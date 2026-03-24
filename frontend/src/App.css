@@ -1,0 +1,33 @@
+/* Add some basic styling for the app */
+.App {
+  padding: 20px;
+}
+
+.movie-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 20px;
+}
+
+.movie-card {
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 10px;
+  text-align: center;
+}
+
+.movie-card img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 4px;
+}
+
+.loading-spinner, .error-message {
+    text-align: center;
+    padding: 20px;
+    font-size: 1.2em;
+}
+
+.movie-detail-page img {
+    max-width: 100%;
+}
