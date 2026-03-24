@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { MovieListItem } from '../models/movie';
+import type { MovieListItem } from '../models';
 import { getMovies } from '../services/movieService';
 
 export const useMovies = () => {

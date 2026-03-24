@@ -1,9 +1,9 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Movie } from '../models/movie';
+import type { MovieListItem } from '../models';
 
 interface MovieCardProps {
-  movie: Movie;
+  movie: MovieListItem;
 }
 
 const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {

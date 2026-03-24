@@ -1,4 +1,4 @@
-import { Movie, PaginatedMovies } from '../models/movie';
+import type { Movie, PaginatedMovies } from '../models';
 
 const API_BASE_URL = 'http://localhost:8000/api/v1'; // Assuming the backend runs on port 8000
 
