@@ -8,7 +8,7 @@ movie_model.Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="Mov-Sug API", version="0.1.0")
 
-app.include_router(movies.router, prefix="/api")
+app.include_router(movies.router)
 
 @app.get("/")
 def read_root():

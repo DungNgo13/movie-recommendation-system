@@ -1,17 +1,43 @@
-from pydantic import BaseModel
-from typing import Optional
+from pydantic import BaseModel, Field, ConfigDict, computed_field
+from typing import List, Optional
+from uuid import UUID
+from datetime import date
 
-class MovieBase(BaseModel):
+# Schema for an item in the movie list
+class MovieListItemSchema(BaseModel):
+    # Use ConfigDict for Pydantic V2 and from_attributes instead of orm_mode
+    model_config = ConfigDict(from_attributes=True)
+
+    id: UUID
     title: str
-    description: Optional[str] = None
-    release_year: Optional[int] = None
-    genre: Optional[str] = None
+    poster_url: Optional[str] = None
+    # This field is used for computation but excluded from the final response
+    release_date: Optional[date] = Field(None, exclude=True)
 
-class MovieCreate(MovieBase):
-    pass
+    @computed_field
+    @property
+    def release_year(self) -> Optional[int]:
+        """Computes release_year from release_date."""
+        if self.release_date:
+            return self.release_date.year
+        return None
 
-class Movie(MovieBase):
-    id: int
+# Schema for the detailed movie view
+class MovieDetailSchema(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
 
-    class Config:
-        orm_mode = True
+    id: UUID
+    title: str
+    overview: Optional[str] = None
+    release_date: Optional[date] = None
+    genres: Optional[List[str]] = []
+    director: Optional[str] = None
+    poster_url: Optional[str] = None
+    backdrop_url: Optional[str] = None
+
+# Schema for the paginated movie list response
+class MovieListResponseSchema(BaseModel):
+    items: List[MovieListItemSchema]
+    total: int
+    page: int
+    limit: int

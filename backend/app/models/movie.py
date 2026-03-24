@@ -1,11 +1,16 @@
-from sqlalchemy import Column, Integer, String, Text
+import uuid
+from sqlalchemy import Column, String, Text, Date
+from sqlalchemy.dialects.postgresql import UUID, JSON
 from ..database import Base
 
 class Movie(Base):
     __tablename__ = "movies"
 
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     title = Column(String(255), index=True, nullable=False)
-    description = Column(Text, nullable=True)
-    release_year = Column(Integer, nullable=True)
-    genre = Column(String(100), index=True, nullable=True)
+    overview = Column(Text, nullable=True)
+    release_date = Column(Date, nullable=True)
+    genres = Column(JSON, nullable=True)
+    director = Column(String(100), nullable=True)
+    poster_url = Column(String(255), nullable=True)
+    backdrop_url = Column(String(255), nullable=True)
