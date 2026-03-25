@@ -10,10 +10,40 @@
 }
 
 .movie-card {
+  position: relative;
   border: 1px solid #ccc;
   border-radius: 8px;
   padding: 10px;
   text-align: center;
+}
+
+.favorite-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 2;
+  background: rgba(255, 255, 255, 0.85);
+  border: none;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  font-size: 1.25rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.15s ease, color 0.15s ease;
+  color: #888;
+  line-height: 1;
+}
+
+.favorite-btn:hover {
+  transform: scale(1.15);
+  color: #e74c3c;
+}
+
+.favorite-btn--active {
+  color: #e74c3c;
 }
 
 .movie-card img {
