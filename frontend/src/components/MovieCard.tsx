@@ -10,7 +10,14 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
   return (
     <div className="movie-card">
       <Link to={`/movie/${movie.id}`}>
-        <img src={movie.poster_url || ''} alt={`${movie.title} poster`} />
+        <img
+          src={movie.poster_url || '/placeholder-poster.png'}
+          alt={`${movie.title} poster`}
+          onError={(e) => {
+            e.currentTarget.onerror = null; // Prevent infinite loop if placeholder fails
+            e.currentTarget.src = '/placeholder-poster.png';
+          }}
+        />
         <h3>{movie.title}</h3>
       </Link>
     </div>

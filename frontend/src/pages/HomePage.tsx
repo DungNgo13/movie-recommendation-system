@@ -5,7 +5,7 @@ import ErrorMessage from '../components/ErrorMessage';
 import { useMovies } from '../hooks/useMovies';
 
 const HomePage: React.FC = () => {
-  const { movies, loading, error, debugData } = useMovies();
+  const { movies, loading, error } = useMovies();
 
   if (loading) {
     return <LoadingSpinner />;
@@ -17,11 +17,6 @@ const HomePage: React.FC = () => {
 
   return (
     <div className="home-page">
-      {/* Debugging section */}
-      <pre style={{ textAlign: 'left', backgroundColor: '#f0f0f0', padding: '10px' }}>
-        {JSON.stringify(debugData, null, 2)}
-      </pre>
-      
       <h1>Movies</h1>
       <div className="movie-list">
         {movies.map((movie) => (
