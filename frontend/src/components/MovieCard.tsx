@@ -5,7 +5,7 @@ import type { MovieListItem } from '../models';
 interface MovieCardProps {
   movie: MovieListItem;
   isFavorite: boolean;
-  onToggleFavorite: (id: string) => void;
+  onToggleFavorite: (id: string) => void | Promise<void>;
 }
 
 const MovieCard: React.FC<MovieCardProps> = ({ movie, isFavorite, onToggleFavorite }) => {

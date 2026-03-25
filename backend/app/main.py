@@ -4,17 +4,21 @@ from fastapi.middleware.cors import CORSMiddleware
 from .database import engine
 from .models import movie as movie_model
 from .models import user as user_model
+from .models import user_favorite as user_favorite_model
 from .routers import movies
 from .routers import auth
+from .routers import favorites
 
 movie_model.Base.metadata.create_all(bind=engine)
 user_model.Base.metadata.create_all(bind=engine)
+user_favorite_model.Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="Mov-Sug API", version="0.1.0")
 
 # Set up CORS
 origins = [
     "http://localhost:5173",
+    "http://127.0.0.1:5173",
 ]
 
 app.add_middleware(
@@ -28,6 +32,7 @@ app.add_middleware(
 
 app.include_router(movies.router)
 app.include_router(auth.router)
+app.include_router(favorites.router)
 
 @app.get("/")
 def read_root():
