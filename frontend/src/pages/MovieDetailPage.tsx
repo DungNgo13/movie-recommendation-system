@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import type { Movie } from '../models';
 import { getMovieById } from '../services/movieService';
+import { setContinueWatchingMovie } from '../services/continueWatchingService';
 import LoadingSpinner from '../components/LoadingSpinner';
 import ErrorMessage from '../components/ErrorMessage';
 
@@ -28,6 +29,17 @@ const MovieDetailPage: React.FC = () => {
         setImageSrc(
           data.backdrop_url || data.poster_url || PLACEHOLDER_IMAGE
         );
+
+        // Save as continue-watching movie
+        const releaseYear = data.release_date
+          ? new Date(data.release_date).getFullYear()
+          : null;
+        setContinueWatchingMovie({
+          id: data.id,
+          title: data.title,
+          poster_url: data.poster_url,
+          release_year: Number.isNaN(releaseYear) ? null : releaseYear,
+        });
       } catch (err) {
         setError('Failed to fetch movie details.');
         console.error(err);

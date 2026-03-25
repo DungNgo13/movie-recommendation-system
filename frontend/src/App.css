@@ -9,6 +9,14 @@
   gap: 20px;
 }
 
+.continue-watching-section {
+  margin-bottom: 32px;
+}
+
+.continue-watching-section h2 {
+  margin-bottom: 12px;
+}
+
 .movie-card {
   position: relative;
   border: 1px solid #ccc;
