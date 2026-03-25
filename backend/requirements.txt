@@ -6,3 +6,6 @@ pydantic[email]
 alembic
 pytest
 httpx
+passlib[bcrypt]
+python-jose[cryptography]
+python-multipart
