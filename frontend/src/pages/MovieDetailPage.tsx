@@ -3,6 +3,9 @@ import { useParams } from 'react-router-dom';
 import type { Movie } from '../models';
 import { getMovieById } from '../services/movieService';
 import { setContinueWatchingMovie } from '../services/continueWatchingService';
+import { useRecommendations } from '../hooks/useRecommendations';
+import { useFavorites } from '../hooks/useFavorites';
+import MovieCard from '../components/MovieCard';
 import LoadingSpinner from '../components/LoadingSpinner';
 import ErrorMessage from '../components/ErrorMessage';
 
@@ -51,6 +54,14 @@ const MovieDetailPage: React.FC = () => {
     fetchMovie();
   }, [id]);
 
+  // Compute release year for recommendations hook
+  const releaseYear = movie?.release_date
+    ? (() => { const y = new Date(movie.release_date).getFullYear(); return Number.isNaN(y) ? null : y; })()
+    : null;
+
+  const { recommendations } = useRecommendations(id, movie?.title ?? '', releaseYear);
+  const { isFavorite, toggleFavorite } = useFavorites();
+
   const handleImageError = () => {
     if (!movie) {
       setImageSrc(PLACEHOLDER_IMAGE);
@@ -93,6 +104,22 @@ const MovieDetailPage: React.FC = () => {
       <p>{movie.overview}</p>
       <p>Release Date: {movie.release_date}</p>
       <p>Director: {movie.director}</p>
+
+      {recommendations.length > 0 && (
+        <section className="recommendations-section">
+          <h2>Recommended Movies</h2>
+          <div className="movie-list">
+            {recommendations.map((rec) => (
+              <MovieCard
+                key={rec.id}
+                movie={rec}
+                isFavorite={isFavorite(rec.id)}
+                onToggleFavorite={toggleFavorite}
+              />
+            ))}
+          </div>
+        </section>
+      )}
     </div>
   );
 };

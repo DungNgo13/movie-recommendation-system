@@ -1,15 +1,29 @@
-import React from 'react';
+import React, { useState, useMemo } from 'react';
 import MovieCard from '../components/MovieCard';
 import LoadingSpinner from '../components/LoadingSpinner';
 import ErrorMessage from '../components/ErrorMessage';
 import { useMovies } from '../hooks/useMovies';
 import { useFavorites } from '../hooks/useFavorites';
 import { getContinueWatchingMovie } from '../services/continueWatchingService';
+import { applyFilters, getUniqueYears } from '../utils/movieFilters';
+import type { SortOption } from '../utils/movieFilters';
 
 const HomePage: React.FC = () => {
   const { movies, loading, error } = useMovies();
   const { isFavorite, toggleFavorite } = useFavorites();
   const continueWatchingMovie = getContinueWatchingMovie();
+
+  // Search / Filter / Sort state
+  const [searchQuery, setSearchQuery] = useState('');
+  const [yearFilter, setYearFilter] = useState<number | null>(null);
+  const [sortOption, setSortOption] = useState<SortOption>('title-asc');
+
+  const availableYears = useMemo(() => getUniqueYears(movies), [movies]);
+
+  const filteredMovies = useMemo(
+    () => applyFilters(movies, searchQuery, yearFilter, sortOption),
+    [movies, searchQuery, yearFilter, sortOption],
+  );
 
   if (loading) {
     return <LoadingSpinner />;
@@ -35,16 +49,60 @@ const HomePage: React.FC = () => {
       )}
 
       <h1>Movies</h1>
-      <div className="movie-list">
-        {movies.map((movie) => (
-          <MovieCard
-            key={movie.id}
-            movie={movie}
-            isFavorite={isFavorite(movie.id)}
-            onToggleFavorite={toggleFavorite}
-          />
-        ))}
+
+      <div className="movie-controls">
+        <input
+          id="search-input"
+          type="text"
+          placeholder="Search by title..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="search-input"
+        />
+
+        <select
+          id="year-filter"
+          value={yearFilter ?? ''}
+          onChange={(e) =>
+            setYearFilter(e.target.value ? Number(e.target.value) : null)
+          }
+          className="filter-select"
+        >
+          <option value="">All Years</option>
+          {availableYears.map((year) => (
+            <option key={year} value={year}>
+              {year}
+            </option>
+          ))}
+        </select>
+
+        <select
+          id="sort-select"
+          value={sortOption}
+          onChange={(e) => setSortOption(e.target.value as SortOption)}
+          className="filter-select"
+        >
+          <option value="title-asc">Title A–Z</option>
+          <option value="title-desc">Title Z–A</option>
+          <option value="year-desc">Newest First</option>
+          <option value="year-asc">Oldest First</option>
+        </select>
       </div>
+
+      {filteredMovies.length === 0 ? (
+        <p className="no-results">No movies found.</p>
+      ) : (
+        <div className="movie-list">
+          {filteredMovies.map((movie) => (
+            <MovieCard
+              key={movie.id}
+              movie={movie}
+              isFavorite={isFavorite(movie.id)}
+              onToggleFavorite={toggleFavorite}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 };

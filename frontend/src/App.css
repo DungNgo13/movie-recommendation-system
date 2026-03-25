@@ -9,6 +9,43 @@
   gap: 20px;
 }
 
+.movie-controls {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.search-input {
+  flex: 1;
+  min-width: 180px;
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 0.95rem;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #666;
+}
+
+.filter-select {
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  background: #fff;
+  cursor: pointer;
+}
+
+.no-results {
+  text-align: center;
+  padding: 40px 20px;
+  color: #888;
+  font-size: 1.1rem;
+}
+
 .continue-watching-section {
   margin-bottom: 32px;
 }
@@ -68,4 +105,12 @@
 
 .movie-detail-page img {
     max-width: 100%;
+}
+
+.recommendations-section {
+  margin-top: 32px;
+}
+
+.recommendations-section h2 {
+  margin-bottom: 12px;
 }
