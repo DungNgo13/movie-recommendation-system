@@ -276,3 +276,228 @@
   border-bottom: none;
   margin-top: 32px;
 }
+
+/* ===== Admin Page ===== */
+.admin-page {
+  max-width: 900px;
+}
+
+.admin-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.admin-header h1 {
+  margin: 0;
+  font-size: 1.6rem;
+}
+
+/* ===== Buttons ===== */
+.btn {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+}
+
+.btn:hover {
+  opacity: 0.85;
+}
+
+.btn--primary {
+  background: #3498db;
+  color: #fff;
+}
+
+.btn--secondary {
+  background: #e8e8e8;
+  color: #333;
+}
+
+.btn--edit {
+  background: #f39c12;
+  color: #fff;
+}
+
+.btn--delete {
+  background: #e74c3c;
+  color: #fff;
+}
+
+/* ===== Admin Table ===== */
+.admin-table-wrapper {
+  overflow-x: auto;
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+}
+
+.admin-table th,
+.admin-table td {
+  padding: 12px 16px;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+}
+
+.admin-table th {
+  background: #f8f9fa;
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: #555;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.admin-table tr:last-child td {
+  border-bottom: none;
+}
+
+.admin-table tr:hover td {
+  background: #f8f9fa;
+}
+
+.admin-table-actions {
+  display: flex;
+  gap: 8px;
+}
+
+/* ===== Admin Form ===== */
+.admin-form {
+  background: #fff;
+  padding: 24px;
+  border-radius: 10px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+}
+
+.admin-form h2 {
+  margin-bottom: 20px;
+  font-size: 1.3rem;
+}
+
+.admin-form-error {
+  color: #e74c3c;
+  background: #fdf0ef;
+  padding: 10px 14px;
+  border-radius: 6px;
+  margin-bottom: 16px;
+  font-size: 0.9rem;
+}
+
+.admin-form-group {
+  margin-bottom: 16px;
+}
+
+.admin-form-group label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 500;
+  font-size: 0.9rem;
+  color: #444;
+}
+
+.admin-form-group input,
+.admin-form-group textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-family: inherit;
+  transition: border-color 0.2s ease;
+}
+
+.admin-form-group input:focus,
+.admin-form-group textarea:focus {
+  outline: none;
+  border-color: #3498db;
+}
+
+.admin-form-row {
+  display: flex;
+  gap: 16px;
+}
+
+.admin-form-row .admin-form-group {
+  flex: 1;
+}
+
+.admin-form-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+/* ===== Admin Badge ===== */
+.admin-badge {
+  display: inline-block;
+  background: #1a1a2e;
+  color: #f39c12;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 20px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+}
+
+/* ===== Admin Empty State ===== */
+.admin-empty {
+  text-align: center;
+  padding: 60px 20px;
+  color: #888;
+}
+
+.admin-empty p {
+  font-size: 1.1rem;
+  margin-bottom: 16px;
+}
+
+/* ===== Confirm Dialog ===== */
+.confirm-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.confirm-dialog {
+  background: #fff;
+  padding: 28px 32px;
+  border-radius: 12px;
+  max-width: 420px;
+  width: 90%;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+}
+
+.confirm-dialog h3 {
+  margin: 0 0 12px;
+  font-size: 1.2rem;
+  color: #e74c3c;
+}
+
+.confirm-dialog p {
+  color: #555;
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+.confirm-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}

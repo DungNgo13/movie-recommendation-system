@@ -38,3 +38,36 @@ def read_movie(movie_id: UUID, db: Session = Depends(database.get_db)):
         raise HTTPException(status_code=404, detail="Movie not found")
     return db_movie
 
+@router.post("", response_model=movie_schema.MovieDetailSchema, status_code=201)
+def create_movie(
+    movie: movie_schema.MovieCreateSchema,
+    db: Session = Depends(database.get_db)
+):
+    """
+    Create a new movie.
+    """
+    return movie_service.create_movie(db, movie)
+
+@router.put("/{movie_id}", response_model=movie_schema.MovieDetailSchema)
+def update_movie(
+    movie_id: UUID,
+    movie: movie_schema.MovieUpdateSchema,
+    db: Session = Depends(database.get_db)
+):
+    """
+    Update an existing movie.
+    """
+    db_movie = movie_service.update_movie(db, movie_id, movie)
+    if db_movie is None:
+        raise HTTPException(status_code=404, detail="Movie not found")
+    return db_movie
+
+@router.delete("/{movie_id}", status_code=204)
+def delete_movie(movie_id: UUID, db: Session = Depends(database.get_db)):
+    """
+    Delete a movie.
+    """
+    deleted = movie_service.delete_movie(db, movie_id)
+    if not deleted:
+        raise HTTPException(status_code=404, detail="Movie not found")
+    return None

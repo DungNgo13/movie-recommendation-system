@@ -35,6 +35,26 @@ class MovieDetailSchema(BaseModel):
     poster_url: Optional[str] = None
     backdrop_url: Optional[str] = None
 
+# Schema for creating a new movie
+class MovieCreateSchema(BaseModel):
+    title: str
+    overview: Optional[str] = None
+    release_date: Optional[date] = None
+    genres: Optional[List[str]] = None
+    director: Optional[str] = None
+    poster_url: Optional[str] = None
+    backdrop_url: Optional[str] = None
+
+# Schema for updating an existing movie (all fields optional)
+class MovieUpdateSchema(BaseModel):
+    title: Optional[str] = None
+    overview: Optional[str] = None
+    release_date: Optional[date] = None
+    genres: Optional[List[str]] = None
+    director: Optional[str] = None
+    poster_url: Optional[str] = None
+    backdrop_url: Optional[str] = None
+
 # Schema for the paginated movie list response
 class MovieListResponseSchema(BaseModel):
     items: List[MovieListItemSchema]
