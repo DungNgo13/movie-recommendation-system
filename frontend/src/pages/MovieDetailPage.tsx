@@ -3,9 +3,12 @@ import { useParams } from 'react-router-dom';
 import type { Movie } from '../models';
 import { getMovieById } from '../services/movieService';
 import { recordWatch } from '../services/continueWatchingService';
+import { getMyRating, rateMovie } from '../services/ratingService';
 import { useRecommendations } from '../hooks/useRecommendations';
 import { useFavorites } from '../hooks/useFavorites';
+import { useAuth } from '../hooks/useAuth';
 import MovieCard from '../components/MovieCard';
+import StarRating from '../components/StarRating';
 import LoadingSpinner from '../components/LoadingSpinner';
 import ErrorMessage from '../components/ErrorMessage';
 
@@ -13,10 +16,12 @@ const PLACEHOLDER_IMAGE = '/placeholder-poster.svg';
 
 const MovieDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
+  const { user } = useAuth();
   const [movie, setMovie] = useState<Movie | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [imageSrc, setImageSrc] = useState<string>(PLACEHOLDER_IMAGE);
+  const [myRating, setMyRating] = useState<number | null>(null);
 
   useEffect(() => {
     const fetchMovie = async () => {
@@ -45,6 +50,29 @@ const MovieDetailPage: React.FC = () => {
 
     fetchMovie();
   }, [id]);
+
+  // Fetch user's existing rating for this movie
+  useEffect(() => {
+    if (!id || !user) {
+      setMyRating(null);
+      return;
+    }
+    const fetchRating = async () => {
+      const rating = await getMyRating(id);
+      setMyRating(rating);
+    };
+    fetchRating();
+  }, [id, user]);
+
+  const handleRate = async (rating: number) => {
+    if (!id || !user) return;
+    try {
+      await rateMovie(id, rating);
+      setMyRating(rating);
+    } catch {
+      // silently fail
+    }
+  };
 
   // Compute release year for recommendations hook
   const releaseYear = movie?.release_date
@@ -96,6 +124,18 @@ const MovieDetailPage: React.FC = () => {
       <p>{movie.overview}</p>
       <p>Release Date: {movie.release_date}</p>
       <p>Director: {movie.director}</p>
+
+      <div className="rating-section">
+        <h3>Your Rating</h3>
+        {user ? (
+          <>
+            <StarRating currentRating={myRating} onRate={handleRate} />
+            {myRating && <span className="rating-label">{myRating}/5</span>}
+          </>
+        ) : (
+          <p className="rating-login-hint">Login to rate this movie</p>
+        )}
+      </div>
 
       {recommendations.length > 0 && (
         <section className="recommendations-section">

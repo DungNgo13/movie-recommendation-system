@@ -6,15 +6,18 @@ from .models import movie as movie_model
 from .models import user as user_model
 from .models import user_favorite as user_favorite_model
 from .models import watch_history as watch_history_model
+from .models import rating as rating_model
 from .routers import movies
 from .routers import auth
 from .routers import favorites
 from .routers import history
+from .routers import ratings
 
 movie_model.Base.metadata.create_all(bind=engine)
 user_model.Base.metadata.create_all(bind=engine)
 user_favorite_model.Base.metadata.create_all(bind=engine)
 watch_history_model.Base.metadata.create_all(bind=engine)
+rating_model.Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="Mov-Sug API", version="0.1.0")
 
@@ -37,6 +40,7 @@ app.include_router(movies.router)
 app.include_router(auth.router)
 app.include_router(favorites.router)
 app.include_router(history.router)
+app.include_router(ratings.router)
 
 @app.get("/")
 def read_root():

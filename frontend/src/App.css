@@ -608,3 +608,58 @@
 .auth-link a:hover {
   text-decoration: underline;
 }
+
+/* ===== Star Rating ===== */
+.rating-section {
+  margin: 24px 0;
+  padding: 16px 0;
+  border-top: 1px solid #eee;
+}
+
+.rating-section h3 {
+  margin: 0 0 10px;
+  font-size: 1rem;
+  color: #444;
+}
+
+.star-rating {
+  display: inline-flex;
+  gap: 4px;
+}
+
+.star-btn {
+  background: none;
+  border: none;
+  font-size: 1.6rem;
+  cursor: pointer;
+  color: #ddd;
+  padding: 0 2px;
+  transition: color 0.15s ease, transform 0.15s ease;
+  line-height: 1;
+}
+
+.star-btn:hover {
+  transform: scale(1.15);
+}
+
+.star-btn--filled {
+  color: #f1c40f;
+}
+
+.star-btn:disabled {
+  cursor: default;
+  opacity: 0.5;
+}
+
+.rating-label {
+  margin-left: 10px;
+  font-size: 0.95rem;
+  color: #888;
+  font-weight: 500;
+}
+
+.rating-login-hint {
+  color: #999;
+  font-size: 0.9rem;
+  font-style: italic;
+}
