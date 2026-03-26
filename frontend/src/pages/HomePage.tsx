@@ -1,22 +1,37 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import MovieCard from '../components/MovieCard';
 import LoadingSpinner from '../components/LoadingSpinner';
 import ErrorMessage from '../components/ErrorMessage';
 import { useMovies } from '../hooks/useMovies';
 import { useFavorites } from '../hooks/useFavorites';
-import { getContinueWatchingMovie } from '../services/continueWatchingService';
+import { useAuth } from '../hooks/useAuth';
+import { getWatchHistory } from '../services/continueWatchingService';
+import type { HistoryItem } from '../services/continueWatchingService';
 import { applyFilters, getUniqueYears } from '../utils/movieFilters';
 import type { SortOption } from '../utils/movieFilters';
 
 const HomePage: React.FC = () => {
   const { movies, loading, error } = useMovies();
   const { isFavorite, toggleFavorite } = useFavorites();
-  const continueWatchingMovie = getContinueWatchingMovie();
+  const { user } = useAuth();
+  const [historyItems, setHistoryItems] = useState<HistoryItem[]>([]);
 
   // Search / Filter / Sort state
   const [searchQuery, setSearchQuery] = useState('');
   const [yearFilter, setYearFilter] = useState<number | null>(null);
   const [sortOption, setSortOption] = useState<SortOption>('title-asc');
+
+  useEffect(() => {
+    if (!user) {
+      setHistoryItems([]);
+      return;
+    }
+    const fetchHistory = async () => {
+      const items = await getWatchHistory(5);
+      setHistoryItems(items);
+    };
+    fetchHistory();
+  }, [user]);
 
   const availableYears = useMemo(() => getUniqueYears(movies), [movies]);
 
@@ -35,15 +50,18 @@ const HomePage: React.FC = () => {
 
   return (
     <div className="home-page">
-      {continueWatchingMovie && (
+      {historyItems.length > 0 && (
         <section className="continue-watching-section">
           <h2>Continue Watching</h2>
           <div className="movie-list">
-            <MovieCard
-              movie={continueWatchingMovie}
-              isFavorite={isFavorite(continueWatchingMovie.id)}
-              onToggleFavorite={toggleFavorite}
-            />
+            {historyItems.map((item) => (
+              <MovieCard
+                key={item.id}
+                movie={item}
+                isFavorite={isFavorite(item.id)}
+                onToggleFavorite={toggleFavorite}
+              />
+            ))}
           </div>
         </section>
       )}

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import type { Movie } from '../models';
 import { getMovieById } from '../services/movieService';
-import { setContinueWatchingMovie } from '../services/continueWatchingService';
+import { recordWatch } from '../services/continueWatchingService';
 import { useRecommendations } from '../hooks/useRecommendations';
 import { useFavorites } from '../hooks/useFavorites';
 import MovieCard from '../components/MovieCard';
@@ -33,16 +33,8 @@ const MovieDetailPage: React.FC = () => {
           data.backdrop_url || data.poster_url || PLACEHOLDER_IMAGE
         );
 
-        // Save as continue-watching movie
-        const releaseYear = data.release_date
-          ? new Date(data.release_date).getFullYear()
-          : null;
-        setContinueWatchingMovie({
-          id: data.id,
-          title: data.title,
-          poster_url: data.poster_url,
-          release_year: Number.isNaN(releaseYear) ? null : releaseYear,
-        });
+        // Record watch history via API (fire-and-forget)
+        recordWatch(data.id);
       } catch (err) {
         setError('Failed to fetch movie details.');
         console.error(err);
