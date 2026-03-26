@@ -716,3 +716,100 @@
   padding: 6px 12px;
   font-size: 0.85rem;
 }
+
+/* ===== Responsive Mobile Layout (Added in Phase 7) ===== */
+
+.table-container {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+@media (max-width: 768px) {
+  /* Navbar adjustments */
+  .navbar {
+    flex-wrap: wrap;
+    padding: 12px 16px;
+    margin: -20px -24px 20px -24px;
+    justify-content: center;
+    gap: 12px;
+  }
+  
+  .navbar-brand {
+    font-size: 1.4rem;
+  }
+  
+  .navbar-links {
+    flex-wrap: wrap;
+    justify-content: center;
+    width: 100%;
+    gap: 8px;
+  }
+  
+  .navbar-link {
+    font-size: 0.85rem;
+    padding: 6px 10px;
+  }
+  
+  .navbar-user {
+    display: none; /* Hide email on small screens to save space */
+  }
+
+  /* Home Controls adjustments */
+  .movie-controls {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+  
+  .search-input,
+  .filter-select {
+    width: 100%;
+  }
+
+  /* Movie Detail Page adjustments */
+  .movie-detail-page {
+    padding: 0 10px;
+  }
+
+  .movie-detail-page img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    margin-bottom: 16px;
+  }
+
+  /* Admin Pages adjustments */
+  .admin-page {
+    padding: 0 10px;
+  }
+
+  .admin-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  
+  .admin-actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .admin-form-row {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .confirm-dialog {
+    width: 95%;
+    padding: 20px;
+  }
+
+  /* Auth Pages adjustments */
+  .auth-container {
+    padding: 24px 20px;
+    margin: 20px 16px;
+    width: auto;
+  }
+}
+
