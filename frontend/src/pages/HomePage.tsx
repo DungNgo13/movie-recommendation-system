@@ -1,12 +1,15 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import MovieCard from '../components/MovieCard';
+import RecommendationCard from '../components/RecommendationCard';
 import LoadingSpinner from '../components/LoadingSpinner';
 import ErrorMessage from '../components/ErrorMessage';
 import { useMovies } from '../hooks/useMovies';
 import { useFavorites } from '../hooks/useFavorites';
 import { useAuth } from '../hooks/useAuth';
 import { getWatchHistory } from '../services/continueWatchingService';
+import { getRecommendations } from '../services/recommendationService';
 import type { HistoryItem } from '../services/continueWatchingService';
+import type { RecommendedMovie } from '../services/recommendationService';
 import { applyFilters, getUniqueYears } from '../utils/movieFilters';
 import type { SortOption } from '../utils/movieFilters';
 
@@ -15,6 +18,7 @@ const HomePage: React.FC = () => {
   const { isFavorite, toggleFavorite } = useFavorites();
   const { user } = useAuth();
   const [historyItems, setHistoryItems] = useState<HistoryItem[]>([]);
+  const [recommendations, setRecommendations] = useState<RecommendedMovie[]>([]);
 
   // Search / Filter / Sort state
   const [searchQuery, setSearchQuery] = useState('');
@@ -24,13 +28,18 @@ const HomePage: React.FC = () => {
   useEffect(() => {
     if (!user) {
       setHistoryItems([]);
+      setRecommendations([]);
       return;
     }
-    const fetchHistory = async () => {
-      const items = await getWatchHistory(5);
-      setHistoryItems(items);
+    const fetchUserData = async () => {
+      const [history, recs] = await Promise.all([
+        getWatchHistory(5),
+        getRecommendations(6),
+      ]);
+      setHistoryItems(history);
+      setRecommendations(recs);
     };
-    fetchHistory();
+    fetchUserData();
   }, [user]);
 
   const availableYears = useMemo(() => getUniqueYears(movies), [movies]);
@@ -59,6 +68,22 @@ const HomePage: React.FC = () => {
                 key={item.id}
                 movie={item}
                 isFavorite={isFavorite(item.id)}
+                onToggleFavorite={toggleFavorite}
+              />
+            ))}
+          </div>
+        </section>
+      )}
+
+      {recommendations.length > 0 && (
+        <section className="recommendations-section recommendations-home">
+          <h2>🤖 Recommended for You</h2>
+          <div className="movie-list">
+            {recommendations.map((rec) => (
+              <RecommendationCard
+                key={rec.id}
+                movie={rec}
+                isFavorite={isFavorite(rec.id)}
                 onToggleFavorite={toggleFavorite}
               />
             ))}
