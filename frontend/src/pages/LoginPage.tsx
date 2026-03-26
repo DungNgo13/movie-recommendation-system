@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { loginUser } from '../services/authService';
 import { useAuth } from '../hooks/useAuth';
 
@@ -9,7 +9,10 @@ const LoginPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
   const { refreshUser } = useAuth();
+  
+  const successMessage = location.state?.message;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -41,6 +44,7 @@ const LoginPage: React.FC = () => {
       <form className="auth-form" onSubmit={handleSubmit}>
         <h1>Login</h1>
 
+        {successMessage && <div className="auth-success-message">{successMessage}</div>}
         {error && <p className="auth-error">{error}</p>}
 
         <div className="auth-field">

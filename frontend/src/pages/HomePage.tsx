@@ -59,6 +59,47 @@ const HomePage: React.FC = () => {
 
   return (
     <div className="home-page">
+      <div className="sticky-controls">
+        <div className="movie-controls">
+          <input
+            id="search-input"
+            type="text"
+            placeholder="Search by title..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="search-input"
+          />
+
+          <select
+            id="year-filter"
+            value={yearFilter ?? ''}
+            onChange={(e) =>
+              setYearFilter(e.target.value ? Number(e.target.value) : null)
+            }
+            className="filter-select"
+          >
+            <option value="">All Years</option>
+            {availableYears.map((year) => (
+              <option key={year} value={year}>
+                {year}
+              </option>
+            ))}
+          </select>
+
+          <select
+            id="sort-select"
+            value={sortOption}
+            onChange={(e) => setSortOption(e.target.value as SortOption)}
+            className="filter-select"
+          >
+            <option value="title-asc">Title A–Z</option>
+            <option value="title-desc">Title Z–A</option>
+            <option value="year-desc">Newest First</option>
+            <option value="year-asc">Oldest First</option>
+          </select>
+        </div>
+      </div>
+
       {historyItems.length > 0 && (
         <section className="continue-watching-section">
           <h2>Continue Watching</h2>
@@ -92,45 +133,6 @@ const HomePage: React.FC = () => {
       )}
 
       <h1>Movies</h1>
-
-      <div className="movie-controls">
-        <input
-          id="search-input"
-          type="text"
-          placeholder="Search by title..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="search-input"
-        />
-
-        <select
-          id="year-filter"
-          value={yearFilter ?? ''}
-          onChange={(e) =>
-            setYearFilter(e.target.value ? Number(e.target.value) : null)
-          }
-          className="filter-select"
-        >
-          <option value="">All Years</option>
-          {availableYears.map((year) => (
-            <option key={year} value={year}>
-              {year}
-            </option>
-          ))}
-        </select>
-
-        <select
-          id="sort-select"
-          value={sortOption}
-          onChange={(e) => setSortOption(e.target.value as SortOption)}
-          className="filter-select"
-        >
-          <option value="title-asc">Title A–Z</option>
-          <option value="title-desc">Title Z–A</option>
-          <option value="year-desc">Newest First</option>
-          <option value="year-asc">Oldest First</option>
-        </select>
-      </div>
 
       {filteredMovies.length === 0 ? (
         <p className="no-results">No movies found.</p>

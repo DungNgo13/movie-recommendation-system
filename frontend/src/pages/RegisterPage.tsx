@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { registerUser, loginUser } from '../services/authService';
-import { useAuth } from '../hooks/useAuth';
+import { registerUser } from '../services/authService';
+// useAuth hook not needed here anymore
 
 const RegisterPage: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -10,7 +10,6 @@ const RegisterPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const navigate = useNavigate();
-  const { refreshUser } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,10 +31,7 @@ const RegisterPage: React.FC = () => {
     try {
       setSubmitting(true);
       await registerUser({ email: email.trim(), password });
-      // Auto-login after registration
-      await loginUser({ email: email.trim(), password });
-      await refreshUser();
-      navigate('/');
+      navigate('/login', { state: { message: 'Registration successful. Please log in.' } });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Registration failed');
     } finally {
