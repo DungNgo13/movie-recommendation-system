@@ -4,10 +4,11 @@ import type { Movie } from '../models';
 import { getMovieById } from '../services/movieService';
 import { recordWatch } from '../services/continueWatchingService';
 import { getMyRating, rateMovie } from '../services/ratingService';
-import { useRecommendations } from '../hooks/useRecommendations';
+import { getRecommendations } from '../services/recommendationService';
+import type { RecommendedMovie } from '../services/recommendationService';
 import { useFavorites } from '../hooks/useFavorites';
 import { useAuth } from '../hooks/useAuth';
-import MovieCard from '../components/MovieCard';
+import RecommendationCard from '../components/RecommendationCard';
 import StarRating from '../components/StarRating';
 import LoadingSpinner from '../components/LoadingSpinner';
 import ErrorMessage from '../components/ErrorMessage';
@@ -22,6 +23,19 @@ const MovieDetailPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [imageSrc, setImageSrc] = useState<string>(PLACEHOLDER_IMAGE);
   const [myRating, setMyRating] = useState<number | null>(null);
+  const [recommendations, setRecommendations] = useState<RecommendedMovie[]>([]);
+
+  useEffect(() => {
+    if (!user) {
+      setRecommendations([]);
+      return;
+    }
+    const fetchRecs = async () => {
+      const recs = await getRecommendations(4);
+      setRecommendations(recs);
+    };
+    fetchRecs();
+  }, [user]);
 
   useEffect(() => {
     const fetchMovie = async () => {
@@ -74,12 +88,6 @@ const MovieDetailPage: React.FC = () => {
     }
   };
 
-  // Compute release year for recommendations hook
-  const releaseYear = movie?.release_date
-    ? (() => { const y = new Date(movie.release_date).getFullYear(); return Number.isNaN(y) ? null : y; })()
-    : null;
-
-  const { recommendations } = useRecommendations(id, movie?.title ?? '', releaseYear);
   const { isFavorite, toggleFavorite } = useFavorites();
 
   const handleImageError = () => {
@@ -139,10 +147,10 @@ const MovieDetailPage: React.FC = () => {
 
       {recommendations.length > 0 && (
         <section className="recommendations-section">
-          <h2>Recommended Movies</h2>
+          <h2>🤖 Recommended for You</h2>
           <div className="movie-list">
             {recommendations.map((rec) => (
-              <MovieCard
+              <RecommendationCard
                 key={rec.id}
                 movie={rec}
                 isFavorite={isFavorite(rec.id)}
