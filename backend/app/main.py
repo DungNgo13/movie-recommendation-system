@@ -12,6 +12,7 @@ from .routers import auth
 from .routers import favorites
 from .routers import history
 from .routers import ratings
+from .routers import recommendations
 
 movie_model.Base.metadata.create_all(bind=engine)
 user_model.Base.metadata.create_all(bind=engine)
@@ -41,6 +42,7 @@ app.include_router(auth.router)
 app.include_router(favorites.router)
 app.include_router(history.router)
 app.include_router(ratings.router)
+app.include_router(recommendations.router)
 
 @app.get("/")
 def read_root():
