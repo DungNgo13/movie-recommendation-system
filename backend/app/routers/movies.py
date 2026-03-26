@@ -5,6 +5,7 @@ from uuid import UUID
 from ..schemas import movie as movie_schema
 from .. import database
 from ..services import movie_service
+from .auth import get_current_admin_user
 
 router = APIRouter(
     prefix="/api/v1/movies",
@@ -41,7 +42,8 @@ def read_movie(movie_id: UUID, db: Session = Depends(database.get_db)):
 @router.post("", response_model=movie_schema.MovieDetailSchema, status_code=201)
 def create_movie(
     movie: movie_schema.MovieCreateSchema,
-    db: Session = Depends(database.get_db)
+    db: Session = Depends(database.get_db),
+    admin_user=Depends(get_current_admin_user)
 ):
     """
     Create a new movie.
@@ -52,7 +54,8 @@ def create_movie(
 def update_movie(
     movie_id: UUID,
     movie: movie_schema.MovieUpdateSchema,
-    db: Session = Depends(database.get_db)
+    db: Session = Depends(database.get_db),
+    admin_user=Depends(get_current_admin_user)
 ):
     """
     Update an existing movie.
@@ -63,7 +66,7 @@ def update_movie(
     return db_movie
 
 @router.delete("/{movie_id}", status_code=204)
-def delete_movie(movie_id: UUID, db: Session = Depends(database.get_db)):
+def delete_movie(movie_id: UUID, db: Session = Depends(database.get_db), admin_user=Depends(get_current_admin_user)):
     """
     Delete a movie.
     """

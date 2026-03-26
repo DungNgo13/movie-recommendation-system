@@ -18,7 +18,12 @@ class UserResponseSchema(BaseModel):
 
     id: UUID
     email: str
+    role: str
     created_at: datetime
+
+
+class UserRoleUpdateSchema(BaseModel):
+    role: str
 
 
 class TokenResponseSchema(BaseModel):

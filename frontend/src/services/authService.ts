@@ -5,6 +5,7 @@ const TOKEN_KEY = 'auth_token';
 export interface AuthUser {
   id: string;
   email: string;
+  role: 'admin' | 'user';
   created_at: string;
 }
 

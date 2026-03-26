@@ -58,6 +58,19 @@ def get_current_user(
     return user
 
 
+def get_current_admin_user(current_user=Depends(get_current_user)):
+    """
+    Dependency that ensures the current user is an admin.
+    Returns 403 Forbidden if the user is not an admin.
+    """
+    if current_user.role != "admin":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="The user doesn't have enough privileges",
+        )
+    return current_user
+
+
 @router.post("/register", response_model=UserResponseSchema, status_code=201)
 def register(
     user_data: UserCreateSchema,

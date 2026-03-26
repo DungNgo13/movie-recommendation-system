@@ -689,3 +689,30 @@
   border-radius: 10px;
   margin-top: 4px;
 }
+
+/* ===== Admin Users Page ===== */
+.role-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+.role-admin {
+  background-color: #ffeaa7;
+  color: #d35400;
+}
+.role-user {
+  background-color: #ecf0f1;
+  color: #7f8c8d;
+}
+.truncate-id {
+  font-family: monospace;
+  color: #95a5a6;
+  font-size: 0.85rem;
+}
+.actions-cell .btn {
+  padding: 6px 12px;
+  font-size: 0.85rem;
+}
