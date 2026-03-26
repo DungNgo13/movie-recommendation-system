@@ -1,5 +1,13 @@
 import argparse
 import sys
+import os
+
+# Đảm bảo python hiểu được thư mục gốc backend (chứa module 'app') dù đứng ở bất kỳ CWD nào
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+BACKEND_DIR = os.path.dirname(os.path.dirname(SCRIPT_DIR))
+if BACKEND_DIR not in sys.path:
+    sys.path.insert(0, BACKEND_DIR)
+
 from app.database import SessionLocal
 from app.models.user import User
 
