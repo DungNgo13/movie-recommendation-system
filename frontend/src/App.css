@@ -811,5 +811,24 @@
     margin: 20px 16px;
     width: auto;
   }
-}
 
+  /* Prevent layout-breaking overlong strings */
+  .movie-detail-page p,
+  .movie-detail-page h1,
+  .admin-table td {
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
+
+  /* Prevent star rating from breaking */
+  .rating-section {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .rating-section h3 {
+    margin: 0;
+  }
+}
