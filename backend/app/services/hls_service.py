@@ -1,10 +1,13 @@
 import os
 import subprocess
 import shutil
+import logging
 from uuid import UUID
 from datetime import datetime
 from ..database import SessionLocal
 from ..models import movie as movie_model
+
+logger = logging.getLogger(__name__)
 
 def process_hls_conversion(movie_id: UUID):
     """
@@ -33,8 +36,14 @@ def process_hls_conversion(movie_id: UUID):
         # New Strict Structure requirement: media/videos/hls/movie_{movie_id}
         output_dir = os.path.join("media", "videos", "hls", f"movie_{movie_id}")
         
-        if os.path.exists(output_dir):
-            shutil.rmtree(output_dir)
+        if os.path.exists(output_dir) and os.path.isdir(output_dir):
+            try:
+                shutil.rmtree(output_dir)
+            except OSError as e:
+                db_movie.processing_status = "failed"
+                db_movie.processing_error = f"Failed scrubbing previous HLS output natively: {e}"
+                db.commit()
+                return
             
         os.makedirs(output_dir, exist_ok=True)
         playlist_path = os.path.join(output_dir, "master.m3u8")
@@ -61,7 +70,6 @@ def process_hls_conversion(movie_id: UUID):
             db.commit()
             return
             
-        # Successfully generated HLS matrix natively bounding OS structure dynamically!
         db_movie.processing_status = "ready"
         db_movie.hls_playlist_path = os.path.normpath(playlist_path).replace("\\", "/")
         db_movie.processing_error = None

@@ -4,7 +4,7 @@ from uuid import UUID
 
 from ..schemas import movie as movie_schema
 from .. import database
-from ..services import movie_service
+from ..services import movie_service, movie_asset_service
 from .auth import get_current_admin_user
 from ..services.admin_service import create_audit_log
 
@@ -117,7 +117,7 @@ def upload_poster(
     """
     Upload a new poster image for a movie.
     """
-    db_movie = movie_service.upload_image(db, movie_id, file, "poster")
+    db_movie = movie_asset_service.upload_image_asset(db, movie_id, file, "poster")
     create_audit_log(
         db=db,
         admin_email=admin_user.email,
@@ -138,7 +138,7 @@ def upload_backdrop(
     """
     Upload a new backdrop image for a movie.
     """
-    db_movie = movie_service.upload_image(db, movie_id, file, "backdrop")
+    db_movie = movie_asset_service.upload_image_asset(db, movie_id, file, "backdrop")
     create_audit_log(
         db=db,
         admin_email=admin_user.email,
@@ -160,7 +160,7 @@ def upload_video(
     """
     Upload a new mp4 source video for a movie and auto-trigger HLS conversion.
     """
-    db_movie = movie_service.upload_video(db, movie_id, file)
+    db_movie = movie_asset_service.upload_video_asset(db, movie_id, file)
     
     # Phase 5 QoL Override: Auto-trigger HLS processing bypassing second native HTTP call!
     db_movie.processing_status = "processing"
