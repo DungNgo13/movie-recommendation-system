@@ -7,8 +7,11 @@ const Navbar: React.FC = () => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    logout();
-    navigate('/');
+    navigate('/', { replace: true });
+    // Defer the state clear so ProtectedRouter doesn't intercept the navigation
+    setTimeout(() => {
+      logout();
+    }, 0);
   };
 
   return (

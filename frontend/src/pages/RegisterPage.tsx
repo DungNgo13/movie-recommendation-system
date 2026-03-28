@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { registerUser } from '../services/authService';
+import { registerUser, removeToken } from '../services/authService';
 // useAuth hook not needed here anymore
 
 const RegisterPage: React.FC = () => {
@@ -31,6 +31,7 @@ const RegisterPage: React.FC = () => {
     try {
       setSubmitting(true);
       await registerUser({ email: email.trim(), password });
+      removeToken(); // Explicitly remove any tokens
       navigate('/login', { state: { message: 'Registration successful. Please log in.' } });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Registration failed');
