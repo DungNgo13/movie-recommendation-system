@@ -227,4 +227,4 @@ def test_get_hls_status(seed_movies, db_session):
     assert response.status_code == 200
     data = response.json()
     assert data["video_status"] == "ready"
-    assert data["hls_playlist_url"] == "fake_play.m3u8"
+    assert data["hls_playlist_url"] == "http://localhost:8000/media/videos/hls/fake_play.m3u8"
