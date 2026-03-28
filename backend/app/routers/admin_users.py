@@ -21,7 +21,8 @@ def get_all_users(
     """
     Get a list of all users. Only accessible by admins.
     """
-    users = db.query(User).order_by(User.created_at.desc()).all()
+    # Limit to 100 for MVP production safety (ideally should be paginated)
+    users = db.query(User).order_by(User.created_at.desc()).limit(100).all()
     return users
 
 @router.patch("/{user_id}/role", response_model=UserResponseSchema)
