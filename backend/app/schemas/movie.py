@@ -12,6 +12,7 @@ class MovieListItemSchema(BaseModel):
     title: str
     poster_url: Optional[str] = None
     video_status: Optional[str] = "pending"
+    hls_playlist_url: Optional[str] = None
     # This field is used for computation but excluded from the final response
     release_date: Optional[date] = Field(None, exclude=True)
 
@@ -37,6 +38,8 @@ class MovieDetailSchema(BaseModel):
     backdrop_url: Optional[str] = None
     video_url: Optional[str] = None
     video_status: Optional[str] = "pending"
+    hls_playlist_url: Optional[str] = None
+    processing_error: Optional[str] = None
 
 # Schema for creating a new movie
 class MovieCreateSchema(BaseModel):

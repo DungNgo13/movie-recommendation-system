@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import type { Movie } from '../../models';
 import type { MovieFormData } from '../../services/movieService';
-import { uploadMovieImage, uploadMovieVideo } from '../../services/movieService';
+import { uploadMovieImage, uploadMovieVideo, processMovieVideo, getMovieProcessingStatus } from '../../services/movieService';
 
 interface MovieFormProps {
   movie: Movie | null;
@@ -18,6 +18,8 @@ const MovieForm: React.FC<MovieFormProps> = ({ movie, onSubmit, onCancel }) => {
   const [backdropUrl, setBackdropUrl] = useState('');
   const [videoStatus, setVideoStatus] = useState('pending');
   const [videoUrl, setVideoUrl] = useState('');
+  const [hlsUrl, setHlsUrl] = useState('');
+  const [processingError, setProcessingError] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
 
@@ -31,6 +33,8 @@ const MovieForm: React.FC<MovieFormProps> = ({ movie, onSubmit, onCancel }) => {
       setBackdropUrl(movie.backdrop_url || '');
       setVideoUrl(movie.video_url || '');
       setVideoStatus(movie.video_status || 'pending');
+      setHlsUrl(movie.hls_playlist_url || '');
+      setProcessingError(movie.processing_error || null);
     }
   }, [movie]);
 
@@ -48,6 +52,38 @@ const MovieForm: React.FC<MovieFormProps> = ({ movie, onSubmit, onCancel }) => {
     } finally {
       setUploading(false);
       e.target.value = ''; // Reset file input
+    }
+  };
+
+  useEffect(() => {
+    let interval: number;
+    if (movie && videoStatus === 'processing') {
+      interval = window.setInterval(async () => {
+        try {
+          const res = await getMovieProcessingStatus(movie.id);
+          setVideoStatus(res.video_status);
+          if (res.hls_playlist_url) setHlsUrl(res.hls_playlist_url);
+          if (res.processing_error) setProcessingError(res.processing_error);
+        } catch (e) {
+          console.warn('Polling error', e);
+        }
+      }, 5000);
+    }
+    return () => clearInterval(interval);
+  }, [movie, videoStatus]);
+
+  const handleProcessHls = async () => {
+    if (!movie) return;
+    try {
+      setUploading(true);
+      setError(null);
+      await processMovieVideo(movie.id);
+      setVideoStatus('processing');
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Processing failed';
+      setError(msg);
+    } finally {
+      setUploading(false);
     }
   };
 
@@ -190,17 +226,39 @@ const MovieForm: React.FC<MovieFormProps> = ({ movie, onSubmit, onCancel }) => {
               <strong>Status:</strong> {videoStatus.toUpperCase()}
               {videoUrl && (
                 <div style={{ wordBreak: 'break-all', marginTop: '4px', opacity: 0.8 }}>
-                  <em>Path: {videoUrl}</em>
+                  <em>Source: {videoUrl}</em>
+                </div>
+              )}
+              {hlsUrl && (
+                <div style={{ wordBreak: 'break-all', marginTop: '4px', color: '#66bb6a' }}>
+                  <em>HLS: {hlsUrl}</em>
+                </div>
+              )}
+              {processingError && (
+                <div style={{ color: '#ef5350', marginTop: '4px', fontSize: '0.85rem' }}>
+                  <strong>Error:</strong> {processingError}
                 </div>
               )}
             </div>
-            <div>
+
+            <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
               <input 
                 type="file" 
                 accept="video/mp4" 
                 onChange={handleVideoUpload} 
-                disabled={uploading}
+                disabled={uploading || videoStatus === 'processing'}
               />
+              
+              {(videoStatus === 'uploaded' || videoStatus === 'failed') && (
+                <button 
+                  type="button" 
+                  className="btn btn--primary" 
+                  onClick={handleProcessHls}
+                  disabled={uploading}
+                >
+                  Convert to HLS
+                </button>
+              )}
             </div>
           </>
         ) : (

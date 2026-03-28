@@ -80,6 +80,31 @@ export const uploadMovieVideo = async (id: string, file: File): Promise<Movie> =
   return response.json();
 };
 
+export const processMovieVideo = async (id: string): Promise<{ message: string }> => {
+  const token = getToken();
+
+  const response = await fetch(`${API_BASE_URL}/movies/${id}/process-hls`, {
+    method: 'POST',
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => null);
+    throw new Error(errorData?.detail || 'Failed to trigger processing');
+  }
+  return response.json();
+};
+
+export const getMovieProcessingStatus = async (id: string): Promise<{ video_status: string; processing_error: string | null; hls_playlist_url: string | null }> => {
+  const response = await fetch(`${API_BASE_URL}/movies/${id}/status`);
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => null);
+    throw new Error(errorData?.detail || 'Failed to fetch status');
+  }
+  return response.json();
+};
+
 export const uploadMovieImage = async (id: string, file: File, type: 'poster' | 'backdrop'): Promise<Movie> => {
   const token = getToken();
   const formData = new FormData();

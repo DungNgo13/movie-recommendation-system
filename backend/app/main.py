@@ -32,6 +32,7 @@ app = FastAPI(title="Mov-Sug API", version="0.1.0")
 os.makedirs("uploads/images/posters", exist_ok=True)
 os.makedirs("uploads/images/backdrops", exist_ok=True)
 os.makedirs("uploads/videos/source", exist_ok=True)
+os.makedirs("uploads/videos/hls", exist_ok=True)
 
 app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 

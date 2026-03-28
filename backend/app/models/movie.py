@@ -16,3 +16,5 @@ class Movie(Base):
     backdrop_url = Column(String(255), nullable=True)
     video_url = Column(String(255), nullable=True)
     video_status = Column(String(50), default="pending")
+    hls_playlist_url = Column(String(255), nullable=True)
+    processing_error = Column(Text, nullable=True)

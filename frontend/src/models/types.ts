@@ -9,6 +9,8 @@ export interface Movie {
   backdrop_url: string | null;
   video_url?: string | null;
   video_status?: string;
+  hls_playlist_url?: string | null;
+  processing_error?: string | null;
 }
 
 export interface MovieListItem {

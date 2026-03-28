@@ -190,3 +190,40 @@ def test_upload_video_invalid_type(seed_movies):
     
     assert response.status_code == 400
     assert "Invalid file type. Only MP4 allowed." in response.json()["detail"]
+
+from unittest.mock import patch
+
+def test_trigger_hls_conversion(seed_movies, db_session):
+    """
+    Tests triggering background HLS conversion correctly.
+    """
+    app.dependency_overrides[get_current_admin_user] = override_get_current_admin_user
+    movie_id = str(seed_movies[0].id)
+    
+    # Needs "uploaded" state to trigger
+    movie = db_session.query(movie_model.Movie).filter_by(id=seed_movies[0].id).first()
+    movie.video_status = "uploaded"
+    movie.video_url = "uploads/videos/source/fake.mp4"
+    db_session.commit()
+    
+    with patch("subprocess.run") as mock_run:
+        response = client.post(f"/api/v1/movies/{movie_id}/process-hls")
+        assert response.status_code == 202
+        assert response.json() == {"message": "HLS conversion started in the background."}
+        
+def test_get_hls_status(seed_movies, db_session):
+    """
+    Tests fetching correct HLS processing states.
+    """
+    movie_id = str(seed_movies[0].id)
+    
+    movie = db_session.query(movie_model.Movie).filter_by(id=seed_movies[0].id).first()
+    movie.video_status = "ready"
+    movie.hls_playlist_url = "fake_play.m3u8"
+    db_session.commit()
+    
+    response = client.get(f"/api/v1/movies/{movie_id}/status")
+    assert response.status_code == 200
+    data = response.json()
+    assert data["video_status"] == "ready"
+    assert data["hls_playlist_url"] == "fake_play.m3u8"

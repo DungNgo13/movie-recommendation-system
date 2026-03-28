@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, Query, UploadFile, File
+from fastapi import APIRouter, Depends, HTTPException, Query, UploadFile, File, BackgroundTasks
 from sqlalchemy.orm import Session
 from uuid import UUID
 
@@ -169,3 +169,58 @@ def upload_video(
         description=f"Uploaded source video for movie '{db_movie.title}'"
     )
     return db_movie
+
+from ..services.hls_service import process_hls_conversion
+
+@router.post("/{movie_id}/process-hls", status_code=202)
+def process_video_hls(
+    movie_id: UUID,
+    background_tasks: BackgroundTasks,
+    db: Session = Depends(database.get_db),
+    admin_user=Depends(get_current_admin_user)
+):
+    """
+    Trigger async FFmpeg conversion of an uploaded source video into HLS.
+    """
+    db_movie = movie_service.get_movie(db, movie_id)
+    if not db_movie:
+        raise HTTPException(status_code=404, detail="Movie not found")
+        
+    if db_movie.video_status != "uploaded" and db_movie.video_status != "failed":
+        raise HTTPException(status_code=400, detail="Video is either processing, ready, or missing.")
+
+    # Mark status immediately via async queue
+    db_movie.video_status = "processing"
+    db_movie.processing_error = None
+    db.commit()
+
+    background_tasks.add_task(process_hls_conversion, movie_id)
+    
+    create_audit_log(
+        db=db,
+        admin_email=admin_user.email,
+        action_type="movie_update",
+        target_type="movie",
+        target_id=str(movie_id),
+        description=f"Triggered HLS conversion for movie '{db_movie.title}'"
+    )
+    
+    return {"message": "HLS conversion started in the background."}
+
+@router.get("/{movie_id}/status")
+def get_video_status(
+    movie_id: UUID, 
+    db: Session = Depends(database.get_db)
+):
+    """
+    Check the current processing status of a movie's video.
+    """
+    db_movie = movie_service.get_movie(db, movie_id)
+    if not db_movie:
+        raise HTTPException(status_code=404, detail="Movie not found")
+        
+    return {
+        "video_status": db_movie.video_status,
+        "processing_error": db_movie.processing_error,
+        "hls_playlist_url": db_movie.hls_playlist_url    
+    }
