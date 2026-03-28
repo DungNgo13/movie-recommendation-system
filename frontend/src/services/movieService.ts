@@ -62,6 +62,24 @@ export const deleteMovie = async (id: string): Promise<void> => {
   }
 };
 
+export const uploadMovieVideo = async (id: string, file: File): Promise<Movie> => {
+  const token = getToken();
+  const formData = new FormData();
+  formData.append('file', file);
+
+  const response = await fetch(`${API_BASE_URL}/movies/${id}/video`, {
+    method: 'POST',
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+    body: formData,
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => null);
+    throw new Error(errorData?.detail || 'Failed to upload video');
+  }
+  return response.json();
+};
+
 export const uploadMovieImage = async (id: string, file: File, type: 'poster' | 'backdrop'): Promise<Movie> => {
   const token = getToken();
   const formData = new FormData();

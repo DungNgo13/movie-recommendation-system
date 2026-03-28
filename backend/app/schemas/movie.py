@@ -11,6 +11,7 @@ class MovieListItemSchema(BaseModel):
     id: UUID
     title: str
     poster_url: Optional[str] = None
+    video_status: Optional[str] = "pending"
     # This field is used for computation but excluded from the final response
     release_date: Optional[date] = Field(None, exclude=True)
 
@@ -34,6 +35,8 @@ class MovieDetailSchema(BaseModel):
     director: Optional[str] = None
     poster_url: Optional[str] = None
     backdrop_url: Optional[str] = None
+    video_url: Optional[str] = None
+    video_status: Optional[str] = "pending"
 
 # Schema for creating a new movie
 class MovieCreateSchema(BaseModel):

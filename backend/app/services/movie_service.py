@@ -107,3 +107,35 @@ def upload_image(db: Session, movie_id: UUID, file: UploadFile, image_type: str)
     db.commit()
     db.refresh(db_movie)
     return db_movie
+
+def upload_video(db: Session, movie_id: UUID, file: UploadFile):
+    """
+    Validates and saves an mp4 video file to disk, then updates the movie record.
+    Status is strictly moved to "uploaded" preventing premature playback.
+    """
+    db_movie = get_movie(db, movie_id)
+    if db_movie is None:
+        raise HTTPException(status_code=404, detail="Movie not found")
+
+    allowed_types = ["video/mp4"]
+    if file.content_type not in allowed_types:
+        raise HTTPException(status_code=400, detail="Invalid file type. Only MP4 allowed.")
+
+    ext = file.filename.split(".")[-1].lower() if file.filename and "." in file.filename else "mp4"
+    unique_filename = f"{uuid.uuid4().hex}.{ext}"
+
+    folder = "uploads/videos/source"
+    os.makedirs(folder, exist_ok=True)
+    file_path = os.path.join(folder, unique_filename)
+
+    with open(file_path, "wb") as buffer:
+        shutil.copyfileobj(file.file, buffer)
+
+    url = f"http://localhost:8000/{folder}/{unique_filename}"
+    
+    db_movie.video_url = url
+    db_movie.video_status = "uploaded"
+
+    db.commit()
+    db.refresh(db_movie)
+    return db_movie

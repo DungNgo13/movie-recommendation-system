@@ -7,6 +7,8 @@ export interface Movie {
   director: string | null;
   poster_url: string | null;
   backdrop_url: string | null;
+  video_url?: string | null;
+  video_status?: string;
 }
 
 export interface MovieListItem {

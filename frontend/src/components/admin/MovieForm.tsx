@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import type { Movie } from '../../models';
 import type { MovieFormData } from '../../services/movieService';
-import { uploadMovieImage } from '../../services/movieService';
+import { uploadMovieImage, uploadMovieVideo } from '../../services/movieService';
 
 interface MovieFormProps {
   movie: Movie | null;
@@ -16,6 +16,8 @@ const MovieForm: React.FC<MovieFormProps> = ({ movie, onSubmit, onCancel }) => {
   const [director, setDirector] = useState('');
   const [posterUrl, setPosterUrl] = useState('');
   const [backdropUrl, setBackdropUrl] = useState('');
+  const [videoStatus, setVideoStatus] = useState('pending');
+  const [videoUrl, setVideoUrl] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
 
@@ -27,6 +29,8 @@ const MovieForm: React.FC<MovieFormProps> = ({ movie, onSubmit, onCancel }) => {
       setDirector(movie.director || '');
       setPosterUrl(movie.poster_url || '');
       setBackdropUrl(movie.backdrop_url || '');
+      setVideoUrl(movie.video_url || '');
+      setVideoStatus(movie.video_status || 'pending');
     }
   }, [movie]);
 
@@ -40,6 +44,23 @@ const MovieForm: React.FC<MovieFormProps> = ({ movie, onSubmit, onCancel }) => {
       if (type === 'backdrop') setBackdropUrl(updatedMovie.backdrop_url || '');
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'Upload failed';
+      setError(msg);
+    } finally {
+      setUploading(false);
+      e.target.value = ''; // Reset file input
+    }
+  };
+
+  const handleVideoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!movie || !e.target.files?.[0]) return;
+    try {
+      setUploading(true);
+      setError(null);
+      const updatedMovie = await uploadMovieVideo(movie.id, e.target.files[0]);
+      setVideoUrl(updatedMovie.video_url || '');
+      setVideoStatus(updatedMovie.video_status || 'uploaded');
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Video upload failed';
       setError(msg);
     } finally {
       setUploading(false);
@@ -158,6 +179,34 @@ const MovieForm: React.FC<MovieFormProps> = ({ movie, onSubmit, onCancel }) => {
               disabled={uploading}
             />
           </div>
+        )}
+      </div>
+
+      <div className="admin-form-group" style={{ backgroundColor: '#1a1a1a', padding: '1rem', borderRadius: '8px', border: '1px solid #333' }}>
+        <h3 style={{ marginTop: 0, marginBottom: '0.5rem', fontSize: '1.1rem' }}>Source Video (.mp4)</h3>
+        {movie ? (
+          <>
+            <div style={{ marginBottom: '1rem', fontSize: '0.9rem' }}>
+              <strong>Status:</strong> {videoStatus.toUpperCase()}
+              {videoUrl && (
+                <div style={{ wordBreak: 'break-all', marginTop: '4px', opacity: 0.8 }}>
+                  <em>Path: {videoUrl}</em>
+                </div>
+              )}
+            </div>
+            <div>
+              <input 
+                type="file" 
+                accept="video/mp4" 
+                onChange={handleVideoUpload} 
+                disabled={uploading}
+              />
+            </div>
+          </>
+        ) : (
+          <p style={{ fontSize: '0.9rem', opacity: 0.7, margin: 0 }}>
+            <em>Please create the movie first before uploading the primary video payload.</em>
+          </p>
         )}
       </div>
 

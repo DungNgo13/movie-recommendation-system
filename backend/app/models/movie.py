@@ -14,3 +14,5 @@ class Movie(Base):
     director = Column(String(100), nullable=True)
     poster_url = Column(String(255), nullable=True)
     backdrop_url = Column(String(255), nullable=True)
+    video_url = Column(String(255), nullable=True)
+    video_status = Column(String(50), default="pending")

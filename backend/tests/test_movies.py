@@ -161,3 +161,32 @@ def test_upload_invalid_file_type(seed_movies):
     
     assert response.status_code == 400
     assert "Invalid file type" in response.json()["detail"]
+
+def test_upload_video_success(seed_movies):
+    """
+    Tests successful mp4 video upload.
+    """
+    app.dependency_overrides[get_current_admin_user] = override_get_current_admin_user
+    movie_id = str(seed_movies[0].id)
+    files = {"file": ("test_vid.mp4", b"fake video bytes", "video/mp4")}
+    
+    response = client.post(f"/api/v1/movies/{movie_id}/video", files=files)
+    
+    assert response.status_code == 200
+    data = response.json()
+    assert "uploads/videos/source" in data["video_url"]
+    assert data["video_url"].endswith(".mp4")
+    assert data["video_status"] == "uploaded"
+
+def test_upload_video_invalid_type(seed_movies):
+    """
+    Tests upload rejection for invalid formats (e.g. video/x-matroska or text/plain).
+    """
+    app.dependency_overrides[get_current_admin_user] = override_get_current_admin_user
+    movie_id = str(seed_movies[0].id)
+    files = {"file": ("test.mkv", b"mkv bytes", "video/x-matroska")}
+    
+    response = client.post(f"/api/v1/movies/{movie_id}/video", files=files)
+    
+    assert response.status_code == 400
+    assert "Invalid file type. Only MP4 allowed." in response.json()["detail"]

@@ -148,3 +148,24 @@ def upload_backdrop(
         description=f"Uploaded backdrop for movie '{db_movie.title}'"
     )
     return db_movie
+
+@router.post("/{movie_id}/video", response_model=movie_schema.MovieDetailSchema)
+def upload_video(
+    movie_id: UUID,
+    file: UploadFile = File(...),
+    db: Session = Depends(database.get_db),
+    admin_user=Depends(get_current_admin_user)
+):
+    """
+    Upload a new mp4 source video for a movie.
+    """
+    db_movie = movie_service.upload_video(db, movie_id, file)
+    create_audit_log(
+        db=db,
+        admin_email=admin_user.email,
+        action_type="movie_update",
+        target_type="movie",
+        target_id=str(movie_id),
+        description=f"Uploaded source video for movie '{db_movie.title}'"
+    )
+    return db_movie
