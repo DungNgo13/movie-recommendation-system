@@ -34,8 +34,6 @@ def create_movie(db: Session, movie_data: MovieCreateSchema):
         release_date=movie_data.release_date,
         genres=movie_data.genres,
         director=movie_data.director,
-        poster_url=movie_data.poster_url,
-        backdrop_url=movie_data.backdrop_url,
     )
     db.add(db_movie)
     db.commit()
@@ -44,15 +42,22 @@ def create_movie(db: Session, movie_data: MovieCreateSchema):
 
 def update_movie(db: Session, movie_id: UUID, movie_data: MovieUpdateSchema):
     """
-    Updates an existing movie. Only updates fields that are provided (not None).
+    Updates an existing movie. Only updates DB-recognized fields.
     """
     db_movie = get_movie(db, movie_id)
     if db_movie is None:
         return None
 
     update_data = movie_data.model_dump(exclude_unset=True)
+    # Ignore Frontend virtual URL bindings intrinsically if accidentally passed 
+    if "poster_url" in update_data:
+        del update_data["poster_url"]
+    if "backdrop_url" in update_data:
+        del update_data["backdrop_url"]
+
     for field, value in update_data.items():
-        setattr(db_movie, field, value)
+        if hasattr(db_movie, field):
+            setattr(db_movie, field, value)
 
     db.commit()
     db.refresh(db_movie)
@@ -82,27 +87,26 @@ def upload_image(db: Session, movie_id: UUID, file: UploadFile, image_type: str)
     if file.content_type not in allowed_types:
         raise HTTPException(status_code=400, detail="Invalid file type. Only JPEG, PNG, or WEBP allowed.")
 
+    from datetime import datetime
     ext = file.filename.split(".")[-1].lower() if file.filename and "." in file.filename else "jpg"
-    unique_filename = f"{uuid.uuid4().hex}.{ext}"
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    unique_filename = f"{image_type}_{timestamp}.{ext}"
 
     if image_type == "poster":
-        # using forward slash format as it represents URI paths natively correctly
-        folder = "uploads/images/posters"
+        folder = os.path.join("media", "images", "posters", f"movie_{movie_id}")
     else:
-        folder = "uploads/images/backdrops"
+        folder = os.path.join("media", "images", "backdrops", f"movie_{movie_id}")
 
     os.makedirs(folder, exist_ok=True)
-    file_path = os.path.join(folder, unique_filename)
+    file_path = os.path.normpath(os.path.join(folder, unique_filename)).replace("\\", "/")
 
     with open(file_path, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
 
-    url = f"http://localhost:8000/{folder}/{unique_filename}"
-
     if image_type == "poster":
-        db_movie.poster_url = url
+        db_movie.poster_path = file_path
     else:
-        db_movie.backdrop_url = url
+        db_movie.backdrop_path = file_path
 
     db.commit()
     db.refresh(db_movie)
@@ -121,36 +125,39 @@ def upload_video(db: Session, movie_id: UUID, file: UploadFile):
     if file.content_type not in allowed_types:
         raise HTTPException(status_code=400, detail="Invalid file type. Only MP4 allowed.")
 
-    # Phase 5: Cleanup existing OS files before taking memory overhead natively
-    if db_movie.video_url:
-        old_path = db_movie.video_url.replace("http://localhost:8000/", "")
+    # Cleanup existing native files safely
+    if db_movie.video_source_path:
+        old_path = db_movie.video_source_path
         if os.path.exists(old_path):
             try:
                 os.remove(old_path)
             except Exception:
                 pass
                 
-    old_hls_folder = os.path.join("uploads", "videos", "hls", str(movie_id))
-    if os.path.exists(old_hls_folder):
-        try:
-            shutil.rmtree(old_hls_folder)
-        except Exception:
-            pass
+    if db_movie.hls_playlist_path:
+        old_hls_folder = os.path.dirname(db_movie.hls_playlist_path)
+        if os.path.exists(old_hls_folder):
+            try:
+                shutil.rmtree(old_hls_folder)
+            except Exception:
+                pass
 
+    from datetime import datetime
     ext = file.filename.split(".")[-1].lower() if file.filename and "." in file.filename else "mp4"
-    unique_filename = f"{uuid.uuid4().hex}.{ext}"
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    unique_filename = f"source_{timestamp}.{ext}"
 
-    folder = "uploads/videos/source"
+    folder = os.path.join("media", "videos", "source", f"movie_{movie_id}")
     os.makedirs(folder, exist_ok=True)
-    file_path = os.path.join(folder, unique_filename)
+    file_path = os.path.normpath(os.path.join(folder, unique_filename)).replace("\\", "/")
 
     with open(file_path, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
-
-    url = f"http://localhost:8000/{folder}/{unique_filename}"
-    
-    db_movie.video_url = url
-    db_movie.video_status = "uploaded"
+        
+    db_movie.video_original_filename = file.filename
+    db_movie.video_source_path = file_path
+    db_movie.processing_status = "uploaded"
+    db_movie.hls_playlist_path = None
 
     db.commit()
     db.refresh(db_movie)

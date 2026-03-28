@@ -39,16 +39,17 @@ def get_user_history(db: Session, user_id: UUID, limit: int = 10) -> list[dict]:
         .limit(limit)
         .all()
     )
-    results = []
+    from ..schemas.movie import normalize_url
+    results_list = []
     for movie, watched_at in rows:
         release_year = None
         if movie.release_date:
             release_year = movie.release_date.year
-        results.append({
+        results_list.append({
             "id": movie.id,
             "title": movie.title,
-            "poster_url": movie.poster_url,
+            "poster_url": normalize_url(movie.poster_path),
             "release_year": release_year,
             "watched_at": watched_at,
         })
-    return results
+    return results_list

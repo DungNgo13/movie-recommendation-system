@@ -131,7 +131,7 @@ def test_upload_poster_success(seed_movies):
     
     assert response.status_code == 200
     data = response.json()
-    assert "uploads/images/posters" in data["poster_url"]
+    assert "media/images/posters" in data["poster_url"]
     assert data["poster_url"].endswith(".jpg")
 
 def test_upload_backdrop_success(seed_movies):
@@ -146,7 +146,7 @@ def test_upload_backdrop_success(seed_movies):
     
     assert response.status_code == 200
     data = response.json()
-    assert "uploads/images/backdrops" in data["backdrop_url"]
+    assert "media/images/backdrops" in data["backdrop_url"]
     assert data["backdrop_url"].endswith(".png")
 
 def test_upload_invalid_file_type(seed_movies):
@@ -175,7 +175,7 @@ def test_upload_video_success(seed_movies):
         
         assert response.status_code == 200
         data = response.json()
-        assert "uploads/videos/source" in data["video_url"]
+        assert "media/videos/source" in data["video_url"]
         assert data["video_url"].endswith(".mp4")
         assert data["video_status"] == "processing"
 
@@ -203,8 +203,8 @@ def test_trigger_hls_conversion(seed_movies, db_session):
     
     # Needs "uploaded" state to trigger
     movie = db_session.query(movie_model.Movie).filter_by(id=seed_movies[0].id).first()
-    movie.video_status = "uploaded"
-    movie.video_url = "uploads/videos/source/fake.mp4"
+    movie.processing_status = "uploaded"
+    movie.video_source_path = "media/videos/source/fake.mp4"
     db_session.commit()
     
     with patch("subprocess.run") as mock_run:
@@ -219,8 +219,8 @@ def test_get_hls_status(seed_movies, db_session):
     movie_id = str(seed_movies[0].id)
     
     movie = db_session.query(movie_model.Movie).filter_by(id=seed_movies[0].id).first()
-    movie.video_status = "ready"
-    movie.hls_playlist_url = "fake_play.m3u8"
+    movie.processing_status = "ready"
+    movie.hls_playlist_path = "media/videos/hls/fake_play.m3u8"
     db_session.commit()
     
     response = client.get(f"/api/v1/movies/{movie_id}/status")

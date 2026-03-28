@@ -29,12 +29,16 @@ admin_audit_log_model.Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="Mov-Sug API", version="0.1.0")
 
-os.makedirs("uploads/images/posters", exist_ok=True)
-os.makedirs("uploads/images/backdrops", exist_ok=True)
-os.makedirs("uploads/videos/source", exist_ok=True)
-os.makedirs("uploads/videos/hls", exist_ok=True)
-
+# Legacy mount mapping for historical files strictly ensuring backwards-parsing safely
+os.makedirs("uploads", exist_ok=True)
 app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
+
+# New explicit media mapping bridging phase limits locally structuring natively!
+os.makedirs("media/images/posters", exist_ok=True)
+os.makedirs("media/images/backdrops", exist_ok=True)
+os.makedirs("media/videos/source", exist_ok=True)
+os.makedirs("media/videos/hls", exist_ok=True)
+app.mount("/media", StaticFiles(directory="media"), name="media")
 
 # Set up CORS
 origins = [
@@ -64,4 +68,3 @@ app.include_router(admin_logs.router)
 @app.get("/")
 def read_root():
     return {"message": "Welcome to Mov-Sug API"}
-

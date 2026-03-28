@@ -12,18 +12,19 @@ def get_user_favorites(db: Session, user_id: UUID) -> list[dict]:
         .filter(UserFavorite.user_id == user_id)
         .all()
     )
-    results = []
+    from ..schemas.movie import normalize_url
+    results_list = []
     for movie in favorites:
         release_year = None
         if movie.release_date:
             release_year = movie.release_date.year
-        results.append({
+        results_list.append({
             "id": movie.id,
             "title": movie.title,
-            "poster_url": movie.poster_url,
+            "poster_url": normalize_url(movie.poster_path),
             "release_year": release_year,
         })
-    return results
+    return results_list
 
 
 def get_user_favorite_ids(db: Session, user_id: UUID) -> list[str]:

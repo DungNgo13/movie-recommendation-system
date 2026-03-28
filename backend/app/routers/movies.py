@@ -163,7 +163,7 @@ def upload_video(
     db_movie = movie_service.upload_video(db, movie_id, file)
     
     # Phase 5 QoL Override: Auto-trigger HLS processing bypassing second native HTTP call!
-    db_movie.video_status = "processing"
+    db_movie.processing_status = "processing"
     db_movie.processing_error = None
     db.commit()
 
@@ -195,11 +195,11 @@ def process_video_hls(
     if not db_movie:
         raise HTTPException(status_code=404, detail="Movie not found")
         
-    if db_movie.video_status != "uploaded" and db_movie.video_status != "failed":
+    if db_movie.processing_status != "uploaded" and db_movie.processing_status != "failed":
         raise HTTPException(status_code=400, detail="Video is either processing, ready, or missing.")
 
     # Mark status immediately via async queue
-    db_movie.video_status = "processing"
+    db_movie.processing_status = "processing"
     db_movie.processing_error = None
     db.commit()
 
@@ -228,8 +228,9 @@ def get_video_status(
     if not db_movie:
         raise HTTPException(status_code=404, detail="Movie not found")
         
+    from ..schemas.movie import normalize_url
     return {
-        "video_status": db_movie.video_status,
+        "video_status": db_movie.processing_status,
         "processing_error": db_movie.processing_error,
-        "hls_playlist_url": db_movie.hls_playlist_url    
+        "hls_playlist_url": normalize_url(db_movie.hls_playlist_path)
     }

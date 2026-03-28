@@ -74,6 +74,7 @@ def get_recommendations(
     movie_map: dict[str, Movie] = {str(m.id): m for m in all_movies}
 
     # Fetch movie details and build response
+    from ...schemas.movie import normalize_url
     results = []
     for mid, score in top_movies:
         movie = movie_map.get(mid)
@@ -87,7 +88,7 @@ def get_recommendations(
         results.append({
             "id": str(movie.id),
             "title": movie.title,
-            "poster_url": movie.poster_url,
+            "poster_url": normalize_url(movie.poster_path),
             "release_year": release_year,
             "score": round(score, 4),
             "reason": generate_reason(summary, score),
@@ -106,6 +107,7 @@ def _cold_start_fallback(db: Session, top_n: int) -> list[dict]:
         .limit(top_n)
         .all()
     )
+    from ...schemas.movie import normalize_url
     results = []
     for movie in movies:
         release_year = None
@@ -114,7 +116,7 @@ def _cold_start_fallback(db: Session, top_n: int) -> list[dict]:
         results.append({
             "id": str(movie.id),
             "title": movie.title,
-            "poster_url": movie.poster_url,
+            "poster_url": normalize_url(movie.poster_path),
             "release_year": release_year,
             "score": 0.0,
             "reason": "Popular movie — rate or favorite some movies for personalized picks!",
