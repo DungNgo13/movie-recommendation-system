@@ -170,13 +170,14 @@ def test_upload_video_success(seed_movies):
     movie_id = str(seed_movies[0].id)
     files = {"file": ("test_vid.mp4", b"fake video bytes", "video/mp4")}
     
-    response = client.post(f"/api/v1/movies/{movie_id}/video", files=files)
-    
-    assert response.status_code == 200
-    data = response.json()
-    assert "uploads/videos/source" in data["video_url"]
-    assert data["video_url"].endswith(".mp4")
-    assert data["video_status"] == "uploaded"
+    with patch("subprocess.run") as mock_run:
+        response = client.post(f"/api/v1/movies/{movie_id}/video", files=files)
+        
+        assert response.status_code == 200
+        data = response.json()
+        assert "uploads/videos/source" in data["video_url"]
+        assert data["video_url"].endswith(".mp4")
+        assert data["video_status"] == "processing"
 
 def test_upload_video_invalid_type(seed_movies):
     """

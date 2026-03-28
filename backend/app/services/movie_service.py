@@ -121,6 +121,22 @@ def upload_video(db: Session, movie_id: UUID, file: UploadFile):
     if file.content_type not in allowed_types:
         raise HTTPException(status_code=400, detail="Invalid file type. Only MP4 allowed.")
 
+    # Phase 5: Cleanup existing OS files before taking memory overhead natively
+    if db_movie.video_url:
+        old_path = db_movie.video_url.replace("http://localhost:8000/", "")
+        if os.path.exists(old_path):
+            try:
+                os.remove(old_path)
+            except Exception:
+                pass
+                
+    old_hls_folder = os.path.join("uploads", "videos", "hls", str(movie_id))
+    if os.path.exists(old_hls_folder):
+        try:
+            shutil.rmtree(old_hls_folder)
+        except Exception:
+            pass
+
     ext = file.filename.split(".")[-1].lower() if file.filename and "." in file.filename else "mp4"
     unique_filename = f"{uuid.uuid4().hex}.{ext}"
 

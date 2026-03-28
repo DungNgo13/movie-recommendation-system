@@ -152,21 +152,30 @@ def upload_backdrop(
 @router.post("/{movie_id}/video", response_model=movie_schema.MovieDetailSchema)
 def upload_video(
     movie_id: UUID,
+    background_tasks: BackgroundTasks,
     file: UploadFile = File(...),
     db: Session = Depends(database.get_db),
     admin_user=Depends(get_current_admin_user)
 ):
     """
-    Upload a new mp4 source video for a movie.
+    Upload a new mp4 source video for a movie and auto-trigger HLS conversion.
     """
     db_movie = movie_service.upload_video(db, movie_id, file)
+    
+    # Phase 5 QoL Override: Auto-trigger HLS processing bypassing second native HTTP call!
+    db_movie.video_status = "processing"
+    db_movie.processing_error = None
+    db.commit()
+
+    background_tasks.add_task(process_hls_conversion, movie_id)
+
     create_audit_log(
         db=db,
         admin_email=admin_user.email,
         action_type="movie_update",
         target_type="movie",
         target_id=str(movie_id),
-        description=f"Uploaded source video for movie '{db_movie.title}'"
+        description=f"Uploaded source video & triggered HLS processing for '{db_movie.title}'"
     )
     return db_movie
 
