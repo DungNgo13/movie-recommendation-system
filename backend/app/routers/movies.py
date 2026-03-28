@@ -6,6 +6,7 @@ from ..schemas import movie as movie_schema
 from .. import database
 from ..services import movie_service
 from .auth import get_current_admin_user
+from ..services.admin_service import create_audit_log
 
 router = APIRouter(
     prefix="/api/v1/movies",
@@ -48,7 +49,16 @@ def create_movie(
     """
     Create a new movie.
     """
-    return movie_service.create_movie(db, movie)
+    new_movie = movie_service.create_movie(db, movie)
+    create_audit_log(
+        db=db,
+        admin_email=admin_user.email,
+        action_type="movie_create",
+        target_type="movie",
+        target_id=str(new_movie.id),
+        description=f"Created movie '{new_movie.title}'"
+    )
+    return new_movie
 
 @router.put("/{movie_id}", response_model=movie_schema.MovieDetailSchema)
 def update_movie(
@@ -63,6 +73,15 @@ def update_movie(
     db_movie = movie_service.update_movie(db, movie_id, movie)
     if db_movie is None:
         raise HTTPException(status_code=404, detail="Movie not found")
+        
+    create_audit_log(
+        db=db,
+        admin_email=admin_user.email,
+        action_type="movie_update",
+        target_type="movie",
+        target_id=str(movie_id),
+        description=f"Updated movie '{db_movie.title}'"
+    )
     return db_movie
 
 @router.delete("/{movie_id}", status_code=204)
@@ -70,7 +89,20 @@ def delete_movie(movie_id: UUID, db: Session = Depends(database.get_db), admin_u
     """
     Delete a movie.
     """
-    deleted = movie_service.delete_movie(db, movie_id)
-    if not deleted:
+    movie_to_delete = movie_service.get_movie(db, movie_id)
+    if not movie_to_delete:
         raise HTTPException(status_code=404, detail="Movie not found")
+        
+    title = movie_to_delete.title
+    deleted = movie_service.delete_movie(db, movie_id)
+    
+    if deleted:
+        create_audit_log(
+            db=db,
+            admin_email=admin_user.email,
+            action_type="movie_delete",
+            target_type="movie",
+            target_id=str(movie_id),
+            description=f"Deleted movie '{title}'"
+        )
     return None

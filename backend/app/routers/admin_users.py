@@ -7,6 +7,7 @@ from .. import database
 from ..models.user import User
 from ..schemas.user import UserResponseSchema, UserRoleUpdateSchema
 from .auth import get_current_admin_user
+from ..services.admin_service import create_audit_log, check_is_last_admin
 
 router = APIRouter(
     prefix="/api/v1/admin/users",
@@ -49,14 +50,26 @@ def update_user_role(
             detail="User not found"
         )
 
-    # Optional: Prevent admin from removing their own admin privilege to avoid locking out the only admin
-    if user.id == admin_user.id and role_update.role == "user":
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="You cannot revoke your own admin privileges."
-        )
+    # Prevent demoting the last remaining admin
+    if user.role == "admin" and role_update.role == "user":
+        if check_is_last_admin(db, user):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Cannot demote the last remaining admin."
+            )
 
+    old_role = user.role
     user.role = role_update.role
     db.commit()
     db.refresh(user)
+    
+    create_audit_log(
+        db=db,
+        admin_email=admin_user.email,
+        action_type="role_change",
+        target_type="user",
+        target_id=str(user.id),
+        description=f"Changed role of user {user.email} from {old_role} to {role_update.role}"
+    )
+    
     return user

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import type { AuthUser } from '../services/authService';
-import { getAdminUsers, updateAdminUserRole } from '../services/adminUserService';
+import { getAdminUsers, updateAdminUserRole } from '../services/adminService';
 import LoadingSpinner from '../components/LoadingSpinner';
 import ErrorMessage from '../components/ErrorMessage';
 
@@ -20,8 +20,9 @@ const AdminUsersPage: React.FC = () => {
       setError(null);
       const data = await getAdminUsers();
       setUsers(data);
-    } catch (err: any) {
-      setError(err.message || 'Failed to retrieve users');
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Failed to retrieve users';
+      setError(msg);
     } finally {
       setLoading(false);
     }
@@ -36,8 +37,9 @@ const AdminUsersPage: React.FC = () => {
     try {
       const updatedUser = await updateAdminUserRole(userId, newRole);
       setUsers(users.map(u => u.id === userId ? updatedUser : u));
-    } catch (err: any) {
-      alert(err.message || 'Failed to update user role');
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Failed to update user role';
+      alert(msg);
     }
   };
 

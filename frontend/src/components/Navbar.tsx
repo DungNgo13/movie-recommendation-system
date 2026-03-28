@@ -22,8 +22,10 @@ const Navbar: React.FC = () => {
         <Link to="/favorites" className="navbar-link">♥ Favorites</Link>
         {user?.role === 'admin' && (
           <>
-            <Link to="/admin/movies" className="navbar-link">⚙ Admin</Link>
+            <Link to="/admin" className="navbar-link">📊 Dashboard</Link>
+            <Link to="/admin/movies" className="navbar-link">⚙ Movies</Link>
             <Link to="/admin/users" className="navbar-link">👥 Users</Link>
+            <Link to="/admin/logs" className="navbar-link">📋 Logs</Link>
           </>
         )}
         {user ? (

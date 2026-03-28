@@ -1,273 +1,118 @@
-# 🎬 Movie Recommendation & Streaming Web App
+# 🎬 Movie Streaming & Recommendation System
 
-## 📌 Giới thiệu
-
-Dự án xây dựng **website xem phim trực tuyến tích hợp hệ thống gợi ý phim thông minh**, trong đó người dùng có thể duyệt phim, xem chi tiết, lưu phim yêu thích, và nhận gợi ý phim tương tự dựa trên nội dung. Hệ thống được phát triển theo mô hình fullstack hiện đại với React + FastAPI.
-
----
-
-## 🚀 Tính năng chính
-
-| Tính năng | Mô tả |
-|-----------|-------|
-| 🎞️ **Duyệt phim** | Xem danh sách phim với poster, title, năm phát hành |
-| 🔍 **Tìm kiếm & Lọc** | Search theo title, filter theo năm, sort theo A–Z / năm |
-| ❤️ **Yêu thích** | Toggle favorite trên mỗi card, lưu localStorage, trang riêng |
-| ▶️ **Continue Watching** | Ghi nhận phim xem gần nhất, hiển thị trên trang chủ |
-| 🤖 **Gợi ý phim** | Recommendation dựa trên keyword title + năm phát hành |
-| 📱 **Responsive** | Giao diện thích ứng desktop, tablet, mobile |
+## 📌 Project Overview
+A full-stack, production-quality movie streaming web application engineered with a centralized content-based recommendation system. The platform elegantly handles multi-tiered user authentication, allowing users to autonomously build watch histories, save favorites, and receive personalized localized recommendations while granting elevated staff privileges to manage film catalogs and observe aggregated system logs.
 
 ---
 
-## 🧠 Công nghệ sử dụng
+## 🚀 Features
 
-### Frontend
+### 👤 User Features
+- **Secure Authentication:** Handled via stateless JWT tokens; no rogue memory storage. Clean register-to-login transitions mapping strictly to RBAC.
+- **Dynamic Catalog:** Paginated movie browsing containing high-res posters, descriptions, and dynamic sorting matrices (A-Z, Release Dates).
+- **Favorites & History:** Asynchronous, persistent user tracking of `Continue Watching` states mapped natively inside the persistent store.
+- **Live Search Filtering:** Real-time cascading UI input filtering traversing titles seamlessly.
+- **Rating Matrix:** Interactive star-rating evaluations securely mapping back to backend aggregators.
+
+### 🛡️ Admin Features (Elevated JWTs)
+- **Advanced Dashboard Metrics:** Low-overhead live-aggregation arrays outputting holistic system statistics (Totals for Users, Movies, Favorites, Logs).
+- **Action Auditing Ecosystem:** Persistent `AdminAuditLog` tracking all role mutations, and specific catalog alterations synchronously preventing untracked system creep.
+- **Robust RBAC Guardrails:** Built-in core logic preventing self-deprecating actions that could inadvertently strip the system's "last remaining admin".
+- **Dynamic User Management:** Deep inline user mutation forms with instant React-state hydration arrays mapping backend changes back to the client immediately.
+- **Scalable Movie CRUD Control:** Intuitive creation portals mapping generic film metrics against core REST architecture with robust safety deletions.
+
+### 🤖 Recommendation System
+The built-in engine leverages a robust **Content-Based Filtering** algorithm processed responsively at the client tier.
+- **Scoring Profile:** Identifies thematic correlations using keyword extractions (e.g. `title` substring overlays omitting explicit syntax stop-words).
+- **Release Proximity Weighting:** Adds aggressive heuristic bonuses for films released sequentially within identical or neighboring calendar years.
+- **Cold-Start Handling:** Naturally cascades gracefully defaulting back to the newest, globally top-rated feature pools without breaking the UX sequence if history is null.
+- *(Note: In highly-scaled production topologies containing >10,000 films traversing TF-IDF/Cosine Similarity NLP arrays, this filtering array must migrate to the Vector backend database queries).*
+
+---
+
+## 🧠 Tech Stack
+
+### Frontend Architecture
 - **React 19** + **TypeScript**
-- **Vite** — build tool
-- **React Router** v7 — client-side routing
-- **Vitest** — unit testing
-- **localStorage** — client-side persistence (favorites, continue watching)
+- **Vite** — HMR Build tooling with minimal-footprint asset rendering.
+- **React Router v7** — Core declarative sub-routing hierarchies (`ProtectedAdminRoutes`).
+- **Vitest** — High velocity Unit/Integration boundaries.
 
-### Backend
-- **FastAPI** — REST API
-- **SQLAlchemy** — ORM
-- **PostgreSQL** — database (hỗ trợ SQLite cho dev)
-- **Pydantic** — schema validation
-- **Alembic** — database migration
-- **pytest** + **httpx** — API testing
+### Backend Infrastructure
+- **FastAPI** — High-performance Async Python REST backbone.
+- **SQLAlchemy** — Deeply-integrated Pythonic ORM.
+- **PostgreSQL / SQLite** — Agnostic dialect databases wrapped securely inside SQLAlchemy schemas.
+- **Pydantic** — Bullet-proof serializing type validations explicitly rejecting loosely shaped frontend injections.
+- **JWT (Passlib/Bcrypt)** — Cryptographically salted stateless authing mechanisms.
 
 ---
 
-## 🏗️ Kiến trúc hệ thống
+## ⚙️ How to Run Project
 
-```
-Frontend (React + TypeScript + Vite)
-        |
-        v
-Backend API (FastAPI)
-        |
-        +---------------------+
-        |                     |
-        v                     v
-Recommendation Engine     Database (PostgreSQL)
-(Frontend-based)
-```
-
----
-
-## 📁 Cấu trúc dự án
-
-```
-movie-recommendation-system/
-├── frontend/
-│   └── src/
-│       ├── components/          # UI components
-│       │   ├── MovieCard.tsx     #   Card phim (poster, title, favorite)
-│       │   ├── Navbar.tsx        #   Navigation bar
-│       │   ├── LoadingSpinner.tsx #   Loading state
-│       │   └── ErrorMessage.tsx  #   Error state
-│       ├── pages/               # Route pages
-│       │   ├── HomePage.tsx      #   Trang chủ (search, filter, sort, continue watching)
-│       │   ├── MovieDetailPage.tsx #  Chi tiết phim + recommendations
-│       │   └── FavoritesPage.tsx #   Danh sách phim yêu thích
-│       ├── hooks/               # Custom React hooks
-│       │   ├── useMovies.ts     #   Fetch danh sách phim
-│       │   ├── useFavorites.ts  #   Quản lý favorites state
-│       │   ├── useContinueWatching.ts # Continue watching state
-│       │   └── useRecommendations.ts  # Tính toán gợi ý
-│       ├── services/            # API & localStorage services
-│       │   ├── movieService.ts  #   API calls (getMovies, getMovieById)
-│       │   ├── favoriteService.ts     # localStorage favorites
-│       │   └── continueWatchingService.ts # localStorage continue watching
-│       ├── utils/               # Pure utility functions
-│       │   ├── recommendation.ts #   Thuật toán scoring gợi ý
-│       │   └── movieFilters.ts  #   Search, filter, sort logic
-│       ├── models/              # TypeScript interfaces
-│       │   └── types.ts         #   Movie, MovieListItem, PaginatedMovies
-│       ├── App.tsx              # Root component + routing
-│       ├── App.css              # Global styles
-│       └── index.css            # Base reset & typography
-│
-├── backend/
-│   ├── app/
-│   │   ├── main.py              # FastAPI app entry point
-│   │   ├── database.py          # Database connection & session
-│   │   ├── seed.py              # Seed data
-│   │   ├── models/              # SQLAlchemy models
-│   │   ├── schemas/             # Pydantic schemas
-│   │   ├── services/            # Business logic
-│   │   └── routers/             # API endpoints
-│   │       └── movies.py        #   /api/v1/movies
-│   ├── tests/                   # pytest tests
-│   └── requirements.txt
-│
-├── docs/
-│   ├── features/                # Feature specs
-│   ├── prompts/                 # AI prompt templates
-│   └── workflow.md              # Development workflow
-│
-└── PROJECT_RULES.md             # Coding rules & conventions
-```
-
----
-
-## ⚙️ Cài đặt & Chạy
-
-### Yêu cầu
-
-- **Node.js** >= 18
+### Prerequisites
+- **Node.js** >= 18.x
 - **Python** >= 3.10
-- **PostgreSQL** (hoặc SQLite cho dev)
+- **PostgreSQL** or **SQLite** (Default fallback for seamless Dev mode).
 
-### 1. Clone project
-
-```bash
-git clone https://github.com/DungNgo13/movie-recommendation-system.git
-cd movie-recommendation-system
-```
-
-### 2. Backend
-
+### 1. Backend Engine
 ```bash
 cd backend
-
-# Tạo virtual environment
 python -m venv venv
+# Activate VENV (Windows: venv\Scripts\activate, Unix: source venv/bin/activate)
 
-# Kích hoạt (Windows)
-venv\Scripts\activate
-
-# Cài dependencies
 pip install -r requirements.txt
-
-# Chạy server
 python -m uvicorn app.main:app --reload
 ```
+*API Base Path executes live on **http://localhost:8000** with dynamic Swagger UI mounted natively at **http://localhost:8000/docs**.*
 
-Backend chạy tại: **http://localhost:8000**
-
-API docs (Swagger): **http://localhost:8000/docs**
-
-### 3. Frontend
-
+### 2. Frontend Terminal
 ```bash
 cd frontend
-
-# Cài dependencies
 npm install
-
-# Chạy dev server
 npm run dev
 ```
+*The React compiler resolves strictly and hosts the web interface live at **http://localhost:5173**.*
 
-Frontend chạy tại: **http://localhost:5173**
+---
 
-### 4. Chạy tests
+## 👑 Admin Account Setup
 
+By default, the API shields the manual creation of Administrator boundaries within the frontend registration portals. Assuming normal operations during a first-time local setup:
 ```bash
-# Frontend tests
-cd frontend
-npm run test:run
-
-# Backend tests
 cd backend
-pytest
+
+# Option 1: Execute the native Database Seeding function included within the package:
+python -m app.seed
+# This creates a baseline dataset alongside an administrative bypass.
+
+# Option 2: Elevating via custom CLI script if packaged:
+# Execute target CLI commands or directly inject value 'admin' via standard DB management schemas inside the `users` table for the target UUID.
 ```
 
 ---
 
-## 📡 API Overview
+## 📡 API Overview (Brief)
 
-| Method | Endpoint | Mô tả |
-|--------|----------|-------|
-| `GET` | `/api/v1/movies?page=1&limit=20` | Danh sách phim (phân trang) |
-| `GET` | `/api/v1/movies/{id}` | Chi tiết một phim |
-
-**Response mẫu — GET /api/v1/movies:**
-
-```json
-{
-  "items": [
-    {
-      "id": "uuid-string",
-      "title": "Inception",
-      "poster_url": "https://...",
-      "release_year": 2010
-    }
-  ],
-  "total": 50,
-  "page": 1,
-  "limit": 20
-}
-```
+| Endpoint Prefix | Description | Auth Scope |
+| :--- | :--- | :--- |
+| **`/api/v1/auth/*`** | Handles stateless JWT Bearer token generation, decoding `me`, and native `register` routes. | `Public` / `User` |
+| **`/api/v1/movies/*`** | Core RESTful movie aggregators handling Paginated `GET` requests spanning the entire catalog and specific `UUID` lookup endpoints. | `Public` |
+| **`/api/v1/favorites/*`** | Synchronized state tracking resolving user-bound movie `UUIDs` across persistent storage states. | `User` |
+| **`/api/v1/admin/*`** | Sensitive multi-table aggregates containing endpoints for User Role mutations (`PATCH`), system configurations, and Audit Logs. | `Admin` |
 
 ---
 
-## 🎯 Demo Flow
+## 📸 Screenshots
 
-1. **Trang chủ** — Hiển thị danh sách phim với search bar, filter năm, sort dropdown
-2. **Tìm kiếm** — Gõ keyword → danh sách lọc real-time
-3. **Yêu thích** — Bấm ♡ → phim được lưu, icon đổi thành ♥
-4. **Xem chi tiết** — Click poster → trang detail với thông tin + phim gợi ý
-5. **Recommendations** — Thuật toán gợi ý 4 phim dựa trên keyword title + năm
-6. **Continue Watching** — Quay về trang chủ → section hiện phim vừa xem
-7. **Favorites** — Vào trang /favorites → xem & quản lý tất cả phim yêu thích
-8. **Persistent** — Reload trang → favorites + continue watching vẫn giữ
+| View Type | Placeholder Image |
+| :--- | :--- |
+| **Homepage Layout** | `![Homepage Overview](/assets/home_overview_placeholder.png)` |
+| **Admin Dashboard** | `![Admin Dashboard Metrics](/assets/admin_dashboard_placeholder.png)` |
+| **Recommendations** | `![Recommendation Sequence](/assets/recommendation_engine_placeholder.png)` |
 
 ---
 
-## 🤖 Thuật toán Recommendation
-
-Hệ thống sử dụng **content-based filtering đơn giản** chạy ở frontend:
-
-| Tiêu chí | Điểm |
-|----------|------|
-| Mỗi keyword trùng trong title | +3 |
-| Cùng năm phát hành | +2 |
-| Chênh lệch 1–2 năm | +1 |
-
-- Loại bỏ stop words (the, a, of, ...) khi so sánh title
-- Loại bỏ phim hiện tại khỏi kết quả
-- Sắp xếp giảm dần theo score, lấy top 4
-
-> ✅ **Ưu điểm**: Đơn giản, dễ giải thích, dễ demo, không cần model training
->
-> 🔮 **Hướng phát triển**: Có thể nâng cấp sang content-based filtering thực thụ dùng TF-IDF hoặc word embeddings trên overview/genres
-
----
-
-## 📊 Test Coverage
-
-| Module | Tests | Mô tả |
-|--------|-------|-------|
-| `favoriteService` | 12 | localStorage CRUD, edge cases |
-| `continueWatchingService` | 10 | localStorage persistence, validation |
-| `recommendation` | 18 | Keyword extraction, scoring, ranking |
-| `movieFilters` | 19 | Search, filter, sort, composed filters |
-| **Tổng** | **59** | |
-
----
-
-## 🔮 Hướng phát triển
-
-- [ ] 🔐 Đăng ký / Đăng nhập (Authentication)
-- [ ] ⭐ Đánh giá phim (Rating system)
-- [ ] 🧠 Content-based filtering nâng cao (TF-IDF, cosine similarity)
-- [ ] 👤 Collaborative filtering dựa trên user behavior
-- [ ] 📺 Video streaming (HLS + Nginx + FFmpeg)
-- [ ] 📊 Dashboard thống kê cho admin
-- [ ] 🔔 Notification khi có phim mới
-- [ ] 🌙 Dark mode toggle
-- [ ] ♿ Accessibility improvements (ARIA, keyboard navigation)
-
----
-
-## 👨‍💻 Tác giả
-
-**Ngô Đăng Dũng** — Sinh viên CNTT
-
----
-
-## 📝 License
-
-Dự án phục vụ mục đích học tập và đồ án tốt nghiệp.
+## ⚠️ Known Limitations
+- **Memory Scaling Bound:** Currently, `get_all_users` on the backend explicitly enforces a `.limit(100)` throttle to completely circumvent RAM bloat or 503 gateway timeouts, bypassing the current lack of dedicated `skip/limit` pagination implementations on the Admin User Table grid.
+- **Client-Side Heavy Search Arrays:** The generic keyword algorithm runs via React `useMemo` inline computations rendering UI blocks instantly, but theoretically incurs main-thread degradation limits above extremely heavy 100kb payload returns.
+- **Race Condition Mitigations:** Explicit `setTimeout` delays securely decouple `<ProtectedRoute>` aggressive kicks during Admin logouts, circumventing hard crashes inherently present in React Router sub-trees unmounting asynchronously against Context States.

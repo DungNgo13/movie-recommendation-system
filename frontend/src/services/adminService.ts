@@ -8,8 +8,45 @@ function authHeaders(): Record<string, string> {
   return token ? {
     Authorization: `Bearer ${token}`,
     'Content-Type': 'application/json',
-  } : {};
+  } : {
+    'Content-Type': 'application/json',
+  };
 }
+
+export interface AdminDashboardData {
+  total_movies: number;
+  total_users: number;
+  total_admins: number;
+  total_favorites: number;
+  total_ratings: number;
+  total_watch_history: number;
+}
+
+export interface AdminAuditLog {
+  id: string;
+  admin_user_email: string;
+  action_type: string;
+  target_type: string;
+  target_id: string | null;
+  description: string | null;
+  created_at: string;
+}
+
+export const getDashboardMetrics = async (): Promise<AdminDashboardData> => {
+  const response = await fetch(`${API_BASE_URL}/admin/dashboard`, {
+    headers: authHeaders(),
+  });
+  if (!response.ok) throw new Error('Failed to fetch dashboard metrics');
+  return response.json();
+};
+
+export const getAuditLogs = async (): Promise<AdminAuditLog[]> => {
+  const response = await fetch(`${API_BASE_URL}/admin/logs`, {
+    headers: authHeaders(),
+  });
+  if (!response.ok) throw new Error('Failed to fetch audit logs');
+  return response.json();
+};
 
 export const getAdminUsers = async (): Promise<AuthUser[]> => {
   const response = await fetch(`${API_BASE_URL}/admin/users`, {
