@@ -12,6 +12,7 @@ import RecommendationCard from '../components/RecommendationCard';
 import StarRating from '../components/StarRating';
 import LoadingSpinner from '../components/LoadingSpinner';
 import ErrorMessage from '../components/ErrorMessage';
+import HlsPlayer from '../components/HlsPlayer';
 
 const PLACEHOLDER_IMAGE = '/placeholder-poster.svg';
 
@@ -123,11 +124,29 @@ const MovieDetailPage: React.FC = () => {
 
   return (
     <div className="movie-detail-page">
-      <img
-        src={imageSrc}
-        alt={`${movie.title} backdrop`}
-        onError={handleImageError}
-      />
+      {movie.video_status === 'ready' && movie.hls_playlist_url ? (
+        <HlsPlayer src={movie.hls_playlist_url} poster={imageSrc} />
+      ) : (
+        <>
+          <img
+            src={imageSrc}
+            alt={`${movie.title} backdrop`}
+            onError={handleImageError}
+            style={{ width: '100%', maxHeight: '500px', objectFit: 'cover', borderRadius: '8px' }}
+          />
+          {movie.video_status === 'processing' && (
+            <div style={{ padding: '1rem', marginTop: '1rem', backgroundColor: '#19426b', color: '#90caf9', borderRadius: '6px', border: '1px solid #1565c0' }}>
+              <strong>Processing:</strong> High-Definition video is currently being generated. Check back shortly!
+            </div>
+          )}
+          {movie.video_status === 'failed' && (
+            <div style={{ padding: '1rem', marginTop: '1rem', backgroundColor: '#5c1616', color: '#ef9a9a', borderRadius: '6px', border: '1px solid #c62828' }}>
+              <strong>Error:</strong> Video stream conversion failed. Please contact an administrator.
+            </div>
+          )}
+        </>
+      )}
+
       <h1>{movie.title}</h1>
       <p>{movie.overview}</p>
       <p>Release Date: {movie.release_date}</p>
