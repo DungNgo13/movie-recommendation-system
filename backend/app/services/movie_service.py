@@ -1,5 +1,9 @@
 from sqlalchemy.orm import Session
 from uuid import UUID
+import os
+import shutil
+import uuid
+from fastapi import UploadFile, HTTPException
 from ..models import movie as movie_model
 from ..schemas.movie import MovieCreateSchema, MovieUpdateSchema
 
@@ -65,3 +69,41 @@ def delete_movie(db: Session, movie_id: UUID):
     db.delete(db_movie)
     db.commit()
     return True
+
+def upload_image(db: Session, movie_id: UUID, file: UploadFile, image_type: str):
+    """
+    Validates and saves a poster or backdrop image to disk, then updates the movie record.
+    """
+    db_movie = get_movie(db, movie_id)
+    if db_movie is None:
+        raise HTTPException(status_code=404, detail="Movie not found")
+
+    allowed_types = ["image/jpeg", "image/png", "image/webp"]
+    if file.content_type not in allowed_types:
+        raise HTTPException(status_code=400, detail="Invalid file type. Only JPEG, PNG, or WEBP allowed.")
+
+    ext = file.filename.split(".")[-1].lower() if file.filename and "." in file.filename else "jpg"
+    unique_filename = f"{uuid.uuid4().hex}.{ext}"
+
+    if image_type == "poster":
+        # using forward slash format as it represents URI paths natively correctly
+        folder = "uploads/images/posters"
+    else:
+        folder = "uploads/images/backdrops"
+
+    os.makedirs(folder, exist_ok=True)
+    file_path = os.path.join(folder, unique_filename)
+
+    with open(file_path, "wb") as buffer:
+        shutil.copyfileobj(file.file, buffer)
+
+    url = f"http://localhost:8000/{folder}/{unique_filename}"
+
+    if image_type == "poster":
+        db_movie.poster_url = url
+    else:
+        db_movie.backdrop_url = url
+
+    db.commit()
+    db.refresh(db_movie)
+    return db_movie

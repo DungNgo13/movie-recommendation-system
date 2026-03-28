@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import type { Movie } from '../../models';
 import type { MovieFormData } from '../../services/movieService';
+import { uploadMovieImage } from '../../services/movieService';
 
 interface MovieFormProps {
   movie: Movie | null;
@@ -16,6 +17,7 @@ const MovieForm: React.FC<MovieFormProps> = ({ movie, onSubmit, onCancel }) => {
   const [posterUrl, setPosterUrl] = useState('');
   const [backdropUrl, setBackdropUrl] = useState('');
   const [error, setError] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
     if (movie) {
@@ -27,6 +29,23 @@ const MovieForm: React.FC<MovieFormProps> = ({ movie, onSubmit, onCancel }) => {
       setBackdropUrl(movie.backdrop_url || '');
     }
   }, [movie]);
+
+  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>, type: 'poster' | 'backdrop') => {
+    if (!movie || !e.target.files?.[0]) return;
+    try {
+      setUploading(true);
+      setError(null);
+      const updatedMovie = await uploadMovieImage(movie.id, e.target.files[0], type);
+      if (type === 'poster') setPosterUrl(updatedMovie.poster_url || '');
+      if (type === 'backdrop') setBackdropUrl(updatedMovie.backdrop_url || '');
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Upload failed';
+      setError(msg);
+    } finally {
+      setUploading(false);
+      e.target.value = ''; // Reset file input
+    }
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -107,6 +126,17 @@ const MovieForm: React.FC<MovieFormProps> = ({ movie, onSubmit, onCancel }) => {
           onChange={(e) => setPosterUrl(e.target.value)}
           placeholder="https://..."
         />
+        {movie && (
+          <div style={{ marginTop: '8px' }}>
+            <label style={{ fontSize: '0.85rem' }}>Or Upload File: </label>
+            <input 
+              type="file" 
+              accept="image/jpeg, image/png, image/webp" 
+              onChange={(e) => handleUpload(e, 'poster')} 
+              disabled={uploading}
+            />
+          </div>
+        )}
       </div>
 
       <div className="admin-form-group">
@@ -118,6 +148,17 @@ const MovieForm: React.FC<MovieFormProps> = ({ movie, onSubmit, onCancel }) => {
           onChange={(e) => setBackdropUrl(e.target.value)}
           placeholder="https://..."
         />
+        {movie && (
+          <div style={{ marginTop: '8px' }}>
+            <label style={{ fontSize: '0.85rem' }}>Or Upload File: </label>
+            <input 
+              type="file" 
+              accept="image/jpeg, image/png, image/webp" 
+              onChange={(e) => handleUpload(e, 'backdrop')} 
+              disabled={uploading}
+            />
+          </div>
+        )}
       </div>
 
       <div className="admin-form-actions">

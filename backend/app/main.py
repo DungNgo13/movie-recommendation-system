@@ -1,5 +1,7 @@
+import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 
 from .database import engine
 from .models import movie as movie_model
@@ -26,6 +28,11 @@ rating_model.Base.metadata.create_all(bind=engine)
 admin_audit_log_model.Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="Mov-Sug API", version="0.1.0")
+
+os.makedirs("uploads/images/posters", exist_ok=True)
+os.makedirs("uploads/images/backdrops", exist_ok=True)
+
+app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
 # Set up CORS
 origins = [

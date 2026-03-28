@@ -113,3 +113,51 @@ def test_read_movie_detail_not_found(db_session: Session):
     assert response.status_code == 404
     assert response.json() == {"detail": "Movie not found"}
 
+from app.routers.auth import get_current_admin_user
+from app.models.user import User
+
+def override_get_current_admin_user():
+    return User(id=uuid.uuid4(), email="admin@test.com", role="admin")
+
+def test_upload_poster_success(seed_movies):
+    """
+    Tests successful poster image upload.
+    """
+    app.dependency_overrides[get_current_admin_user] = override_get_current_admin_user
+    movie_id = str(seed_movies[0].id)
+    files = {"file": ("test_poster.jpg", b"fake image bytes", "image/jpeg")}
+    
+    response = client.post(f"/api/v1/movies/{movie_id}/poster", files=files)
+    
+    assert response.status_code == 200
+    data = response.json()
+    assert "uploads/images/posters" in data["poster_url"]
+    assert data["poster_url"].endswith(".jpg")
+
+def test_upload_backdrop_success(seed_movies):
+    """
+    Tests successful backdrop image upload.
+    """
+    app.dependency_overrides[get_current_admin_user] = override_get_current_admin_user
+    movie_id = str(seed_movies[0].id)
+    files = {"file": ("test_bg.png", b"fake image bytes", "image/png")}
+    
+    response = client.post(f"/api/v1/movies/{movie_id}/backdrop", files=files)
+    
+    assert response.status_code == 200
+    data = response.json()
+    assert "uploads/images/backdrops" in data["backdrop_url"]
+    assert data["backdrop_url"].endswith(".png")
+
+def test_upload_invalid_file_type(seed_movies):
+    """
+    Tests upload rejection for invalid formats (e.g. text/plain).
+    """
+    app.dependency_overrides[get_current_admin_user] = override_get_current_admin_user
+    movie_id = str(seed_movies[0].id)
+    files = {"file": ("test.txt", b"text bytes", "text/plain")}
+    
+    response = client.post(f"/api/v1/movies/{movie_id}/poster", files=files)
+    
+    assert response.status_code == 400
+    assert "Invalid file type" in response.json()["detail"]

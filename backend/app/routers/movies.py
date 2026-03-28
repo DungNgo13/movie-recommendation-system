@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, UploadFile, File
 from sqlalchemy.orm import Session
 from uuid import UUID
 
@@ -106,3 +106,45 @@ def delete_movie(movie_id: UUID, db: Session = Depends(database.get_db), admin_u
             description=f"Deleted movie '{title}'"
         )
     return None
+
+@router.post("/{movie_id}/poster", response_model=movie_schema.MovieDetailSchema)
+def upload_poster(
+    movie_id: UUID,
+    file: UploadFile = File(...),
+    db: Session = Depends(database.get_db),
+    admin_user=Depends(get_current_admin_user)
+):
+    """
+    Upload a new poster image for a movie.
+    """
+    db_movie = movie_service.upload_image(db, movie_id, file, "poster")
+    create_audit_log(
+        db=db,
+        admin_email=admin_user.email,
+        action_type="movie_update",
+        target_type="movie",
+        target_id=str(movie_id),
+        description=f"Uploaded poster for movie '{db_movie.title}'"
+    )
+    return db_movie
+
+@router.post("/{movie_id}/backdrop", response_model=movie_schema.MovieDetailSchema)
+def upload_backdrop(
+    movie_id: UUID,
+    file: UploadFile = File(...),
+    db: Session = Depends(database.get_db),
+    admin_user=Depends(get_current_admin_user)
+):
+    """
+    Upload a new backdrop image for a movie.
+    """
+    db_movie = movie_service.upload_image(db, movie_id, file, "backdrop")
+    create_audit_log(
+        db=db,
+        admin_email=admin_user.email,
+        action_type="movie_update",
+        target_type="movie",
+        target_id=str(movie_id),
+        description=f"Uploaded backdrop for movie '{db_movie.title}'"
+    )
+    return db_movie

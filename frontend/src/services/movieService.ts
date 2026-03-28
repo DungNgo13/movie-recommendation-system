@@ -1,4 +1,5 @@
 import type { Movie, PaginatedMovies } from '../models';
+import { getToken } from './authService';
 
 const API_BASE_URL = 'http://localhost:8000/api/v1'; // Assuming the backend runs on port 8000
 
@@ -59,5 +60,23 @@ export const deleteMovie = async (id: string): Promise<void> => {
   if (!response.ok) {
     throw new Error('Failed to delete movie');
   }
+};
+
+export const uploadMovieImage = async (id: string, file: File, type: 'poster' | 'backdrop'): Promise<Movie> => {
+  const token = getToken();
+  const formData = new FormData();
+  formData.append('file', file);
+
+  const response = await fetch(`${API_BASE_URL}/movies/${id}/${type}`, {
+    method: 'POST',
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+    body: formData,
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => null);
+    throw new Error(errorData?.detail || `Failed to upload ${type}`);
+  }
+  return response.json();
 };
 
