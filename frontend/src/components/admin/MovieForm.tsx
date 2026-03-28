@@ -218,8 +218,8 @@ const MovieForm: React.FC<MovieFormProps> = ({ movie, onSubmit, onCancel }) => {
         )}
       </div>
 
-      <div className="admin-form-group" style={{ backgroundColor: '#1a1a1a', padding: '1rem', borderRadius: '8px', border: '1px solid #333' }}>
-        <h3 style={{ marginTop: 0, marginBottom: '0.5rem', fontSize: '1.1rem' }}>Source Video (.mp4)</h3>
+      <div className="admin-form-group" style={{ backgroundColor: '#f8f9fa', padding: '1rem', borderRadius: '8px', border: '1px solid #dee2e6', color: '#212529' }}>
+        <h3 style={{ marginTop: 0, marginBottom: '0.5rem', fontSize: '1.1rem', color: '#212529' }}>Source Video (.mp4)</h3>
         {movie ? (
           <>
             <div style={{ marginBottom: '1rem', fontSize: '0.9rem' }}>
@@ -262,7 +262,7 @@ const MovieForm: React.FC<MovieFormProps> = ({ movie, onSubmit, onCancel }) => {
             </div>
           </>
         ) : (
-          <p style={{ fontSize: '0.9rem', opacity: 0.7, margin: 0 }}>
+          <p style={{ fontSize: '0.9rem', color: '#6c757d', margin: 0 }}>
             <em>Please create the movie first before uploading the primary video payload.</em>
           </p>
         )}

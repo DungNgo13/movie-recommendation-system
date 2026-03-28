@@ -30,9 +30,13 @@ export const getMovieById = async (id: string): Promise<Movie> => {
 };
 
 export const createMovie = async (data: MovieFormData): Promise<Movie> => {
+  const token = getToken();
   const response = await fetch(`${API_BASE_URL}/movies`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 
+      'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {})
+    },
     body: JSON.stringify(data),
   });
   if (!response.ok) {
@@ -42,9 +46,13 @@ export const createMovie = async (data: MovieFormData): Promise<Movie> => {
 };
 
 export const updateMovie = async (id: string, data: MovieFormData): Promise<Movie> => {
+  const token = getToken();
   const response = await fetch(`${API_BASE_URL}/movies/${id}`, {
     method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 
+      'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {})
+    },
     body: JSON.stringify(data),
   });
   if (!response.ok) {
@@ -54,8 +62,10 @@ export const updateMovie = async (id: string, data: MovieFormData): Promise<Movi
 };
 
 export const deleteMovie = async (id: string): Promise<void> => {
+  const token = getToken();
   const response = await fetch(`${API_BASE_URL}/movies/${id}`, {
     method: 'DELETE',
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
   });
   if (!response.ok) {
     throw new Error('Failed to delete movie');
