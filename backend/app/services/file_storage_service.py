@@ -49,10 +49,13 @@ def store_file(file: UploadFile, movie_id: str, asset_category: str, asset_type:
     with open(physical_path, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
 
-    relative_to_root = os.path.relpath(physical_path, MEDIA_ROOT).replace("\\", "/")
+    # Store path relative to project root (includes "media/" prefix).
+    # normalize_url() in schemas expects a root-relative path like
+    # "media/images/posters/...", NOT one relative to the media dir.
+    relative_from_root = physical_path.replace("\\", "/")
 
     return {
-        "public_url": f"/{MEDIA_ROOT}/{relative_to_root}",
-        "relative_path": relative_to_root,
+        "public_url": f"/{relative_from_root}",
+        "relative_path": relative_from_root,
         "original_filename": file.filename
     }
