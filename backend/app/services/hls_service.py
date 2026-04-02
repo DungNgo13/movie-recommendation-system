@@ -3,7 +3,6 @@ import subprocess
 import shutil
 import logging
 from uuid import UUID
-from datetime import datetime
 from ..database import SessionLocal
 from ..models import movie as movie_model
 
@@ -62,7 +61,12 @@ def process_hls_conversion(movie_id: UUID):
             playlist_path
         ]
 
-        result = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        result = subprocess.run(
+            cmd,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True
+        )
 
         if result.returncode != 0:
             db_movie.processing_status = "failed"
@@ -75,6 +79,15 @@ def process_hls_conversion(movie_id: UUID):
         db_movie.processing_error = None
         db.commit()
 
+    except FileNotFoundError:
+        # FFmpeg binary is not installed or not on PATH
+        if db_movie:
+            db_movie.processing_status = "failed"
+            db_movie.processing_error = (
+                "FFmpeg is not installed or not found on PATH. "
+                "Please install FFmpeg and ensure it is accessible from the command line."
+            )
+            db.commit()
     except Exception as e:
         if db_movie:
             db_movie.processing_status = "failed"

@@ -127,13 +127,22 @@ const MovieDetailPage: React.FC = () => {
       {movie.video_status === 'ready' && movie.hls_playlist_url ? (
         <HlsPlayer src={movie.hls_playlist_url} poster={imageSrc} />
       ) : (
-        <>
-          <img
-            src={imageSrc}
-            alt={`${movie.title} backdrop`}
-            onError={handleImageError}
-            style={{ width: '100%', maxHeight: '500px', objectFit: 'cover', borderRadius: '8px' }}
-          />
+      <>
+          {/* Cinema-style banner: blurred background + properly contained foreground image.
+              Works for both portrait and landscape uploads without severe cropping. */}
+          <div className="movie-banner">
+            <div
+              className="movie-banner__bg"
+              style={{ backgroundImage: `url(${imageSrc})` }}
+              aria-hidden="true"
+            />
+            <img
+              src={imageSrc}
+              alt={`${movie.title} backdrop`}
+              onError={handleImageError}
+              className="movie-banner__img"
+            />
+          </div>
           {movie.video_status === 'processing' && (
             <div style={{ padding: '1rem', marginTop: '1rem', backgroundColor: '#19426b', color: '#90caf9', borderRadius: '6px', border: '1px solid #1565c0' }}>
               <strong>Processing:</strong> High-Definition video is currently being generated. Check back shortly!
@@ -141,7 +150,8 @@ const MovieDetailPage: React.FC = () => {
           )}
           {movie.video_status === 'failed' && (
             <div style={{ padding: '1rem', marginTop: '1rem', backgroundColor: '#5c1616', color: '#ef9a9a', borderRadius: '6px', border: '1px solid #c62828' }}>
-              <strong>Error:</strong> Video stream conversion failed. Please contact an administrator.
+              <strong>Error:</strong>{' '}
+              {movie.processing_error ?? 'Video stream conversion failed. Please contact an administrator.'}
             </div>
           )}
         </>

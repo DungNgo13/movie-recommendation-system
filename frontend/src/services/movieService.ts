@@ -72,22 +72,49 @@ export const deleteMovie = async (id: string): Promise<void> => {
   }
 };
 
-export const uploadMovieVideo = async (id: string, file: File): Promise<Movie> => {
+export const uploadMovieVideo = async (
+  id: string,
+  file: File,
+  onProgress?: (percent: number) => void
+): Promise<Movie> => {
   const token = getToken();
   const formData = new FormData();
   formData.append('file', file);
 
-  const response = await fetch(`${API_BASE_URL}/movies/${id}/video`, {
-    method: 'POST',
-    headers: token ? { Authorization: `Bearer ${token}` } : {},
-    body: formData,
-  });
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
 
-  if (!response.ok) {
-    const errorData = await response.json().catch(() => null);
-    throw new Error(errorData?.detail || 'Failed to upload video');
-  }
-  return response.json();
+    if (onProgress) {
+      xhr.upload.addEventListener('progress', (e) => {
+        if (e.lengthComputable) {
+          onProgress(Math.round((e.loaded / e.total) * 100));
+        }
+      });
+    }
+
+    xhr.addEventListener('load', () => {
+      if (xhr.status >= 200 && xhr.status < 300) {
+        try {
+          resolve(JSON.parse(xhr.responseText));
+        } catch {
+          reject(new Error('Failed to parse server response'));
+        }
+      } else {
+        let detail = 'Failed to upload video';
+        try {
+          detail = JSON.parse(xhr.responseText)?.detail ?? detail;
+        } catch { /* ignore */ }
+        reject(new Error(detail));
+      }
+    });
+
+    xhr.addEventListener('error', () => reject(new Error('Network error during upload')));
+    xhr.addEventListener('abort', () => reject(new Error('Upload cancelled')));
+
+    xhr.open('POST', `${API_BASE_URL}/movies/${id}/video`);
+    if (token) xhr.setRequestHeader('Authorization', `Bearer ${token}`);
+    xhr.send(formData);
+  });
 };
 
 export const processMovieVideo = async (id: string): Promise<{ message: string }> => {

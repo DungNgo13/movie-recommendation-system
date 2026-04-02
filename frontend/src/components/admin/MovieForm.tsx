@@ -22,6 +22,7 @@ const MovieForm: React.FC<MovieFormProps> = ({ movie, onSubmit, onCancel }) => {
   const [processingError, setProcessingError] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
+  const [uploadPercent, setUploadPercent] = useState<number | null>(null);
 
   useEffect(() => {
     if (movie) {
@@ -92,7 +93,10 @@ const MovieForm: React.FC<MovieFormProps> = ({ movie, onSubmit, onCancel }) => {
     try {
       setUploading(true);
       setError(null);
-      const updatedMovie = await uploadMovieVideo(movie.id, e.target.files[0]);
+      setUploadPercent(0);
+      const updatedMovie = await uploadMovieVideo(movie.id, e.target.files[0], (pct) => {
+        setUploadPercent(pct);
+      });
       setVideoUrl(updatedMovie.video_url || '');
       setVideoStatus(updatedMovie.video_status || 'uploaded');
     } catch (err) {
@@ -100,7 +104,8 @@ const MovieForm: React.FC<MovieFormProps> = ({ movie, onSubmit, onCancel }) => {
       setError(msg);
     } finally {
       setUploading(false);
-      e.target.value = ''; // Reset file input
+      setUploadPercent(null);
+      e.target.value = '';
     }
   };
 
@@ -223,19 +228,76 @@ const MovieForm: React.FC<MovieFormProps> = ({ movie, onSubmit, onCancel }) => {
         {movie ? (
           <>
             <div style={{ marginBottom: '1rem', fontSize: '0.9rem' }}>
-              <strong>Status:</strong> {videoStatus.toUpperCase()}
+              {/* Status badge */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
+                <strong>Status:</strong>
+                <span style={{
+                  display: 'inline-block',
+                  padding: '2px 10px',
+                  borderRadius: '12px',
+                  fontSize: '0.8rem',
+                  fontWeight: 600,
+                  backgroundColor:
+                    videoStatus === 'ready' ? '#d4edda' :
+                    videoStatus === 'processing' ? '#fff3cd' :
+                    videoStatus === 'failed' ? '#f8d7da' :
+                    videoStatus === 'uploaded' ? '#d1ecf1' : '#e9ecef',
+                  color:
+                    videoStatus === 'ready' ? '#155724' :
+                    videoStatus === 'processing' ? '#856404' :
+                    videoStatus === 'failed' ? '#721c24' :
+                    videoStatus === 'uploaded' ? '#0c5460' : '#6c757d',
+                }}>
+                  {videoStatus.toUpperCase()}
+                </span>
+                {/* Processing spinner */}
+                {videoStatus === 'processing' && (
+                  <span style={{ display: 'inline-block', width: '14px', height: '14px', border: '2px solid #856404', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 0.7s linear infinite' }} />
+                )}
+              </div>
+
+              {/* Upload progress bar */}
+              {uploadPercent !== null && (
+                <div style={{ marginBottom: '8px' }}>
+                  <div style={{ fontSize: '0.8rem', marginBottom: '4px', color: '#495057' }}>
+                    Uploading… {uploadPercent}%
+                  </div>
+                  <div style={{ height: '6px', background: '#dee2e6', borderRadius: '3px', overflow: 'hidden' }}>
+                    <div style={{ height: '100%', width: `${uploadPercent}%`, background: '#0d6efd', transition: 'width 0.2s ease', borderRadius: '3px' }} />
+                  </div>
+                </div>
+              )}
+
+              {/* Processing indeterminate bar */}
+              {videoStatus === 'processing' && uploadPercent === null && (
+                <div style={{ marginBottom: '8px' }}>
+                  <div style={{ fontSize: '0.8rem', marginBottom: '4px', color: '#856404' }}>
+                    Converting to HLS… this may take a few minutes.
+                  </div>
+                  <div style={{ height: '6px', background: '#dee2e6', borderRadius: '3px', overflow: 'hidden' }}>
+                    <div style={{
+                      height: '100%',
+                      width: '40%',
+                      background: 'linear-gradient(90deg, #ffc107, #fd7e14)',
+                      borderRadius: '3px',
+                      animation: 'progress-slide 1.4s ease-in-out infinite',
+                    }} />
+                  </div>
+                </div>
+              )}
+
               {videoUrl && (
-                <div style={{ wordBreak: 'break-all', marginTop: '4px', opacity: 0.8 }}>
+                <div style={{ wordBreak: 'break-all', marginTop: '4px', opacity: 0.8, fontSize: '0.85rem' }}>
                   <em>Source: {videoUrl}</em>
                 </div>
               )}
               {hlsUrl && (
-                <div style={{ wordBreak: 'break-all', marginTop: '4px', color: '#66bb6a' }}>
-                  <em>HLS: {hlsUrl}</em>
+                <div style={{ wordBreak: 'break-all', marginTop: '4px', color: '#155724', fontSize: '0.85rem' }}>
+                  <em>HLS: <a href={hlsUrl} target="_blank" rel="noopener noreferrer">{hlsUrl}</a></em>
                 </div>
               )}
               {processingError && (
-                <div style={{ color: '#ef5350', marginTop: '4px', fontSize: '0.85rem' }}>
+                <div style={{ color: '#721c24', marginTop: '6px', fontSize: '0.85rem', background: '#f8d7da', padding: '8px', borderRadius: '4px' }}>
                   <strong>Error:</strong> {processingError}
                 </div>
               )}
