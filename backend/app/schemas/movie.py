@@ -1,5 +1,5 @@
-from pydantic import BaseModel, Field, ConfigDict, computed_field
-from typing import List, Optional
+from pydantic import BaseModel, Field, ConfigDict, computed_field, field_validator
+from typing import List, Optional, Union
 from uuid import UUID
 from datetime import date
 
@@ -99,21 +99,55 @@ class MovieDetailSchema(BaseModel):
 class MovieCreateSchema(BaseModel):
     title: str
     overview: Optional[str] = None
-    release_date: Optional[date] = None
+    release_date: Union[date, str, int, None] = None
     genres: Optional[List[str]] = None
     director: Optional[str] = None
     poster_url: Optional[str] = None
     backdrop_url: Optional[str] = None
 
+    @field_validator('release_date')
+    @classmethod
+    def parse_release_date(cls, v):
+        if v is None:
+            return None
+        if isinstance(v, date):
+            return v
+        # Assuming it's a 4-digit string or int
+        v_str = str(v).strip()
+        if len(v_str) == 4 and v_str.isdigit():
+            # Pad to first of year so DB handles it properly
+            return date(int(v_str), 1, 1)
+        # Attempt standard parse if given full "YYYY-MM-DD"
+        try:
+            return date.fromisoformat(v_str)
+        except ValueError:
+            raise ValueError("Release date must be 'YYYY' or 'YYYY-MM-DD'")
+
 # Schema for updating an existing movie (All fields optional)
 class MovieUpdateSchema(BaseModel):
     title: Optional[str] = None
     overview: Optional[str] = None
-    release_date: Optional[date] = None
+    release_date: Union[date, str, int, None] = None
     genres: Optional[List[str]] = None
     director: Optional[str] = None
     poster_url: Optional[str] = None
     backdrop_url: Optional[str] = None
+
+    @field_validator('release_date')
+    @classmethod
+    def parse_release_date(cls, v):
+        if v is None:
+            return None
+        if isinstance(v, date):
+            return v
+        # Assuming it's a 4-digit string or int
+        v_str = str(v).strip()
+        if len(v_str) == 4 and v_str.isdigit():
+            return date(int(v_str), 1, 1)
+        try:
+            return date.fromisoformat(v_str)
+        except ValueError:
+            raise ValueError("Release date must be 'YYYY' or 'YYYY-MM-DD'")
 
 # Schema for the paginated movie list response
 class MovieListResponseSchema(BaseModel):

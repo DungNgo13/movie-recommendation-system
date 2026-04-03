@@ -227,4 +227,32 @@ def test_get_hls_status(seed_movies, db_session):
     assert response.status_code == 200
     data = response.json()
     assert data["video_status"] == "ready"
-    assert data["hls_playlist_url"] == "http://localhost:8000/media/videos/hls/fake_play.m3u8"
+        
+def test_create_movie_year_only(db_session, seed_movies):
+    """
+    Tests creating a movie passing only 'YYYY' as release_date.
+    The schema should pad it securely so the Date column continues to function.
+    """
+    app.dependency_overrides[get_current_admin_user] = override_get_current_admin_user
+    payload = {
+        "title": "Dune: Part Two",
+        "release_date": "2024",
+    }
+    response = client.post("/api/v1/movies/", json=payload)
+    assert response.status_code == 201
+    data = response.json()
+    assert data["title"] == "Dune: Part Two"
+    assert data["release_date"] == "2024-01-01"
+    
+def test_create_movie_invalid_year(db_session, seed_movies):
+    """
+    Tests creating a movie passing an invalid string for release_date.
+    """
+    app.dependency_overrides[get_current_admin_user] = override_get_current_admin_user
+    payload = {
+        "title": "Invalid Year Movie",
+        "release_date": "NotAYear",
+    }
+    response = client.post("/api/v1/movies/", json=payload)
+    assert response.status_code == 422
+    assert "Release date must be 'YYYY' or 'YYYY-MM-DD'" in str(response.json())

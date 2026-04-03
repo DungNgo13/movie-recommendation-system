@@ -28,7 +28,7 @@ const MovieForm: React.FC<MovieFormProps> = ({ movie, onSubmit, onCancel }) => {
     if (movie) {
       setTitle(movie.title);
       setOverview(movie.overview || '');
-      setReleaseDate(movie.release_date || '');
+      setReleaseDate(movie.release_date ? movie.release_date.split('-')[0] : '');
       setDirector(movie.director || '');
       setPosterUrl(movie.poster_url || '');
       setBackdropUrl(movie.backdrop_url || '');
@@ -121,7 +121,7 @@ const MovieForm: React.FC<MovieFormProps> = ({ movie, onSubmit, onCancel }) => {
     onSubmit({
       title: title.trim(),
       overview: overview.trim() || null,
-      release_date: releaseDate || null,
+      release_date: releaseDate ? `${releaseDate.trim()}-01-01` : null,
       director: director.trim() || null,
       poster_url: posterUrl.trim() || null,
       backdrop_url: backdropUrl.trim() || null,
@@ -158,12 +158,15 @@ const MovieForm: React.FC<MovieFormProps> = ({ movie, onSubmit, onCancel }) => {
 
       <div className="admin-form-row">
         <div className="admin-form-group">
-          <label htmlFor="release_date">Release Date</label>
+          <label htmlFor="release_date">Release Year</label>
           <input
             id="release_date"
-            type="date"
+            type="number"
+            min="1888"
+            max="2100"
             value={releaseDate}
             onChange={(e) => setReleaseDate(e.target.value)}
+            placeholder="e.g. 2024"
           />
         </div>
 

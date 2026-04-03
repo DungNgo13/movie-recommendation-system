@@ -159,7 +159,7 @@ const MovieDetailPage: React.FC = () => {
 
       <h1>{movie.title}</h1>
       <p>{movie.overview}</p>
-      <p>Release Date: {movie.release_date}</p>
+      <p>Release Year: {movie.release_date ? movie.release_date.split('-')[0] : 'N/A'}</p>
       <p>Director: {movie.director}</p>
 
       <div className="rating-section">

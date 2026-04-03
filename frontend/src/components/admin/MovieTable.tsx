@@ -83,7 +83,7 @@ const MovieTable: React.FC<MovieTableProps> = ({ movies, onEdit, onDelete }) => 
           <tr>
             <th>Title</th>
             <th>Director</th>
-            <th>Release Date</th>
+            <th>Release Year</th>
             <th>Video Status</th>
             <th>Actions</th>
           </tr>
@@ -93,7 +93,7 @@ const MovieTable: React.FC<MovieTableProps> = ({ movies, onEdit, onDelete }) => 
             <tr key={movie.id}>
               <td>{movie.title}</td>
               <td>{movie.director || '—'}</td>
-              <td>{movie.release_date || '—'}</td>
+              <td>{movie.release_date ? movie.release_date.split('-')[0] : '—'}</td>
               <td><VideoStatusCell movie={movie} /></td>
               <td className="admin-table-actions">
                 <button
