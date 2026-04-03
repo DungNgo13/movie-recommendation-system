@@ -11,6 +11,7 @@ import {
   updateMovie,
   deleteMovie,
   getMovieById,
+  getMovieProcessingStatus,
 } from '../services/movieService';
 
 const AdminMoviesPage: React.FC = () => {
@@ -40,6 +41,41 @@ const AdminMoviesPage: React.FC = () => {
   useEffect(() => {
     fetchMovies();
   }, [fetchMovies]);
+
+  // Poll status for any movie currently in the 'processing' state.
+  // Updates the individual row in-place without a full list reload.
+  useEffect(() => {
+    const processingIds = movies
+      .filter((m) => m.video_status === 'processing')
+      .map((m) => m.id);
+
+    if (processingIds.length === 0) return;
+
+    const interval = window.setInterval(async () => {
+      const updates = await Promise.allSettled(
+        processingIds.map((id) => getMovieProcessingStatus(id)),
+      );
+      setMovies((prev) =>
+        prev.map((m) => {
+          const idx = processingIds.indexOf(m.id);
+          if (idx === -1) return m;
+          const result = updates[idx];
+          if (result.status === 'fulfilled') {
+            const s = result.value;
+            return {
+              ...m,
+              video_status: s.video_status,
+              hls_playlist_url: s.hls_playlist_url ?? m.hls_playlist_url,
+              processing_error: s.processing_error ?? m.processing_error,
+            };
+          }
+          return m;
+        }),
+      );
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [movies]);
 
   const handleCreate = async (formData: MovieFormData) => {
     try {
