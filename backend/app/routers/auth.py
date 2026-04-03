@@ -48,7 +48,7 @@ def get_current_user(
             detail="Invalid token payload",
         )
 
-    user = auth_service.get_user_by_email(db, user_id)
+    user = auth_service.get_user_by_id(db, user_id)
     if user is None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -107,7 +107,7 @@ def login(
             detail="Invalid email or password",
         )
 
-    token = create_access_token(data={"sub": user.email})
+    token = create_access_token(data={"sub": str(user.id)})
     return {"access_token": token, "token_type": "bearer"}
 
 

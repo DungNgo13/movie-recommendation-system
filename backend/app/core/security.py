@@ -1,11 +1,18 @@
 from datetime import datetime, timedelta, timezone
 import bcrypt
+import os
 from jose import jwt, JWTError
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # In production, use env variable for SECRET_KEY
-SECRET_KEY = "movie-rec-secret-key-change-in-production"
+SECRET_KEY = os.getenv("SECRET_KEY", "movie-rec-secret-key-change-in-production")
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24  # 24 hours
+try:
+    ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 1440))
+except ValueError:
+    ACCESS_TOKEN_EXPIRE_MINUTES = 1440  # 24 hours
 
 
 def hash_password(password: str) -> str:
