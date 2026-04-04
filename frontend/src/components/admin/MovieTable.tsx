@@ -49,14 +49,22 @@ const VideoStatusCell: React.FC<{ movie: Movie }> = ({ movie }) => {
         )}
       </div>
 
-      {/* Indeterminate animated bar — only while processing */}
+      {/* Dynamic progress animated bar */}
       {status === 'processing' && (
         <div style={{ marginTop: '4px' }}>
           <div style={{ fontSize: '0.75rem', color: '#856404', marginBottom: '4px' }}>
-            Converting video to HLS...
+            Converting video to HLS... {movie.video_progress ?? 0}%
           </div>
           <div className="vst-track">
-            <div className="vst-bar" />
+             <div 
+               style={{
+                 height: '100%',
+                 background: 'linear-gradient(90deg, #ffc107, #fd7e14)',
+                 width: `${movie.video_progress ?? 0}%`,
+                 transition: 'width 0.5s ease-out',
+                 borderRadius: '3px'
+               }} 
+             />
           </div>
         </div>
       )}

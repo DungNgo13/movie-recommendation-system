@@ -13,3 +13,7 @@ class HistoryItemSchema(BaseModel):
     poster_url: Optional[str] = None
     release_year: Optional[int] = None
     watched_at: datetime
+    playback_position_seconds: int = 0
+
+class RecordHistoryPayload(BaseModel):
+    playback_position_seconds: int = 0

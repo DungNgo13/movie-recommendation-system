@@ -4,9 +4,11 @@ import Hls from 'hls.js';
 interface HlsPlayerProps {
   src: string;
   poster?: string;
+  initialTime?: number;
+  onTimeUpdate?: (currentTime: number) => void;
 }
 
-const HlsPlayer: React.FC<HlsPlayerProps> = ({ src, poster }) => {
+const HlsPlayer: React.FC<HlsPlayerProps> = ({ src, poster, initialTime = 0, onTimeUpdate }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
@@ -27,7 +29,9 @@ const HlsPlayer: React.FC<HlsPlayerProps> = ({ src, poster }) => {
 
       hls.on(Hls.Events.MANIFEST_PARSED, () => {
         // Video is completely ready. 
-        // We avoid auto-play out-of-the-box ensuring UX rules aren't broken violently.
+        if (initialTime > 0) {
+          video.currentTime = initialTime;
+        }
       });
 
       hls.on(Hls.Events.ERROR, (_event, data) => {
@@ -52,6 +56,11 @@ const HlsPlayer: React.FC<HlsPlayerProps> = ({ src, poster }) => {
     } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
       // Direct pass-through for iOS Safari
       video.src = src;
+      video.addEventListener('loadedmetadata', () => {
+        if (initialTime > 0) {
+          video.currentTime = initialTime;
+        }
+      });
     }
 
     return () => {
@@ -68,6 +77,11 @@ const HlsPlayer: React.FC<HlsPlayerProps> = ({ src, poster }) => {
         controls
         poster={poster}
         style={{ width: '100%', display: 'block', maxHeight: '720px' }}
+        onTimeUpdate={() => {
+          if (onTimeUpdate && videoRef.current) {
+            onTimeUpdate(videoRef.current.currentTime);
+          }
+        }}
       />
     </div>
   );

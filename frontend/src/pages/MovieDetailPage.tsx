@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import type { Movie } from '../models';
 import { getMovieById } from '../services/movieService';
-import { recordWatch } from '../services/continueWatchingService';
+import { recordWatch, getWatchStatus } from '../services/continueWatchingService';
 import { getMyRating, rateMovie } from '../services/ratingService';
 import { getRecommendations } from '../services/recommendationService';
 import type { RecommendedMovie } from '../services/recommendationService';
@@ -25,6 +25,17 @@ const MovieDetailPage: React.FC = () => {
   const [imageSrc, setImageSrc] = useState<string>(PLACEHOLDER_IMAGE);
   const [myRating, setMyRating] = useState<number | null>(null);
   const [recommendations, setRecommendations] = useState<RecommendedMovie[]>([]);
+  const [initialTime, setInitialTime] = useState<number>(0);
+  const lastSavedTime = useRef<number>(0);
+
+  const handleTimeUpdate = (currentTime: number) => {
+    if (Math.abs(currentTime - lastSavedTime.current) >= 15) {
+      lastSavedTime.current = currentTime;
+      if (movie) {
+        recordWatch(movie.id, currentTime);
+      }
+    }
+  };
 
   useEffect(() => {
     if (!user) {
@@ -53,8 +64,20 @@ const MovieDetailPage: React.FC = () => {
           data.backdrop_url || data.poster_url || PLACEHOLDER_IMAGE
         );
 
-        // Record watch history via API (fire-and-forget)
-        recordWatch(data.id);
+        if (user) {
+          try {
+            const status = await getWatchStatus(data.id);
+            if (status?.playback_position_seconds > 0) {
+              setInitialTime(status.playback_position_seconds);
+              lastSavedTime.current = status.playback_position_seconds;
+            }
+          } catch (e) {
+            console.error('Failed to parse previous watch position:', e);
+          }
+        }
+
+        // Record initial watch history hook conservatively explicitly dynamically
+        recordWatch(data.id, 0);
       } catch (err) {
         setError('Failed to fetch movie details.');
         console.error(err);
@@ -125,7 +148,12 @@ const MovieDetailPage: React.FC = () => {
   return (
     <div className="movie-detail-page">
       {movie.video_status === 'ready' && movie.hls_playlist_url ? (
-        <HlsPlayer src={movie.hls_playlist_url} poster={imageSrc} />
+        <HlsPlayer 
+          src={movie.hls_playlist_url} 
+          poster={imageSrc} 
+          initialTime={initialTime}
+          onTimeUpdate={handleTimeUpdate}
+        />
       ) : (
       <>
           {/* Cinema-style banner: blurred background + properly contained foreground image.

@@ -16,14 +16,33 @@ function authHeaders(): Record<string, string> {
 /**
  * Records that the current user watched a movie.
  */
-export const recordWatch = async (movieId: string): Promise<void> => {
+export const recordWatch = async (movieId: string, playbackSeconds: number = 0): Promise<void> => {
   const token = getToken();
   if (!token) return;
 
   await fetch(`${API_BASE_URL}/history/${movieId}`, {
     method: 'POST',
-    headers: authHeaders(),
+    headers: { ...authHeaders(), 'Content-Type': 'application/json' },
+    body: JSON.stringify({ playback_position_seconds: Math.floor(playbackSeconds) })
   });
+};
+
+/**
+ * Gets specific view metrics for tracking.
+ */
+export const getWatchStatus = async (movieId: string): Promise<{ playback_position_seconds: number }> => {
+  const token = getToken();
+  if (!token) return { playback_position_seconds: 0 };
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/history/${movieId}`, {
+      headers: authHeaders(),
+    });
+    if (!response.ok) return { playback_position_seconds: 0 };
+    return response.json();
+  } catch {
+    return { playback_position_seconds: 0 };
+  }
 };
 
 /**

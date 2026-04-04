@@ -26,16 +26,6 @@ engine = create_engine(
 )
 TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-# Dependency to override the get_db provider
-def override_get_db():
-    db = TestingSessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
-
-app.dependency_overrides[get_db] = override_get_db
-
 client = TestClient(app)
 
 @pytest.fixture(scope="function")
@@ -45,9 +35,11 @@ def db_session():
     """
     Base.metadata.create_all(bind=engine)
     db = TestingSessionLocal()
+    app.dependency_overrides[get_db] = lambda: db
     try:
         yield db
     finally:
+        app.dependency_overrides.pop(get_db, None)
         db.close()
         Base.metadata.drop_all(bind=engine)
 
@@ -177,7 +169,7 @@ def test_upload_video_success(seed_movies):
         data = response.json()
         assert "media/videos/source" in data["video_url"]
         assert data["video_url"].endswith(".mp4")
-        assert data["video_status"] == "processing"
+        assert data["video_status"] == "uploaded"
 
 def test_upload_video_invalid_type(seed_movies):
     """

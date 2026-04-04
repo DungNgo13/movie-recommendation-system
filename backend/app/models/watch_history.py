@@ -16,3 +16,4 @@ class WatchHistory(Base):
     movie_id = Column(UUID(as_uuid=True), ForeignKey("movies.id"), nullable=False)
     watched_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
     progress_percent = Column(Integer, default=0)
+    playback_position_seconds = Column(Integer, default=0)

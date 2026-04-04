@@ -273,19 +273,19 @@ const MovieForm: React.FC<MovieFormProps> = ({ movie, onSubmit, onCancel }) => {
                 </div>
               )}
 
-              {/* Processing indeterminate bar */}
+              {/* Processing Dynamic Status bar */}
               {videoStatus === 'processing' && uploadPercent === null && (
                 <div style={{ marginBottom: '8px' }}>
                   <div style={{ fontSize: '0.8rem', marginBottom: '4px', color: '#856404' }}>
-                    Converting to HLS… this may take a few minutes.
+                    Converting to HLS… {movie.video_progress ?? 0}%
                   </div>
                   <div style={{ height: '6px', background: '#dee2e6', borderRadius: '3px', overflow: 'hidden' }}>
                     <div style={{
                       height: '100%',
-                      width: '40%',
+                      width: `${movie.video_progress ?? 0}%`,
                       background: 'linear-gradient(90deg, #ffc107, #fd7e14)',
                       borderRadius: '3px',
-                      animation: 'progress-slide 1.4s ease-in-out infinite',
+                      transition: 'width 0.5s ease-out'
                     }} />
                   </div>
                 </div>

@@ -2,11 +2,24 @@ import os
 import subprocess
 import shutil
 import logging
+import re
 from uuid import UUID
 from ..database import SessionLocal
 from ..models import movie as movie_model
 
 logger = logging.getLogger(__name__)
+
+def get_video_duration(path: str) -> float:
+    cmd = [
+        "ffprobe", "-v", "error", "-show_entries",
+        "format=duration", "-of",
+        "default=noprint_wrappers=1:nokey=1", path
+    ]
+    try:
+        result = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        return float(result.stdout.strip())
+    except (ValueError, TypeError, FileNotFoundError):
+        return 0.0
 
 def process_hls_conversion(movie_id: UUID):
     """
@@ -29,8 +42,11 @@ def process_hls_conversion(movie_id: UUID):
             return
 
         db_movie.processing_status = "processing"
+        db_movie.processing_progress = 0
         db_movie.processing_error = None
         db.commit()
+        
+        total_duration = get_video_duration(source_path)
         
         # New Strict Structure requirement: media/videos/hls/movie_{movie_id}
         output_dir = os.path.join("media", "videos", "hls", f"movie_{movie_id}")
@@ -47,34 +63,66 @@ def process_hls_conversion(movie_id: UUID):
         os.makedirs(output_dir, exist_ok=True)
         playlist_path = os.path.join(output_dir, "master.m3u8")
 
-        # Command for converting standard mp4 to HLS maintaining exact strict bounds
+        # Advanced Command injecting 720p + 360p variant variants building real Master streams natively!
         cmd = [
             "ffmpeg",
             "-y",
             "-i", source_path,
-            "-c:v", "libx264",
-            "-c:a", "aac",
+            
+            # Extract independent visual paths natively routing them cleanly smoothly!
+            "-filter_complex", "[0:v]split=2[v1][v2]; [v1]scale=w=-2:h=720[v1out]; [v2]scale=w=-2:h=360[v2out]",
+            
+            # Bind maps connecting bitrate boundaries correctly organically seamlessly
+            "-map", "[v1out]", "-c:v:0", "libx264", "-b:v:0", "2000k", "-maxrate:v:0", "2140k", "-bufsize:v:0", "4200k",
+            "-map", "[v2out]", "-c:v:1", "libx264", "-b:v:1", "800k",  "-maxrate:v:1", "856k",  "-bufsize:v:1", "1200k",
+            "-map", "0:a?", "-c:a", "aac", "-b:a", "128k",
+
+            # Format declarations establishing valid tracking payloads cleanly!
+            "-f", "hls",
             "-hls_time", "10",
             "-hls_list_size", "0",
-            "-f", "hls",
-            "-hls_segment_filename", os.path.join(output_dir, "segment_%03d.ts"),
-            playlist_path
+            "-hls_playlist_type", "vod",
+            
+            # Bind mappings natively explicitly parsing them flawlessly avoiding cross-over segmentation failures!
+            "-master_pl_name", "master.m3u8",
+            "-hls_segment_filename", os.path.join(output_dir, "v%v_segment_%03d.ts"),
+            "-var_stream_map", "v:0,a:0 v:1,a:0",
+            "-progress", "pipe:1",
+            
+            os.path.join(output_dir, "v%v_playlist.m3u8")
         ]
 
-        result = subprocess.run(
+        process = subprocess.Popen(
             cmd,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             text=True
         )
 
-        if result.returncode != 0:
+        last_progress = 0
+        for line in process.stdout:
+            match = re.search(r"out_time_us=(\d+)", line)
+            if match and total_duration > 0:
+                out_time_us = int(match.group(1))
+                time_s = out_time_us / 1000000.0
+                progress_percent = min(int((time_s / total_duration) * 100), 99)
+                
+                # Update DB every ~2% to avoid overloading native sqlite bindings explicitly
+                if progress_percent > last_progress + 1:
+                    last_progress = progress_percent
+                    db_movie.processing_progress = progress_percent
+                    db.commit()
+
+        process.wait()
+        stderr_output = process.stderr.read()
+
+        if process.returncode != 0:
             db.refresh(db_movie)
             if db_movie.processing_status != "processing":
                 logger.info("Movie status changed while FFmpeg was running. Skipping failure state overwrite.")
                 return
             db_movie.processing_status = "failed"
-            db_movie.processing_error = f"FFmpeg Error:\n{result.stderr[-500:]}"
+            db_movie.processing_error = f"FFmpeg Error:\n{stderr_output[-500:]}"
             db.commit()
             return
             
@@ -84,6 +132,7 @@ def process_hls_conversion(movie_id: UUID):
             return
 
         db_movie.processing_status = "ready"
+        db_movie.processing_progress = 100
         db_movie.hls_playlist_path = os.path.normpath(playlist_path).replace("\\", "/")
         db_movie.processing_error = None
         db.commit()

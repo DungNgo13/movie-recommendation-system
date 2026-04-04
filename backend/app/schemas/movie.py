@@ -24,6 +24,7 @@ class MovieListItemSchema(BaseModel):
     poster_path: Optional[str] = Field(None, exclude=True)
     backdrop_path: Optional[str] = Field(None, exclude=True)
     processing_status: Optional[str] = Field("no_video", exclude=True)
+    processing_progress: Optional[int] = Field(0, exclude=True)
     hls_playlist_path: Optional[str] = Field(None, exclude=True)
     
     release_date: Optional[date] = Field(None, exclude=True)
@@ -43,6 +44,11 @@ class MovieListItemSchema(BaseModel):
     @property
     def video_status(self) -> Optional[str]:
         return self.processing_status
+
+    @computed_field
+    @property
+    def video_progress(self) -> int:
+        return self.processing_progress or 0
         
     @computed_field
     @property
@@ -75,6 +81,7 @@ class MovieDetailSchema(BaseModel):
     backdrop_path: Optional[str] = Field(None, exclude=True)
     video_source_path: Optional[str] = Field(None, exclude=True)
     processing_status: Optional[str] = Field("no_video", exclude=True)
+    processing_progress: Optional[int] = Field(0, exclude=True)
     hls_playlist_path: Optional[str] = Field(None, exclude=True)
 
     @computed_field
@@ -96,6 +103,11 @@ class MovieDetailSchema(BaseModel):
     @property
     def video_status(self) -> Optional[str]:
         return self.processing_status
+
+    @computed_field
+    @property
+    def video_progress(self) -> int:
+        return self.processing_progress or 0
         
     @computed_field
     @property
