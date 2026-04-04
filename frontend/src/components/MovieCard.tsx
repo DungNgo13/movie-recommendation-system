@@ -17,7 +17,7 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie, isFavorite, onToggleFavori
     if (enableImageSwap && movie.backdrop_url) {
       interval = window.setInterval(() => {
         setShowBackdrop((prev) => !prev);
-      }, 4000);
+      }, 3700);
     }
     return () => {
       if (interval) clearInterval(interval);
@@ -30,8 +30,6 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie, isFavorite, onToggleFavori
     onToggleFavorite(movie.id);
   };
 
-  const currentImage = (showBackdrop && movie.backdrop_url) ? movie.backdrop_url : (movie.poster_url || '/placeholder-poster.svg');
-
   return (
     <div className="movie-card">
       <button
@@ -43,15 +41,32 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie, isFavorite, onToggleFavori
         {isFavorite ? '♥' : '♡'}
       </button>
       <Link to={`/movie/${movie.id}`}>
-        <img
-          src={currentImage}
-          alt={`${movie.title} poster`}
-          style={{ transition: 'opacity 0.5s ease-in-out' }}
-          onError={(e) => {
-            e.currentTarget.onerror = null;
-            e.currentTarget.src = '/placeholder-poster.svg';
-          }}
-        />
+        <div style={{ position: 'relative', width: '100%', aspectRatio: '2/3', background: '#eee' }}>
+          {/* Primary Poster */}
+          <img
+            src={movie.poster_url || '/placeholder-poster.svg'}
+            alt={`${movie.title} poster`}
+            style={{ 
+              position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover',
+              opacity: showBackdrop ? 0 : 1, transition: 'opacity 0.6s ease-in-out' 
+            }}
+            onError={(e) => {
+              e.currentTarget.onerror = null;
+              e.currentTarget.src = '/placeholder-poster.svg';
+            }}
+          />
+          {/* Secondary Backdrop */}
+          {enableImageSwap && movie.backdrop_url && (
+            <img
+              src={movie.backdrop_url}
+              alt={`${movie.title} backdrop`}
+              style={{ 
+                position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover',
+                opacity: showBackdrop ? 1 : 0, transition: 'opacity 0.6s ease-in-out' 
+              }}
+            />
+          )}
+        </div>
         <h3>{movie.title}</h3>
       </Link>
     </div>
