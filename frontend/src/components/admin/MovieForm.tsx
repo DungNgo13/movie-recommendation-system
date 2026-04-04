@@ -244,12 +244,14 @@ const MovieForm: React.FC<MovieFormProps> = ({ movie, onSubmit, onCancel }) => {
                     videoStatus === 'ready' ? '#d4edda' :
                     videoStatus === 'processing' ? '#fff3cd' :
                     videoStatus === 'failed' ? '#f8d7da' :
-                    videoStatus === 'uploaded' ? '#d1ecf1' : '#e9ecef',
+                    videoStatus === 'uploaded' ? '#d1ecf1' :
+                    videoStatus === 'no_video' ? '#e2e3e5' : '#e9ecef',
                   color:
                     videoStatus === 'ready' ? '#155724' :
                     videoStatus === 'processing' ? '#856404' :
                     videoStatus === 'failed' ? '#721c24' :
-                    videoStatus === 'uploaded' ? '#0c5460' : '#6c757d',
+                    videoStatus === 'uploaded' ? '#0c5460' :
+                    videoStatus === 'no_video' ? '#383d41' : '#6c757d',
                 }}>
                   {videoStatus.toUpperCase()}
                 </span>
@@ -311,7 +313,7 @@ const MovieForm: React.FC<MovieFormProps> = ({ movie, onSubmit, onCancel }) => {
                 type="file" 
                 accept="video/mp4" 
                 onChange={handleVideoUpload} 
-                disabled={uploading || videoStatus === 'processing'}
+                disabled={uploading}
               />
               
               {(videoStatus === 'uploaded' || videoStatus === 'failed') && (

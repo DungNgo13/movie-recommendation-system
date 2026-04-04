@@ -158,16 +158,10 @@ def upload_video(
     admin_user=Depends(get_current_admin_user)
 ):
     """
-    Upload a new mp4 source video for a movie and auto-trigger HLS conversion.
+    Upload a new mp4 source video for a movie.
+    Does NOT auto-trigger HLS conversion anymore; correctly stages movie for manual triggering.
     """
     db_movie = movie_asset_service.upload_video_asset(db, movie_id, file)
-    
-    # Phase 5 QoL Override: Auto-trigger HLS processing bypassing second native HTTP call!
-    db_movie.processing_status = "processing"
-    db_movie.processing_error = None
-    db.commit()
-
-    background_tasks.add_task(process_hls_conversion, movie_id)
 
     create_audit_log(
         db=db,

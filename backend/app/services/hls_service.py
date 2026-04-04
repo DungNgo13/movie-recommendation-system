@@ -69,11 +69,20 @@ def process_hls_conversion(movie_id: UUID):
         )
 
         if result.returncode != 0:
+            db.refresh(db_movie)
+            if db_movie.processing_status != "processing":
+                logger.info("Movie status changed while FFmpeg was running. Skipping failure state overwrite.")
+                return
             db_movie.processing_status = "failed"
             db_movie.processing_error = f"FFmpeg Error:\n{result.stderr[-500:]}"
             db.commit()
             return
             
+        db.refresh(db_movie)
+        if db_movie.processing_status != "processing":
+            logger.info("Movie status changed while FFmpeg was running. Skipping ready state overwrite.")
+            return
+
         db_movie.processing_status = "ready"
         db_movie.hls_playlist_path = os.path.normpath(playlist_path).replace("\\", "/")
         db_movie.processing_error = None

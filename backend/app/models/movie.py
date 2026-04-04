@@ -16,6 +16,6 @@ class Movie(Base):
     backdrop_path = Column(String(255), nullable=True)
     video_source_path = Column(String(255), nullable=True)
     video_original_filename = Column(String(255), nullable=True)
-    processing_status = Column(String(50), default="pending")
+    processing_status = Column(String(50), default="no_video")
     hls_playlist_path = Column(String(255), nullable=True)
     processing_error = Column(Text, nullable=True)

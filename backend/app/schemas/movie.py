@@ -23,7 +23,7 @@ class MovieListItemSchema(BaseModel):
     # Exclude internal _path representations safely bridging local/prod natively
     poster_path: Optional[str] = Field(None, exclude=True)
     backdrop_path: Optional[str] = Field(None, exclude=True)
-    processing_status: Optional[str] = Field("pending", exclude=True)
+    processing_status: Optional[str] = Field("no_video", exclude=True)
     hls_playlist_path: Optional[str] = Field(None, exclude=True)
     
     release_date: Optional[date] = Field(None, exclude=True)
@@ -74,7 +74,7 @@ class MovieDetailSchema(BaseModel):
     poster_path: Optional[str] = Field(None, exclude=True)
     backdrop_path: Optional[str] = Field(None, exclude=True)
     video_source_path: Optional[str] = Field(None, exclude=True)
-    processing_status: Optional[str] = Field("pending", exclude=True)
+    processing_status: Optional[str] = Field("no_video", exclude=True)
     hls_playlist_path: Optional[str] = Field(None, exclude=True)
 
     @computed_field

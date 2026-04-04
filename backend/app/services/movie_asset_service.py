@@ -32,26 +32,25 @@ def upload_video_asset(db: Session, movie_id: UUID, file: UploadFile):
     if not db_movie:
         raise HTTPException(status_code=404, detail="Movie not found")
         
-    # Safely clear old OS source payloads logging failures strictly avoiding swallowing crashes
-    if db_movie.video_source_path and not db_movie.video_source_path.startswith("http"):
-        old_vid_path = db_movie.video_source_path
-        if os.path.exists(old_vid_path) and os.path.isfile(old_vid_path):
-            try:
-                os.remove(old_vid_path)
-            except OSError as e:
-                logger.warning(f"Failed to cleanly remove stale Source MP4 asset [{old_vid_path}]: {e}")
-
-    # Structurally track OS HLS directories identically cleanly dynamically
-    if db_movie.hls_playlist_path and not db_movie.hls_playlist_path.startswith("http"):
-        old_hls_folder = os.path.dirname(db_movie.hls_playlist_path)
-        if os.path.exists(old_hls_folder) and os.path.isdir(old_hls_folder):
-            try:
-                shutil.rmtree(old_hls_folder)
-            except OSError as e:
-                logger.warning(f"Failed scrubbing legacy HLS directory [{old_hls_folder}]: {e}")
-
+    old_vid_path = db_movie.video_source_path if (db_movie.video_source_path and not db_movie.video_source_path.startswith("http")) else None
+    old_hls_folder = os.path.dirname(db_movie.hls_playlist_path) if (db_movie.hls_playlist_path and not db_movie.hls_playlist_path.startswith("http")) else None
+    
+    # Securely write new file natively before ANY cleanup occurs
     metadata = store_file(file, str(movie_id), "videos", "source")
     
+    # Clean old items securely without breaking execution natively
+    if old_vid_path and os.path.exists(old_vid_path) and os.path.isfile(old_vid_path):
+        try:
+            os.remove(old_vid_path)
+        except OSError as e:
+            logger.warning(f"Failed to cleanly remove stale Source MP4 asset [{old_vid_path}]: {e}")
+
+    if old_hls_folder and os.path.exists(old_hls_folder) and os.path.isdir(old_hls_folder):
+        try:
+            shutil.rmtree(old_hls_folder)
+        except OSError as e:
+            logger.warning(f"Failed scrubbing legacy HLS directory [{old_hls_folder}]: {e}")
+
     db_movie.video_source_path = metadata["relative_path"]
     db_movie.video_original_filename = metadata["original_filename"]
     

@@ -9,7 +9,7 @@ interface MovieTableProps {
 
 /** Colour-coded badge + optional indeterminate bar for the video pipeline status. */
 const VideoStatusCell: React.FC<{ movie: Movie }> = ({ movie }) => {
-  const status = movie.video_status ?? 'pending';
+  const status = movie.video_status ?? 'no_video';
 
   const badgeStyle: React.CSSProperties = {
     display: 'inline-block',
@@ -27,6 +27,8 @@ const VideoStatusCell: React.FC<{ movie: Movie }> = ({ movie }) => {
       ? { background: '#f8d7da', color: '#721c24' }
       : status === 'uploaded'
       ? { background: '#d1ecf1', color: '#0c5460' }
+      : status === 'no_video'
+      ? { background: '#e2e3e5', color: '#383d41' }
       : { background: '#e9ecef', color: '#6c757d' }),
   };
 
