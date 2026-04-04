@@ -997,3 +997,23 @@
   flex: 0 0 200px;
   width: 200px;
 }
+
+/* ===== Video Status Table Indeterminate Progress Bar ===== */
+.vst-track {
+  width: 100%;
+  height: 6px;
+  background: #dee2e6;
+  border-radius: 3px;
+  overflow: hidden;
+  position: relative;
+}
+
+.vst-bar {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 40%;
+  background: linear-gradient(90deg, #ffc107, #fd7e14);
+  border-radius: 3px;
+  animation: progress-slide 1.4s ease-in-out infinite;
+}

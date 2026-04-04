@@ -49,8 +49,13 @@ const VideoStatusCell: React.FC<{ movie: Movie }> = ({ movie }) => {
 
       {/* Indeterminate animated bar — only while processing */}
       {status === 'processing' && (
-        <div className="vst-track">
-          <div className="vst-bar" />
+        <div style={{ marginTop: '4px' }}>
+          <div style={{ fontSize: '0.75rem', color: '#856404', marginBottom: '4px' }}>
+            Converting video to HLS...
+          </div>
+          <div className="vst-track">
+            <div className="vst-bar" />
+          </div>
         </div>
       )}
 
