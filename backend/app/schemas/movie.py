@@ -22,15 +22,22 @@ class MovieListItemSchema(BaseModel):
     
     # Exclude internal _path representations safely bridging local/prod natively
     poster_path: Optional[str] = Field(None, exclude=True)
+    backdrop_path: Optional[str] = Field(None, exclude=True)
     processing_status: Optional[str] = Field("pending", exclude=True)
     hls_playlist_path: Optional[str] = Field(None, exclude=True)
     
     release_date: Optional[date] = Field(None, exclude=True)
+    genres: Optional[List[str]] = []
 
     @computed_field
     @property
     def poster_url(self) -> Optional[str]:
         return normalize_url(self.poster_path)
+        
+    @computed_field
+    @property
+    def backdrop_url(self) -> Optional[str]:
+        return normalize_url(self.backdrop_path)
         
     @computed_field
     @property

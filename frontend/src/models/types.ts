@@ -17,7 +17,9 @@ export interface MovieListItem {
     id: string;
     title: string;
     poster_url: string | null;
+    backdrop_url?: string | null;
     release_year: number | null;
+    genres?: string[] | null;
 }
 
 export interface PaginatedMovies {

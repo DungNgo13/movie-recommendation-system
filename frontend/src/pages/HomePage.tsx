@@ -49,6 +49,18 @@ const HomePage: React.FC = () => {
     [movies, searchQuery, yearFilter, sortOption],
   );
 
+  const moviesByGenre = useMemo(() => {
+    const grouped: Record<string, typeof filteredMovies> = {};
+    filteredMovies.forEach(movie => {
+      const genres = movie.genres && movie.genres.length > 0 ? movie.genres : ['Uncategorized'];
+      genres.forEach(genre => {
+        if (!grouped[genre]) grouped[genre] = [];
+        grouped[genre].push(movie);
+      });
+    });
+    return Object.entries(grouped).sort(([a], [b]) => a.localeCompare(b));
+  }, [filteredMovies]);
+
   if (loading) {
     return <LoadingSpinner />;
   }
@@ -103,7 +115,7 @@ const HomePage: React.FC = () => {
       {historyItems.length > 0 && (
         <section className="continue-watching-section">
           <h2>Continue Watching</h2>
-          <div className="movie-list">
+          <div className="movie-list movie-row">
             {historyItems.map((item) => (
               <MovieCard
                 key={item.id}
@@ -119,7 +131,7 @@ const HomePage: React.FC = () => {
       {recommendations.length > 0 && (
         <section className="recommendations-section recommendations-home">
           <h2>🤖 Recommended for You</h2>
-          <div className="movie-list">
+          <div className="movie-list movie-row">
             {recommendations.map((rec) => (
               <RecommendationCard
                 key={rec.id}
@@ -132,21 +144,27 @@ const HomePage: React.FC = () => {
         </section>
       )}
 
-      <h1>Movies</h1>
+      <h1>Movies by Genre</h1>
 
-      {filteredMovies.length === 0 ? (
+      {moviesByGenre.length === 0 ? (
         <p className="no-results">No movies found.</p>
       ) : (
-        <div className="movie-list">
-          {filteredMovies.map((movie) => (
-            <MovieCard
-              key={movie.id}
-              movie={movie}
-              isFavorite={isFavorite(movie.id)}
-              onToggleFavorite={toggleFavorite}
-            />
-          ))}
-        </div>
+        moviesByGenre.map(([genre, genreMovies]) => (
+          <section key={genre} className="genre-section" style={{ marginBottom: '2rem' }}>
+            <h2 style={{ paddingLeft: '1rem' }}>{genre}</h2>
+            <div className="movie-list movie-row">
+              {genreMovies.map((movie) => (
+                <MovieCard
+                  key={movie.id}
+                  movie={movie}
+                  isFavorite={isFavorite(movie.id)}
+                  onToggleFavorite={toggleFavorite}
+                  enableImageSwap={true}
+                />
+              ))}
+            </div>
+          </section>
+        ))
       )}
     </div>
   );
