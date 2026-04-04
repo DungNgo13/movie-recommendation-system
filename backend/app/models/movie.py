@@ -18,5 +18,6 @@ class Movie(Base):
     video_original_filename = Column(String(255), nullable=True)
     processing_status = Column(String(50), default="no_video")
     processing_progress = Column(Integer, default=0, nullable=True)
+    processing_step = Column(String(100), nullable=True)
     hls_playlist_path = Column(String(255), nullable=True)
     processing_error = Column(Text, nullable=True)

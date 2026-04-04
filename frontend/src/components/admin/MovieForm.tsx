@@ -277,7 +277,7 @@ const MovieForm: React.FC<MovieFormProps> = ({ movie, onSubmit, onCancel }) => {
               {videoStatus === 'processing' && uploadPercent === null && (
                 <div style={{ marginBottom: '8px' }}>
                   <div style={{ fontSize: '0.8rem', marginBottom: '4px', color: '#856404' }}>
-                    Converting to HLS… {movie.video_progress ?? 0}%
+                    {movie.video_step || 'Processing'} — {movie.video_progress ?? 0}%
                   </div>
                   <div style={{ height: '6px', background: '#dee2e6', borderRadius: '3px', overflow: 'hidden' }}>
                     <div style={{

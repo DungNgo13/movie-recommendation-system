@@ -10,6 +10,7 @@ export interface Movie {
   video_url?: string | null;
   video_status?: string;
   video_progress?: number;
+  video_step?: string;
   hls_playlist_url?: string | null;
   processing_error?: string | null;
 }

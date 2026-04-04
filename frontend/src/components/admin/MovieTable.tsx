@@ -53,7 +53,7 @@ const VideoStatusCell: React.FC<{ movie: Movie }> = ({ movie }) => {
       {status === 'processing' && (
         <div style={{ marginTop: '4px' }}>
           <div style={{ fontSize: '0.75rem', color: '#856404', marginBottom: '4px' }}>
-            Converting video to HLS... {movie.video_progress ?? 0}%
+            {movie.video_step || 'Processing'} — {movie.video_progress ?? 0}%
           </div>
           <div className="vst-track">
              <div 

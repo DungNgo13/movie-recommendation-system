@@ -42,6 +42,7 @@ def process_hls_conversion(movie_id: UUID):
             return
 
         db_movie.processing_status = "processing"
+        db_movie.processing_step = "Queued"
         db_movie.processing_progress = 0
         db_movie.processing_error = None
         db.commit()
@@ -63,6 +64,10 @@ def process_hls_conversion(movie_id: UUID):
         os.makedirs(output_dir, exist_ok=True)
         playlist_path = os.path.join(output_dir, "master.m3u8")
 
+        # Parse conversion arrays natively cleanly explicitly mapping layers safely
+        db_movie.processing_step = "Preparing conversion"
+        db.commit()
+        
         # Advanced Command injecting 720p + 360p variant variants building real Master streams natively!
         cmd = [
             "ffmpeg",
@@ -92,6 +97,9 @@ def process_hls_conversion(movie_id: UUID):
             os.path.join(output_dir, "v%v_playlist.m3u8")
         ]
 
+        db_movie.processing_step = "Converting to HLS"
+        db.commit()
+
         process = subprocess.Popen(
             cmd,
             stdout=subprocess.PIPE,
@@ -113,6 +121,9 @@ def process_hls_conversion(movie_id: UUID):
                     db_movie.processing_progress = progress_percent
                     db.commit()
 
+        db_movie.processing_step = "Finalizing playlist"
+        db.commit()
+
         process.wait()
         stderr_output = process.stderr.read()
 
@@ -122,6 +133,7 @@ def process_hls_conversion(movie_id: UUID):
                 logger.info("Movie status changed while FFmpeg was running. Skipping failure state overwrite.")
                 return
             db_movie.processing_status = "failed"
+            db_movie.processing_step = "Failed"
             db_movie.processing_error = f"FFmpeg Error:\n{stderr_output[-500:]}"
             db.commit()
             return
@@ -132,6 +144,7 @@ def process_hls_conversion(movie_id: UUID):
             return
 
         db_movie.processing_status = "ready"
+        db_movie.processing_step = "Ready"
         db_movie.processing_progress = 100
         db_movie.hls_playlist_path = os.path.normpath(playlist_path).replace("\\", "/")
         db_movie.processing_error = None
@@ -141,6 +154,7 @@ def process_hls_conversion(movie_id: UUID):
         # FFmpeg binary is not installed or not on PATH
         if db_movie:
             db_movie.processing_status = "failed"
+            db_movie.processing_step = "Failed"
             db_movie.processing_error = (
                 "FFmpeg is not installed or not found on PATH. "
                 "Please install FFmpeg and ensure it is accessible from the command line."
@@ -149,6 +163,7 @@ def process_hls_conversion(movie_id: UUID):
     except Exception as e:
         if db_movie:
             db_movie.processing_status = "failed"
+            db_movie.processing_step = "Failed"
             db_movie.processing_error = str(e)
             db.commit()
     finally:
