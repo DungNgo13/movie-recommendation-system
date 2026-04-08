@@ -65,6 +65,8 @@ const AdminMoviesPage: React.FC = () => {
             return {
               ...m,
               video_status: s.video_status,
+              video_progress: s.video_progress ?? m.video_progress,
+              video_step: s.video_step ?? m.video_step,
               hls_playlist_url: s.hls_playlist_url ?? m.hls_playlist_url,
               processing_error: s.processing_error ?? m.processing_error,
             };

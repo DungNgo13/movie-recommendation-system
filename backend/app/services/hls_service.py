@@ -69,25 +69,29 @@ def process_hls_conversion(movie_id: UUID):
         db_movie.processing_step = "Preparing conversion"
         db.commit()
         
-        # Multi-quality HLS command: 720p + 360p variants with a master playlist
-        # -progress pipe:2 sends progress key=value lines to stderr
+        # Normalize to forward slashes — FFmpeg requires them even on Windows,
+        # especially inside patterns containing %v and %03d.
+        seg_pattern = os.path.join(output_dir, "v%v_segment_%03d.ts").replace("\\", "/")
+        out_pattern = os.path.join(output_dir, "v%v_playlist.m3u8").replace("\\", "/")
+        src_path_fwd = source_path.replace("\\", "/")
+
         cmd = [
             "ffmpeg",
             "-y",
-            "-i", source_path,
+            "-i", src_path_fwd,
             "-filter_complex", "[0:v]split=2[v1][v2]; [v1]scale=w=-2:h=720[v1out]; [v2]scale=w=-2:h=360[v2out]",
             "-map", "[v1out]", "-c:v:0", "libx264", "-b:v:0", "2000k", "-maxrate:v:0", "2140k", "-bufsize:v:0", "4200k",
             "-map", "[v2out]", "-c:v:1", "libx264", "-b:v:1", "800k",  "-maxrate:v:1", "856k",  "-bufsize:v:1", "1200k",
-            "-map", "0:a?", "-c:a", "aac", "-b:a", "128k",
+            "-map", "0:a?", "-c:a:0", "aac", "-b:a:0", "128k",
             "-f", "hls",
             "-hls_time", "10",
             "-hls_list_size", "0",
             "-hls_playlist_type", "vod",
             "-master_pl_name", "master.m3u8",
-            "-hls_segment_filename", os.path.join(output_dir, "v%v_segment_%03d.ts"),
+            "-hls_segment_filename", seg_pattern,
             "-var_stream_map", "v:0,a:0 v:1,a:0",
-            "-progress", "pipe:2",  # write progress to stderr, not stdout
-            os.path.join(output_dir, "v%v_playlist.m3u8")
+            "-progress", "pipe:2",
+            out_pattern,
         ]
 
         db_movie.processing_step = "Converting to HLS"
@@ -138,10 +142,20 @@ def process_hls_conversion(movie_id: UUID):
             if db_movie.processing_status != "processing":
                 logger.info("Movie status changed while FFmpeg was running. Skipping failure state overwrite.")
                 return
+            # Strip -progress pipe output (key=value lines) — keep only real log lines
+            error_lines = [
+                l for l in stderr_lines
+                if "=" not in l or l.startswith("[")
+            ]
+            error_tail = "".join(error_lines).strip()
+            # Fall back to last 500 chars of full output if filtering left nothing useful
+            if len(error_tail) < 20:
+                error_tail = stderr_output.strip()[-500:]
             db_movie.processing_status = "failed"
             db_movie.processing_step = "Failed"
-            db_movie.processing_error = f"FFmpeg Error:\n{stderr_output[-500:]}"
+            db_movie.processing_error = error_tail[-600:]
             db.commit()
+            logger.error("[HLS] FFmpeg failed (returncode=%d) for movie %s", process.returncode, movie_id)
             return
             
         db.refresh(db_movie)
@@ -149,12 +163,21 @@ def process_hls_conversion(movie_id: UUID):
             logger.info("Movie status changed while FFmpeg was running. Skipping ready state overwrite.")
             return
 
+        # Verify the master playlist was actually written to disk
+        if not os.path.exists(playlist_path):
+            db_movie.processing_status = "failed"
+            db_movie.processing_step = "Failed"
+            db_movie.processing_error = "FFmpeg exited successfully but master.m3u8 was not created."
+            db.commit()
+            return
+
         db_movie.processing_status = "ready"
         db_movie.processing_step = "Ready"
         db_movie.processing_progress = 100
-        db_movie.hls_playlist_path = os.path.normpath(playlist_path).replace("\\", "/")
+        db_movie.hls_playlist_path = playlist_path.replace("\\", "/")
         db_movie.processing_error = None
         db.commit()
+        logger.info("[HLS] Conversion complete for movie %s", movie_id)
 
     except FileNotFoundError:
         # FFmpeg binary is not installed or not on PATH
