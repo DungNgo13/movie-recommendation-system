@@ -3,6 +3,7 @@ import subprocess
 import shutil
 import logging
 import re
+import threading
 from uuid import UUID
 from ..database import SessionLocal
 from ..models import movie as movie_model
@@ -68,37 +69,31 @@ def process_hls_conversion(movie_id: UUID):
         db_movie.processing_step = "Preparing conversion"
         db.commit()
         
-        # Advanced Command injecting 720p + 360p variant variants building real Master streams natively!
+        # Multi-quality HLS command: 720p + 360p variants with a master playlist
+        # -progress pipe:2 sends progress key=value lines to stderr
         cmd = [
             "ffmpeg",
             "-y",
             "-i", source_path,
-            
-            # Extract independent visual paths natively routing them cleanly smoothly!
             "-filter_complex", "[0:v]split=2[v1][v2]; [v1]scale=w=-2:h=720[v1out]; [v2]scale=w=-2:h=360[v2out]",
-            
-            # Bind maps connecting bitrate boundaries correctly organically seamlessly
             "-map", "[v1out]", "-c:v:0", "libx264", "-b:v:0", "2000k", "-maxrate:v:0", "2140k", "-bufsize:v:0", "4200k",
             "-map", "[v2out]", "-c:v:1", "libx264", "-b:v:1", "800k",  "-maxrate:v:1", "856k",  "-bufsize:v:1", "1200k",
             "-map", "0:a?", "-c:a", "aac", "-b:a", "128k",
-
-            # Format declarations establishing valid tracking payloads cleanly!
             "-f", "hls",
             "-hls_time", "10",
             "-hls_list_size", "0",
             "-hls_playlist_type", "vod",
-            
-            # Bind mappings natively explicitly parsing them flawlessly avoiding cross-over segmentation failures!
             "-master_pl_name", "master.m3u8",
             "-hls_segment_filename", os.path.join(output_dir, "v%v_segment_%03d.ts"),
             "-var_stream_map", "v:0,a:0 v:1,a:0",
-            "-progress", "pipe:1",
-            
+            "-progress", "pipe:2",  # write progress to stderr, not stdout
             os.path.join(output_dir, "v%v_playlist.m3u8")
         ]
 
         db_movie.processing_step = "Converting to HLS"
         db.commit()
+
+        logger.info("[HLS] Spawning FFmpeg: %s", " ".join(cmd))
 
         process = subprocess.Popen(
             cmd,
@@ -107,25 +102,36 @@ def process_hls_conversion(movie_id: UUID):
             text=True
         )
 
+        # Drain stdout in a background thread to prevent pipe deadlock.
+        # (With -progress pipe:2, stdout should be empty for HLS muxer output,
+        #  but we drain it anyway to be safe.)
+        stdout_lines = []
+        def drain_stdout():
+            for line in process.stdout:
+                stdout_lines.append(line)
+        stdout_thread = threading.Thread(target=drain_stdout, daemon=True)
+        stdout_thread.start()
+
+        # Read stderr line-by-line for progress + capture errors.
         last_progress = 0
-        for line in process.stdout:
+        stderr_lines = []
+        for line in process.stderr:
+            stderr_lines.append(line)
             match = re.search(r"out_time_us=(\d+)", line)
             if match and total_duration > 0:
                 out_time_us = int(match.group(1))
-                time_s = out_time_us / 1000000.0
+                time_s = out_time_us / 1_000_000.0
                 progress_percent = min(int((time_s / total_duration) * 100), 99)
-                
-                # Update DB every ~2% to avoid overloading native sqlite bindings explicitly
                 if progress_percent > last_progress + 1:
                     last_progress = progress_percent
                     db_movie.processing_progress = progress_percent
                     db.commit()
 
+        stdout_thread.join(timeout=10)
         db_movie.processing_step = "Finalizing playlist"
         db.commit()
-
         process.wait()
-        stderr_output = process.stderr.read()
+        stderr_output = "".join(stderr_lines)
 
         if process.returncode != 0:
             db.refresh(db_movie)

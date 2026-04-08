@@ -225,6 +225,8 @@ def get_video_status(
     from ..schemas.movie import normalize_url
     return {
         "video_status": db_movie.processing_status,
+        "video_progress": db_movie.processing_progress or 0,
+        "video_step": db_movie.processing_step,
         "processing_error": db_movie.processing_error,
         "hls_playlist_url": normalize_url(db_movie.hls_playlist_path)
     }

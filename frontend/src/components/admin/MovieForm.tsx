@@ -23,6 +23,8 @@ const MovieForm: React.FC<MovieFormProps> = ({ movie, onSubmit, onCancel }) => {
   const [error, setError] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
   const [uploadPercent, setUploadPercent] = useState<number | null>(null);
+  const [pollProgress, setPollProgress] = useState<number>(0);
+  const [pollStep, setPollStep] = useState<string>('Processing');
 
   useEffect(() => {
     if (movie) {
@@ -63,12 +65,14 @@ const MovieForm: React.FC<MovieFormProps> = ({ movie, onSubmit, onCancel }) => {
         try {
           const res = await getMovieProcessingStatus(movie.id);
           setVideoStatus(res.video_status);
+          setPollProgress(res.video_progress ?? 0);
+          setPollStep(res.video_step || 'Processing');
           if (res.hls_playlist_url) setHlsUrl(res.hls_playlist_url);
           if (res.processing_error) setProcessingError(res.processing_error);
         } catch (e) {
           console.warn('Polling error', e);
         }
-      }, 5000);
+      }, 2000);
     }
     return () => clearInterval(interval);
   }, [movie, videoStatus]);
@@ -277,12 +281,12 @@ const MovieForm: React.FC<MovieFormProps> = ({ movie, onSubmit, onCancel }) => {
               {videoStatus === 'processing' && uploadPercent === null && (
                 <div style={{ marginBottom: '8px' }}>
                   <div style={{ fontSize: '0.8rem', marginBottom: '4px', color: '#856404' }}>
-                    {movie.video_step || 'Processing'} — {movie.video_progress ?? 0}%
+                    {pollStep} — {pollProgress}%
                   </div>
                   <div style={{ height: '6px', background: '#dee2e6', borderRadius: '3px', overflow: 'hidden' }}>
                     <div style={{
                       height: '100%',
-                      width: `${movie.video_progress ?? 0}%`,
+                      width: `${pollProgress}%`,
                       background: 'linear-gradient(90deg, #ffc107, #fd7e14)',
                       borderRadius: '3px',
                       transition: 'width 0.5s ease-out'

@@ -132,7 +132,7 @@ export const processMovieVideo = async (id: string): Promise<{ message: string }
   return response.json();
 };
 
-export const getMovieProcessingStatus = async (id: string): Promise<{ video_status: string; processing_error: string | null; hls_playlist_url: string | null }> => {
+export const getMovieProcessingStatus = async (id: string): Promise<{ video_status: string; video_progress: number; video_step: string | null; processing_error: string | null; hls_playlist_url: string | null }> => {
   const response = await fetch(`${API_BASE_URL}/movies/${id}/status`);
 
   if (!response.ok) {
