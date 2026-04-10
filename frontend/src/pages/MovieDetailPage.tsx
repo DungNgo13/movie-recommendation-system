@@ -58,6 +58,36 @@ const MovieDetailPage: React.FC = () => {
     }
   };
 
+  // Save immediately on pause
+  const handlePause = (currentTime: number, duration: number) => {
+    if (!movie || !user || currentTime < 1) return;
+    lastSavedTimeRef.current = currentTime;
+    lastDurationRef.current = duration;
+    saveWatchProgress(movie.id, currentTime, duration);
+  };
+
+  // Save as completed when video ends
+  const handleEnded = (duration: number) => {
+    if (!movie || !user) return;
+    // Save at 100% — backend will mark is_completed = true
+    saveWatchProgress(movie.id, duration, duration);
+  };
+
+  // Save on unmount (navigate away mid-watch)
+  const movieRef = useRef<Movie | null>(null);
+  movieRef.current = movie;
+  const userRef = useRef(user);
+  userRef.current = user;
+  useEffect(() => {
+    return () => {
+      const pos = lastSavedTimeRef.current;
+      const dur = lastDurationRef.current;
+      if (movieRef.current && userRef.current && pos > 1 && dur > 0) {
+        saveWatchProgress(movieRef.current.id, pos, dur);
+      }
+    };
+  }, []);
+
   // Fetch recommendations
   useEffect(() => {
     if (!user) { setRecommendations([]); return; }
@@ -176,6 +206,8 @@ const MovieDetailPage: React.FC = () => {
           poster={imageSrc}
           initialTime={initialTime}
           onTimeUpdate={handleTimeUpdate}
+          onPause={handlePause}
+          onEnded={handleEnded}
         />
       ) : (
         <>

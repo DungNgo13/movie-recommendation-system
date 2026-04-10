@@ -6,9 +6,11 @@ interface HlsPlayerProps {
   poster?: string;
   initialTime?: number;
   onTimeUpdate?: (currentTime: number, duration: number) => void;
+  onPause?: (currentTime: number, duration: number) => void;
+  onEnded?: (duration: number) => void;
 }
 
-const HlsPlayer: React.FC<HlsPlayerProps> = ({ src, poster, initialTime = 0, onTimeUpdate }) => {
+const HlsPlayer: React.FC<HlsPlayerProps> = ({ src, poster, initialTime = 0, onTimeUpdate, onPause, onEnded }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
@@ -76,6 +78,18 @@ const HlsPlayer: React.FC<HlsPlayerProps> = ({ src, poster, initialTime = 0, onT
           const video = videoRef.current;
           if (onTimeUpdate && video) {
             onTimeUpdate(video.currentTime, video.duration || 0);
+          }
+        }}
+        onPause={() => {
+          const video = videoRef.current;
+          if (onPause && video) {
+            onPause(video.currentTime, video.duration || 0);
+          }
+        }}
+        onEnded={() => {
+          const video = videoRef.current;
+          if (onEnded && video) {
+            onEnded(video.duration || 0);
           }
         }}
       />
