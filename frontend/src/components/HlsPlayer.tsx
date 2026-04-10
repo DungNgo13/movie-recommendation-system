@@ -1,5 +1,7 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import Hls from 'hls.js';
+import Plyr from 'plyr';
+import 'plyr/dist/plyr.css';
 
 interface HlsPlayerProps {
   src: string;
@@ -8,11 +10,6 @@ interface HlsPlayerProps {
   onTimeUpdate?: (currentTime: number, duration: number) => void;
   onPause?: (currentTime: number, duration: number) => void;
   onEnded?: (duration: number) => void;
-}
-
-interface QualityLevel {
-  index: number;
-  label: string;
 }
 
 const HlsPlayer: React.FC<HlsPlayerProps> = ({
@@ -25,25 +22,18 @@ const HlsPlayer: React.FC<HlsPlayerProps> = ({
 }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
 
-  // Store the hls instance in a ref so both effects and the quality handler
-  // can access the same object without triggering re-renders.
+  // Store hls + plyr instances so they can be accessed across effects & cleanup
   const hlsRef = useRef<Hls | null>(null);
+  const playerRef = useRef<Plyr | null>(null);
 
-  const [levels, setLevels] = useState<QualityLevel[]>([]);
-  const [currentLevel, setCurrentLevel] = useState<number>(-1); // -1 = Auto
-
-  // ── Effect 1: initialise HLS when src changes ────────────────────────────
+  // ── Effect 1: init HLS + Plyr when src changes ───────────────────────────
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
 
-    // Clean up any previous instance
-    if (hlsRef.current) {
-      hlsRef.current.destroy();
-      hlsRef.current = null;
-    }
-    setLevels([]);
-    setCurrentLevel(-1);
+    // Tear down any previous instances before building new ones
+    if (playerRef.current) { playerRef.current.destroy(); playerRef.current = null; }
+    if (hlsRef.current)    { hlsRef.current.destroy();    hlsRef.current = null;    }
 
     if (Hls.isSupported()) {
       const hls = new Hls({ maxBufferLength: 30, enableWorker: true });
@@ -52,16 +42,49 @@ const HlsPlayer: React.FC<HlsPlayerProps> = ({
       hls.loadSource(src);
       hls.attachMedia(video);
 
+      // Wait for the manifest so we know the available quality levels
       hls.on(Hls.Events.MANIFEST_PARSED, (_event, data) => {
-        // Build quality labels from the parsed levels
-        const qualityLevels: QualityLevel[] = data.levels.map((lvl, idx) => ({
-          index: idx,
-          label: lvl.height ? `${lvl.height}p` : `Level ${idx}`,
-        }));
-        setLevels(qualityLevels);
-        setCurrentLevel(-1); // start on Auto
+        // Build the quality array: 0 = Auto, then real heights (720, 480 …)
+        const heights = data.levels
+          .map((lvl) => lvl.height)
+          .filter((h): h is number => Boolean(h));
 
-        // Seek to resume position AFTER manifest is ready
+        const qualityOptions = [0, ...heights]; // 0 = Auto
+
+        // Initialise Plyr now that we know available qualities.
+        // Plyr renders the quality menu once at init time, so we init here.
+        const player = new Plyr(video, {
+          controls: [
+            'play-large', 'play', 'rewind', 'fast-forward',
+            'progress', 'current-time', 'duration',
+            'mute', 'volume', 'settings', 'fullscreen',
+          ],
+          settings: ['quality', 'speed'],
+          quality: {
+            default: 0, // start on Auto
+            options: qualityOptions,
+            forced: true,
+            // When the user picks a quality in the Plyr menu:
+            onChange: (selectedQuality: number) => {
+              if (!hlsRef.current) return;
+              if (selectedQuality === 0) {
+                hlsRef.current.currentLevel = -1; // -1 = hls.js Auto ABR
+              } else {
+                const idx = hlsRef.current.levels.findIndex(
+                  (lvl) => lvl.height === selectedQuality,
+                );
+                hlsRef.current.currentLevel = idx;
+              }
+            },
+          },
+          // Label the "0" option as "Auto" in the menu
+          i18n: { qualityLabel: { 0: 'Auto' } } as object,
+          poster,
+        });
+
+        playerRef.current = player;
+
+        // Seek to resume position once the manifest is ready
         if (initialTime > 0) {
           video.currentTime = initialTime;
         }
@@ -82,104 +105,70 @@ const HlsPlayer: React.FC<HlsPlayerProps> = ({
           }
         }
       });
+
     } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-      // iOS Safari native HLS — no level API available
+      // iOS Safari has native HLS support — no hls.js needed, no quality API
       video.src = src;
+      const player = new Plyr(video, { poster });
+      playerRef.current = player;
+
       video.addEventListener('loadedmetadata', () => {
-        if (initialTime > 0) {
-          video.currentTime = initialTime;
-        }
+        if (initialTime > 0) video.currentTime = initialTime;
       });
     }
 
-    return () => {
-      if (hlsRef.current) {
-        hlsRef.current.destroy();
-        hlsRef.current = null;
+    // Attach progress callbacks directly on the native video element.
+    // Plyr wraps the same element so these always fire regardless of
+    // which controls the user interacts with.
+    const handleTimeUpdate = () => {
+      if (onTimeUpdate && videoRef.current) {
+        onTimeUpdate(videoRef.current.currentTime, videoRef.current.duration || 0);
       }
     };
-  }, [src]); // only re-init when the stream URL changes
+    const handlePause = () => {
+      if (onPause && videoRef.current) {
+        onPause(videoRef.current.currentTime, videoRef.current.duration || 0);
+      }
+    };
+    const handleEnded = () => {
+      if (onEnded && videoRef.current) {
+        onEnded(videoRef.current.duration || 0);
+      }
+    };
 
-  // ── Effect 2: seek when initialTime changes (e.g. user clicks Resume) ───
-  // This runs independently so we do NOT rebuild the whole HLS instance.
+    video.addEventListener('timeupdate', handleTimeUpdate);
+    video.addEventListener('pause',      handlePause);
+    video.addEventListener('ended',      handleEnded);
+
+    return () => {
+      video.removeEventListener('timeupdate', handleTimeUpdate);
+      video.removeEventListener('pause',      handlePause);
+      video.removeEventListener('ended',      handleEnded);
+      if (playerRef.current) { playerRef.current.destroy(); playerRef.current = null; }
+      if (hlsRef.current)    { hlsRef.current.destroy();    hlsRef.current = null;    }
+    };
+  }, [src]); // only re-init when the stream URL itself changes
+
+  // ── Effect 2: seek when resume time changes (user clicks "Resume") ───────
+  // The HLS effect above only runs on [src], so when the parent updates
+  // initialTime after the user clicks "Resume", we need this separate effect
+  // to actually perform the seek without destroying and rebuilding the player.
   useEffect(() => {
     const video = videoRef.current;
     if (!video || initialTime <= 0) return;
-
-    // If the video already has metadata (manifest loaded), seek immediately.
-    // Otherwise the MANIFEST_PARSED handler above will handle it.
+    // readyState >= HAVE_METADATA means the manifest has been parsed and
+    // the video element knows the duration — seeking is safe at this point.
     if (video.readyState >= HTMLMediaElement.HAVE_METADATA) {
       video.currentTime = initialTime;
     }
+    // If not ready yet, the MANIFEST_PARSED handler in Effect 1 covers it
   }, [initialTime]);
 
-  // ── Quality change handler ────────────────────────────────────────────────
-  const handleQualityChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const selected = parseInt(e.target.value, 10);
-    setCurrentLevel(selected);
-    if (hlsRef.current) {
-      hlsRef.current.currentLevel = selected; // -1 = Auto, 0+ = specific level
-    }
-  };
-
   return (
-    <div
-      className="hls-player-container"
-      style={{ width: '100%', marginBottom: '1.5rem', backgroundColor: '#000', borderRadius: '8px', overflow: 'hidden' }}
-    >
-      <video
-        ref={videoRef}
-        controls
-        poster={poster}
-        style={{ width: '100%', display: 'block', maxHeight: '720px' }}
-        onTimeUpdate={() => {
-          const video = videoRef.current;
-          if (onTimeUpdate && video) {
-            onTimeUpdate(video.currentTime, video.duration || 0);
-          }
-        }}
-        onPause={() => {
-          const video = videoRef.current;
-          if (onPause && video) {
-            onPause(video.currentTime, video.duration || 0);
-          }
-        }}
-        onEnded={() => {
-          const video = videoRef.current;
-          if (onEnded && video) {
-            onEnded(video.duration || 0);
-          }
-        }}
-      />
-
-      {/* Quality selector — only shown when HLS levels are available */}
-      {levels.length > 1 && (
-        <div style={{
-          display: 'flex', alignItems: 'center', gap: '0.5rem',
-          padding: '0.4rem 0.75rem',
-          backgroundColor: '#111', color: '#ccc', fontSize: '0.85rem',
-        }}>
-          <label htmlFor="hls-quality-select" style={{ whiteSpace: 'nowrap' }}>
-            Quality:
-          </label>
-          <select
-            id="hls-quality-select"
-            value={currentLevel}
-            onChange={handleQualityChange}
-            style={{
-              background: '#222', color: '#fff', border: '1px solid #444',
-              borderRadius: '4px', padding: '0.2rem 0.4rem', cursor: 'pointer',
-            }}
-          >
-            <option value={-1}>Auto</option>
-            {levels.map((lvl) => (
-              <option key={lvl.index} value={lvl.index}>
-                {lvl.label}
-              </option>
-            ))}
-          </select>
-        </div>
-      )}
+    // Plyr replaces the <video> element's native controls with its own UI,
+    // so we only need a bare <video> tag here. Plyr manages everything else.
+    <div style={{ width: '100%', marginBottom: '1.5rem' }}>
+      <video ref={videoRef} />
     </div>
   );
 };
