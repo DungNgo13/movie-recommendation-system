@@ -19,6 +19,7 @@ const MovieForm: React.FC<MovieFormProps> = ({ movie, onSubmit, onCancel }) => {
   const [videoStatus, setVideoStatus] = useState('pending');
   const [videoUrl, setVideoUrl] = useState('');
   const [hlsUrl, setHlsUrl] = useState('');
+  const [availableQualities, setAvailableQualities] = useState<string | null>(null);
   const [processingError, setProcessingError] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
@@ -37,6 +38,7 @@ const MovieForm: React.FC<MovieFormProps> = ({ movie, onSubmit, onCancel }) => {
       setVideoUrl(movie.video_url || '');
       setVideoStatus(movie.video_status || 'pending');
       setHlsUrl(movie.hls_playlist_url || '');
+      setAvailableQualities(movie.available_qualities || null);
       setProcessingError(movie.processing_error || null);
     }
   }, [movie]);
@@ -69,6 +71,9 @@ const MovieForm: React.FC<MovieFormProps> = ({ movie, onSubmit, onCancel }) => {
           setPollStep(res.video_step || 'Processing');
           if (res.hls_playlist_url) setHlsUrl(res.hls_playlist_url);
           if (res.processing_error) setProcessingError(res.processing_error);
+          if ((res as { available_qualities?: string }).available_qualities) {
+            setAvailableQualities((res as { available_qualities?: string }).available_qualities ?? null);
+          }
         } catch (e) {
           console.warn('Polling error', e);
         }
@@ -295,6 +300,23 @@ const MovieForm: React.FC<MovieFormProps> = ({ movie, onSubmit, onCancel }) => {
                 </div>
               )}
 
+              {/* Encoded quality badges */}
+              {availableQualities && (
+                <div style={{ marginTop: '6px', display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+                  <strong style={{ fontSize: '0.85rem' }}>Qualities:</strong>
+                  {availableQualities.split(',').map((q) => (
+                    <span key={q} style={{
+                      display: 'inline-block', padding: '2px 8px', borderRadius: '10px',
+                      fontSize: '0.75rem', fontWeight: 700,
+                      background: q.trim() === '1080p' ? '#cce5ff' : q.trim() === '720p' ? '#d4edda' : '#e2e3e5',
+                      color:      q.trim() === '1080p' ? '#004085' : q.trim() === '720p' ? '#155724' : '#383d41',
+                    }}>
+                      {q.trim()}
+                    </span>
+                  ))}
+                </div>
+              )}
+
               {videoUrl && (
                 <div style={{ wordBreak: 'break-all', marginTop: '4px', opacity: 0.8, fontSize: '0.85rem' }}>
                   <em>Source: {videoUrl}</em>
@@ -312,22 +334,24 @@ const MovieForm: React.FC<MovieFormProps> = ({ movie, onSubmit, onCancel }) => {
               )}
             </div>
 
-            <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-              <input 
-                type="file" 
-                accept="video/mp4" 
-                onChange={handleVideoUpload} 
+            <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', flexWrap: 'wrap' }}>
+              <input
+                type="file"
+                accept="video/mp4"
+                onChange={handleVideoUpload}
                 disabled={uploading}
               />
-              
-              {(videoStatus === 'uploaded' || videoStatus === 'failed') && (
-                <button 
-                  type="button" 
-                  className="btn btn--primary" 
+
+              {/* Show encode button when video is uploaded, failed, or ready (re-encode) */}
+              {(videoStatus === 'uploaded' || videoStatus === 'failed' || videoStatus === 'ready') && (
+                <button
+                  type="button"
+                  className="btn btn--primary"
                   onClick={handleProcessHls}
                   disabled={uploading}
+                  title={videoStatus === 'ready' ? 'Re-encode with current settings' : 'Start multi-quality HLS encoding'}
                 >
-                  Convert to HLS
+                  {videoStatus === 'ready' ? '↺ Re-encode' : '▶ Start Multi-Quality Encoding'}
                 </button>
               )}
             </div>

@@ -69,6 +69,7 @@ const AdminMoviesPage: React.FC = () => {
               video_step: s.video_step ?? m.video_step,
               hls_playlist_url: s.hls_playlist_url ?? m.hls_playlist_url,
               processing_error: s.processing_error ?? m.processing_error,
+              available_qualities: (s as { available_qualities?: string }).available_qualities ?? m.available_qualities,
             };
           }
           return m;

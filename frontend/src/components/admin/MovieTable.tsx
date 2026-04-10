@@ -7,6 +7,49 @@ interface MovieTableProps {
   onDelete: (movie: Movie) => void;
 }
 
+/** Small pill badge for a single quality label like "720p". */
+const QualityBadge: React.FC<{ label: string }> = ({ label }) => (
+  <span style={{
+    display: 'inline-block',
+    padding: '2px 7px',
+    marginRight: '3px',
+    borderRadius: '8px',
+    fontSize: '0.7rem',
+    fontWeight: 700,
+    background: label === '1080p' ? '#cce5ff' : label === '720p' ? '#d4edda' : '#e2e3e5',
+    color:      label === '1080p' ? '#004085' : label === '720p' ? '#155724' : '#383d41',
+  }}>
+    {label}
+  </span>
+);
+
+/** Quality cell: shows quality pills or a "Not Processed" badge. */
+const QualityCell: React.FC<{ movie: Movie }> = ({ movie }) => {
+  const status = movie.video_status ?? 'no_video';
+
+  if (movie.available_qualities) {
+    return (
+      <div style={{ whiteSpace: 'nowrap' }}>
+        {movie.available_qualities.split(',').map((q) => (
+          <QualityBadge key={q} label={q.trim()} />
+        ))}
+      </div>
+    );
+  }
+
+  // Show a neutral "Not Processed" badge if video exists but not yet encoded
+  const notYet = status === 'uploaded' || status === 'no_video' || status === 'failed';
+  return notYet ? (
+    <span style={{
+      display: 'inline-block', padding: '2px 8px', borderRadius: '8px',
+      fontSize: '0.7rem', fontWeight: 600,
+      background: '#e9ecef', color: '#6c757d',
+    }}>
+      Not Processed
+    </span>
+  ) : null;
+};
+
 /** Colour-coded badge + optional indeterminate bar for the video pipeline status. */
 const VideoStatusCell: React.FC<{ movie: Movie }> = ({ movie }) => {
   const status = movie.video_status ?? 'no_video';
@@ -99,6 +142,7 @@ const MovieTable: React.FC<MovieTableProps> = ({ movies, onEdit, onDelete }) => 
             <th>Title</th>
             <th>Director</th>
             <th>Release Year</th>
+            <th>Quality</th>
             <th>Video Status</th>
             <th>Actions</th>
           </tr>
@@ -109,6 +153,7 @@ const MovieTable: React.FC<MovieTableProps> = ({ movies, onEdit, onDelete }) => 
               <td>{movie.title}</td>
               <td>{movie.director || '—'}</td>
               <td>{movie.release_date ? movie.release_date.split('-')[0] : '—'}</td>
+              <td><QualityCell movie={movie} /></td>
               <td><VideoStatusCell movie={movie} /></td>
               <td className="admin-table-actions">
                 <button

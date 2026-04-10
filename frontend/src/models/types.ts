@@ -13,6 +13,8 @@ export interface Movie {
   video_step?: string;
   hls_playlist_url?: string | null;
   processing_error?: string | null;
+  /** Comma-separated quality labels produced by FFmpeg, e.g. "360p,720p,1080p". Null if not yet encoded. */
+  available_qualities?: string | null;
 }
 
 export interface MovieListItem {
