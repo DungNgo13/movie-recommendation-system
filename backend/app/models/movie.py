@@ -21,3 +21,6 @@ class Movie(Base):
     processing_step = Column(String(100), nullable=True)
     hls_playlist_path = Column(String(255), nullable=True)
     processing_error = Column(Text, nullable=True)
+    # Comma-separated list of successfully encoded quality labels, e.g. "360p,720p,1080p"
+    available_qualities = Column(String(100), nullable=True)
+

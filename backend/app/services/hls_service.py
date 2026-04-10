@@ -24,6 +24,22 @@ def get_video_duration(path: str) -> float:
         return 0.0
 
 
+def get_video_height(path: str) -> int:
+    """Return the height in pixels of the first video stream, or 0 on failure."""
+    cmd = [
+        "ffprobe", "-v", "error",
+        "-select_streams", "v:0",
+        "-show_entries", "stream=height",
+        "-of", "default=noprint_wrappers=1:nokey=1",
+        path,
+    ]
+    try:
+        result = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        return int(result.stdout.strip())
+    except (ValueError, TypeError, FileNotFoundError):
+        return 0
+
+
 def has_audio_stream(path: str) -> bool:
     """Return True if the source file contains at least one audio stream."""
     cmd = [
@@ -77,9 +93,17 @@ def _spawn_ffmpeg(cmd: list, db, db_movie, total_duration: float):
     return process.returncode, stderr_lines
 
 
-def _build_multi_quality_cmd(src: str, output_dir: str, audio: bool) -> list:
+def _build_multi_quality_cmd(
+    src: str, output_dir: str, audio: bool, source_height: int
+) -> tuple[list, list[str]]:
     """
-    Build a 720p + 360p multi-variant HLS command.
+    Build a multi-variant HLS FFmpeg command.
+    Tiers are selected based on source height:
+      - Always include 360p
+      - Include 720p  when source_height >= 720
+      - Include 1080p when source_height >= 1080
+
+    Returns (cmd, quality_labels) so callers know which tiers were built.
 
     Key correctness rules:
     - ALL -map flags come first, THEN codec specifiers.
@@ -88,6 +112,24 @@ def _build_multi_quality_cmd(src: str, output_dir: str, audio: bool) -> list:
     - Forward-slash paths only (required by FFmpeg on Windows for %v/%03d patterns).
     - Conditional audio: only reference a:0 in var_stream_map when audio stream exists.
     """
+    # Determine which tiers to produce
+    tiers: list[tuple[str, int, str]] = []   # (filter_label, height, bitrate)
+    tiers.append(("v360p", 360, "800k"))
+    if source_height >= 720:
+        tiers.append(("v720p", 720, "2000k"))
+    if source_height >= 1080:
+        tiers.append(("v1080p", 1080, "4000k"))
+
+    quality_labels = [f"{t[1]}p" for t in tiers]
+    n = len(tiers)
+
+    # Build filter_complex: split into N streams and scale each
+    split_outputs = "".join(f"[s{i}]" for i in range(n))
+    filter_parts = [f"[0:v]split={n}{split_outputs}"]
+    for i, (label, height, _) in enumerate(tiers):
+        filter_parts.append(f"[s{i}]scale=-2:{height}[{label}]")
+    filter_complex = "; ".join(filter_parts)
+
     seg = f"{output_dir}/v%v_segment_%03d.ts"
     out = f"{output_dir}/v%v_playlist.m3u8"
 
@@ -95,27 +137,28 @@ def _build_multi_quality_cmd(src: str, output_dir: str, audio: bool) -> list:
     cmd = [
         "ffmpeg", "-y",
         "-i", src,
-        "-filter_complex",
-        "[0:v]split=2[v720p][v360p]; [v720p]scale=-2:720[v720pout]; [v360p]scale=-2:360[v360pout]",
-        "-map", "[v720pout]",   # output video stream 0
-        "-map", "[v360pout]",   # output video stream 1
+        "-filter_complex", filter_complex,
     ]
+    for label, _, _ in tiers:
+        cmd += ["-map", f"[{label}]"]   # one video output per tier
 
     if audio:
-        cmd += ["-map", "0:a"]  # output audio stream 0
+        cmd += ["-map", "0:a"]
 
     # ---- CODEC + BITRATE SPECS (after all maps) ----
-    cmd += [
-        "-c:v", "libx264",
-        "-b:v:0", "2000k",      # bitrate for video stream 0 (720p)
-        "-b:v:1", "800k",       # bitrate for video stream 1 (360p)
-    ]
+    cmd += ["-c:v", "libx264"]
+    for i, (_, _, bitrate) in enumerate(tiers):
+        cmd += [f"-b:v:{i}", bitrate]
 
     if audio:
         cmd += ["-c:a", "aac", "-b:a:0", "128k"]
 
     # ---- HLS MUXER OPTIONS ----
-    var_map = "v:0,a:0 v:1,a:0" if audio else "v:0 v:1"
+    if audio:
+        var_map = " ".join(f"v:{i},a:0" for i in range(n))
+    else:
+        var_map = " ".join(f"v:{i}" for i in range(n))
+
     cmd += [
         "-f", "hls",
         "-hls_time", "10",
@@ -127,7 +170,7 @@ def _build_multi_quality_cmd(src: str, output_dir: str, audio: bool) -> list:
         "-progress", "pipe:2",
         out,
     ]
-    return cmd
+    return cmd, quality_labels
 
 
 def _build_single_quality_cmd(src: str, output_dir: str, audio: bool) -> tuple[list, str]:
@@ -206,6 +249,9 @@ def process_hls_conversion(movie_id: UUID):
 
         total_duration = get_video_duration(source_path)
         audio = has_audio_stream(source_path)
+        source_height = get_video_height(source_path)
+        logger.info("[HLS] Source: duration=%.1fs, audio=%s, height=%dpx",
+                    total_duration, audio, source_height)
 
         output_dir = os.path.join("media", "videos", "hls", f"movie_{movie_id}")
         if os.path.exists(output_dir):
@@ -228,10 +274,13 @@ def process_hls_conversion(movie_id: UUID):
         db_movie.processing_step = "Preparing conversion"
         db.commit()
 
-        multi_cmd = _build_multi_quality_cmd(src_fwd, out_dir_fwd, audio)
+        multi_cmd, quality_labels = _build_multi_quality_cmd(
+            src_fwd, out_dir_fwd, audio, source_height
+        )
         master_playlist = os.path.join(output_dir, "master.m3u8")
 
-        db_movie.processing_step = "Converting to HLS"
+        tier_str = ", ".join(quality_labels)
+        db_movie.processing_step = f"Converting to HLS ({tier_str})"
         db.commit()
 
         rc, stderr_lines = _spawn_ffmpeg(multi_cmd, db, db_movie, total_duration)
@@ -245,9 +294,11 @@ def process_hls_conversion(movie_id: UUID):
             db_movie.processing_step = "Ready"
             db_movie.processing_progress = 100
             db_movie.hls_playlist_path = master_playlist.replace("\\", "/")
+            db_movie.available_qualities = ",".join(quality_labels)
             db_movie.processing_error = None
             db.commit()
-            logger.info("[HLS] Multi-quality conversion complete for movie %s", movie_id)
+            logger.info("[HLS] Multi-quality conversion complete for movie %s (%s)",
+                        movie_id, tier_str)
             return
 
         # ── Attempt 2: single-quality fallback ─────────────────────────────
@@ -279,6 +330,7 @@ def process_hls_conversion(movie_id: UUID):
             db_movie.processing_step = "Ready (480p)"
             db_movie.processing_progress = 100
             db_movie.hls_playlist_path = fallback_pl_path.replace("\\", "/")
+            db_movie.available_qualities = "480p"
             db_movie.processing_error = None
             db.commit()
             logger.info("[HLS] Single-quality fallback complete for movie %s", movie_id)

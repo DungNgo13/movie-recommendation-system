@@ -30,6 +30,7 @@ class MovieListItemSchema(BaseModel):
     
     release_date: Optional[date] = Field(None, exclude=True)
     genres: Optional[List[str]] = []
+    available_qualities: Optional[str] = None
 
     @computed_field
     @property
@@ -81,6 +82,7 @@ class MovieDetailSchema(BaseModel):
     
     video_original_filename: Optional[str] = None
     processing_error: Optional[str] = None
+    available_qualities: Optional[str] = None
 
     # Excluded Physical Native Paths
     poster_path: Optional[str] = Field(None, exclude=True)
