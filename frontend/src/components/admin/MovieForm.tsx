@@ -71,8 +71,8 @@ const MovieForm: React.FC<MovieFormProps> = ({ movie, onSubmit, onCancel }) => {
           setPollStep(res.video_step || 'Processing');
           if (res.hls_playlist_url) setHlsUrl(res.hls_playlist_url);
           if (res.processing_error) setProcessingError(res.processing_error);
-          if ((res as { available_qualities?: string }).available_qualities) {
-            setAvailableQualities((res as { available_qualities?: string }).available_qualities ?? null);
+          if (res.available_qualities) {
+            setAvailableQualities(res.available_qualities);
           }
         } catch (e) {
           console.warn('Polling error', e);

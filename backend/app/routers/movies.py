@@ -189,8 +189,11 @@ def process_video_hls(
     if not db_movie:
         raise HTTPException(status_code=404, detail="Movie not found")
         
-    if db_movie.processing_status != "uploaded" and db_movie.processing_status != "failed":
-        raise HTTPException(status_code=400, detail="Video is either processing, ready, or missing.")
+    if db_movie.processing_status not in ("uploaded", "failed", "ready"):
+        raise HTTPException(
+            status_code=400,
+            detail="Video must be in 'uploaded', 'failed', or 'ready' state to re-encode."
+        )
 
     # Mark status immediately via async queue
     db_movie.processing_status = "processing"
@@ -228,5 +231,6 @@ def get_video_status(
         "video_progress": db_movie.processing_progress or 0,
         "video_step": db_movie.processing_step,
         "processing_error": db_movie.processing_error,
-        "hls_playlist_url": normalize_url(db_movie.hls_playlist_path)
+        "hls_playlist_url": normalize_url(db_movie.hls_playlist_path),
+        "available_qualities": db_movie.available_qualities,
     }
