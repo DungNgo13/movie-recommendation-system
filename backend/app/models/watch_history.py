@@ -1,6 +1,6 @@
 import uuid
 from datetime import datetime, timezone
-from sqlalchemy import Column, Integer, DateTime, ForeignKey, UniqueConstraint
+from sqlalchemy import Column, Integer, DateTime, ForeignKey, UniqueConstraint, Boolean
 from sqlalchemy.dialects.postgresql import UUID
 from ..database import Base
 
@@ -17,3 +17,6 @@ class WatchHistory(Base):
     watched_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
     progress_percent = Column(Integer, default=0)
     playback_position_seconds = Column(Integer, default=0)
+    duration_seconds = Column(Integer, default=0, nullable=True)
+    is_completed = Column(Boolean, default=False, nullable=False)
+

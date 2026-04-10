@@ -14,6 +14,8 @@ class HistoryItemSchema(BaseModel):
     release_year: Optional[int] = None
     watched_at: datetime
     playback_position_seconds: int = 0
+    progress_percent: int = 0
+    is_completed: bool = False
 
 class RecordHistoryPayload(BaseModel):
     playback_position_seconds: int = 0

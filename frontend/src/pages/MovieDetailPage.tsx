@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import type { Movie } from '../models';
 import { getMovieById } from '../services/movieService';
-import { recordWatch, getWatchStatus } from '../services/continueWatchingService';
+import { saveWatchProgress, getWatchProgress, recordWatch } from '../services/continueWatchingService';
 import { getMyRating, rateMovie } from '../services/ratingService';
 import { getRecommendations } from '../services/recommendationService';
 import type { RecommendedMovie } from '../services/recommendationService';
@@ -15,6 +15,18 @@ import ErrorMessage from '../components/ErrorMessage';
 import HlsPlayer from '../components/HlsPlayer';
 
 const PLACEHOLDER_IMAGE = '/placeholder-poster.svg';
+// Save position every N seconds of playback change
+const SAVE_INTERVAL_SECONDS = 15;
+// Only prompt to resume if position is more than this many seconds in
+const MIN_RESUME_SECONDS = 30;
+
+const formatTime = (seconds: number): string => {
+  const h = Math.floor(seconds / 3600);
+  const m = Math.floor((seconds % 3600) / 60);
+  const s = Math.floor(seconds % 60);
+  if (h > 0) return `${h}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+  return `${m}:${String(s).padStart(2, '0')}`;
+};
 
 const MovieDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -25,81 +37,74 @@ const MovieDetailPage: React.FC = () => {
   const [imageSrc, setImageSrc] = useState<string>(PLACEHOLDER_IMAGE);
   const [myRating, setMyRating] = useState<number | null>(null);
   const [recommendations, setRecommendations] = useState<RecommendedMovie[]>([]);
-  const [initialTime, setInitialTime] = useState<number>(0);
-  const lastSavedTime = useRef<number>(0);
 
-  const handleTimeUpdate = (currentTime: number) => {
-    if (Math.abs(currentTime - lastSavedTime.current) >= 15) {
-      lastSavedTime.current = currentTime;
-      if (movie) {
-        recordWatch(movie.id, currentTime);
-      }
+  // Resume state
+  const [initialTime, setInitialTime] = useState<number>(0);
+  const [savedPosition, setSavedPosition] = useState<number>(0);
+  const [showResumePrompt, setShowResumePrompt] = useState(false);
+
+  // Refs to track save throttle without causing re-renders
+  const lastSavedTimeRef = useRef<number>(0);
+  const lastDurationRef = useRef<number>(0);
+
+  // Called by HlsPlayer on every timeupdate (~4Hz).
+  // Throttled: only saves to backend every SAVE_INTERVAL_SECONDS.
+  const handleTimeUpdate = (currentTime: number, duration: number) => {
+    lastDurationRef.current = duration;
+    if (!movie || !user) return;
+    if (Math.abs(currentTime - lastSavedTimeRef.current) >= SAVE_INTERVAL_SECONDS) {
+      lastSavedTimeRef.current = currentTime;
+      saveWatchProgress(movie.id, currentTime, duration);
     }
   };
 
+  // Fetch recommendations
   useEffect(() => {
-    if (!user) {
-      setRecommendations([]);
-      return;
-    }
-    const fetchRecs = async () => {
-      const recs = await getRecommendations(4);
-      setRecommendations(recs);
-    };
-    fetchRecs();
+    if (!user) { setRecommendations([]); return; }
+    getRecommendations(4).then(setRecommendations).catch(() => {});
   }, [user]);
 
+  // Fetch movie + resume position
   useEffect(() => {
     const fetchMovie = async () => {
       if (!id) return;
-
       try {
         setLoading(true);
         setError(null);
 
         const data = await getMovieById(id);
         setMovie(data);
-
-        setImageSrc(
-          data.backdrop_url || data.poster_url || PLACEHOLDER_IMAGE
-        );
+        setImageSrc(data.backdrop_url || data.poster_url || PLACEHOLDER_IMAGE);
 
         if (user) {
           try {
-            const status = await getWatchStatus(data.id);
-            if (status?.playback_position_seconds > 0) {
-              setInitialTime(status.playback_position_seconds);
-              lastSavedTime.current = status.playback_position_seconds;
+            const progress = await getWatchProgress(data.id);
+            const pos = progress.current_time_seconds;
+            if (pos >= MIN_RESUME_SECONDS && !progress.is_completed) {
+              setSavedPosition(pos);
+              setShowResumePrompt(true);
+              // Don't set initialTime yet — wait for user choice
             }
-          } catch (e) {
-            console.error('Failed to parse previous watch position:', e);
+          } catch {
+            // Non-blocking
           }
         }
 
-        // Record initial watch history hook conservatively explicitly dynamically
+        // Record initial watch event (lightweight)
         recordWatch(data.id, 0);
-      } catch (err) {
+      } catch {
         setError('Failed to fetch movie details.');
-        console.error(err);
       } finally {
         setLoading(false);
       }
     };
-
     fetchMovie();
-  }, [id]);
+  }, [id, user]);
 
-  // Fetch user's existing rating for this movie
+  // Rating
   useEffect(() => {
-    if (!id || !user) {
-      setMyRating(null);
-      return;
-    }
-    const fetchRating = async () => {
-      const rating = await getMyRating(id);
-      setMyRating(rating);
-    };
-    fetchRating();
+    if (!id || !user) { setMyRating(null); return; }
+    getMyRating(id).then(setMyRating).catch(() => {});
   }, [id, user]);
 
   const handleRate = async (rating: number) => {
@@ -107,57 +112,73 @@ const MovieDetailPage: React.FC = () => {
     try {
       await rateMovie(id, rating);
       setMyRating(rating);
-    } catch {
-      // silently fail
-    }
+    } catch { /* silently fail */ }
+  };
+
+  // Resume prompt actions
+  const handleResume = () => {
+    setInitialTime(savedPosition);
+    lastSavedTimeRef.current = savedPosition;
+    setShowResumePrompt(false);
+  };
+
+  const handleRestart = () => {
+    setInitialTime(0);
+    lastSavedTimeRef.current = 0;
+    setShowResumePrompt(false);
   };
 
   const { isFavorite, toggleFavorite } = useFavorites();
 
   const handleImageError = () => {
-    if (!movie) {
-      setImageSrc(PLACEHOLDER_IMAGE);
-      return;
-    }
-
+    if (!movie) { setImageSrc(PLACEHOLDER_IMAGE); return; }
     const backdrop = movie.backdrop_url || '';
     const poster = movie.poster_url || '';
-
-    if (imageSrc === backdrop && poster && poster !== backdrop) {
-      setImageSrc(poster);
-      return;
-    }
-
-    if (imageSrc !== PLACEHOLDER_IMAGE) {
-      setImageSrc(PLACEHOLDER_IMAGE);
-    }
+    if (imageSrc === backdrop && poster && poster !== backdrop) { setImageSrc(poster); return; }
+    if (imageSrc !== PLACEHOLDER_IMAGE) setImageSrc(PLACEHOLDER_IMAGE);
   };
 
-  if (loading) {
-    return <LoadingSpinner />;
-  }
-
-  if (error) {
-    return <ErrorMessage message={error} />;
-  }
-
-  if (!movie) {
-    return <div>Movie not found.</div>;
-  }
+  if (loading) return <LoadingSpinner />;
+  if (error)   return <ErrorMessage message={error} />;
+  if (!movie)  return <div>Movie not found.</div>;
 
   return (
     <div className="movie-detail-page">
+
+      {/* Resume prompt banner */}
+      {showResumePrompt && (
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: '1rem',
+          padding: '0.75rem 1rem', marginBottom: '0.75rem',
+          backgroundColor: '#1a3a5c', borderRadius: '8px',
+          border: '1px solid #1565c0', color: '#90caf9',
+          flexWrap: 'wrap',
+        }}>
+          <span>▶ Continue from <strong>{formatTime(savedPosition)}</strong>?</span>
+          <button
+            onClick={handleResume}
+            style={{ padding: '0.3rem 0.9rem', background: '#1976d2', color: '#fff', border: 'none', borderRadius: '5px', cursor: 'pointer', fontWeight: 600 }}
+          >
+            Resume
+          </button>
+          <button
+            onClick={handleRestart}
+            style={{ padding: '0.3rem 0.9rem', background: 'transparent', color: '#90caf9', border: '1px solid #1565c0', borderRadius: '5px', cursor: 'pointer' }}
+          >
+            Start over
+          </button>
+        </div>
+      )}
+
       {movie.video_status === 'ready' && movie.hls_playlist_url ? (
-        <HlsPlayer 
-          src={movie.hls_playlist_url} 
-          poster={imageSrc} 
+        <HlsPlayer
+          src={movie.hls_playlist_url}
+          poster={imageSrc}
           initialTime={initialTime}
           onTimeUpdate={handleTimeUpdate}
         />
       ) : (
-      <>
-          {/* Cinema-style banner: blurred background + properly contained foreground image.
-              Works for both portrait and landscape uploads without severe cropping. */}
+        <>
           <div className="movie-banner">
             <div
               className="movie-banner__bg"

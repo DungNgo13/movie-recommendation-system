@@ -112,18 +112,36 @@ const HomePage: React.FC = () => {
         </div>
       </div>
 
-      {historyItems.length > 0 && (
+      {historyItems.filter(item => !item.is_completed && (item.playback_position_seconds ?? 0) >= 30).length > 0 && (
         <section className="continue-watching-section">
           <h2>Continue Watching</h2>
           <div className="movie-list movie-row">
-            {historyItems.map((item) => (
-              <MovieCard
-                key={item.id}
-                movie={item}
-                isFavorite={isFavorite(item.id)}
-                onToggleFavorite={toggleFavorite}
-              />
-            ))}
+            {historyItems
+              .filter(item => !item.is_completed && (item.playback_position_seconds ?? 0) >= 30)
+              .map((item) => (
+                <div key={item.id} style={{ position: 'relative' }}>
+                  <MovieCard
+                    movie={item}
+                    isFavorite={isFavorite(item.id)}
+                    onToggleFavorite={toggleFavorite}
+                  />
+                  {/* Progress bar shown at bottom of the card thumbnail */}
+                  {item.progress_percent != null && item.progress_percent > 0 && (
+                    <div style={{
+                      position: 'absolute', bottom: '2.2rem', left: 0, right: 0,
+                      height: '4px', background: 'rgba(0,0,0,0.4)',
+                    }}>
+                      <div style={{
+                        height: '100%',
+                        width: `${Math.min(item.progress_percent, 100)}%`,
+                        background: '#e50914',
+                        borderRadius: '0 2px 2px 0',
+                        transition: 'width 0.3s ease',
+                      }} />
+                    </div>
+                  )}
+                </div>
+              ))}
           </div>
         </section>
       )}

@@ -5,7 +5,7 @@ interface HlsPlayerProps {
   src: string;
   poster?: string;
   initialTime?: number;
-  onTimeUpdate?: (currentTime: number) => void;
+  onTimeUpdate?: (currentTime: number, duration: number) => void;
 }
 
 const HlsPlayer: React.FC<HlsPlayerProps> = ({ src, poster, initialTime = 0, onTimeUpdate }) => {
@@ -19,16 +19,14 @@ const HlsPlayer: React.FC<HlsPlayerProps> = ({ src, poster, initialTime = 0, onT
 
     if (Hls.isSupported()) {
       hls = new Hls({
-        // Optional configuration bindings
         maxBufferLength: 30,
-        enableWorker: true
+        enableWorker: true,
       });
-      
+
       hls.loadSource(src);
       hls.attachMedia(video);
 
       hls.on(Hls.Events.MANIFEST_PARSED, () => {
-        // Video is completely ready. 
         if (initialTime > 0) {
           video.currentTime = initialTime;
         }
@@ -38,23 +36,19 @@ const HlsPlayer: React.FC<HlsPlayerProps> = ({ src, poster, initialTime = 0, onT
         if (data.fatal) {
           switch (data.type) {
             case Hls.ErrorTypes.NETWORK_ERROR:
-              console.error('HLS Network Error, attempting recovery...');
               hls.startLoad();
               break;
             case Hls.ErrorTypes.MEDIA_ERROR:
-              console.error('HLS Media Error, attempting recovery...');
               hls.recoverMediaError();
               break;
             default:
-              // Cannot recover native crash out
-              console.error('HLS Unrecoverable Error:', data);
               hls.destroy();
               break;
           }
         }
       });
     } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-      // Direct pass-through for iOS Safari
+      // iOS Safari native HLS
       video.src = src;
       video.addEventListener('loadedmetadata', () => {
         if (initialTime > 0) {
@@ -64,22 +58,24 @@ const HlsPlayer: React.FC<HlsPlayerProps> = ({ src, poster, initialTime = 0, onT
     }
 
     return () => {
-      if (hls) {
-        hls.destroy();
-      }
+      if (hls) hls.destroy();
     };
   }, [src]);
 
   return (
-    <div className="hls-player-container" style={{ width: '100%', marginBottom: '1.5rem', backgroundColor: '#000', borderRadius: '8px', overflow: 'hidden' }}>
+    <div
+      className="hls-player-container"
+      style={{ width: '100%', marginBottom: '1.5rem', backgroundColor: '#000', borderRadius: '8px', overflow: 'hidden' }}
+    >
       <video
         ref={videoRef}
         controls
         poster={poster}
         style={{ width: '100%', display: 'block', maxHeight: '720px' }}
         onTimeUpdate={() => {
-          if (onTimeUpdate && videoRef.current) {
-            onTimeUpdate(videoRef.current.currentTime);
+          const video = videoRef.current;
+          if (onTimeUpdate && video) {
+            onTimeUpdate(video.currentTime, video.duration || 0);
           }
         }}
       />
