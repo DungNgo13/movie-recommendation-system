@@ -27,6 +27,7 @@ const QualityBadge: React.FC<{ label: string }> = ({ label }) => (
 const QualityCell: React.FC<{ movie: Movie }> = ({ movie }) => {
   const status = movie.video_status ?? 'no_video';
 
+  // Quality pills — shown once FFmpeg has written available_qualities to the DB
   if (movie.available_qualities) {
     return (
       <div style={{ whiteSpace: 'nowrap' }}>
@@ -37,17 +38,29 @@ const QualityCell: React.FC<{ movie: Movie }> = ({ movie }) => {
     );
   }
 
-  // Show a neutral "Not Processed" badge if video exists but not yet encoded
-  const notYet = status === 'uploaded' || status === 'no_video' || status === 'failed';
-  return notYet ? (
+  // While encoding is running, show a small animated indicator instead
+  if (status === 'processing') {
+    return (
+      <span style={{
+        display: 'inline-block', padding: '2px 8px', borderRadius: '8px',
+        fontSize: '0.7rem', fontWeight: 600,
+        background: '#fff3cd', color: '#856404',
+      }}>
+        Encoding…
+      </span>
+    );
+  }
+
+  // Any other state with no qualities → not yet encoded
+  return (
     <span style={{
       display: 'inline-block', padding: '2px 8px', borderRadius: '8px',
       fontSize: '0.7rem', fontWeight: 600,
       background: '#e9ecef', color: '#6c757d',
     }}>
-      Not Processed
+      Not Encoded
     </span>
-  ) : null;
+  );
 };
 
 /** Colour-coded badge + optional indeterminate bar for the video pipeline status. */
