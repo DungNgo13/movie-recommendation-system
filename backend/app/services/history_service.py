@@ -3,6 +3,7 @@ from uuid import UUID
 from datetime import datetime, timezone
 from ..models.watch_history import WatchHistory
 from ..models.movie import Movie
+from ..schemas.movie import normalize_url
 
 # A movie is considered "completed" when ≥ 95% watched.
 COMPLETION_THRESHOLD = 95.0
@@ -135,7 +136,6 @@ def get_user_history(db: Session, user_id: UUID, limit: int = 10) -> list[dict]:
         .limit(limit)
         .all()
     )
-    from ..schemas.movie import normalize_url
     results = []
     for movie, history in rows:
         release_year = movie.release_date.year if movie.release_date else None
