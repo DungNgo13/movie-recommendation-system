@@ -7,7 +7,7 @@ interface MovieTableProps {
   onDelete: (movie: Movie) => void;
 }
 
-/** Small pill badge for a single quality label like "720p". */
+/** Green pill for a single resolved quality label like "720p". */
 const QualityBadge: React.FC<{ label: string }> = ({ label }) => (
   <span style={{
     display: 'inline-block',
@@ -16,49 +16,65 @@ const QualityBadge: React.FC<{ label: string }> = ({ label }) => (
     borderRadius: '8px',
     fontSize: '0.7rem',
     fontWeight: 700,
-    background: label === '1080p' ? '#cce5ff' : label === '720p' ? '#d4edda' : '#e2e3e5',
-    color:      label === '1080p' ? '#004085' : label === '720p' ? '#155724' : '#383d41',
+    background: '#d4edda',
+    color: '#155724',
   }}>
     {label}
   </span>
 );
 
-/** Quality cell: shows quality pills or a "Not Processed" badge. */
+/**
+ * Quality column cell — three visible states:
+ *  1. "Processing..."  → yellow badge + spinner (set by router on encode start)
+ *  2. "360p,720p,…"   → green resolution pills  (set by service on encode finish)
+ *  3. null / missing  → grey "Pending" badge
+ */
 const QualityCell: React.FC<{ movie: Movie }> = ({ movie }) => {
-  const status = movie.video_status ?? 'no_video';
+  const q = movie.available_qualities;
 
-  // Quality pills — shown once FFmpeg has written available_qualities to the DB
-  if (movie.available_qualities) {
-    return (
-      <div style={{ whiteSpace: 'nowrap' }}>
-        {movie.available_qualities.split(',').map((q) => (
-          <QualityBadge key={q} label={q.trim()} />
-        ))}
-      </div>
-    );
-  }
-
-  // While encoding is running, show a small animated indicator instead
-  if (status === 'processing') {
+  // ── State 1: actively encoding ────────────────────────────────────────────
+  if (q === 'Processing...') {
     return (
       <span style={{
-        display: 'inline-block', padding: '2px 8px', borderRadius: '8px',
+        display: 'inline-flex', alignItems: 'center', gap: '5px',
+        padding: '2px 8px', borderRadius: '8px',
         fontSize: '0.7rem', fontWeight: 600,
         background: '#fff3cd', color: '#856404',
       }}>
+        {/* Inline CSS spinner — no extra library needed */}
+        <span style={{
+          display: 'inline-block',
+          width: '8px', height: '8px',
+          border: '2px solid #856404',
+          borderTopColor: 'transparent',
+          borderRadius: '50%',
+          animation: 'spin 0.7s linear infinite',
+          flexShrink: 0,
+        }} />
         Encoding…
       </span>
     );
   }
 
-  // Any other state with no qualities → not yet encoded
+  // ── State 2: resolutions known ────────────────────────────────────────────
+  if (q) {
+    return (
+      <div style={{ whiteSpace: 'nowrap' }}>
+        {q.split(',').map((label) => (
+          <QualityBadge key={label} label={label.trim()} />
+        ))}
+      </div>
+    );
+  }
+
+  // ── State 3: not yet encoded ──────────────────────────────────────────────
   return (
     <span style={{
       display: 'inline-block', padding: '2px 8px', borderRadius: '8px',
       fontSize: '0.7rem', fontWeight: 600,
       background: '#e9ecef', color: '#6c757d',
     }}>
-      Not Encoded
+      Pending
     </span>
   );
 };
