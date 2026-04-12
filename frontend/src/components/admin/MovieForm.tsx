@@ -90,6 +90,12 @@ const MovieForm: React.FC<MovieFormProps> = ({ movie, onSubmit, onCancel }) => {
       await processMovieVideo(movie.id);
       setVideoStatus('processing');
     } catch (err) {
+      // 401 = token expired → send user back to login
+      const status = (err as Error & { status?: number }).status;
+      if (status === 401) {
+        window.location.href = '/login';
+        return;
+      }
       const msg = err instanceof Error ? err.message : 'Processing failed';
       setError(msg);
     } finally {

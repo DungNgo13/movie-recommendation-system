@@ -126,8 +126,11 @@ export const processMovieVideo = async (id: string): Promise<{ message: string }
   });
 
   if (!response.ok) {
+    // Attach the HTTP status to the error so callers can handle 401 specially
     const errorData = await response.json().catch(() => null);
-    throw new Error(errorData?.detail || 'Failed to trigger processing');
+    const err = new Error(errorData?.detail || 'Failed to trigger processing') as Error & { status?: number };
+    err.status = response.status;
+    throw err;
   }
   return response.json();
 };
