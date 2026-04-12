@@ -24,20 +24,36 @@ def get_video_duration(path: str) -> float:
         return 0.0
 
 
-def get_video_height(path: str) -> int:
-    """Return the height in pixels of the first video stream, or 0 on failure."""
+def get_video_dimensions(path: str) -> tuple[int, int]:
+    """
+    Return (width, height) of the first video stream via a single ffprobe call.
+    Falls back to (0, 0) on any error so callers always get safe integers.
+
+    Using both dimensions avoids misclassifying cinematic videos whose cropped
+    height falls just below a round number (e.g. 1280x714 is still 720p HD).
+    """
     cmd = [
         "ffprobe", "-v", "error",
         "-select_streams", "v:0",
-        "-show_entries", "stream=height",
+        "-show_entries", "stream=width,height",
         "-of", "default=noprint_wrappers=1:nokey=1",
         path,
     ]
     try:
-        result = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-        return int(result.stdout.strip())
-    except (ValueError, TypeError, FileNotFoundError):
-        return 0
+        result = subprocess.run(
+            cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
+        )
+        # Output is two lines:  line 0 = width, line 1 = height
+        parts = result.stdout.strip().splitlines()
+        return int(parts[0]), int(parts[1])
+    except (ValueError, TypeError, IndexError, FileNotFoundError):
+        return 0, 0
+
+
+# Keep the old single-value helper for any callers outside this file.
+def get_video_height(path: str) -> int:
+    _, h = get_video_dimensions(path)
+    return h
 
 
 def has_audio_stream(path: str) -> bool:
@@ -94,30 +110,33 @@ def _spawn_ffmpeg(cmd: list, db, db_movie, total_duration: float):
 
 
 def _build_multi_quality_cmd(
-    src: str, output_dir: str, audio: bool, source_height: int
+    src: str, output_dir: str, audio: bool, source_width: int, source_height: int
 ) -> tuple[list, list[str]]:
     """
     Build a multi-variant HLS FFmpeg command.
-    Tiers are selected based on source height:
-      - Always include 360p
-      - Include 720p  when source_height >= 720
-      - Include 1080p when source_height >= 1080
+
+    Tier thresholds use width OR height so cinematic aspect ratios
+    (e.g. 1280x714) are not incorrectly downgraded:
+
+      1080p: width >= 1900  OR  height >= 1000
+       720p: width >= 1200  OR  height >=  680
+       360p: always included (base quality)
 
     Returns (cmd, quality_labels) so callers know which tiers were built.
 
     Key correctness rules:
     - ALL -map flags come first, THEN codec specifiers.
     - Use global -c:v / -c:a then per-stream -b:v:N / -b:a:N for bitrates.
-    - Do NOT use -hls_playlist_type vod with -var_stream_map (crashes many FFmpeg builds).
-    - Forward-slash paths only (required by FFmpeg on Windows for %v/%03d patterns).
-    - Conditional audio: only reference a:0 in var_stream_map when audio stream exists.
+    - Do NOT use -hls_playlist_type vod with -var_stream_map (crashes FFmpeg).
+    - Forward-slash paths only (required by FFmpeg on Windows for %v/%03d).
+    - Conditional audio: only reference a:0 in var_stream_map when audio exists.
     """
-    # Determine which tiers to produce
-    tiers: list[tuple[str, int, str]] = []   # (filter_label, height, bitrate)
-    tiers.append(("v360p", 360, "800k"))
-    if source_height >= 720:
+    # Determine which tiers to produce (no upscaling — each tier must fit source)
+    tiers: list[tuple[str, int, str]] = []   # (filter_label, target_height, bitrate)
+    tiers.append(("v360p", 360, "800k"))                                    # always
+    if source_width >= 1200 or source_height >= 680:                        # HD
         tiers.append(("v720p", 720, "2000k"))
-    if source_height >= 1080:
+    if source_width >= 1900 or source_height >= 1000:                       # Full HD
         tiers.append(("v1080p", 1080, "4000k"))
 
     quality_labels = [f"{t[1]}p" for t in tiers]
@@ -249,9 +268,9 @@ def process_hls_conversion(movie_id: UUID):
 
         total_duration = get_video_duration(source_path)
         audio = has_audio_stream(source_path)
-        source_height = get_video_height(source_path)
-        logger.info("[HLS] Source: duration=%.1fs, audio=%s, height=%dpx",
-                    total_duration, audio, source_height)
+        source_width, source_height = get_video_dimensions(source_path)
+        logger.info("[HLS] Source: duration=%.1fs, audio=%s, dimensions=%dx%dpx",
+                    total_duration, audio, source_width, source_height)
 
         output_dir = os.path.join("media", "videos", "hls", f"movie_{movie_id}")
         if os.path.exists(output_dir):
@@ -275,7 +294,7 @@ def process_hls_conversion(movie_id: UUID):
         db.commit()
 
         multi_cmd, quality_labels = _build_multi_quality_cmd(
-            src_fwd, out_dir_fwd, audio, source_height
+            src_fwd, out_dir_fwd, audio, source_width, source_height
         )
         master_playlist = os.path.join(output_dir, "master.m3u8")
 
