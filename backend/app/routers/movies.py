@@ -195,9 +195,10 @@ def process_video_hls(
             detail="Video must be in 'uploaded', 'failed', or 'ready' state to re-encode."
         )
 
-    # Mark status immediately via async queue
+    # Mark status immediately so the UI shows live feedback
     db_movie.processing_status = "processing"
     db_movie.processing_error = None
+    db_movie.available_qualities = "Processing..."   # cleared when FFmpeg finishes
     db.commit()
 
     background_tasks.add_task(process_hls_conversion, movie_id)
