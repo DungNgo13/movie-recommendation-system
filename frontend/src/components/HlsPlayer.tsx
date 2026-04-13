@@ -44,10 +44,15 @@ const HlsPlayer: React.FC<HlsPlayerProps> = ({
 
       // Wait for the manifest so we know the available quality levels
       hls.on(Hls.Events.MANIFEST_PARSED, (_event, data) => {
-        // Build the quality array: 0 = Auto, then real heights (720, 480 …)
-        const heights = data.levels
-          .map((lvl) => lvl.height)
-          .filter((h): h is number => Boolean(h));
+        // Build the quality array: 0 = Auto, then real heights (1080, 720, …)
+        // Deduplicate & sort descending so the menu looks natural.
+        const heights = Array.from(
+          new Set(
+            data.levels
+              .map((lvl) => lvl.height)
+              .filter((h): h is number => Boolean(h))
+          )
+        ).sort((a, b) => b - a);
 
         const qualityOptions = [0, ...heights]; // 0 = Auto
 
@@ -61,14 +66,14 @@ const HlsPlayer: React.FC<HlsPlayerProps> = ({
           ],
           settings: ['quality', 'speed'],
           quality: {
-            default: 0, // start on Auto
+            default: 0,           // start on Auto
             options: qualityOptions,
             forced: true,
-            // When the user picks a quality in the Plyr menu:
+            // When the user picks a quality in the Plyr settings menu:
             onChange: (selectedQuality: number) => {
               if (!hlsRef.current) return;
               if (selectedQuality === 0) {
-                hlsRef.current.currentLevel = -1; // -1 = hls.js Auto ABR
+                hlsRef.current.currentLevel = -1; // -1 = ABR auto
               } else {
                 const idx = hlsRef.current.levels.findIndex(
                   (lvl) => lvl.height === selectedQuality,
@@ -77,12 +82,29 @@ const HlsPlayer: React.FC<HlsPlayerProps> = ({
               }
             },
           },
-          // Label the "0" option as "Auto" in the menu
-          i18n: { qualityLabel: { 0: 'Auto' } } as object,
+          // Plyr 3 i18n: label the "0" option as "Auto" in the menu
+          i18n: { qualityLabel: { 0: 'Auto' } },
           poster,
         });
 
         playerRef.current = player;
+
+        // ── LEVEL_SWITCHED: keep the Plyr quality badge in sync ─────────────
+        // hls.js switches levels asynchronously; without this listener the
+        // Plyr menu would show the previously selected value instead of the
+        // level that is actually playing.
+        hls.on(Hls.Events.LEVEL_SWITCHED, (_ev, { level }) => {
+          if (!playerRef.current) return;
+          const activeHeight = hlsRef.current?.levels[level]?.height ?? 0;
+          // Plyr 3 exposes quality as a writable property.
+          // Setting it here updates the badge without re-triggering onChange.
+          try {
+            (playerRef.current as unknown as { quality: number }).quality =
+              activeHeight;
+          } catch {
+            // Plyr may not be fully initialised on first switch — safe to ignore.
+          }
+        });
 
         // Seek to resume position once the manifest is ready
         if (initialTime > 0) {

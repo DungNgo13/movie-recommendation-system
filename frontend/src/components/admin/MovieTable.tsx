@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import type { Movie } from '../../models';
 
 interface MovieTableProps {
   movies: Movie[];
   onEdit: (movie: Movie) => void;
   onDelete: (movie: Movie) => void;
+  onCancelEncode: (movie: Movie) => Promise<void>;
 }
 
 /** Green pill for a single resolved quality label like "720p". */
@@ -80,8 +81,21 @@ const QualityCell: React.FC<{ movie: Movie }> = ({ movie }) => {
 };
 
 /** Colour-coded badge + optional indeterminate bar for the video pipeline status. */
-const VideoStatusCell: React.FC<{ movie: Movie }> = ({ movie }) => {
+const VideoStatusCell: React.FC<{
+  movie: Movie;
+  onCancelEncode: (movie: Movie) => Promise<void>;
+}> = ({ movie, onCancelEncode }) => {
   const status = movie.video_status ?? 'no_video';
+  const [isCancelling, setIsCancelling] = useState(false);
+
+  const handleCancel = async () => {
+    setIsCancelling(true);
+    try {
+      await onCancelEncode(movie);
+    } finally {
+      setIsCancelling(false);
+    }
+  };
 
   const badgeStyle: React.CSSProperties = {
     display: 'inline-block',
@@ -118,6 +132,31 @@ const VideoStatusCell: React.FC<{ movie: Movie }> = ({ movie }) => {
           >
             ▶
           </a>
+        )}
+        {/* ── Cancel encode button — visible only while encoding ── */}
+        {status === 'processing' && (
+          <button
+            onClick={handleCancel}
+            disabled={isCancelling}
+            title="Stop encoding"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '4px',
+              padding: '2px 8px',
+              borderRadius: '8px',
+              border: 'none',
+              cursor: isCancelling ? 'not-allowed' : 'pointer',
+              fontSize: '0.7rem',
+              fontWeight: 700,
+              background: isCancelling ? '#e9ecef' : '#f8d7da',
+              color: isCancelling ? '#6c757d' : '#721c24',
+              transition: 'background 0.2s',
+              flexShrink: 0,
+            }}
+          >
+            ⬛ {isCancelling ? 'Cancelling…' : 'Stop'}
+          </button>
         )}
       </div>
 
@@ -162,7 +201,7 @@ const VideoStatusCell: React.FC<{ movie: Movie }> = ({ movie }) => {
   );
 };
 
-const MovieTable: React.FC<MovieTableProps> = ({ movies, onEdit, onDelete }) => {
+const MovieTable: React.FC<MovieTableProps> = ({ movies, onEdit, onDelete, onCancelEncode }) => {
   return (
     <div className="admin-table-wrapper">
       <table className="admin-table">
@@ -183,7 +222,7 @@ const MovieTable: React.FC<MovieTableProps> = ({ movies, onEdit, onDelete }) => 
               <td>{movie.director || '—'}</td>
               <td>{movie.release_date ? movie.release_date.split('-')[0] : '—'}</td>
               <td><QualityCell movie={movie} /></td>
-              <td><VideoStatusCell movie={movie} /></td>
+              <td><VideoStatusCell movie={movie} onCancelEncode={onCancelEncode} /></td>
               <td className="admin-table-actions">
                 <button
                   className="btn btn--edit"

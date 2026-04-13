@@ -12,6 +12,7 @@ import {
   deleteMovie,
   getMovieById,
   getMovieProcessingStatus,
+  cancelEncodeMovie,
 } from '../services/movieService';
 
 const AdminMoviesPage: React.FC = () => {
@@ -132,6 +133,35 @@ const AdminMoviesPage: React.FC = () => {
     setShowForm(false);
   };
 
+  // Called when the user clicks "⬛ Stop" on a processing movie.
+  // Optimistically patches the row to "ready" / Cancelled, then confirms
+  // via a status refresh so the UI reflects the true DB state.
+  const handleCancelEncode = async (movie: Movie) => {
+    try {
+      await cancelEncodeMovie(movie.id);
+      // Optimistic update — flip this row immediately so the button disappears
+      setMovies((prev) =>
+        prev.map((m) =>
+          m.id === movie.id
+            ? { ...m, video_status: 'ready', video_step: 'Cancelled', video_progress: 0, available_qualities: null }
+            : m
+        )
+      );
+      // Then confirm with a live status fetch
+      const fresh = await getMovieProcessingStatus(movie.id);
+      setMovies((prev) =>
+        prev.map((m) =>
+          m.id === movie.id
+            ? { ...m, video_status: fresh.video_status, video_step: fresh.video_step, video_progress: fresh.video_progress, available_qualities: fresh.available_qualities }
+            : m
+        )
+      );
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Failed to cancel encode';
+      setError(msg);
+    }
+  };
+
   const handleAdd = () => {
     setEditingMovie(null);
     setShowForm(true);
@@ -176,6 +206,7 @@ const AdminMoviesPage: React.FC = () => {
               movies={movies}
               onEdit={handleEdit}
               onDelete={handleDeleteRequest}
+              onCancelEncode={handleCancelEncode}
             />
           )}
         </>

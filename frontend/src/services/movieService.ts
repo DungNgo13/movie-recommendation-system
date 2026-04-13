@@ -170,3 +170,16 @@ export const uploadMovieImage = async (id: string, file: File, type: 'poster' | 
   return response.json();
 };
 
+export const cancelEncodeMovie = async (id: string): Promise<{ cancelled: boolean; detail: string }> => {
+  const token = getToken();
+  const response = await fetch(`${API_BASE_URL}/movies/${id}/cancel-encode`, {
+    method: 'POST',
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+  });
+
+  const body = await response.json().catch(() => null);
+  if (!response.ok) {
+    throw new Error(body?.detail || 'Failed to cancel encode');
+  }
+  return body;
+};
