@@ -162,7 +162,12 @@ def _build_multi_quality_cmd(
         cmd += ["-map", f"[{label}]"]   # one video output per tier
 
     if audio:
-        cmd += ["-map", "0:a"]
+        # Map audio once per video tier so each variant stream gets its own
+        # dedicated output audio stream (a:0, a:1, …).
+        # Mapping a single 0:a into multiple var_stream_map entries causes
+        # "Same elementary stream found more than once" on newer FFmpeg builds.
+        for _ in range(n):
+            cmd += ["-map", "0:a"]
 
     # ---- CODEC + BITRATE SPECS (after all maps) ----
     cmd += ["-c:v", "libx264"]
@@ -170,11 +175,14 @@ def _build_multi_quality_cmd(
         cmd += [f"-b:v:{i}", bitrate]
 
     if audio:
-        cmd += ["-c:a", "aac", "-b:a:0", "128k"]
+        cmd += ["-c:a", "aac"]
+        for i in range(n):
+            cmd += [f"-b:a:{i}", "128k"]
 
     # ---- HLS MUXER OPTIONS ----
     if audio:
-        var_map = " ".join(f"v:{i},a:0" for i in range(n))
+        # Each variant references its own video stream v:i and audio stream a:i
+        var_map = " ".join(f"v:{i},a:{i}" for i in range(n))
     else:
         var_map = " ".join(f"v:{i}" for i in range(n))
 
