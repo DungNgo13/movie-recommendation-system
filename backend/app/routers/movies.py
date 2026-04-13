@@ -173,7 +173,7 @@ def upload_video(
     )
     return db_movie
 
-from ..services.hls_service import process_hls_conversion
+from ..services.hls_service import process_hls_conversion, cancel_encode_task
 
 @router.post("/{movie_id}/process-hls", status_code=202)
 def process_video_hls(
@@ -235,3 +235,35 @@ def get_video_status(
         "hls_playlist_url": normalize_url(db_movie.hls_playlist_path),
         "available_qualities": db_movie.available_qualities,
     }
+
+
+@router.post("/{movie_id}/cancel-encode", status_code=200)
+def cancel_encode(
+    movie_id: UUID,
+    db: Session = Depends(database.get_db),
+    admin_user=Depends(get_current_admin_user)
+):
+    """
+    Kill an ongoing FFmpeg HLS encode for the given movie.
+
+    Returns HTTP 200 when the process was killed, HTTP 409 when no encode
+    is currently running for this movie.
+    """
+    db_movie = movie_service.get_movie(db, movie_id)
+    if not db_movie:
+        raise HTTPException(status_code=404, detail="Movie not found")
+
+    result = cancel_encode_task(movie_id)
+
+    if not result["cancelled"]:
+        raise HTTPException(status_code=409, detail=result["detail"])
+
+    create_audit_log(
+        db=db,
+        admin_email=admin_user.email,
+        action_type="movie_update",
+        target_type="movie",
+        target_id=str(movie_id),
+        description=f"Cancelled HLS encode for movie '{db_movie.title}'"
+    )
+    return result

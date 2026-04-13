@@ -10,6 +10,11 @@ from ..models import movie as movie_model
 
 logger = logging.getLogger(__name__)
 
+# ---------------------------------------------------------------------------
+# Global process registry  { movie_id (str) -> subprocess.Popen }
+# ---------------------------------------------------------------------------
+active_encodes: dict[str, subprocess.Popen] = {}
+
 
 def get_video_duration(path: str) -> float:
     cmd = [
@@ -72,9 +77,19 @@ def has_audio_stream(path: str) -> bool:
         return False
 
 
-def _spawn_ffmpeg(cmd: list, db, db_movie, total_duration: float):
+def _spawn_ffmpeg(
+    cmd: list,
+    db,
+    db_movie,
+    total_duration: float,
+    movie_id: str | None = None,
+):
     """
     Spawn FFmpeg, drain stdout in a thread, parse progress from stderr.
+
+    If *movie_id* is provided the process is registered in :data:`active_encodes`
+    so that :func:`cancel_encode_task` can kill it at any time.
+
     Returns (returncode, stderr_lines).
     """
     logger.info("[HLS] FFmpeg command:\n  %s", " ".join(cmd))
@@ -86,6 +101,10 @@ def _spawn_ffmpeg(cmd: list, db, db_movie, total_duration: float):
         text=True,
     )
 
+    # Register so the cancel endpoint can reach this process.
+    if movie_id is not None:
+        active_encodes[str(movie_id)] = process
+
     # Drain stdout in background thread to prevent pipe deadlock.
     def drain_stdout():
         for _ in process.stdout:
@@ -94,18 +113,23 @@ def _spawn_ffmpeg(cmd: list, db, db_movie, total_duration: float):
 
     last_progress = 0
     stderr_lines: list[str] = []
-    for line in process.stderr:
-        stderr_lines.append(line)
-        m = re.search(r"out_time_us=(\d+)", line)
-        if m and total_duration > 0:
-            time_s = int(m.group(1)) / 1_000_000.0
-            pct = min(int((time_s / total_duration) * 100), 99)
-            if pct > last_progress + 1:
-                last_progress = pct
-                db_movie.processing_progress = pct
-                db.commit()
+    try:
+        for line in process.stderr:
+            stderr_lines.append(line)
+            m = re.search(r"out_time_us=(\d+)", line)
+            if m and total_duration > 0:
+                time_s = int(m.group(1)) / 1_000_000.0
+                pct = min(int((time_s / total_duration) * 100), 99)
+                if pct > last_progress + 1:
+                    last_progress = pct
+                    db_movie.processing_progress = pct
+                    db.commit()
+    finally:
+        process.wait()
+        # Always deregister regardless of success / failure / kill.
+        if movie_id is not None:
+            active_encodes.pop(str(movie_id), None)
 
-    process.wait()
     return process.returncode, stderr_lines
 
 
@@ -113,63 +137,71 @@ def _build_multi_quality_cmd(
     src: str, output_dir: str, audio: bool, source_width: int, source_height: int
 ) -> tuple[list, list[str]]:
     """
-    Build a multi-variant HLS FFmpeg command.
+    Build a single-pass multi-variant HLS FFmpeg command.
 
     Tier thresholds use width OR height so cinematic aspect ratios
     (e.g. 1280x714) are not incorrectly downgraded:
 
       1080p: width >= 1900  OR  height >= 1000
        720p: width >= 1200  OR  height >=  680
+       480p: width >=  854  OR  height >=  460
        360p: always included (base quality)
 
-    Returns (cmd, quality_labels) so callers know which tiers were built.
+    Audio strategy:
+      Use [0:a]asplit=N to create N independent audio outputs (ao0, ao1…).
+      Each variant then references its own video (v:i) and audio (a:i)
+      stream, avoiding the "Same elementary stream found more than once"
+      error that occurs when a single -map 0:a is shared across variants.
 
-    Key correctness rules:
-    - ALL -map flags come first, THEN codec specifiers.
-    - Use global -c:v / -c:a then per-stream -b:v:N / -b:a:N for bitrates.
-    - Do NOT use -hls_playlist_type vod with -var_stream_map (crashes FFmpeg).
-    - Forward-slash paths only (required by FFmpeg on Windows for %v/%03d).
-    - Conditional audio: only reference a:0 in var_stream_map when audio exists.
+    Returns (cmd, quality_labels) so callers know which tiers were built.
     """
-    # Determine which tiers to produce (no upscaling — each tier must fit source)
+    # ── Tier selection (no upscaling) ────────────────────────────────────────
     tiers: list[tuple[str, int, str]] = []   # (filter_label, target_height, bitrate)
-    tiers.append(("v360p", 360, "800k"))                                    # always
-    if source_width >= 1200 or source_height >= 680:                        # HD
-        tiers.append(("v720p", 720, "2000k"))
-    if source_width >= 1900 or source_height >= 1000:                       # Full HD
+    tiers.append(("v360p",  360,  "800k"))                                   # always
+    if source_width >= 854  or source_height >= 460:                         # SD+
+        tiers.append(("v480p",  480, "1200k"))
+    if source_width >= 1200 or source_height >= 680:                         # HD
+        tiers.append(("v720p",  720, "2000k"))
+    if source_width >= 1900 or source_height >= 1000:                        # Full HD
         tiers.append(("v1080p", 1080, "4000k"))
 
     quality_labels = [f"{t[1]}p" for t in tiers]
     n = len(tiers)
 
-    # Build filter_complex: split into N streams and scale each
+    # ── filter_complex ────────────────────────────────────────────────────────
+    # Video: split once and scale to each target height.
     split_outputs = "".join(f"[s{i}]" for i in range(n))
-    filter_parts = [f"[0:v]split={n}{split_outputs}"]
+    filter_parts  = [f"[0:v]split={n}{split_outputs}"]
     for i, (label, height, _) in enumerate(tiers):
         filter_parts.append(f"[s{i}]scale=-2:{height}[{label}]")
+
+    # Audio: asplit into N independent streams so each variant owns one.
+    # This prevents "Same elementary stream found more than once" in the
+    # HLS muxer which occurs when a single -map 0:a is shared.
+    if audio:
+        a_outputs = "".join(f"[ao{i}]" for i in range(n))
+        if n > 1:
+            filter_parts.append(f"[0:a]asplit={n}{a_outputs}")
+        else:
+            # asplit=1 is not supported by all FFmpeg builds; use anull instead.
+            filter_parts.append("[0:a]anull[ao0]")
+
     filter_complex = "; ".join(filter_parts)
 
     seg = f"{output_dir}/v%v_segment_%03d.ts"
     out = f"{output_dir}/v%v_playlist.m3u8"
 
-    # ---- ALL MAPS FIRST ----
-    cmd = [
-        "ffmpeg", "-y",
-        "-i", src,
-        "-filter_complex", filter_complex,
-    ]
+    # ── Maps: video first, then audio ────────────────────────────────────────
+    cmd = ["ffmpeg", "-y", "-i", src, "-filter_complex", filter_complex]
+
     for label, _, _ in tiers:
-        cmd += ["-map", f"[{label}]"]   # one video output per tier
+        cmd += ["-map", f"[{label}]"]          # v:0, v:1, …
 
     if audio:
-        # Map audio once per video tier so each variant stream gets its own
-        # dedicated output audio stream (a:0, a:1, …).
-        # Mapping a single 0:a into multiple var_stream_map entries causes
-        # "Same elementary stream found more than once" on newer FFmpeg builds.
-        for _ in range(n):
-            cmd += ["-map", "0:a"]
+        for i in range(n):
+            cmd += ["-map", f"[ao{i}]"]        # a:0, a:1, …
 
-    # ---- CODEC + BITRATE SPECS (after all maps) ----
+    # ── Codec + bitrate specs ────────────────────────────────────────────────
     cmd += ["-c:v", "libx264"]
     for i, (_, _, bitrate) in enumerate(tiers):
         cmd += [f"-b:v:{i}", bitrate]
@@ -179,18 +211,17 @@ def _build_multi_quality_cmd(
         for i in range(n):
             cmd += [f"-b:a:{i}", "128k"]
 
-    # ---- HLS MUXER OPTIONS ----
-    if audio:
-        # Each variant references its own video stream v:i and audio stream a:i
-        var_map = " ".join(f"v:{i},a:{i}" for i in range(n))
-    else:
-        var_map = " ".join(f"v:{i}" for i in range(n))
+    # ── HLS muxer ────────────────────────────────────────────────────────────
+    # Each variant gets its own independent video + audio stream index.
+    var_map = " ".join(
+        (f"v:{i},a:{i}" if audio else f"v:{i}") for i in range(n)
+    )
 
     cmd += [
         "-f", "hls",
         "-hls_time", "10",
         "-hls_list_size", "0",
-        # NOTE: -hls_playlist_type vod intentionally omitted — incompatible with var_stream_map
+        # -hls_playlist_type vod intentionally omitted: incompatible with var_stream_map
         "-master_pl_name", "master.m3u8",
         "-hls_segment_filename", seg,
         "-var_stream_map", var_map,
@@ -198,6 +229,7 @@ def _build_multi_quality_cmd(
         out,
     ]
     return cmd, quality_labels
+
 
 
 def _build_single_quality_cmd(src: str, output_dir: str, audio: bool) -> tuple[list, str]:
@@ -310,7 +342,7 @@ def process_hls_conversion(movie_id: UUID):
         db_movie.processing_step = f"Converting to HLS ({tier_str})"
         db.commit()
 
-        rc, stderr_lines = _spawn_ffmpeg(multi_cmd, db, db_movie, total_duration)
+        rc, stderr_lines = _spawn_ffmpeg(multi_cmd, db, db_movie, total_duration, movie_id=movie_id)
 
         if rc == 0 and os.path.exists(master_playlist):
             # Multi-quality succeeded
@@ -345,7 +377,7 @@ def process_hls_conversion(movie_id: UUID):
         db.commit()
 
         fallback_cmd, fallback_playlist = _build_single_quality_cmd(src_fwd, out_dir_fwd, audio)
-        rc2, stderr_lines2 = _spawn_ffmpeg(fallback_cmd, db, db_movie, total_duration)
+        rc2, stderr_lines2 = _spawn_ffmpeg(fallback_cmd, db, db_movie, total_duration, movie_id=movie_id)
 
         db.refresh(db_movie)
         if db_movie.processing_status != "processing":
@@ -388,4 +420,49 @@ def process_hls_conversion(movie_id: UUID):
             db_movie.processing_error = str(e)
             db.commit()
     finally:
+        # Safety net — if we exited abnormally, ensure we're not still registered.
+        active_encodes.pop(str(movie_id), None)
         db.close()
+
+
+# ---------------------------------------------------------------------------
+# Cancel / Kill-switch
+# ---------------------------------------------------------------------------
+
+def cancel_encode_task(movie_id: UUID) -> dict:
+    """
+    Kill a running FFmpeg process for *movie_id* and reset DB status to 'ready'.
+
+    Returns a dict with ``cancelled`` (bool) and ``detail`` (str).
+    Raises :exc:`KeyError` if no encode is running for that movie.
+    """
+    mid = str(movie_id)
+    process = active_encodes.get(mid)
+    if process is None:
+        return {"cancelled": False, "detail": "No active encode found for this movie."}
+
+    try:
+        process.kill()
+    except OSError as exc:
+        logger.warning("[HLS] kill() failed for movie %s: %s", mid, exc)
+
+    # Deregister immediately (the _spawn_ffmpeg finally block will be a no-op).
+    active_encodes.pop(mid, None)
+
+    # Update DB so the UI reflects the cancelled state.
+    db = SessionLocal()
+    try:
+        db_movie = db.query(movie_model.Movie).filter(movie_model.Movie.id == movie_id).first()
+        if db_movie:
+            db_movie.processing_status = "ready"
+            db_movie.processing_step = "Cancelled"
+            db_movie.processing_progress = 0
+            db_movie.processing_error = "Encode was cancelled by user."
+            db.commit()
+            logger.info("[HLS] Encode cancelled and DB reset for movie %s", mid)
+    except Exception:
+        logger.exception("[HLS] DB update failed after cancelling movie %s", mid)
+    finally:
+        db.close()
+
+    return {"cancelled": True, "detail": "Encode process killed successfully."}
