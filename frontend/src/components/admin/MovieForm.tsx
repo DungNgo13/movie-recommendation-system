@@ -242,7 +242,7 @@ const MovieForm: React.FC<MovieFormProps> = ({ movie, onSubmit, onCancel }) => {
       </div>
 
       <div className="admin-form-group" style={{ backgroundColor: '#f8f9fa', padding: '1rem', borderRadius: '8px', border: '1px solid #dee2e6', color: '#212529' }}>
-        <h3 style={{ marginTop: 0, marginBottom: '0.5rem', fontSize: '1.1rem', color: '#212529' }}>Source Video (.mp4)</h3>
+        <h3 style={{ marginTop: 0, marginBottom: '0.5rem', fontSize: '1.1rem', color: '#212529' }}>Source Video</h3>
         {movie ? (
           <>
             <div style={{ marginBottom: '1rem', fontSize: '0.9rem' }}>
@@ -343,7 +343,7 @@ const MovieForm: React.FC<MovieFormProps> = ({ movie, onSubmit, onCancel }) => {
             <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', flexWrap: 'wrap' }}>
               <input
                 type="file"
-                accept="video/mp4"
+                accept="video/mp4,video/x-matroska,video/webm,video/avi,video/quicktime,.mp4,.mkv,.webm,.avi,.mov"
                 onChange={handleVideoUpload}
                 disabled={uploading}
               />

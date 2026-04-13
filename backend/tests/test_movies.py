@@ -173,16 +173,22 @@ def test_upload_video_success(seed_movies):
 
 def test_upload_video_invalid_type(seed_movies):
     """
-    Tests upload rejection for invalid formats (e.g. video/x-matroska or text/plain).
+    MKV and other video/* formats are now accepted (returns 200).
+    Only genuinely non-video MIME types (e.g. text/plain) are rejected with 400.
     """
     app.dependency_overrides[get_current_admin_user] = override_get_current_admin_user
     movie_id = str(seed_movies[0].id)
+
+    # MKV must now succeed
     files = {"file": ("test.mkv", b"mkv bytes", "video/x-matroska")}
-    
     response = client.post(f"/api/v1/movies/{movie_id}/video", files=files)
-    
-    assert response.status_code == 400
-    assert "Invalid file type. Only MP4 allowed." in response.json()["detail"]
+    assert response.status_code == 200
+
+    # A non-video type must still be rejected
+    files_bad = {"file": ("malicious.txt", b"text bytes", "text/plain")}
+    response_bad = client.post(f"/api/v1/movies/{movie_id}/video", files=files_bad)
+    assert response_bad.status_code == 400
+    assert "video files are allowed" in response_bad.json()["detail"]
 
 from unittest.mock import patch
 
