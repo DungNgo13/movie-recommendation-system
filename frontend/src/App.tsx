@@ -8,6 +8,7 @@ import AdminMoviesPage from './pages/AdminMoviesPage';
 import AdminUsersPage from './pages/AdminUsersPage';
 import AdminDashboardPage from './pages/AdminDashboardPage';
 import AdminAuditLogsPage from './pages/AdminAuditLogsPage';
+import RecsysMonitorPage from './pages/RecsysMonitorPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import ProtectedAdminRoute from './components/ProtectedAdminRoute';
@@ -27,6 +28,7 @@ const App: React.FC = () => {
           <Route path="/admin/movies" element={<AdminMoviesPage />} />
           <Route path="/admin/users" element={<AdminUsersPage />} />
           <Route path="/admin/logs" element={<AdminAuditLogsPage />} />
+          <Route path="/admin/recsys" element={<RecsysMonitorPage />} />
         </Route>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />

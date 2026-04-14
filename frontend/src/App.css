@@ -1018,3 +1018,87 @@
   border-radius: 3px;
   animation: progress-slide 1.4s ease-in-out infinite;
 }
+
+/* ===== RecSys Monitor Page ===== */
+
+/* Selector card at the top of the page */
+.recsys-selector-card {
+  background: #fff;
+  border-radius: 10px;
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.07);
+  border: 1px solid #e8e8e8;
+}
+
+/* Algorithm summary banner — dark background for contrast */
+.recsys-algo-banner {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  color: #e8eaf6;
+  border-radius: 10px;
+  padding: 20px 24px;
+  margin-bottom: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Individual content section card */
+.recsys-section {
+  background: #fff;
+  border-radius: 10px;
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.07);
+  border: 1px solid #e8e8e8;
+}
+
+/* Section heading with subtitle on a new line */
+.recsys-section-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #1a1a2e;
+  margin: 0 0 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.recsys-section-subtitle {
+  font-size: 0.82rem;
+  font-weight: 400;
+  color: #888;
+  line-height: 1.4;
+}
+
+/* Legend row (colored dot + label) */
+.recsys-legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 14px;
+  padding: 10px 14px;
+  background: #f8f9fa;
+  border-radius: 6px;
+  font-size: 0.82rem;
+  color: #555;
+}
+
+/* Form field label inside selector card */
+.recsys-label {
+  display: block;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: #555;
+  margin-bottom: 6px;
+}
+
+/* Empty state inside a section */
+.recsys-empty {
+  text-align: center;
+  padding: 40px 20px;
+  color: #999;
+  font-size: 0.95rem;
+  background: #fafafa;
+  border-radius: 6px;
+  border: 1px dashed #ddd;
+}
