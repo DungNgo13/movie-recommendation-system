@@ -15,9 +15,12 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie, isFavorite, onToggleFavori
   useEffect(() => {
     let interval: number;
     if (enableImageSwap && movie.backdrop_url) {
+      // Random duration per card so all cards don't swap in perfect sync.
+      // Computed once at mount; range: 3000 – 5000 ms.
+      const swapInterval = Math.floor(Math.random() * 2000) + 3000;
       interval = window.setInterval(() => {
         setShowBackdrop((prev) => !prev);
-      }, 3700);
+      }, swapInterval);
     }
     return () => {
       if (interval) clearInterval(interval);
