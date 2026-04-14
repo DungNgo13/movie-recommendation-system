@@ -78,6 +78,8 @@ class MovieDetailSchema(BaseModel):
     overview: Optional[str] = None
     release_date: Optional[date] = None
     genres: Optional[List[str]] = []
+    cast: Optional[List[str]] = []
+    keywords: Optional[List[str]] = []
     director: Optional[str] = None
     
     video_original_filename: Optional[str] = None
@@ -134,6 +136,8 @@ class MovieCreateSchema(BaseModel):
     overview: Optional[str] = None
     release_date: Union[date, str, int, None] = None
     genres: Optional[List[str]] = None
+    cast: Optional[List[str]] = None
+    keywords: Optional[List[str]] = None
     director: Optional[str] = None
     poster_url: Optional[str] = None
     backdrop_url: Optional[str] = None
@@ -162,6 +166,8 @@ class MovieUpdateSchema(BaseModel):
     overview: Optional[str] = None
     release_date: Union[date, str, int, None] = None
     genres: Optional[List[str]] = None
+    cast: Optional[List[str]] = None
+    keywords: Optional[List[str]] = None
     director: Optional[str] = None
     poster_url: Optional[str] = None
     backdrop_url: Optional[str] = None

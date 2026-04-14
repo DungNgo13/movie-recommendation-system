@@ -10,7 +10,9 @@ class Movie(Base):
     title = Column(String(255), index=True, nullable=False)
     overview = Column(Text, nullable=True)
     release_date = Column(Date, nullable=True)
-    genres = Column(JSON, nullable=True)
+    genres = Column(JSON, nullable=True)       # list of genre strings, e.g. ["Action", "Drama"]
+    cast = Column(JSON, nullable=True)         # list of actor names (top-billed), e.g. ["Tom Hanks"]
+    keywords = Column(JSON, nullable=True)     # list of thematic tags,  e.g. ["heist", "based on true story"]
     director = Column(String(100), nullable=True)
     poster_path = Column(String(255), nullable=True)
     backdrop_path = Column(String(255), nullable=True)
