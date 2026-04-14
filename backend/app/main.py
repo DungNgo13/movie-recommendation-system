@@ -19,6 +19,7 @@ from .routers import recommendations
 from .routers import admin_users
 from .routers import admin_dashboard
 from .routers import admin_logs
+from .routers import admin_recommendations
 from .routers import watch_progress
 
 movie_model.Base.metadata.create_all(bind=engine)
@@ -66,6 +67,7 @@ app.include_router(recommendations.router)
 app.include_router(admin_users.router)
 app.include_router(admin_dashboard.router)
 app.include_router(admin_logs.router)
+app.include_router(admin_recommendations.router)
 
 @app.get("/")
 def read_root():
