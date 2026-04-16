@@ -1,7 +1,90 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, KeyboardEvent } from 'react';
 import type { Movie } from '../../models';
 import type { MovieFormData } from '../../services/movieService';
 import { uploadMovieImage, uploadMovieVideo, processMovieVideo, getMovieProcessingStatus } from '../../services/movieService';
+
+// ─── TagInput ─────────────────────────────────────────────────────────────────
+// Self-contained chip/tag input — no external library needed.
+//
+// Keyboard UX (defensible in a thesis viva):
+//   Enter or comma → confirm the typed text as a new tag
+//   Backspace on empty input → remove the last tag
+//   Clicking × on a chip → remove that chip
+//   Duplicate tags are silently ignored
+
+interface TagInputProps {
+  id: string;
+  tags: string[];
+  onChange: (tags: string[]) => void;
+  placeholder?: string;
+  disabled?: boolean;
+}
+
+const TagInput: React.FC<TagInputProps> = ({ id, tags, onChange, placeholder, disabled }) => {
+  const [inputValue, setInputValue] = useState('');
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const addTag = (raw: string) => {
+    const value = raw.trim();
+    if (!value || tags.includes(value)) return;
+    onChange([...tags, value]);
+    setInputValue('');
+  };
+
+  const removeTag = (index: number) => {
+    onChange(tags.filter((_, i) => i !== index));
+  };
+
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' || e.key === ',') {
+      e.preventDefault();          // prevent form submit on Enter
+      addTag(inputValue);
+    } else if (e.key === 'Backspace' && inputValue === '') {
+      removeTag(tags.length - 1); // delete last chip on Backspace
+    }
+  };
+
+  const handleBlur = () => {
+    if (inputValue.trim()) addTag(inputValue); // commit pending text on blur
+  };
+
+  return (
+    <div
+      className="tag-input-container"
+      onClick={() => inputRef.current?.focus()}
+    >
+      {tags.map((tag, i) => (
+        <span key={i} className="tag-chip">
+          {tag}
+          {!disabled && (
+            <button
+              type="button"
+              className="tag-chip-remove"
+              onClick={(e) => { e.stopPropagation(); removeTag(i); }}
+              aria-label={`Remove ${tag}`}
+            >
+              ×
+            </button>
+          )}
+        </span>
+      ))}
+      <input
+        ref={inputRef}
+        id={id}
+        type="text"
+        className="tag-input-text"
+        value={inputValue}
+        placeholder={tags.length === 0 ? placeholder : ''}
+        disabled={disabled}
+        onChange={(e) => setInputValue(e.target.value)}
+        onKeyDown={handleKeyDown}
+        onBlur={handleBlur}
+      />
+    </div>
+  );
+};
+
+// ─── MovieForm ────────────────────────────────────────────────────────────────
 
 interface MovieFormProps {
   movie: Movie | null;
@@ -10,29 +93,42 @@ interface MovieFormProps {
 }
 
 const MovieForm: React.FC<MovieFormProps> = ({ movie, onSubmit, onCancel }) => {
-  const [title, setTitle] = useState('');
-  const [overview, setOverview] = useState('');
-  const [releaseDate, setReleaseDate] = useState('');
-  const [director, setDirector] = useState('');
-  const [posterUrl, setPosterUrl] = useState('');
-  const [backdropUrl, setBackdropUrl] = useState('');
-  const [videoStatus, setVideoStatus] = useState('pending');
-  const [videoUrl, setVideoUrl] = useState('');
-  const [hlsUrl, setHlsUrl] = useState('');
-  const [availableQualities, setAvailableQualities] = useState<string | null>(null);
-  const [processingError, setProcessingError] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [uploading, setUploading] = useState(false);
-  const [uploadPercent, setUploadPercent] = useState<number | null>(null);
-  const [pollProgress, setPollProgress] = useState<number>(0);
-  const [pollStep, setPollStep] = useState<string>('Processing');
 
+  // ── Metadata state ───────────────────────────────────────────────────────
+  const [title, setTitle]               = useState('');
+  const [overview, setOverview]         = useState('');
+  const [releaseDate, setReleaseDate]   = useState('');
+  const [director, setDirector]         = useState('');
+  const [genres, setGenres]             = useState<string[]>([]);
+  const [cast, setCast]                 = useState<string[]>([]);
+  const [keywords, setKeywords]         = useState<string[]>([]);
+  const [posterUrl, setPosterUrl]       = useState('');
+  const [backdropUrl, setBackdropUrl]   = useState('');
+
+  // ── Video pipeline state ─────────────────────────────────────────────────
+  const [videoStatus, setVideoStatus]             = useState('pending');
+  const [videoUrl, setVideoUrl]                   = useState('');
+  const [hlsUrl, setHlsUrl]                       = useState('');
+  const [availableQualities, setAvailableQualities] = useState<string | null>(null);
+  const [processingError, setProcessingError]     = useState<string | null>(null);
+
+  // ── UI state ─────────────────────────────────────────────────────────────
+  const [error, setError]                 = useState<string | null>(null);
+  const [uploading, setUploading]         = useState(false);
+  const [uploadPercent, setUploadPercent] = useState<number | null>(null);
+  const [pollProgress, setPollProgress]   = useState<number>(0);
+  const [pollStep, setPollStep]           = useState<string>('Processing');
+
+  // ── Populate from existing movie when editing ────────────────────────────
   useEffect(() => {
     if (movie) {
       setTitle(movie.title);
       setOverview(movie.overview || '');
       setReleaseDate(movie.release_date ? movie.release_date.split('-')[0] : '');
       setDirector(movie.director || '');
+      setGenres(movie.genres ?? []);
+      setCast(movie.cast ?? []);
+      setKeywords(movie.keywords ?? []);
       setPosterUrl(movie.poster_url || '');
       setBackdropUrl(movie.backdrop_url || '');
       setVideoUrl(movie.video_url || '');
@@ -43,23 +139,24 @@ const MovieForm: React.FC<MovieFormProps> = ({ movie, onSubmit, onCancel }) => {
     }
   }, [movie]);
 
+  // ── Image upload ─────────────────────────────────────────────────────────
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>, type: 'poster' | 'backdrop') => {
     if (!movie || !e.target.files?.[0]) return;
     try {
       setUploading(true);
       setError(null);
       const updatedMovie = await uploadMovieImage(movie.id, e.target.files[0], type);
-      if (type === 'poster') setPosterUrl(updatedMovie.poster_url || '');
+      if (type === 'poster')   setPosterUrl(updatedMovie.poster_url || '');
       if (type === 'backdrop') setBackdropUrl(updatedMovie.backdrop_url || '');
     } catch (err) {
-      const msg = err instanceof Error ? err.message : 'Upload failed';
-      setError(msg);
+      setError(err instanceof Error ? err.message : 'Upload failed');
     } finally {
       setUploading(false);
-      e.target.value = ''; // Reset file input
+      e.target.value = '';
     }
   };
 
+  // ── Video processing status poll ─────────────────────────────────────────
   useEffect(() => {
     let interval: number;
     if (movie && videoStatus === 'processing') {
@@ -69,11 +166,9 @@ const MovieForm: React.FC<MovieFormProps> = ({ movie, onSubmit, onCancel }) => {
           setVideoStatus(res.video_status);
           setPollProgress(res.video_progress ?? 0);
           setPollStep(res.video_step || 'Processing');
-          if (res.hls_playlist_url) setHlsUrl(res.hls_playlist_url);
-          if (res.processing_error) setProcessingError(res.processing_error);
-          if (res.available_qualities) {
-            setAvailableQualities(res.available_qualities);
-          }
+          if (res.hls_playlist_url)    setHlsUrl(res.hls_playlist_url);
+          if (res.processing_error)    setProcessingError(res.processing_error);
+          if (res.available_qualities) setAvailableQualities(res.available_qualities);
         } catch (e) {
           console.warn('Polling error', e);
         }
@@ -82,6 +177,7 @@ const MovieForm: React.FC<MovieFormProps> = ({ movie, onSubmit, onCancel }) => {
     return () => clearInterval(interval);
   }, [movie, videoStatus]);
 
+  // ── Start HLS encoding ───────────────────────────────────────────────────
   const handleProcessHls = async () => {
     if (!movie) return;
     try {
@@ -90,19 +186,15 @@ const MovieForm: React.FC<MovieFormProps> = ({ movie, onSubmit, onCancel }) => {
       await processMovieVideo(movie.id);
       setVideoStatus('processing');
     } catch (err) {
-      // 401 = token expired → send user back to login
       const status = (err as Error & { status?: number }).status;
-      if (status === 401) {
-        window.location.href = '/login';
-        return;
-      }
-      const msg = err instanceof Error ? err.message : 'Processing failed';
-      setError(msg);
+      if (status === 401) { window.location.href = '/login'; return; }
+      setError(err instanceof Error ? err.message : 'Processing failed');
     } finally {
       setUploading(false);
     }
   };
 
+  // ── Video file upload ────────────────────────────────────────────────────
   const handleVideoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!movie || !e.target.files?.[0]) return;
     try {
@@ -115,8 +207,7 @@ const MovieForm: React.FC<MovieFormProps> = ({ movie, onSubmit, onCancel }) => {
       setVideoUrl(updatedMovie.video_url || '');
       setVideoStatus(updatedMovie.video_status || 'uploaded');
     } catch (err) {
-      const msg = err instanceof Error ? err.message : 'Video upload failed';
-      setError(msg);
+      setError(err instanceof Error ? err.message : 'Video upload failed');
     } finally {
       setUploading(false);
       setUploadPercent(null);
@@ -124,6 +215,7 @@ const MovieForm: React.FC<MovieFormProps> = ({ movie, onSubmit, onCancel }) => {
     }
   };
 
+  // ── Form submit ──────────────────────────────────────────────────────────
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
@@ -134,21 +226,30 @@ const MovieForm: React.FC<MovieFormProps> = ({ movie, onSubmit, onCancel }) => {
     }
 
     onSubmit({
-      title: title.trim(),
-      overview: overview.trim() || null,
+      title:        title.trim(),
+      overview:     overview.trim() || null,
       release_date: releaseDate ? `${releaseDate.trim()}-01-01` : null,
-      director: director.trim() || null,
-      poster_url: posterUrl.trim() || null,
+      director:     director.trim() || null,
+      // Send empty arrays as null so the backend treats them as "not provided"
+      genres:       genres.length   > 0 ? genres   : null,
+      cast:         cast.length     > 0 ? cast     : null,
+      keywords:     keywords.length > 0 ? keywords : null,
+      poster_url:   posterUrl.trim()   || null,
       backdrop_url: backdropUrl.trim() || null,
     });
   };
 
+  // Show the AI warning banner when all three signal fields are still empty
+  const missingAiFields = genres.length === 0 && cast.length === 0 && keywords.length === 0;
+
+  // ── Render ───────────────────────────────────────────────────────────────
   return (
     <form className="admin-form" onSubmit={handleSubmit}>
       <h2>{movie ? 'Edit Movie' : 'Add Movie'}</h2>
 
       {error && <p className="admin-form-error">{error}</p>}
 
+      {/* ── Basic metadata ───────────────────────────────────────────── */}
       <div className="admin-form-group">
         <label htmlFor="title">Title *</label>
         <input
@@ -197,6 +298,89 @@ const MovieForm: React.FC<MovieFormProps> = ({ movie, onSubmit, onCancel }) => {
         </div>
       </div>
 
+      {/* ── AI Recommendation Fields ─────────────────────────────────── */}
+      <div className="ai-fields-section">
+
+        {/* Section header */}
+        <div className="ai-fields-header">
+          <span className="ai-fields-icon">🤖</span>
+          <div>
+            <strong>AI Recommendation Data</strong>
+            <span className="ai-fields-desc">
+              Used directly by the TF-IDF recommendation engine.
+              Filling these fields improves personalisation accuracy.
+            </span>
+          </div>
+        </div>
+
+        {/* Warning — only visible when ALL three fields are empty */}
+        {missingAiFields && (
+          <div className="ai-fields-warning">
+            ⚠️&nbsp;<strong>Genres, Cast, and Keywords are all empty.</strong> Missing data
+            reduces recommendation accuracy — the engine will rely on title and
+            overview text alone.
+          </div>
+        )}
+
+        {/* Genres */}
+        <div className="admin-form-group">
+          <label htmlFor="genres">
+            Genres (Thể loại)
+            <span className="field-hint">Press Enter or comma to add each genre</span>
+          </label>
+          <TagInput
+            id="genres"
+            tags={genres}
+            onChange={setGenres}
+            placeholder="e.g. Action, Drama, Sci-Fi…"
+          />
+          {genres.length === 0 && (
+            <p className="ai-field-missing-hint">
+              🔴 No genres — genre matching is the strongest content signal.
+            </p>
+          )}
+        </div>
+
+        {/* Cast */}
+        <div className="admin-form-group">
+          <label htmlFor="cast">
+            Cast / Actors (Diễn viên)
+            <span className="field-hint">Press Enter or comma to add each actor</span>
+          </label>
+          <TagInput
+            id="cast"
+            tags={cast}
+            onChange={setCast}
+            placeholder="e.g. Tom Hanks, Scarlett Johansson…"
+          />
+          {cast.length === 0 && (
+            <p className="ai-field-missing-hint">
+              🟡 No cast — actor-based similarity scoring is disabled.
+            </p>
+          )}
+        </div>
+
+        {/* Keywords */}
+        <div className="admin-form-group">
+          <label htmlFor="keywords">
+            Keywords / Tags (Từ khóa)
+            <span className="field-hint">Thematic tags — press Enter or comma to add each</span>
+          </label>
+          <TagInput
+            id="keywords"
+            tags={keywords}
+            onChange={setKeywords}
+            placeholder="e.g. heist, space, based on true story…"
+          />
+          {keywords.length === 0 && (
+            <p className="ai-field-missing-hint">
+              🟡 No keywords — thematic similarity scoring will be weaker.
+            </p>
+          )}
+        </div>
+      </div>
+
+      {/* ── Image fields ─────────────────────────────────────────────── */}
       <div className="admin-form-group">
         <label htmlFor="poster_url">Poster URL</label>
         <input
@@ -209,10 +393,10 @@ const MovieForm: React.FC<MovieFormProps> = ({ movie, onSubmit, onCancel }) => {
         {movie && (
           <div style={{ marginTop: '8px' }}>
             <label style={{ fontSize: '0.85rem' }}>Or Upload File: </label>
-            <input 
-              type="file" 
-              accept="image/jpeg, image/png, image/webp" 
-              onChange={(e) => handleUpload(e, 'poster')} 
+            <input
+              type="file"
+              accept="image/jpeg, image/png, image/webp"
+              onChange={(e) => handleUpload(e, 'poster')}
               disabled={uploading}
             />
           </div>
@@ -231,82 +415,70 @@ const MovieForm: React.FC<MovieFormProps> = ({ movie, onSubmit, onCancel }) => {
         {movie && (
           <div style={{ marginTop: '8px' }}>
             <label style={{ fontSize: '0.85rem' }}>Or Upload File: </label>
-            <input 
-              type="file" 
-              accept="image/jpeg, image/png, image/webp" 
-              onChange={(e) => handleUpload(e, 'backdrop')} 
+            <input
+              type="file"
+              accept="image/jpeg, image/png, image/webp"
+              onChange={(e) => handleUpload(e, 'backdrop')}
               disabled={uploading}
             />
           </div>
         )}
       </div>
 
+      {/* ── Video pipeline ────────────────────────────────────────────── */}
       <div className="admin-form-group" style={{ backgroundColor: '#f8f9fa', padding: '1rem', borderRadius: '8px', border: '1px solid #dee2e6', color: '#212529' }}>
         <h3 style={{ marginTop: 0, marginBottom: '0.5rem', fontSize: '1.1rem', color: '#212529' }}>Source Video</h3>
         {movie ? (
           <>
             <div style={{ marginBottom: '1rem', fontSize: '0.9rem' }}>
+
               {/* Status badge */}
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
                 <strong>Status:</strong>
                 <span style={{
-                  display: 'inline-block',
-                  padding: '2px 10px',
-                  borderRadius: '12px',
-                  fontSize: '0.8rem',
-                  fontWeight: 600,
+                  display: 'inline-block', padding: '2px 10px', borderRadius: '12px',
+                  fontSize: '0.8rem', fontWeight: 600,
                   backgroundColor:
-                    videoStatus === 'ready' ? '#d4edda' :
+                    videoStatus === 'ready'      ? '#d4edda' :
                     videoStatus === 'processing' ? '#fff3cd' :
-                    videoStatus === 'failed' ? '#f8d7da' :
-                    videoStatus === 'uploaded' ? '#d1ecf1' :
-                    videoStatus === 'no_video' ? '#e2e3e5' : '#e9ecef',
+                    videoStatus === 'failed'     ? '#f8d7da' :
+                    videoStatus === 'uploaded'   ? '#d1ecf1' :
+                    videoStatus === 'no_video'   ? '#e2e3e5' : '#e9ecef',
                   color:
-                    videoStatus === 'ready' ? '#155724' :
+                    videoStatus === 'ready'      ? '#155724' :
                     videoStatus === 'processing' ? '#856404' :
-                    videoStatus === 'failed' ? '#721c24' :
-                    videoStatus === 'uploaded' ? '#0c5460' :
-                    videoStatus === 'no_video' ? '#383d41' : '#6c757d',
+                    videoStatus === 'failed'     ? '#721c24' :
+                    videoStatus === 'uploaded'   ? '#0c5460' :
+                    videoStatus === 'no_video'   ? '#383d41' : '#6c757d',
                 }}>
                   {videoStatus.toUpperCase()}
                 </span>
-                {/* Processing spinner */}
                 {videoStatus === 'processing' && (
                   <span style={{ display: 'inline-block', width: '14px', height: '14px', border: '2px solid #856404', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 0.7s linear infinite' }} />
                 )}
               </div>
 
-              {/* Upload progress bar */}
+              {/* Upload progress */}
               {uploadPercent !== null && (
                 <div style={{ marginBottom: '8px' }}>
-                  <div style={{ fontSize: '0.8rem', marginBottom: '4px', color: '#495057' }}>
-                    Uploading… {uploadPercent}%
-                  </div>
+                  <div style={{ fontSize: '0.8rem', marginBottom: '4px', color: '#495057' }}>Uploading… {uploadPercent}%</div>
                   <div style={{ height: '6px', background: '#dee2e6', borderRadius: '3px', overflow: 'hidden' }}>
                     <div style={{ height: '100%', width: `${uploadPercent}%`, background: '#0d6efd', transition: 'width 0.2s ease', borderRadius: '3px' }} />
                   </div>
                 </div>
               )}
 
-              {/* Processing Dynamic Status bar */}
+              {/* Encode progress */}
               {videoStatus === 'processing' && uploadPercent === null && (
                 <div style={{ marginBottom: '8px' }}>
-                  <div style={{ fontSize: '0.8rem', marginBottom: '4px', color: '#856404' }}>
-                    {pollStep} — {pollProgress}%
-                  </div>
+                  <div style={{ fontSize: '0.8rem', marginBottom: '4px', color: '#856404' }}>{pollStep} — {pollProgress}%</div>
                   <div style={{ height: '6px', background: '#dee2e6', borderRadius: '3px', overflow: 'hidden' }}>
-                    <div style={{
-                      height: '100%',
-                      width: `${pollProgress}%`,
-                      background: 'linear-gradient(90deg, #ffc107, #fd7e14)',
-                      borderRadius: '3px',
-                      transition: 'width 0.5s ease-out'
-                    }} />
+                    <div style={{ height: '100%', width: `${pollProgress}%`, background: 'linear-gradient(90deg, #ffc107, #fd7e14)', borderRadius: '3px', transition: 'width 0.5s ease-out' }} />
                   </div>
                 </div>
               )}
 
-              {/* Encoded quality badges */}
+              {/* Quality badges */}
               {availableQualities && (
                 <div style={{ marginTop: '6px', display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
                   <strong style={{ fontSize: '0.85rem' }}>Qualities:</strong>
@@ -316,23 +488,13 @@ const MovieForm: React.FC<MovieFormProps> = ({ movie, onSubmit, onCancel }) => {
                       fontSize: '0.75rem', fontWeight: 700,
                       background: q.trim() === '1080p' ? '#cce5ff' : q.trim() === '720p' ? '#d4edda' : '#e2e3e5',
                       color:      q.trim() === '1080p' ? '#004085' : q.trim() === '720p' ? '#155724' : '#383d41',
-                    }}>
-                      {q.trim()}
-                    </span>
+                    }}>{q.trim()}</span>
                   ))}
                 </div>
               )}
 
-              {videoUrl && (
-                <div style={{ wordBreak: 'break-all', marginTop: '4px', opacity: 0.8, fontSize: '0.85rem' }}>
-                  <em>Source: {videoUrl}</em>
-                </div>
-              )}
-              {hlsUrl && (
-                <div style={{ wordBreak: 'break-all', marginTop: '4px', color: '#155724', fontSize: '0.85rem' }}>
-                  <em>HLS: <a href={hlsUrl} target="_blank" rel="noopener noreferrer">{hlsUrl}</a></em>
-                </div>
-              )}
+              {videoUrl && <div style={{ wordBreak: 'break-all', marginTop: '4px', opacity: 0.8, fontSize: '0.85rem' }}><em>Source: {videoUrl}</em></div>}
+              {hlsUrl   && <div style={{ wordBreak: 'break-all', marginTop: '4px', color: '#155724', fontSize: '0.85rem' }}><em>HLS: <a href={hlsUrl} target="_blank" rel="noopener noreferrer">{hlsUrl}</a></em></div>}
               {processingError && (
                 <div style={{ color: '#721c24', marginTop: '6px', fontSize: '0.85rem', background: '#f8d7da', padding: '8px', borderRadius: '4px' }}>
                   <strong>Error:</strong> {processingError}
@@ -347,8 +509,6 @@ const MovieForm: React.FC<MovieFormProps> = ({ movie, onSubmit, onCancel }) => {
                 onChange={handleVideoUpload}
                 disabled={uploading}
               />
-
-              {/* Show encode button when video is uploaded, failed, or ready (re-encode) */}
               {(videoStatus === 'uploaded' || videoStatus === 'failed' || videoStatus === 'ready') && (
                 <button
                   type="button"
@@ -369,6 +529,7 @@ const MovieForm: React.FC<MovieFormProps> = ({ movie, onSubmit, onCancel }) => {
         )}
       </div>
 
+      {/* ── Form actions ──────────────────────────────────────────────── */}
       <div className="admin-form-actions">
         <button type="submit" className="btn btn--primary">
           {movie ? 'Save Changes' : 'Create Movie'}
