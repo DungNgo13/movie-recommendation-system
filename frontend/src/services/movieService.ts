@@ -8,6 +8,8 @@ export interface MovieFormData {
   overview?: string | null;
   release_date?: string | null;
   genres?: string[] | null;
+  cast?: string[] | null;       // actor names → fed into TF-IDF recommendation engine
+  keywords?: string[] | null;   // thematic tags  → fed into TF-IDF recommendation engine
   director?: string | null;
   poster_url?: string | null;
   backdrop_url?: string | null;

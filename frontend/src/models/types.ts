@@ -4,6 +4,8 @@ export interface Movie {
   overview: string | null;
   release_date: string | null;
   genres: string[] | null;
+  cast: string[] | null;         // top-billed actor names — used by TF-IDF engine
+  keywords: string[] | null;     // thematic tags — used by TF-IDF engine
   director: string | null;
   poster_url: string | null;
   backdrop_url: string | null;
