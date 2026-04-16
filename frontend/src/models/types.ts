@@ -17,6 +17,8 @@ export interface Movie {
   processing_error?: string | null;
   /** Comma-separated quality labels produced by FFmpeg, e.g. "360p,720p,1080p". Null if not yet encoded. */
   available_qualities?: string | null;
+  /** 0–100 data-completeness score computed on-the-fly by the backend schema. Not stored in DB. */
+  quality_score?: number;
 }
 
 export interface MovieListItem {

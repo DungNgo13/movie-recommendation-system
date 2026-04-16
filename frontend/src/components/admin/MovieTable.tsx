@@ -80,6 +80,110 @@ const QualityCell: React.FC<{ movie: Movie }> = ({ movie }) => {
   );
 };
 
+// ─── Data Quality Cell ───────────────────────────────────────────────────────
+// Mirrors the backend compute_quality_score() formula so the tooltip is
+// always consistent with the number coming from the API.
+
+/** Returns a human-readable list of which AI fields are still empty. */
+function getMissingFields(movie: Movie): string[] {
+  const missing: string[] = [];
+  if (!movie.genres?.length)                           missing.push('Genres (+30)');
+  if (!movie.cast?.length)                             missing.push('Cast (+20)');
+  if (!movie.overview || movie.overview.length <= 50)  missing.push('Overview >50 chars (+20)');
+  if (!movie.director)                                 missing.push('Director (+15)');
+  if (!movie.poster_url || !movie.backdrop_url)        missing.push('Poster & Backdrop (+10)');
+  return missing;
+}
+
+/** Colour thresholds matching the brief */
+function scoreColor(score: number): string {
+  if (score >= 80) return '#27ae60'; // green  — optimised
+  if (score >= 50) return '#f39c12'; // amber  — average
+  return '#e74c3c';                  // red    — critical
+}
+
+/**
+ * SVG ring gauge (donut chart) showing quality_score 0–100.
+ * The ring fill is the only moving part; no external library needed.
+ */
+const DataQualityCell: React.FC<{ movie: Movie }> = ({ movie }) => {
+  const score  = movie.quality_score ?? 0;
+  const color  = scoreColor(score);
+  const missing = getMissingFields(movie);
+
+  // SVG ring maths
+  const R   = 16;                           // radius of the ring
+  const C   = 2 * Math.PI * R;             // full circumference
+  const arc = C * (score / 100);           // filled arc length
+
+  // Tooltip — shows missing fields or a success message
+  const tooltip = missing.length === 0
+    ? '✓ All AI fields complete — engine fully optimised'
+    : `Missing:\n${missing.map(f => `  • ${f}`).join('\n')}`;
+
+  // Label under the ring — severity text
+  const label =
+    score >= 80 ? 'Optimised' :
+    score >= 50 ? 'Average'   : 'Critical';
+
+  return (
+    <div
+      title={tooltip}
+      style={{
+        display:        'inline-flex',
+        flexDirection:  'column',
+        alignItems:     'center',
+        gap:            3,
+        cursor:         'help',
+        userSelect:     'none',
+      }}
+    >
+      {/* SVG donut ring */}
+      <svg width={40} height={40} viewBox="0 0 40 40">
+        {/* Track ring (grey background) */}
+        <circle
+          cx={20} cy={20} r={R}
+          fill="none"
+          stroke="#e9ecef"
+          strokeWidth={5}
+        />
+        {/* Score arc — rotated so it starts at 12 o'clock */}
+        <circle
+          cx={20} cy={20} r={R}
+          fill="none"
+          stroke={color}
+          strokeWidth={5}
+          strokeLinecap="round"
+          strokeDasharray={`${arc} ${C - arc}`}
+          strokeDashoffset={C / 4}   /* rotate to 12 o'clock */
+          style={{ transition: 'stroke-dasharray 0.4s ease' }}
+        />
+        {/* Score number in the centre */}
+        <text
+          x={20} y={20}
+          textAnchor="middle"
+          dominantBaseline="central"
+          fontSize={9}
+          fontWeight={700}
+          fill={color}
+        >
+          {score}
+        </text>
+      </svg>
+
+      {/* Severity label */}
+      <span style={{
+        fontSize:   '0.65rem',
+        fontWeight: 600,
+        color,
+        letterSpacing: '0.02em',
+      }}>
+        {label}
+      </span>
+    </div>
+  );
+};
+
 /** Colour-coded badge + optional indeterminate bar for the video pipeline status. */
 const VideoStatusCell: React.FC<{
   movie: Movie;
@@ -211,6 +315,12 @@ const MovieTable: React.FC<MovieTableProps> = ({ movies, onEdit, onDelete, onCan
             <th>Director</th>
             <th>Release Year</th>
             <th>Quality</th>
+            <th
+              title="Data completeness score for the AI recommendation engine (0–100). Hover each row for missing fields."
+              style={{ cursor: 'help', whiteSpace: 'nowrap' }}
+            >
+              Data Quality ℹ
+            </th>
             <th>Video Status</th>
             <th>Actions</th>
           </tr>
@@ -222,6 +332,9 @@ const MovieTable: React.FC<MovieTableProps> = ({ movies, onEdit, onDelete, onCan
               <td>{movie.director || '—'}</td>
               <td>{movie.release_date ? movie.release_date.split('-')[0] : '—'}</td>
               <td><QualityCell movie={movie} /></td>
+              <td style={{ textAlign: 'center' }}>
+                <DataQualityCell movie={movie} />
+              </td>
               <td><VideoStatusCell movie={movie} onCancelEncode={onCancelEncode} /></td>
               <td className="admin-table-actions">
                 <button

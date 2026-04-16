@@ -13,22 +13,57 @@ def normalize_url(path: Optional[str]) -> Optional[str]:
     clean_path = path.lstrip("/\\")
     return f"http://localhost:8000/{clean_path}"
 
+
+def compute_quality_score(
+    title: Optional[str],
+    overview: Optional[str],
+    genres: Optional[list],
+    cast: Optional[list],
+    director: Optional[str],
+    poster_path: Optional[str],
+    backdrop_path: Optional[str],
+) -> int:
+    """
+    Compute a 0–100 data-completeness score for a movie's AI-recommendation
+    metadata.  Higher score → the TF-IDF engine has more signals to work with.
+
+    Scoring breakdown (max = 100):
+      +30  genres present          — strongest content signal
+      +20  cast present            — actor-based similarity
+      +20  overview > 50 chars     — rich text for TF-IDF
+      +15  director present        — director affinity signal
+      +10  both poster & backdrop  — visual completeness (UX quality)
+      + 5  title present           — always required; sanity check
+    """
+    score = 0
+    if genres:                              score += 30
+    if cast:                                score += 20
+    if overview and len(overview) > 50:     score += 20
+    if director:                            score += 15
+    if poster_path and backdrop_path:       score += 10
+    if title:                               score +=  5
+    return score
+
 # Schema for an item in the movie list
 class MovieListItemSchema(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     id: UUID
     title: str
-    
-    # Exclude internal _path representations safely bridging local/prod natively
+
+    # Exclude raw DB columns — exposed only through computed_field properties below
     poster_path: Optional[str] = Field(None, exclude=True)
     backdrop_path: Optional[str] = Field(None, exclude=True)
     processing_status: Optional[str] = Field("no_video", exclude=True)
     processing_progress: Optional[int] = Field(0, exclude=True)
     processing_step: Optional[str] = Field(None, exclude=True)
     hls_playlist_path: Optional[str] = Field(None, exclude=True)
-    
     release_date: Optional[date] = Field(None, exclude=True)
+    # Needed only for quality_score calculation — not exposed in list output
+    overview: Optional[str] = Field(None, exclude=True)
+    director: Optional[str] = Field(None, exclude=True)
+    cast: Optional[List[str]] = Field(None, exclude=True)
+
     genres: Optional[List[str]] = []
     available_qualities: Optional[str] = None
 
@@ -36,12 +71,12 @@ class MovieListItemSchema(BaseModel):
     @property
     def poster_url(self) -> Optional[str]:
         return normalize_url(self.poster_path)
-        
+
     @computed_field
     @property
     def backdrop_url(self) -> Optional[str]:
         return normalize_url(self.backdrop_path)
-        
+
     @computed_field
     @property
     def video_status(self) -> Optional[str]:
@@ -56,7 +91,7 @@ class MovieListItemSchema(BaseModel):
     @property
     def video_step(self) -> Optional[str]:
         return self.processing_step
-        
+
     @computed_field
     @property
     def hls_playlist_url(self) -> Optional[str]:
@@ -68,6 +103,20 @@ class MovieListItemSchema(BaseModel):
         if self.release_date:
             return self.release_date.year
         return None
+
+    @computed_field
+    @property
+    def quality_score(self) -> int:
+        """0–100 data-completeness score for the AI recommendation engine."""
+        return compute_quality_score(
+            title=self.title,
+            overview=self.overview,
+            genres=self.genres,
+            cast=self.cast,
+            director=self.director,
+            poster_path=self.poster_path,
+            backdrop_path=self.backdrop_path,
+        )
 
 # Schema for the detailed movie view
 class MovieDetailSchema(BaseModel):
@@ -81,7 +130,7 @@ class MovieDetailSchema(BaseModel):
     cast: Optional[List[str]] = []
     keywords: Optional[List[str]] = []
     director: Optional[str] = None
-    
+
     video_original_filename: Optional[str] = None
     processing_error: Optional[str] = None
     available_qualities: Optional[str] = None
@@ -104,7 +153,7 @@ class MovieDetailSchema(BaseModel):
     @property
     def backdrop_url(self) -> Optional[str]:
         return normalize_url(self.backdrop_path)
-        
+
     @computed_field
     @property
     def video_url(self) -> Optional[str]:
@@ -124,11 +173,25 @@ class MovieDetailSchema(BaseModel):
     @property
     def video_step(self) -> Optional[str]:
         return self.processing_step
-        
+
     @computed_field
     @property
     def hls_playlist_url(self) -> Optional[str]:
         return normalize_url(self.hls_playlist_path)
+
+    @computed_field
+    @property
+    def quality_score(self) -> int:
+        """0–100 data-completeness score for the AI recommendation engine."""
+        return compute_quality_score(
+            title=self.title,
+            overview=self.overview,
+            genres=self.genres,
+            cast=self.cast,
+            director=self.director,
+            poster_path=self.poster_path,
+            backdrop_path=self.backdrop_path,
+        )
 
 # Schema for creating a new movie (Matches Frontend Expected input!)
 class MovieCreateSchema(BaseModel):
