@@ -184,25 +184,38 @@ def process_video_hls(
 ):
     """
     Trigger async FFmpeg conversion of an uploaded source video into HLS.
+
+    Allowed from any status EXCEPT 'processing' (an encode is already running).
+    Re-encoding a 'ready' movie is explicitly supported so admins can change
+    quality settings at any time.
     """
     db_movie = movie_service.get_movie(db, movie_id)
     if not db_movie:
         raise HTTPException(status_code=404, detail="Movie not found")
-        
-    if db_movie.processing_status not in ("uploaded", "failed", "ready"):
+
+    # Block only if FFmpeg is already running — everything else is fair game.
+    if db_movie.processing_status == "processing":
         raise HTTPException(
-            status_code=400,
-            detail="Video must be in 'uploaded', 'failed', or 'ready' state to re-encode."
+            status_code=409,
+            detail="An encode is already in progress for this movie. "
+                   "Cancel it first via POST /{movie_id}/cancel-encode."
         )
 
-    # Mark status immediately so the UI shows live feedback
+    # A source video must exist on disk before we can encode.
+    if not db_movie.video_source_path:
+        raise HTTPException(
+            status_code=422,
+            detail="No source video found. Upload a video file first."
+        )
+
+    # Mark status immediately so the UI shows live feedback.
     db_movie.processing_status = "processing"
-    db_movie.processing_error = None
+    db_movie.processing_error  = None
     db_movie.available_qualities = "Processing..."   # cleared when FFmpeg finishes
     db.commit()
 
     background_tasks.add_task(process_hls_conversion, movie_id)
-    
+
     create_audit_log(
         db=db,
         admin_email=admin_user.email,
@@ -211,8 +224,9 @@ def process_video_hls(
         target_id=str(movie_id),
         description=f"Triggered HLS conversion for movie '{db_movie.title}'"
     )
-    
+
     return {"message": "HLS conversion started in the background."}
+
 
 @router.get("/{movie_id}/status")
 def get_video_status(
