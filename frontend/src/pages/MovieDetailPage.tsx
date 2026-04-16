@@ -240,8 +240,49 @@ const MovieDetailPage: React.FC = () => {
 
       <h1>{movie.title}</h1>
       <p>{movie.overview}</p>
-      <p>Release Year: {movie.release_date ? movie.release_date.split('-')[0] : 'N/A'}</p>
-      <p>Director: {movie.director}</p>
+
+      {/* ── Metadata block ────────────────────────────────────────────── */}
+      <div className="movie-meta-block">
+
+        {/* Release year + Director — plain text rows */}
+        <p className="movie-meta-row">
+          <span className="movie-meta-label">Release Year</span>
+          <span>{movie.release_date ? movie.release_date.split('-')[0] : 'N/A'}</span>
+        </p>
+        <p className="movie-meta-row">
+          <span className="movie-meta-label">Director</span>
+          <span>{movie.director || 'N/A'}</span>
+        </p>
+
+        {/* Cast — one scrollable row of actor badges (hidden when empty) */}
+        {movie.cast && movie.cast.length > 0 && (
+          <div className="movie-meta-row movie-meta-scroll-row">
+            <span className="movie-meta-label">Cast</span>
+            <div className="movie-meta-scroll-track">
+              {movie.cast.map((actor) => (
+                <span key={actor} className="detail-cast-badge">
+                  {actor}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Keywords — one scrollable row of hashtag badges (hidden when empty) */}
+        {movie.keywords && movie.keywords.length > 0 && (
+          <div className="movie-meta-row movie-meta-scroll-row">
+            <span className="movie-meta-label">Keywords</span>
+            <div className="movie-meta-scroll-track">
+              {movie.keywords.map((kw) => (
+                <span key={kw} className="detail-keyword-badge">
+                  #{kw}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
+
+      </div>
 
       <div className="rating-section">
         <h3>Your Rating</h3>

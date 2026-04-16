@@ -1240,3 +1240,98 @@
   font-size: 0.78rem;
   color: #888;
 }
+
+/* ===== Movie Detail — Metadata Block ===== */
+
+/* Wrapper that groups all metadata rows */
+.movie-meta-block {
+  margin: 4px 0 20px;
+}
+
+/* A single metadata row: fixed label on the left + content on the right */
+.movie-meta-row {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin: 0 0 8px;
+  font-size: 0.95rem;
+  color: #444;
+  min-height: 28px;      /* consistent row height */
+}
+
+/* Bold label that never shrinks or wraps */
+.movie-meta-label {
+  flex: 0 0 90px;        /* fixed 90 px column — stays visible while track scrolls */
+  font-weight: 700;
+  color: #1a1a2e;
+  font-size: 0.88rem;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+}
+
+/* Rows that contain a horizontally scrollable badge track */
+.movie-meta-scroll-row {
+  align-items: center;
+  overflow: hidden;       /* clip the track; actual scroll is on the child */
+}
+
+/* The pill track: single row, scrollable, no wrap */
+.movie-meta-scroll-track {
+  display: flex;
+  flex-wrap: nowrap;      /* — no wrap, ever */
+  gap: 6px;
+  overflow-x: auto;       /* — horizontal scroll when badges overflow */
+  padding-bottom: 3px;    /* space for scrollbar on some OS */
+  /* Hide scrollbar on Webkit but keep it functional */
+  scrollbar-width: thin;
+  scrollbar-color: #d0d0d0 transparent;
+}
+
+.movie-meta-scroll-track::-webkit-scrollbar {
+  height: 3px;
+}
+.movie-meta-scroll-track::-webkit-scrollbar-track {
+  background: transparent;
+}
+.movie-meta-scroll-track::-webkit-scrollbar-thumb {
+  background: #d0d0d0;
+  border-radius: 2px;
+}
+
+/* ── Cast badge: subtle dark-navy chip ── */
+.detail-cast-badge {
+  display: inline-block;
+  padding: 3px 12px;
+  border-radius: 14px;
+  white-space: nowrap;    /* single item must never break */
+  font-size: 0.78rem;
+  font-weight: 500;
+  background: #1a1a2e;
+  color: #e8eaf6;
+  border: 1px solid #2d2d5e;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.detail-cast-badge:hover {
+  background: #2d2d5e;
+  color: #fff;
+}
+
+/* ── Keyword badge: tinted hashtag chip ── */
+.detail-keyword-badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 14px;
+  white-space: nowrap;
+  font-size: 0.76rem;
+  font-weight: 600;
+  background: rgba(52, 152, 219, 0.10);
+  color: #2471a3;
+  border: 1px solid rgba(52, 152, 219, 0.30);
+  letter-spacing: 0.01em;
+  transition: background 0.15s ease;
+}
+
+.detail-keyword-badge:hover {
+  background: rgba(52, 152, 219, 0.20);
+}
