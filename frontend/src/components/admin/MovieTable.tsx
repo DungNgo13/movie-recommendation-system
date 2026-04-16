@@ -6,6 +6,7 @@ interface MovieTableProps {
   onEdit: (movie: Movie) => void;
   onDelete: (movie: Movie) => void;
   onCancelEncode: (movie: Movie) => Promise<void>;
+  onStartEncode: (movie: Movie) => Promise<void>;
 }
 
 /** Green pill for a single resolved quality label like "720p". */
@@ -188,7 +189,8 @@ const DataQualityCell: React.FC<{ movie: Movie }> = ({ movie }) => {
 const VideoStatusCell: React.FC<{
   movie: Movie;
   onCancelEncode: (movie: Movie) => Promise<void>;
-}> = ({ movie, onCancelEncode }) => {
+  onStartEncode:  (movie: Movie) => Promise<void>;
+}> = ({ movie, onCancelEncode, onStartEncode }) => {
   const status = movie.video_status ?? 'no_video';
   const [isCancelling, setIsCancelling] = useState(false);
 
@@ -284,7 +286,26 @@ const VideoStatusCell: React.FC<{
         </div>
       )}
 
-      {/* One-line error hint */}
+      {/* ── One-click encode trigger — visible for uploaded / failed / ready ── */}
+      {(status === 'uploaded' || status === 'failed' || status === 'ready') && (
+        <button
+          onClick={() => onStartEncode(movie)}
+          title={status === 'ready' ? 'Re-encode (replace existing HLS)' : 'Start multi-quality HLS encoding'}
+          style={{
+            marginTop: '6px',
+            display: 'inline-flex', alignItems: 'center', gap: '4px',
+            padding: '2px 10px', borderRadius: '8px', border: 'none',
+            cursor: 'pointer', fontSize: '0.7rem', fontWeight: 700,
+            background: status === 'ready' ? '#d1ecf1' : '#d4edda',
+            color:      status === 'ready' ? '#0c5460'  : '#155724',
+            transition: 'background 0.2s',
+          }}
+        >
+          {status === 'ready' ? '↺ Re-encode' : '▶ Encode'}
+        </button>
+      )}
+
+      {/* One-line error hint — only when encoding failed */}
       {status === 'failed' && movie.processing_error && (
         <div
           title={movie.processing_error}
@@ -305,7 +326,7 @@ const VideoStatusCell: React.FC<{
   );
 };
 
-const MovieTable: React.FC<MovieTableProps> = ({ movies, onEdit, onDelete, onCancelEncode }) => {
+const MovieTable: React.FC<MovieTableProps> = ({ movies, onEdit, onDelete, onCancelEncode, onStartEncode }) => {
   return (
     <div className="admin-table-wrapper">
       <table className="admin-table">
@@ -335,7 +356,7 @@ const MovieTable: React.FC<MovieTableProps> = ({ movies, onEdit, onDelete, onCan
               <td style={{ textAlign: 'center' }}>
                 <DataQualityCell movie={movie} />
               </td>
-              <td><VideoStatusCell movie={movie} onCancelEncode={onCancelEncode} /></td>
+              <td><VideoStatusCell movie={movie} onCancelEncode={onCancelEncode} onStartEncode={onStartEncode} /></td>
               <td className="admin-table-actions">
                 <button
                   className="btn btn--edit"

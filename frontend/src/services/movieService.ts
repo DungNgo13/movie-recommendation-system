@@ -124,18 +124,26 @@ export const processMovieVideo = async (id: string): Promise<{ message: string }
 
   const response = await fetch(`${API_BASE_URL}/movies/${id}/process-hls`, {
     method: 'POST',
-    headers: token ? { Authorization: `Bearer ${token}` } : {},
+    // Content-Type is required even for an empty-body POST so FastAPI doesn't
+    // reject the request with a 422 Unprocessable Entity on some versions.
+    headers: {
+      'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
   });
 
   if (!response.ok) {
-    // Attach the HTTP status to the error so callers can handle 401 specially
+    // Parse the backend JSON error body so callers get the exact detail string.
     const errorData = await response.json().catch(() => null);
-    const err = new Error(errorData?.detail || 'Failed to trigger processing') as Error & { status?: number };
-    err.status = response.status;
+    const message   = errorData?.detail || `Request failed (HTTP ${response.status})`;
+    const err       = new Error(message) as Error & { status?: number };
+    err.status      = response.status;   // callers check .status === 401 / 409 etc.
     throw err;
   }
+
   return response.json();
 };
+
 
 export const getMovieProcessingStatus = async (id: string): Promise<{
   video_status: string;

@@ -13,13 +13,16 @@ import {
   getMovieById,
   getMovieProcessingStatus,
   cancelEncodeMovie,
+  processMovieVideo,
 } from '../services/movieService';
 
 const AdminMoviesPage: React.FC = () => {
-  const [movies, setMovies] = useState<Movie[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [showForm, setShowForm] = useState(false);
+  const [movies, setMovies]           = useState<Movie[]>([]);
+  const [loading, setLoading]         = useState(true);
+  const [error, setError]             = useState<string | null>(null);
+  // Toast for session-expired (401) — shown as a dismissible amber banner
+  const [sessionToast, setSessionToast] = useState<string | null>(null);
+  const [showForm, setShowForm]       = useState(false);
   const [editingMovie, setEditingMovie] = useState<Movie | null>(null);
   const [deletingMovie, setDeletingMovie] = useState<Movie | null>(null);
 
@@ -162,6 +165,66 @@ const AdminMoviesPage: React.FC = () => {
     }
   };
 
+  // Called by MovieTable when the admin clicks "▶ Start Encoding" on a row.
+  // Optimistically transitions the row to "processing" immediately so the UI
+  // responds before the background task starts, then handles auth errors clearly.
+  const handleStartEncode = async (movie: Movie) => {
+    // Optimistic update — show the encoding spinner right away
+    setMovies((prev) =>
+      prev.map((m) =>
+        m.id === movie.id
+          ? { ...m, video_status: 'processing', available_qualities: 'Processing...', video_progress: 0, video_step: 'Queued' }
+          : m
+      )
+    );
+
+    try {
+      await processMovieVideo(movie.id);
+    } catch (err: unknown) {
+      const typedErr = err as Error & { status?: number };
+
+      // 401 — session expired: show a prominent toast and do NOT redirect
+      // silently; let the user finish what they were doing and choose to log in.
+      if (typedErr.status === 401) {
+        setSessionToast('Your session has expired. Please log in again to continue encoding.');
+        // Roll back the optimistic update
+        setMovies((prev) =>
+          prev.map((m) =>
+            m.id === movie.id
+              ? { ...m, video_status: movie.video_status, available_qualities: movie.available_qualities, video_progress: movie.video_progress, video_step: movie.video_step }
+              : m
+          )
+        );
+        return;
+      }
+
+      // 409 — already encoding (race condition from double-click)
+      if (typedErr.status === 409) {
+        // The encode is running anyway — just refresh the row status
+        const fresh = await getMovieProcessingStatus(movie.id).catch(() => null);
+        if (fresh) {
+          setMovies((prev) =>
+            prev.map((m) =>
+              m.id === movie.id ? { ...m, video_status: fresh.video_status, available_qualities: fresh.available_qualities } : m
+            )
+          );
+        }
+        return;
+      }
+
+      // Other errors — show in the page error banner and roll back the row
+      const msg = typedErr.message || 'Failed to start encoding';
+      setError(msg);
+      setMovies((prev) =>
+        prev.map((m) =>
+          m.id === movie.id
+            ? { ...m, video_status: movie.video_status, available_qualities: movie.available_qualities }
+            : m
+        )
+      );
+    }
+  };
+
   const handleAdd = () => {
     setEditingMovie(null);
     setShowForm(true);
@@ -174,6 +237,30 @@ const AdminMoviesPage: React.FC = () => {
   return (
     <div className="admin-page">
       <span className="admin-badge">Admin Mode</span>
+
+      {/* ── Session-expired toast (401) ───────────────────────────────── */}
+      {sessionToast && (
+        <div style={{
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          gap: '12px', padding: '12px 16px', marginBottom: '12px',
+          background: '#fff8e1', border: '1px solid #ffe082',
+          borderLeft: '4px solid #f39c12', borderRadius: '6px',
+          fontSize: '0.9rem', color: '#7a5800',
+        }}>
+          <span>⚠️ {sessionToast}</span>
+          <button
+            onClick={() => { setSessionToast(null); window.location.href = '/login'; }}
+            style={{ padding: '4px 14px', borderRadius: '5px', border: 'none', background: '#f39c12', color: '#fff', fontWeight: 700, cursor: 'pointer' }}
+          >
+            Log in
+          </button>
+          <button
+            onClick={() => setSessionToast(null)}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '1.1rem', color: '#7a5800', lineHeight: 1 }}
+            aria-label="Dismiss"
+          >×</button>
+        </div>
+      )}
 
       <div className="admin-header">
         <h1>🎬 Movie Management</h1>
@@ -202,11 +289,12 @@ const AdminMoviesPage: React.FC = () => {
               </button>
             </div>
           ) : (
-            <MovieTable
+        <MovieTable
               movies={movies}
               onEdit={handleEdit}
               onDelete={handleDeleteRequest}
               onCancelEncode={handleCancelEncode}
+              onStartEncode={handleStartEncode}
             />
           )}
         </>
