@@ -1,4 +1,6 @@
 import os
+import asyncio
+import contextlib
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
@@ -29,7 +31,33 @@ watch_history_model.Base.metadata.create_all(bind=engine)
 rating_model.Base.metadata.create_all(bind=engine)
 admin_audit_log_model.Base.metadata.create_all(bind=engine)
 
-app = FastAPI(title="Mov-Sug API", version="0.1.0")
+
+@contextlib.asynccontextmanager
+async def lifespan(app: FastAPI):
+    """
+    FastAPI lifespan context manager.
+
+    STARTUP  → launch the singleton encoding worker so exactly one FFmpeg
+               process can run at a time (prevents CPU exhaustion).
+    SHUTDOWN → cancel the worker task gracefully.
+
+    Using lifespan instead of the deprecated @app.on_event("startup") is the
+    recommended pattern since FastAPI 0.93.
+    """
+    from .services.hls_service import encoding_worker   # local import avoids circular deps
+
+    worker_task = asyncio.create_task(encoding_worker(), name="hls_encoding_worker")
+
+    yield   # ←── application runs here ────────────────────────────────────
+
+    # SHUTDOWN: cancel the worker and wait for it to finish cleanly.
+    worker_task.cancel()
+    with contextlib.suppress(asyncio.CancelledError):
+        await worker_task
+
+
+app = FastAPI(title="Mov-Sug API", version="0.1.0", lifespan=lifespan)
+
 
 # Legacy mount mapping for historical files strictly ensuring backwards-parsing safely
 os.makedirs("uploads", exist_ok=True)

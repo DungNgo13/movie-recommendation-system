@@ -1,4 +1,5 @@
 import os
+import asyncio
 import subprocess
 import shutil
 import logging
@@ -14,6 +15,89 @@ logger = logging.getLogger(__name__)
 # Global process registry  { movie_id (str) -> subprocess.Popen }
 # ---------------------------------------------------------------------------
 active_encodes: dict[str, subprocess.Popen] = {}
+
+# ---------------------------------------------------------------------------
+# In-Memory Async Task Queue  (no Redis / Celery required)
+#
+# Architecture (thesis-friendly explanation):
+#   ┌──────────────────────────────────────────────────────┐
+#   │  POST /process-hls                                    │
+#   │       │                                               │
+#   │       ▼                                               │
+#   │  queue_encode_task(movie_id)  →  encode_queue.put()  │
+#   │  returns HTTP 202 immediately                         │
+#   └──────────────────────────────────────────────────────┘
+#
+#   ┌──────────────────────────────────────────────────────┐
+#   │  encoding_worker  (runs forever, started at app boot)  │
+#   │       │                                               │
+#   │       ▼  encode_queue.get()  (blocks until item ready)│
+#   │  run process_hls_conversion(movie_id)                 │
+#   │     in a ThreadPoolExecutor so asyncio is not blocked  │
+#   │       │                                               │
+#   │       ▼  task_done()  → pick up NEXT job               │
+#   └──────────────────────────────────────────────────────┘
+#
+# Strictly 1 FFmpeg process at a time — prevents CPU exhaustion in production.
+# ---------------------------------------------------------------------------
+
+# The queue holds movie UUIDs waiting to be encoded.
+# maxsize=0 means unlimited depth — jobs won't be dropped, just queued.
+encode_queue: asyncio.Queue = asyncio.Queue()
+
+
+def queue_encode_task(movie_id: UUID) -> int:
+    """
+    Add a movie to the encoding queue.
+
+    Puts the movie_id onto the asyncio.Queue and returns the current queue
+    depth (including the newly added item) so the HTTP response can report
+    the position.
+
+    This is the ONLY way encoding should be triggered — it replaces the
+    previous BackgroundTasks.add_task(process_hls_conversion, ...) pattern.
+    """
+    encode_queue.put_nowait(movie_id)   # non-blocking; never raises on maxsize=0
+    return encode_queue.qsize()
+
+
+def queue_size() -> int:
+    """Return the number of encoding jobs currently waiting in the queue."""
+    return encode_queue.qsize()
+
+
+async def encoding_worker() -> None:
+    """
+    Long-running coroutine that serialises FFmpeg encoding jobs.
+
+    Started once at application startup via the lifespan context manager.
+    Pulls one UUID from encode_queue, runs process_hls_conversion in a
+    ThreadPoolExecutor (so the synchronous FFmpeg subprocess does not block
+    the asyncio event loop), then picks up the next job.
+
+    Concurrency: exactly ONE FFmpeg process runs at any moment, no matter
+    how many admins click “Encode” simultaneously.
+    """
+    loop = asyncio.get_event_loop()
+    logger.info("[Queue] Encoding worker started — ready to process jobs.")
+
+    while True:
+        movie_id = await encode_queue.get()   # waits until a job arrives
+        logger.info("[Queue] Dequeued movie %s for encoding. Jobs remaining: %d",
+                    movie_id, encode_queue.qsize())
+        try:
+            # run_in_executor offloads the blocking subprocess call to a
+            # thread pool so the event loop stays responsive during encoding.
+            await loop.run_in_executor(None, process_hls_conversion, movie_id)
+        except Exception:
+            # process_hls_conversion handles its own DB error state; any
+            # uncaught exception here is logged but must not kill the worker.
+            logger.exception("[Queue] Unexpected error while encoding movie %s", movie_id)
+        finally:
+            encode_queue.task_done()   # signals join() callers (used in tests)
+            logger.info("[Queue] Finished movie %s. Jobs remaining: %d",
+                        movie_id, encode_queue.qsize())
+
 
 
 def get_video_duration(path: str) -> float:

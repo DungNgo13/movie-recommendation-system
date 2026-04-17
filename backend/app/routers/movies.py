@@ -173,21 +173,23 @@ def upload_video(
     )
     return db_movie
 
-from ..services.hls_service import process_hls_conversion, cancel_encode_task
+from ..services.hls_service import process_hls_conversion, cancel_encode_task, queue_encode_task, queue_size
 
 @router.post("/{movie_id}/process-hls", status_code=202)
 def process_video_hls(
     movie_id: UUID,
-    background_tasks: BackgroundTasks,
     db: Session = Depends(database.get_db),
     admin_user=Depends(get_current_admin_user)
 ):
     """
-    Trigger async FFmpeg conversion of an uploaded source video into HLS.
+    Queue a movie for async FFmpeg HLS conversion.
 
-    Allowed from any status EXCEPT 'processing' (an encode is already running).
-    Re-encoding a 'ready' movie is explicitly supported so admins can change
-    quality settings at any time.
+    Instead of spawning a raw BackgroundTask (which allows unlimited parallel
+    FFmpeg processes), this endpoint puts the movie_id onto the in-memory
+    asyncio.Queue.  The singleton encoding_worker coroutine serialises
+    execution: exactly ONE FFmpeg process runs at any time.
+
+    Returns HTTP 202 immediately.  The frontend polls /status to track progress.
     """
     db_movie = movie_service.get_movie(db, movie_id)
     if not db_movie:
@@ -209,12 +211,13 @@ def process_video_hls(
         )
 
     # Mark status immediately so the UI shows live feedback.
-    db_movie.processing_status = "processing"
-    db_movie.processing_error  = None
+    db_movie.processing_status   = "processing"
+    db_movie.processing_error    = None
     db_movie.available_qualities = "Processing..."   # cleared when FFmpeg finishes
     db.commit()
 
-    background_tasks.add_task(process_hls_conversion, movie_id)
+    # Enqueue — the singleton worker will pick this up when it is free.
+    position = queue_encode_task(movie_id)
 
     create_audit_log(
         db=db,
@@ -222,11 +225,14 @@ def process_video_hls(
         action_type="movie_update",
         target_type="movie",
         target_id=str(movie_id),
-        description=f"Triggered HLS conversion for movie '{db_movie.title}'"
+        description=f"Queued HLS conversion for movie '{db_movie.title}' (queue position {position})"
     )
 
-    return {"message": "HLS conversion started in the background."}
-
+    return {
+        "message":        "HLS conversion queued successfully.",
+        "queue_position": position,
+        "info":           "Exactly one encode runs at a time. Poll /status for progress.",
+    }
 
 @router.get("/{movie_id}/status")
 def get_video_status(
