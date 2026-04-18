@@ -2,7 +2,13 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import type { Movie } from '../models';
 import { getMovieById } from '../services/movieService';
-import { saveWatchProgress, getWatchProgress, recordWatch } from '../services/continueWatchingService';
+import {
+  saveWatchProgress,
+  getWatchProgress,
+  recordWatch,
+  saveGuestWatchProgress,
+  getGuestWatchProgressForMovie,
+} from '../services/continueWatchingService';
 import { getMyRating, rateMovie } from '../services/ratingService';
 import { getRecommendations } from '../services/recommendationService';
 import type { RecommendedMovie } from '../services/recommendationService';
@@ -49,28 +55,41 @@ const MovieDetailPage: React.FC = () => {
 
   // Called by HlsPlayer on every timeupdate (~4Hz).
   // Throttled: only saves to backend every SAVE_INTERVAL_SECONDS.
+  // Falls through to guest localStorage save when no user is authenticated.
   const handleTimeUpdate = (currentTime: number, duration: number) => {
     lastDurationRef.current = duration;
-    if (!movie || !user) return;
+    if (!movie) return;
     if (Math.abs(currentTime - lastSavedTimeRef.current) >= SAVE_INTERVAL_SECONDS) {
       lastSavedTimeRef.current = currentTime;
-      saveWatchProgress(movie.id, currentTime, duration);
+      if (user) {
+        saveWatchProgress(movie.id, currentTime, duration);
+      } else {
+        saveGuestWatchProgress(movie.id, currentTime, duration);
+      }
     }
   };
 
   // Save immediately on pause
   const handlePause = (currentTime: number, duration: number) => {
-    if (!movie || !user || currentTime < 1) return;
+    if (!movie || currentTime < 1) return;
     lastSavedTimeRef.current = currentTime;
     lastDurationRef.current = duration;
-    saveWatchProgress(movie.id, currentTime, duration);
+    if (user) {
+      saveWatchProgress(movie.id, currentTime, duration);
+    } else {
+      saveGuestWatchProgress(movie.id, currentTime, duration);
+    }
   };
 
   // Save as completed when video ends
   const handleEnded = (duration: number) => {
-    if (!movie || !user) return;
+    if (!movie) return;
     // Save at 100% — backend will mark is_completed = true
-    saveWatchProgress(movie.id, duration, duration);
+    if (user) {
+      saveWatchProgress(movie.id, duration, duration);
+    } else {
+      saveGuestWatchProgress(movie.id, duration, duration);
+    }
   };
 
   // Save on unmount (navigate away mid-watch)
@@ -82,8 +101,12 @@ const MovieDetailPage: React.FC = () => {
     return () => {
       const pos = lastSavedTimeRef.current;
       const dur = lastDurationRef.current;
-      if (movieRef.current && userRef.current && pos > 1 && dur > 0) {
-        saveWatchProgress(movieRef.current.id, pos, dur);
+      if (movieRef.current && pos > 1 && dur > 0) {
+        if (userRef.current) {
+          saveWatchProgress(movieRef.current.id, pos, dur);
+        } else {
+          saveGuestWatchProgress(movieRef.current.id, pos, dur);
+        }
       }
     };
   }, []);
@@ -113,15 +136,23 @@ const MovieDetailPage: React.FC = () => {
             if (pos >= MIN_RESUME_SECONDS && !progress.is_completed) {
               setSavedPosition(pos);
               setShowResumePrompt(true);
-              // Don't set initialTime yet — wait for user choice
             }
           } catch {
             // Non-blocking
           }
+        } else {
+          // Guest: check localStorage for a saved resume position
+          const guestProgress = getGuestWatchProgressForMovie(data.id);
+          if (guestProgress && guestProgress.current_time_seconds >= MIN_RESUME_SECONDS && guestProgress.progress_percent < 95) {
+            setSavedPosition(guestProgress.current_time_seconds);
+            setShowResumePrompt(true);
+          }
         }
 
-        // Record initial watch event (lightweight)
-        recordWatch(data.id, 0);
+        // Record initial watch event (lightweight, only for logged-in users)
+        if (user) {
+          recordWatch(data.id, 0);
+        }
       } catch {
         setError('Failed to fetch movie details.');
       } finally {

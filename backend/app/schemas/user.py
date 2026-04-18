@@ -1,6 +1,7 @@
-from pydantic import BaseModel, EmailStr, ConfigDict
+from pydantic import BaseModel, EmailStr, ConfigDict, Field
 from uuid import UUID
 from datetime import datetime
+from typing import Optional
 
 
 class UserCreateSchema(BaseModel):
@@ -8,9 +9,18 @@ class UserCreateSchema(BaseModel):
     password: str
 
 
+class GuestWatchEntry(BaseModel):
+    """A single watch-progress record collected while the user was a guest."""
+    movie_id: str
+    current_time_seconds: int = Field(ge=0)
+    duration_seconds: int = Field(ge=0, default=0)
+    progress_percent: float = Field(ge=0.0, le=100.0, default=0.0)
+
+
 class UserLoginSchema(BaseModel):
     email: EmailStr
     password: str
+    guest_history: Optional[list[GuestWatchEntry]] = None
 
 
 class UserResponseSchema(BaseModel):

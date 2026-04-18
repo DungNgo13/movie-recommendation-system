@@ -108,6 +108,11 @@ def login(
         )
 
     token = create_access_token(data={"sub": str(user.id)})
+
+    # Merge guest watch history into the authenticated user's account
+    if user_data.guest_history:
+        auth_service.merge_guest_history(db, user.id, user_data.guest_history)
+
     return {"access_token": token, "token_type": "bearer"}
 
 

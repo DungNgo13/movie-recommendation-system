@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { loginUser } from '../services/authService';
+import { getGuestWatchHistory, clearGuestWatchHistory } from '../services/continueWatchingService';
 import { useAuth } from '../hooks/useAuth';
 
 const LoginPage: React.FC = () => {
@@ -29,7 +30,19 @@ const LoginPage: React.FC = () => {
 
     try {
       setSubmitting(true);
-      await loginUser({ email: email.trim(), password });
+
+      // Grab guest watch history from localStorage for cold-start merge
+      const guestHistory = getGuestWatchHistory();
+
+      await loginUser({
+        email: email.trim(),
+        password,
+        ...(guestHistory.length > 0 ? { guest_history: guestHistory } : {}),
+      });
+
+      // Merge succeeded with login — clear guest data
+      clearGuestWatchHistory();
+
       await refreshUser();
       navigate('/');
     } catch (err) {

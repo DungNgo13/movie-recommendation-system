@@ -35,3 +35,34 @@ def authenticate_user(db: Session, email: str, password: str) -> User | None:
     if not verify_password(password, user.password_hash):
         return None
     return user
+
+
+def merge_guest_history(
+    db: Session,
+    user_id: uuid.UUID,
+    guest_history: list,
+) -> int:
+    """
+    Upsert guest watch-progress records into the DB for the given user.
+    Returns the number of successfully merged entries.
+    Non-fatal: individual entry failures are skipped so login always succeeds.
+    """
+    from ..services.history_service import save_watch_progress
+
+    merged = 0
+    for entry in guest_history:
+        try:
+            movie_id = uuid.UUID(entry.movie_id)
+            save_watch_progress(
+                db=db,
+                user_id=user_id,
+                movie_id=movie_id,
+                current_time_seconds=entry.current_time_seconds,
+                duration_seconds=entry.duration_seconds,
+                progress_percent=entry.progress_percent,
+            )
+            merged += 1
+        except Exception:
+            # Skip invalid entries — don't block login
+            continue
+    return merged

@@ -126,3 +126,77 @@ export const getWatchHistory = async (limit = 10): Promise<HistoryItem[]> => {
   if (!res.ok) return [];
   return res.json();
 };
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Guest (unauthenticated) localStorage tracking — Cold Start Problem
+// ─────────────────────────────────────────────────────────────────────────────
+
+const GUEST_HISTORY_KEY = 'guest_watch_history';
+
+export interface GuestWatchEntry {
+  movie_id: string;
+  current_time_seconds: number;
+  duration_seconds: number;
+  progress_percent: number;
+}
+
+/**
+ * Save watch progress for a guest user into localStorage.
+ * Upserts by movie_id — only the latest position per movie is kept.
+ */
+export const saveGuestWatchProgress = (
+  movieId: string,
+  currentTimeSeconds: number,
+  durationSeconds: number,
+): void => {
+  const progressPercent =
+    durationSeconds > 0
+      ? parseFloat(Math.min((currentTimeSeconds / durationSeconds) * 100, 100).toFixed(2))
+      : 0;
+
+  const entry: GuestWatchEntry = {
+    movie_id: movieId,
+    current_time_seconds: Math.floor(currentTimeSeconds),
+    duration_seconds: Math.floor(durationSeconds),
+    progress_percent: progressPercent,
+  };
+
+  const history = getGuestWatchHistory();
+  const idx = history.findIndex((e) => e.movie_id === movieId);
+  if (idx >= 0) {
+    history[idx] = entry;
+  } else {
+    history.push(entry);
+  }
+
+  localStorage.setItem(GUEST_HISTORY_KEY, JSON.stringify(history));
+};
+
+/**
+ * Read the full guest watch history array from localStorage.
+ */
+export const getGuestWatchHistory = (): GuestWatchEntry[] => {
+  try {
+    const raw = localStorage.getItem(GUEST_HISTORY_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+};
+
+/**
+ * Get a single movie's guest progress (for resume prompt).
+ */
+export const getGuestWatchProgressForMovie = (movieId: string): GuestWatchEntry | null => {
+  const history = getGuestWatchHistory();
+  return history.find((e) => e.movie_id === movieId) ?? null;
+};
+
+/**
+ * Remove all guest watch data from localStorage (called after successful login merge).
+ */
+export const clearGuestWatchHistory = (): void => {
+  localStorage.removeItem(GUEST_HISTORY_KEY);
+};

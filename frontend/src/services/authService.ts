@@ -9,9 +9,17 @@ export interface AuthUser {
   created_at: string;
 }
 
+export interface GuestWatchEntryPayload {
+  movie_id: string;
+  current_time_seconds: number;
+  duration_seconds: number;
+  progress_percent: number;
+}
+
 export interface LoginData {
   email: string;
   password: string;
+  guest_history?: GuestWatchEntryPayload[];
 }
 
 export interface RegisterData {
