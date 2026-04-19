@@ -1,118 +1,328 @@
-# 🎬 Movie Streaming & Recommendation System
+# 🎬 Mov-Sug — Movie Streaming & Recommendation System
 
-## 📌 Project Overview
-A full-stack, production-quality movie streaming web application engineered with a centralized content-based recommendation system. The platform elegantly handles multi-tiered user authentication, allowing users to autonomously build watch histories, save favorites, and receive personalized localized recommendations while granting elevated staff privileges to manage film catalogs and observe aggregated system logs.
+Website xem phim trực tuyến tích hợp **hệ thống gợi ý thông minh**, hỗ trợ **video streaming bằng HLS**, quản trị nội dung phim, theo dõi hành vi người dùng và sinh gợi ý cá nhân hóa dựa trên lịch sử tương tác.
 
----
-
-## 🚀 Features
-
-### 👤 User Features
-- **Secure Authentication:** Handled via stateless JWT tokens; no rogue memory storage. Clean register-to-login transitions mapping strictly to RBAC.
-- **Dynamic Catalog:** Paginated movie browsing containing high-res posters, descriptions, and dynamic sorting matrices (A-Z, Release Dates).
-- **Favorites & History:** Asynchronous, persistent user tracking of `Continue Watching` states mapped natively inside the persistent store.
-- **Live Search Filtering:** Real-time cascading UI input filtering traversing titles seamlessly.
-- **Rating Matrix:** Interactive star-rating evaluations securely mapping back to backend aggregators.
-
-### 🛡️ Admin Features (Elevated JWTs)
-- **Advanced Dashboard Metrics:** Low-overhead live-aggregation arrays outputting holistic system statistics (Totals for Users, Movies, Favorites, Logs).
-- **Action Auditing Ecosystem:** Persistent `AdminAuditLog` tracking all role mutations, and specific catalog alterations synchronously preventing untracked system creep.
-- **Robust RBAC Guardrails:** Built-in core logic preventing self-deprecating actions that could inadvertently strip the system's "last remaining admin".
-- **Dynamic User Management:** Deep inline user mutation forms with instant React-state hydration arrays mapping backend changes back to the client immediately.
-- **Scalable Movie CRUD Control:** Intuitive creation portals mapping generic film metrics against core REST architecture with robust safety deletions.
-
-### 🤖 Recommendation System
-The built-in engine leverages a robust **Content-Based Filtering** algorithm processed responsively at the client tier.
-- **Scoring Profile:** Identifies thematic correlations using keyword extractions (e.g. `title` substring overlays omitting explicit syntax stop-words).
-- **Release Proximity Weighting:** Adds aggressive heuristic bonuses for films released sequentially within identical or neighboring calendar years.
-- **Cold-Start Handling:** Naturally cascades gracefully defaulting back to the newest, globally top-rated feature pools without breaking the UX sequence if history is null.
-- *(Note: In highly-scaled production topologies containing >10,000 films traversing TF-IDF/Cosine Similarity NLP arrays, this filtering array must migrate to the Vector backend database queries).*
+> Đây là đồ án theo hướng **fullstack + AI recommendation + video streaming**, phù hợp để demo học thuật, báo cáo tốt nghiệp và tiếp tục mở rộng thành sản phẩm thực tế.
 
 ---
 
-## 🧠 Tech Stack
+## 📌 Tổng quan
 
-### Frontend Architecture
-- **React 19** + **TypeScript**
-- **Vite** — HMR Build tooling with minimal-footprint asset rendering.
-- **React Router v7** — Core declarative sub-routing hierarchies (`ProtectedAdminRoutes`).
-- **Vitest** — High velocity Unit/Integration boundaries.
+Dự án tập trung giải quyết 3 bài toán chính:
 
-### Backend Infrastructure
-- **FastAPI** — High-performance Async Python REST backbone.
-- **SQLAlchemy** — Deeply-integrated Pythonic ORM.
-- **PostgreSQL / SQLite** — Agnostic dialect databases wrapped securely inside SQLAlchemy schemas.
-- **Pydantic** — Bullet-proof serializing type validations explicitly rejecting loosely shaped frontend injections.
-- **JWT (Passlib/Bcrypt)** — Cryptographically salted stateless authing mechanisms.
+- Xây dựng **web app xem phim** hoàn chỉnh cho người dùng và admin
+- Tích hợp **recommendation engine** để đề xuất phim thông minh
+- Hỗ trợ **streaming video theo chuẩn HLS** với nhiều mức chất lượng
+
+Hệ thống hiện đã có đầy đủ các nhóm chức năng quan trọng như:
+
+- Đăng ký / đăng nhập bằng JWT
+- Quản lý phim, upload video, encode HLS
+- Tìm kiếm, lọc phim, xem chi tiết
+- Đánh giá phim, lưu yêu thích, lưu tiến độ xem
+- Continue Watching / Resume video
+- Gợi ý phim tương tự và gợi ý cá nhân hóa
+- Dashboard quản trị và theo dõi dữ liệu hệ thống
+- Password reset, audit bảo mật, email notification
 
 ---
 
-## ⚙️ How to Run Project
+## ✨ Tính năng nổi bật
 
-### Prerequisites
-- **Node.js** >= 18.x
-- **Python** >= 3.10
-- **PostgreSQL** or **SQLite** (Default fallback for seamless Dev mode).
+### 👤 Dành cho người dùng
 
-### 1. Backend Engine
+- Đăng ký / đăng nhập / xác thực JWT
+- Xem danh sách phim và chi tiết phim
+- Tìm kiếm theo tên, lọc theo thể loại
+- Xem video bằng trình phát HLS
+- Lưu tiến độ xem và xem tiếp từ vị trí trước đó
+- Đánh giá phim theo sao
+- Thêm / xóa phim yêu thích
+- Nhận gợi ý cá nhân hóa dựa trên hành vi
+
+### 🤖 Recommendation Engine
+
+- Content-based recommendation bằng **TF-IDF + Cosine Similarity**
+- Tạo **movie profile** từ tiêu đề, mô tả, thể loại, diễn viên, đạo diễn, keywords
+- Tạo **user profile** từ rating, favorites, watch history
+- Cold-start fallback cho người dùng mới
+- Giải thích lý do gợi ý để dễ demo trong báo cáo đồ án
+
+### 🎥 Streaming Engine
+
+- Upload video phim từ trang admin
+- Encode sang **HLS multi-quality** bằng FFmpeg
+- Tự chọn các mức chất lượng phù hợp theo độ phân giải nguồn
+- Có queue xử lý encode để tránh chạy nhiều FFmpeg cùng lúc
+- Có chức năng hủy encode khi cần
+
+### 🛠️ Dành cho quản trị viên
+
+- Quản lý phim: CRUD, upload poster/backdrop/video
+- Trigger encode HLS và theo dõi trạng thái xử lý
+- Quản lý người dùng và phân quyền admin/user
+- Force reset password cho user
+- Dashboard thống kê hệ thống
+- Audit log cho thao tác quản trị
+- Security audit cho tài khoản người dùng
+
+---
+
+## 🧱 Kiến trúc hệ thống
+
+```mermaid
+flowchart LR
+    A[Frontend - React + TypeScript + Vite] --> B[Backend API - FastAPI]
+    B --> C[Recommendation Engine\nTF-IDF + Cosine Similarity]
+    B --> D[(Database)]
+    B --> E[FFmpeg + HLS Processing]
+    E --> F[Nginx / HLS Delivery]
+```
+
+### Luồng chính
+
+1. Admin upload video phim lên hệ thống
+2. Backend đưa tác vụ encode vào queue
+3. FFmpeg xử lý và sinh ra các file `.m3u8` + `.ts`
+4. Frontend phát video qua `hls.js` / Plyr
+5. Người dùng tương tác với phim (rating, favorite, watch progress)
+6. Recommendation engine tổng hợp dữ liệu và trả về danh sách gợi ý
+
+---
+
+## 🧠 Công nghệ sử dụng
+
+### Frontend
+
+- React
+- TypeScript
+- Vite
+- React Router
+- Plyr
+- hls.js
+- CSS
+
+### Backend
+
+- FastAPI
+- SQLAlchemy
+- Pydantic
+- JWT (`python-jose`)
+- Passlib / bcrypt
+- Jinja2
+- SMTP email service
+
+### Recommendation / ML
+
+- scikit-learn
+- TF-IDF Vectorizer
+- Cosine Similarity
+
+### Video & Infra
+
+- FFmpeg / FFprobe
+- HLS
+- Nginx
+
+### Database
+
+- **Hiện tại:** SQLite cho bản MVP / demo
+- **Có thể mở rộng:** PostgreSQL cho môi trường production
+
+---
+
+## 📂 Cấu trúc dự án gợi ý
+
+```text
+movie-recommendation-system/
+├── backend/
+│   ├── app/
+│   │   ├── core/
+│   │   ├── models/
+│   │   ├── routers/
+│   │   ├── schemas/
+│   │   ├── services/
+│   │   └── main.py
+│   ├── requirements.txt
+│   └── ...
+├── frontend/
+│   ├── src/
+│   │   ├── components/
+│   │   ├── pages/
+│   │   ├── services/
+│   │   ├── hooks/
+│   │   └── ...
+│   ├── package.json
+│   └── ...
+├── media/
+│   ├── images/
+│   └── videos/
+└── README.md
+```
+
+---
+
+## 🚀 Hướng dẫn chạy project local
+
+### 1) Yêu cầu môi trường
+
+Cần cài sẵn:
+
+- Python 3.10+
+- Node.js 18+
+- FFmpeg
+- Git
+
+---
+
+### 2) Clone repository
+
+```bash
+git clone https://github.com/DungNgo13/movie-recommendation-system.git
+cd movie-recommendation-system
+```
+
+---
+
+### 3) Chạy Backend
+
 ```bash
 cd backend
-python -m venv venv
-# Activate VENV (Windows: venv\Scripts\activate, Unix: source venv/bin/activate)
+python -m venv .venv
+```
 
+**Windows**
+
+```bash
+.venv\Scripts\activate
+```
+
+**macOS / Linux**
+
+```bash
+source .venv/bin/activate
+```
+
+Cài thư viện:
+
+```bash
 pip install -r requirements.txt
+```
+
+Chạy server:
+
+```bash
 python -m uvicorn app.main:app --reload
 ```
-*API Base Path executes live on **http://localhost:8000** with dynamic Swagger UI mounted natively at **http://localhost:8000/docs**.*
 
-### 2. Frontend Terminal
+Backend mặc định chạy tại:
+
+```text
+http://localhost:8000
+```
+
+---
+
+### 4) Chạy Frontend
+
+Mở terminal mới:
+
 ```bash
 cd frontend
 npm install
 npm run dev
 ```
-*The React compiler resolves strictly and hosts the web interface live at **http://localhost:5173**.*
 
----
+Frontend mặc định chạy tại:
 
-## 👑 Admin Account Setup
-
-By default, the API shields the manual creation of Administrator boundaries within the frontend registration portals. Assuming normal operations during a first-time local setup:
-```bash
-cd backend
-
-# Option 1: Execute the native Database Seeding function included within the package:
-python -m app.seed
-# This creates a baseline dataset alongside an administrative bypass.
-
-# Option 2: Elevating via custom CLI script if packaged:
-# Execute target CLI commands or directly inject value 'admin' via standard DB management schemas inside the `users` table for the target UUID.
+```text
+http://localhost:5173
 ```
 
 ---
 
-## 📡 API Overview (Brief)
+## 🧪 Testing
 
-| Endpoint Prefix | Description | Auth Scope |
-| :--- | :--- | :--- |
-| **`/api/v1/auth/*`** | Handles stateless JWT Bearer token generation, decoding `me`, and native `register` routes. | `Public` / `User` |
-| **`/api/v1/movies/*`** | Core RESTful movie aggregators handling Paginated `GET` requests spanning the entire catalog and specific `UUID` lookup endpoints. | `Public` |
-| **`/api/v1/favorites/*`** | Synchronized state tracking resolving user-bound movie `UUIDs` across persistent storage states. | `User` |
-| **`/api/v1/admin/*`** | Sensitive multi-table aggregates containing endpoints for User Role mutations (`PATCH`), system configurations, and Audit Logs. | `Admin` |
+### Frontend
 
----
+```bash
+npm run test:run
+```
 
-## 📸 Screenshots
+### Backend
 
-| View Type | Placeholder Image |
-| :--- | :--- |
-| **Homepage Layout** | `![Homepage Overview](/assets/home_overview_placeholder.png)` |
-| **Admin Dashboard** | `![Admin Dashboard Metrics](/assets/admin_dashboard_placeholder.png)` |
-| **Recommendations** | `![Recommendation Sequence](/assets/recommendation_engine_placeholder.png)` |
+```bash
+pytest
+```
+
+> Nguyên tắc của project: feature mới nên đi kèm test, router chỉ xử lý request/response, business logic nằm ở service, hạn chế sửa lan rộng gây ảnh hưởng code cũ.
 
 ---
 
-## ⚠️ Known Limitations
-- **Memory Scaling Bound:** Currently, `get_all_users` on the backend explicitly enforces a `.limit(100)` throttle to completely circumvent RAM bloat or 503 gateway timeouts, bypassing the current lack of dedicated `skip/limit` pagination implementations on the Admin User Table grid.
-- **Client-Side Heavy Search Arrays:** The generic keyword algorithm runs via React `useMemo` inline computations rendering UI blocks instantly, but theoretically incurs main-thread degradation limits above extremely heavy 100kb payload returns.
-- **Race Condition Mitigations:** Explicit `setTimeout` delays securely decouple `<ProtectedRoute>` aggressive kicks during Admin logouts, circumventing hard crashes inherently present in React Router sub-trees unmounting asynchronously against Context States.
+## 🔐 Một số điểm kỹ thuật đáng chú ý
+
+- JWT authentication với thời hạn token cấu hình được
+- Theo dõi IP đăng nhập gần nhất
+- Cảnh báo brute-force khi đăng nhập sai nhiều lần
+- Password reset cho user và admin-led reset
+- Queue encode HLS giúp hệ thống ổn định hơn
+- Fallback quality nếu encode multi-quality thất bại
+- Guest watch history có thể merge vào tài khoản sau khi đăng nhập
+- Dashboard hỗ trợ demo tốt cho phần báo cáo đồ án
+
+---
+
+## 📈 Trạng thái hiện tại của dự án
+
+Dự án đã đạt mức **feature-complete cho demo đồ án**, bao gồm:
+
+- Hệ thống user và admin hoạt động
+- Streaming HLS hoạt động
+- Recommendation engine hoạt động
+- Các route frontend/backend khớp nhau
+- Có kiểm soát watch history, favorites, ratings
+- Có dashboard, audit log và security audit
+
+### Một số điểm nên cải thiện thêm nếu muốn nâng cấp production
+
+- Chuyển database từ SQLite sang PostgreSQL
+- Đưa API base URL sang biến môi trường
+- Bổ sung pagination cho một số màn hình admin
+- Chuẩn hóa migration bằng Alembic
+- Mở rộng cấu hình CORS cho môi trường deploy thực tế
+
+---
+
+## 🎓 Giá trị nổi bật cho đồ án tốt nghiệp
+
+Dự án có lợi thế vì kết hợp được nhiều mảng trong cùng một hệ thống:
+
+- **Fullstack Web Development**
+- **Machine Learning / Recommendation System**
+- **Multimedia Streaming**
+- **Authentication & Security**
+- **Admin Dashboard & Data Monitoring**
+
+Điều này giúp đồ án có cả chiều sâu kỹ thuật lẫn khả năng trình diễn trực quan khi bảo vệ.
+
+---
+
+## 🔗 Repository
+
+```text
+https://github.com/DungNgo13/movie-recommendation-system
+```
+
+---
+
+## 👨‍💻 Tác giả
+
+Phát triển cho mục tiêu học tập, nghiên cứu và báo cáo đồ án tốt nghiệp.
+
+Nếu dùng README này để public repo, có thể bổ sung thêm:
+
+- ảnh chụp giao diện hệ thống
+- link demo video
+- sơ đồ database
+- tài liệu báo cáo / slide bảo vệ
+
