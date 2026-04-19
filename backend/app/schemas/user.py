@@ -50,3 +50,9 @@ class ForgotPasswordSchema(BaseModel):
 class ResetPasswordSchema(BaseModel):
     token: str
     new_password: str = Field(min_length=6)
+
+
+class ForceResetPasswordSchema(BaseModel):
+    """Admin-only: payload for force-resetting a user's password."""
+    new_password: str = Field(min_length=6)
+

@@ -71,3 +71,19 @@ export const updateAdminUserRole = async (userId: string, targetRole: 'admin' | 
   }
   return response.json();
 };
+
+export const forceResetUserPassword = async (userId: string, newPassword: string): Promise<string> => {
+  const response = await fetch(`${API_BASE_URL}/admin/users/${userId}/force-reset-password`, {
+    method: 'POST',
+    headers: authHeaders(),
+    body: JSON.stringify({ new_password: newPassword }),
+  });
+
+  if (!response.ok) {
+    const data = await response.json().catch(() => null);
+    throw new Error(data?.detail || 'Failed to reset password');
+  }
+  const result = await response.json();
+  return result.message;
+};
+

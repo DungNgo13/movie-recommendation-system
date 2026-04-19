@@ -5,7 +5,8 @@ from uuid import UUID
 
 from .. import database
 from ..models.user import User
-from ..schemas.user import UserResponseSchema, UserRoleUpdateSchema
+from ..schemas.user import UserResponseSchema, UserRoleUpdateSchema, ForceResetPasswordSchema
+from ..core.security import hash_password
 from .auth import get_current_admin_user
 from ..services.admin_service import create_audit_log, check_is_last_admin
 
@@ -73,3 +74,48 @@ def update_user_role(
     )
     
     return user
+
+
+@router.post("/{user_id}/force-reset-password", status_code=200)
+def force_reset_password(
+    user_id: UUID,
+    payload: ForceResetPasswordSchema,
+    db: Session = Depends(database.get_db),
+    admin_user=Depends(get_current_admin_user),
+):
+    """
+    Admin-only: Force-set a new password for a user.
+    The user will need to use this temporary password to log in.
+    """
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="User not found",
+        )
+
+    if len(payload.new_password) < 6:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Password must be at least 6 characters",
+        )
+
+    user.password_hash = hash_password(payload.new_password)
+    user.password_reset_token = None
+    user.password_reset_expires = None
+    user.failed_login_attempts = 0
+    if user.status == "suspect":
+        user.status = "active"
+    db.commit()
+
+    create_audit_log(
+        db=db,
+        admin_email=admin_user.email,
+        action_type="force_password_reset",
+        target_type="user",
+        target_id=str(user.id),
+        description=f"Admin force-reset password for user {user.email}",
+    )
+
+    return {"message": f"Password has been reset for {user.email}."}
+

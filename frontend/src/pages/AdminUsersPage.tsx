@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import type { AuthUser } from '../services/authService';
-import { getAdminUsers, updateAdminUserRole } from '../services/adminService';
+import { getAdminUsers, updateAdminUserRole, forceResetUserPassword } from '../services/adminService';
 import LoadingSpinner from '../components/LoadingSpinner';
 import ErrorMessage from '../components/ErrorMessage';
 
@@ -9,6 +9,14 @@ const AdminUsersPage: React.FC = () => {
   const [users, setUsers] = useState<AuthUser[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Reset password modal state
+  const [resetTarget, setResetTarget] = useState<AuthUser | null>(null);
+  const [resetPassword, setResetPassword] = useState('');
+  const [resetConfirm, setResetConfirm] = useState('');
+  const [resetError, setResetError] = useState<string | null>(null);
+  const [resetSuccess, setResetSuccess] = useState<string | null>(null);
+  const [resetSubmitting, setResetSubmitting] = useState(false);
 
   useEffect(() => {
     fetchUsers();
@@ -43,6 +51,50 @@ const AdminUsersPage: React.FC = () => {
     }
   };
 
+  const openResetModal = (user: AuthUser) => {
+    setResetTarget(user);
+    setResetPassword('');
+    setResetConfirm('');
+    setResetError(null);
+    setResetSuccess(null);
+  };
+
+  const closeResetModal = () => {
+    setResetTarget(null);
+    setResetPassword('');
+    setResetConfirm('');
+    setResetError(null);
+    setResetSuccess(null);
+  };
+
+  const handleForceReset = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setResetError(null);
+    setResetSuccess(null);
+
+    if (!resetPassword || resetPassword.length < 6) {
+      setResetError('Password must be at least 6 characters.');
+      return;
+    }
+    if (resetPassword !== resetConfirm) {
+      setResetError('Passwords do not match.');
+      return;
+    }
+    if (!resetTarget) return;
+
+    try {
+      setResetSubmitting(true);
+      const message = await forceResetUserPassword(resetTarget.id, resetPassword);
+      setResetSuccess(message);
+      setResetPassword('');
+      setResetConfirm('');
+    } catch (err) {
+      setResetError(err instanceof Error ? err.message : 'Failed to reset password');
+    } finally {
+      setResetSubmitting(false);
+    }
+  };
+
   if (loading) return <LoadingSpinner />;
   if (error) return <ErrorMessage message={error} />;
 
@@ -64,6 +116,7 @@ const AdminUsersPage: React.FC = () => {
               <th>ID</th>
               <th>Email</th>
               <th>Role</th>
+              <th>Status</th>
               <th>Created At</th>
               <th>Actions</th>
             </tr>
@@ -78,6 +131,11 @@ const AdminUsersPage: React.FC = () => {
                     {user.role}
                   </span>
                 </td>
+                <td>
+                  <span className={`role-badge status-${(user as Record<string, unknown>).status || 'active'}`}>
+                    {((user as Record<string, unknown>).status as string) || 'active'}
+                  </span>
+                </td>
                 <td>{new Date(user.created_at).toLocaleDateString()}</td>
                 <td className="actions-cell">
                   <button
@@ -86,12 +144,73 @@ const AdminUsersPage: React.FC = () => {
                   >
                     Make {user.role === 'admin' ? 'User' : 'Admin'}
                   </button>
+                  <button
+                    className="btn btn--edit"
+                    onClick={() => openResetModal(user)}
+                    title="Reset this user's password"
+                  >
+                    🔑 Reset PW
+                  </button>
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
+
+      {/* Reset Password Modal */}
+      {resetTarget && (
+        <div className="confirm-overlay" onClick={(e) => { if (e.target === e.currentTarget) closeResetModal(); }}>
+          <div className="confirm-dialog">
+            <h3>🔑 Reset Password</h3>
+            <p style={{ color: '#555', marginBottom: '16px' }}>
+              Set a new temporary password for <strong>{resetTarget.email}</strong>.
+            </p>
+
+            {resetSuccess && <div className="auth-success-message">{resetSuccess}</div>}
+            {resetError && <p className="auth-error">{resetError}</p>}
+
+            {!resetSuccess ? (
+              <form onSubmit={handleForceReset}>
+                <div className="admin-form-group">
+                  <label htmlFor="admin-reset-pw">New Password</label>
+                  <input
+                    id="admin-reset-pw"
+                    type="password"
+                    value={resetPassword}
+                    onChange={(e) => setResetPassword(e.target.value)}
+                    placeholder="At least 6 characters"
+                  />
+                </div>
+                <div className="admin-form-group">
+                  <label htmlFor="admin-reset-confirm">Confirm Password</label>
+                  <input
+                    id="admin-reset-confirm"
+                    type="password"
+                    value={resetConfirm}
+                    onChange={(e) => setResetConfirm(e.target.value)}
+                    placeholder="Repeat password"
+                  />
+                </div>
+                <div className="confirm-actions">
+                  <button type="button" className="btn btn--secondary" onClick={closeResetModal}>
+                    Cancel
+                  </button>
+                  <button type="submit" className="btn btn--primary" disabled={resetSubmitting}>
+                    {resetSubmitting ? 'Resetting...' : 'Reset Password'}
+                  </button>
+                </div>
+              </form>
+            ) : (
+              <div className="confirm-actions">
+                <button className="btn btn--primary" onClick={closeResetModal}>
+                  Done
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 };

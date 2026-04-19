@@ -11,6 +11,8 @@ import AdminAuditLogsPage from './pages/AdminAuditLogsPage';
 import RecsysMonitorPage from './pages/RecsysMonitorPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
+import ForgotPasswordPage from './pages/ForgotPasswordPage';
+import ResetPasswordPage from './pages/ResetPasswordPage';
 import ProtectedAdminRoute from './components/ProtectedAdminRoute';
 import './App.css';
 
@@ -32,6 +34,8 @@ const App: React.FC = () => {
         </Route>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
+        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+        <Route path="/reset-password" element={<ResetPasswordPage />} />
       </Routes>
     </div>
   );

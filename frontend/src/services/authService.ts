@@ -6,7 +6,9 @@ export interface AuthUser {
   id: string;
   email: string;
   role: 'admin' | 'user';
+  status: string;
   created_at: string;
+  last_login_at?: string | null;
 }
 
 export interface GuestWatchEntryPayload {
@@ -86,3 +88,32 @@ export const fetchCurrentUser = async (): Promise<AuthUser> => {
 export const logoutUser = (): void => {
   removeToken();
 };
+
+export const forgotPassword = async (email: string): Promise<string> => {
+  const response = await fetch(`${API_BASE_URL}/auth/forgot-password`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email }),
+  });
+  if (!response.ok) {
+    const err = await response.json().catch(() => null);
+    throw new Error(err?.detail || 'Failed to send reset email');
+  }
+  const data = await response.json();
+  return data.message;
+};
+
+export const resetPassword = async (token: string, newPassword: string): Promise<string> => {
+  const response = await fetch(`${API_BASE_URL}/auth/reset-password`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ token, new_password: newPassword }),
+  });
+  if (!response.ok) {
+    const err = await response.json().catch(() => null);
+    throw new Error(err?.detail || 'Failed to reset password');
+  }
+  const data = await response.json();
+  return data.message;
+};
+

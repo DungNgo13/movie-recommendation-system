@@ -801,6 +801,26 @@
   font-size: 0.85rem;
 }
 
+.actions-cell {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+/* ===== Status Badges ===== */
+.status-active {
+  background-color: #d4edda;
+  color: #155724;
+}
+.status-suspect {
+  background-color: #fff3cd;
+  color: #856404;
+}
+.status-locked {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
 /* ===== Responsive Mobile Layout (Added in Phase 7) ===== */
 
 .table-container {
