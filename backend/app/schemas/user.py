@@ -56,3 +56,19 @@ class ForceResetPasswordSchema(BaseModel):
     """Admin-only: payload for force-resetting a user's password."""
     new_password: str = Field(min_length=6)
 
+
+class UserSecurityAuditSchema(BaseModel):
+    """Admin-only: full security audit view of a user."""
+    model_config = ConfigDict(from_attributes=True)
+
+    id: UUID
+    email: str
+    role: str
+    status: str
+    created_at: datetime
+    last_login_ip: Optional[str] = None
+    last_login_at: Optional[datetime] = None
+    last_password_change: Optional[datetime] = None
+    last_email_change: Optional[datetime] = None
+    failed_login_attempts: int = 0
+

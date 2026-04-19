@@ -9,6 +9,7 @@ import AdminUsersPage from './pages/AdminUsersPage';
 import AdminDashboardPage from './pages/AdminDashboardPage';
 import AdminAuditLogsPage from './pages/AdminAuditLogsPage';
 import RecsysMonitorPage from './pages/RecsysMonitorPage';
+import AdminSecurityAuditPage from './pages/AdminSecurityAuditPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
@@ -31,6 +32,7 @@ const App: React.FC = () => {
           <Route path="/admin/users" element={<AdminUsersPage />} />
           <Route path="/admin/logs" element={<AdminAuditLogsPage />} />
           <Route path="/admin/recsys" element={<RecsysMonitorPage />} />
+          <Route path="/admin/security" element={<AdminSecurityAuditPage />} />
         </Route>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />

@@ -87,3 +87,24 @@ export const forceResetUserPassword = async (userId: string, newPassword: string
   return result.message;
 };
 
+export interface SecurityAuditUser {
+  id: string;
+  email: string;
+  role: string;
+  status: string;
+  created_at: string;
+  last_login_ip: string | null;
+  last_login_at: string | null;
+  last_password_change: string | null;
+  last_email_change: string | null;
+  failed_login_attempts: number;
+}
+
+export const getSecurityAudit = async (): Promise<SecurityAuditUser[]> => {
+  const response = await fetch(`${API_BASE_URL}/admin/users/security-audit`, {
+    headers: authHeaders(),
+  });
+  if (!response.ok) throw new Error('Failed to fetch security audit data');
+  return response.json();
+};
+

@@ -5,7 +5,7 @@ from uuid import UUID
 
 from .. import database
 from ..models.user import User
-from ..schemas.user import UserResponseSchema, UserRoleUpdateSchema, ForceResetPasswordSchema
+from ..schemas.user import UserResponseSchema, UserRoleUpdateSchema, ForceResetPasswordSchema, UserSecurityAuditSchema
 from ..core.security import hash_password
 from .auth import get_current_admin_user
 from ..services.admin_service import create_audit_log, check_is_last_admin
@@ -25,6 +25,19 @@ def get_all_users(
     """
     # Limit to 100 for MVP production safety (ideally should be paginated)
     users = db.query(User).order_by(User.created_at.desc()).limit(100).all()
+    return users
+
+
+@router.get("/security-audit", response_model=List[UserSecurityAuditSchema])
+def get_security_audit(
+    db: Session = Depends(database.get_db),
+    admin_user=Depends(get_current_admin_user),
+):
+    """
+    Admin-only: Get full security audit data for all users.
+    Includes login tracking, failed attempts, and password change timestamps.
+    """
+    users = db.query(User).order_by(User.created_at.desc()).limit(200).all()
     return users
 
 @router.patch("/{user_id}/role", response_model=UserResponseSchema)

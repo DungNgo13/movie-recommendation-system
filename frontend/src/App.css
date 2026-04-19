@@ -821,6 +821,31 @@
   color: #721c24;
 }
 
+/* ===== Security Audit Badges ===== */
+.security-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 14px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.security-red {
+  background: #fdecea;
+  color: #b71c1c;
+  border: 1px solid #ef9a9a;
+}
+.security-yellow {
+  background: #fff8e1;
+  color: #e65100;
+  border: 1px solid #ffe082;
+}
+.security-green {
+  background: #e8f5e9;
+  color: #1b5e20;
+  border: 1px solid #a5d6a7;
+}
+
 /* ===== Responsive Mobile Layout (Added in Phase 7) ===== */
 
 .table-container {

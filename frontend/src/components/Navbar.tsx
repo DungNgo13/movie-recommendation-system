@@ -27,6 +27,7 @@ const Navbar: React.FC = () => {
             <Link to="/admin/users" className="navbar-link">👥 Users</Link>
             <Link to="/admin/logs" className="navbar-link">📋 Logs</Link>
             <Link to="/admin/recsys" className="navbar-link">🔬 RecSys</Link>
+            <Link to="/admin/security" className="navbar-link">🛡️ Security</Link>
           </>
         )}
         {user ? (
