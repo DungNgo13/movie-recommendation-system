@@ -10,3 +10,5 @@ passlib[bcrypt]
 python-jose[cryptography]
 python-multipart
 scikit-learn
+python-dotenv
+jinja2

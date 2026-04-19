@@ -29,7 +29,9 @@ class UserResponseSchema(BaseModel):
     id: UUID
     email: str
     role: str
+    status: str
     created_at: datetime
+    last_login_at: Optional[datetime] = None
 
 
 class UserRoleUpdateSchema(BaseModel):
@@ -39,3 +41,12 @@ class UserRoleUpdateSchema(BaseModel):
 class TokenResponseSchema(BaseModel):
     access_token: str
     token_type: str = "bearer"
+
+
+class ForgotPasswordSchema(BaseModel):
+    email: EmailStr
+
+
+class ResetPasswordSchema(BaseModel):
+    token: str
+    new_password: str = Field(min_length=6)

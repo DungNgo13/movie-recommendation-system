@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 
@@ -7,9 +7,12 @@ from ..schemas.user import (
     UserLoginSchema,
     UserResponseSchema,
     TokenResponseSchema,
+    ForgotPasswordSchema,
+    ResetPasswordSchema,
 )
 from .. import database
 from ..services import auth_service
+from ..services.mail_service import send_welcome_email, send_password_reset_email
 from ..core.security import create_access_token, decode_access_token
 
 router = APIRouter(
@@ -71,6 +74,18 @@ def get_current_admin_user(current_user=Depends(get_current_user)):
     return current_user
 
 
+def _extract_client_ip(request: Request) -> str:
+    """
+    Extract the real client IP from the request.
+    Checks X-Forwarded-For (reverse proxy) first, falls back to request.client.
+    """
+    forwarded = request.headers.get("X-Forwarded-For")
+    if forwarded:
+        # X-Forwarded-For can be a comma-separated list; first entry is the client
+        return forwarded.split(",")[0].strip()
+    return request.client.host if request.client else "unknown"
+
+
 @router.post("/register", response_model=UserResponseSchema, status_code=201)
 def register(
     user_data: UserCreateSchema,
@@ -91,21 +106,32 @@ def register(
         )
 
     user = auth_service.create_user(db, user_data.email, user_data.password)
+
+    # Send welcome email (non-blocking — fires in a background thread)
+    send_welcome_email(user.email)
+
     return user
 
 
 @router.post("/login", response_model=TokenResponseSchema)
 def login(
     user_data: UserLoginSchema,
+    request: Request,
     db: Session = Depends(database.get_db),
 ):
     """Login and receive a JWT access token."""
     user = auth_service.authenticate_user(db, user_data.email, user_data.password)
     if user is None:
+        # Record the failed attempt before returning error
+        auth_service.record_login_failure(db, user_data.email)
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid email or password",
         )
+
+    # Record successful login with client IP
+    client_ip = _extract_client_ip(request)
+    auth_service.record_login_success(db, user, client_ip)
 
     token = create_access_token(data={"sub": str(user.id)})
 
@@ -114,6 +140,38 @@ def login(
         auth_service.merge_guest_history(db, user.id, user_data.guest_history)
 
     return {"access_token": token, "token_type": "bearer"}
+
+
+@router.post("/forgot-password", status_code=200)
+def forgot_password(
+    payload: ForgotPasswordSchema,
+    db: Session = Depends(database.get_db),
+):
+    """
+    Request a password reset link.
+    Always returns 200 to avoid leaking whether the email exists.
+    """
+    token = auth_service.create_password_reset_token(db, payload.email)
+    if token:
+        send_password_reset_email(payload.email, token)
+
+    # Intentionally vague response — don't reveal whether the email exists
+    return {"message": "If that email is registered, a reset link has been sent."}
+
+
+@router.post("/reset-password", status_code=200)
+def reset_password(
+    payload: ResetPasswordSchema,
+    db: Session = Depends(database.get_db),
+):
+    """Reset a user's password using a valid, non-expired token."""
+    success = auth_service.reset_password(db, payload.token, payload.new_password)
+    if not success:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid or expired reset token.",
+        )
+    return {"message": "Password has been reset successfully."}
 
 
 @router.get("/me", response_model=UserResponseSchema)
