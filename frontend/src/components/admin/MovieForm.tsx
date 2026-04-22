@@ -84,7 +84,54 @@ const TagInput: React.FC<TagInputProps> = ({ id, tags, onChange, placeholder, di
   );
 };
 
-// ─── MovieForm ────────────────────────────────────────────────────────────────
+// ─── Genre Checkbox Grid ──────────────────────────────────────────────────────
+// Restricts genres to a predefined list for TF-IDF data consistency.
+// The engine's movie_profile.py joins genres into the corpus string — free-text
+// would introduce spelling variants that fragment the vocabulary.
+
+const STANDARD_GENRES: string[] = [
+  'Action',      'Adventure',   'Animation',  'Comedy',
+  'Crime',       'Documentary', 'Drama',      'Family',
+  'Fantasy',     'History',     'Horror',     'Music',
+  'Mystery',     'Romance',     'Sci-Fi',     'Thriller',
+  'War',         'Western',
+];
+
+interface GenreCheckboxGridProps {
+  selected: string[];
+  onChange: (genres: string[]) => void;
+}
+
+const GenreCheckboxGrid: React.FC<GenreCheckboxGridProps> = ({ selected, onChange }) => {
+  const toggle = (genre: string) => {
+    if (selected.includes(genre)) {
+      onChange(selected.filter((g) => g !== genre));
+    } else {
+      onChange([...selected, genre]);
+    }
+  };
+
+  return (
+    <div className="genre-checkbox-grid">
+      {STANDARD_GENRES.map((genre) => {
+        const isChecked = selected.includes(genre);
+        return (
+          <label
+            key={genre}
+            className={`genre-checkbox-item ${isChecked ? 'genre-checkbox-item--active' : ''}`}
+          >
+            <input
+              type="checkbox"
+              checked={isChecked}
+              onChange={() => toggle(genre)}
+            />
+            <span className="genre-checkbox-label">{genre}</span>
+          </label>
+        );
+      })}
+    </div>
+  );
+};
 
 interface MovieFormProps {
   movie: Movie | null;
@@ -324,16 +371,19 @@ const MovieForm: React.FC<MovieFormProps> = ({ movie, onSubmit, onCancel }) => {
 
         {/* Genres */}
         <div className="admin-form-group">
-          <label htmlFor="genres">
+          <label>
             Genres (Thể loại)
-            <span className="field-hint">Press Enter or comma to add each genre</span>
+            <span className="field-hint">Select all applicable genres from the list below</span>
           </label>
-          <TagInput
-            id="genres"
-            tags={genres}
+          <GenreCheckboxGrid
+            selected={genres}
             onChange={setGenres}
-            placeholder="e.g. Action, Drama, Sci-Fi…"
           />
+          {genres.length > 0 && (
+            <p style={{ fontSize: '0.8rem', color: '#555', margin: '6px 0 0' }}>
+              Selected: <strong>{genres.join(', ')}</strong>
+            </p>
+          )}
           {genres.length === 0 && (
             <p className="ai-field-missing-hint">
               🔴 No genres — genre matching is the strongest content signal.

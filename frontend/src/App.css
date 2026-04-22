@@ -1220,6 +1220,72 @@
   color: #333;
 }
 
+/* ===== Genre Checkbox Grid ===== */
+.genre-checkbox-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.genre-checkbox-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  background: #fff;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-size: 0.85rem;
+  user-select: none;
+}
+
+.genre-checkbox-item:hover {
+  border-color: #3498db;
+  background: #f0f7ff;
+}
+
+.genre-checkbox-item--active {
+  background: #1a1a2e;
+  border-color: #1a1a2e;
+  color: #e8eaf6;
+}
+
+.genre-checkbox-item--active:hover {
+  background: #2d2d5e;
+  border-color: #2d2d5e;
+}
+
+.genre-checkbox-item input[type="checkbox"] {
+  accent-color: #3498db;
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.genre-checkbox-item--active input[type="checkbox"] {
+  accent-color: #7c83ff;
+}
+
+.genre-checkbox-label {
+  font-weight: 500;
+  line-height: 1;
+}
+
+@media (max-width: 900px) {
+  .genre-checkbox-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .genre-checkbox-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
 /* ===== AI Recommendation Fields Section ===== */
 
 /* Outer card wrapping all three AI fields */
