@@ -186,9 +186,17 @@ const HlsPlayer: React.FC<HlsPlayerProps> = ({
       onEnded?.(video.duration || 0);
     };
 
+    // Sliding Session: signal user activity while video is playing.
+    // The custom event is picked up by useAutoRefreshSession to prevent
+    // the JWT from expiring during a long viewing session.
+    const handlePlaying = () => {
+      window.dispatchEvent(new Event('video-play-activity'));
+    };
+
     video.addEventListener('timeupdate', handleTimeUpdate);
     video.addEventListener('pause',      handlePause);
     video.addEventListener('ended',      handleEnded);
+    video.addEventListener('playing',    handlePlaying);
 
     // ── STEP 5: Cleanup ──────────────────────────────────────────────────
     // isMounted = false MUST be the very first line so the async
@@ -198,6 +206,7 @@ const HlsPlayer: React.FC<HlsPlayerProps> = ({
       video.removeEventListener('timeupdate', handleTimeUpdate);
       video.removeEventListener('pause',      handlePause);
       video.removeEventListener('ended',      handleEnded);
+      video.removeEventListener('playing',    handlePlaying);
       playerRef.current?.destroy();
       playerRef.current = null;
       hlsRef.current?.destroy();

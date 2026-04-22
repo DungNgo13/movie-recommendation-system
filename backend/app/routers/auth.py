@@ -174,6 +174,21 @@ def reset_password(
     return {"message": "Password has been reset successfully."}
 
 
+@router.post("/refresh", response_model=TokenResponseSchema)
+def refresh_token(current_user=Depends(get_current_user)):
+    """
+    Sliding Session — issue a fresh JWT for an already-authenticated user.
+
+    The frontend calls this when the user is still active and the current
+    token has passed 50% of its lifetime.  The old token remains valid
+    until its original expiry (stateless JWTs can't be revoked), but the
+    frontend immediately replaces it in localStorage so subsequent
+    requests use the new, longer-lived token.
+    """
+    new_token = create_access_token(data={"sub": str(current_user.id)})
+    return {"access_token": new_token, "token_type": "bearer"}
+
+
 @router.get("/me", response_model=UserResponseSchema)
 def get_me(current_user=Depends(get_current_user)):
     """Get the currently authenticated user's info."""

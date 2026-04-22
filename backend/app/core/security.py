@@ -10,9 +10,9 @@ load_dotenv()
 SECRET_KEY = os.getenv("SECRET_KEY", "movie-rec-secret-key-change-in-production")
 ALGORITHM = "HS256"
 try:
-    ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 1440))
+    ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 480))
 except ValueError:
-    ACCESS_TOKEN_EXPIRE_MINUTES = 1440  # 24 hours
+    ACCESS_TOKEN_EXPIRE_MINUTES = 480  # 8 hours (sliding session extends on activity)
 
 
 def hash_password(password: str) -> str:
@@ -27,8 +27,9 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
 
 def create_access_token(data: dict) -> str:
     to_encode = data.copy()
-    expire = datetime.now(timezone.utc) + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    to_encode.update({"exp": expire})
+    now = datetime.now(timezone.utc)
+    expire = now + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    to_encode.update({"exp": expire, "iat": now})
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
 

@@ -117,3 +117,26 @@ export const resetPassword = async (token: string, newPassword: string): Promise
   return data.message;
 };
 
+/**
+ * Sliding Session — exchange the current valid JWT for a fresh one.
+ * Called silently in the background; never triggers a page reload.
+ * Returns the new token string, or null if the refresh fails (token already expired).
+ */
+export const refreshToken = async (): Promise<string | null> => {
+  const currentToken = getToken();
+  if (!currentToken) return null;
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/auth/refresh`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${currentToken}` },
+    });
+    if (!response.ok) return null;
+    const data = await response.json();
+    const newToken = data.access_token as string;
+    setToken(newToken);
+    return newToken;
+  } catch {
+    return null; // network error — don't disrupt the user
+  }
+};

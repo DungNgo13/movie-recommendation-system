@@ -15,9 +15,14 @@ import RegisterPage from './pages/RegisterPage';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import ResetPasswordPage from './pages/ResetPasswordPage';
 import ProtectedAdminRoute from './components/ProtectedAdminRoute';
+import { useAutoRefreshSession } from './hooks/useAutoRefreshSession';
 import './App.css';
 
 const App: React.FC = () => {
+  // Sliding session — silently refreshes the JWT when the user is active
+  // and the token reaches 50% of its lifetime. Runs in the background
+  // with zero re-renders; does not interrupt the HLS player.
+  useAutoRefreshSession();
   return (
     <div className="App">
       <Navbar />
