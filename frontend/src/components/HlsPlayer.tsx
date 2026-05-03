@@ -129,22 +129,6 @@ const HlsPlayer: React.FC<HlsPlayerProps> = ({
 
         playerRef.current = player;
 
-        // ── Fullscreen controls fix (native Plyr events) ─────────────────
-        // In fullscreen, the browser's bottom-edge dead zone can cause Plyr
-        // to think the mouse left the player and auto-hide the controls.
-        //
-        // Fix: Disable auto-hide entirely while in fullscreen mode.
-        // The structural CSS (100vw × 100vh on .plyr--fullscreen-active)
-        // ensures the controls are always reachable.  On exit, restore
-        // the normal 3 s idle timer for embedded playback.
-        player.on('enterfullscreen', () => {
-          player.config.hideControls = 0;
-          player.toggleControls(true);
-        });
-        player.on('exitfullscreen', () => {
-          player.config.hideControls = 3000;
-        });
-
         // Keep the Plyr quality badge in sync with hls.js ABR decisions.
         // hls.js switches levels asynchronously; without this the badge
         // would show the requested level, not the one actually playing.
@@ -234,6 +218,45 @@ const HlsPlayer: React.FC<HlsPlayerProps> = ({
       hlsRef.current = null;
     };
   }, [src]); // only re-init when the stream URL changes
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // Effect 3 — Fullscreen bottom-edge event forwarding
+  //
+  // Problem: When the cursor hits the absolute bottom pixel of the monitor
+  // in fullscreen, the browser stops firing mousemove on the .plyr container
+  // (treats it as mouseleave).  Plyr's internal idle timer expires and it
+  // hides the controls.
+  //
+  // Fix: Listen for mousemove on `window` (always receives events, even at
+  // screen edges).  If we're in fullscreen AND the cursor is within the
+  // bottom 30px, dispatch a synthetic mousemove directly onto the Plyr
+  // container.  This resets Plyr's 3s auto-hide timer naturally, without
+  // overriding any config or fighting its internal state machine.
+  // ─────────────────────────────────────────────────────────────────────────
+  useEffect(() => {
+    const EDGE_THRESHOLD = 30;
+
+    const handleWindowMouseMove = (e: MouseEvent) => {
+      // Only act when in fullscreen
+      if (!document.fullscreenElement) return;
+
+      // Only act when cursor is at the bottom edge
+      if (window.innerHeight - e.clientY > EDGE_THRESHOLD) return;
+
+      // Forward the event to the Plyr container so its internal timer resets
+      const plyrContainer = playerRef.current?.elements?.container;
+      if (plyrContainer) {
+        plyrContainer.dispatchEvent(new MouseEvent('mousemove', {
+          bubbles: true,
+          clientX: e.clientX,
+          clientY: e.clientY,
+        }));
+      }
+    };
+
+    window.addEventListener('mousemove', handleWindowMouseMove);
+    return () => window.removeEventListener('mousemove', handleWindowMouseMove);
+  }, []);
 
   // ─────────────────────────────────────────────────────────────────────────
   // Effect 2 — seek when parent updates initialTime (user clicks "Resume")
