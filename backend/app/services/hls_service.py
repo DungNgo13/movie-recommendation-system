@@ -12,6 +12,16 @@ from ..models import movie as movie_model
 logger = logging.getLogger(__name__)
 
 # ---------------------------------------------------------------------------
+# FFmpeg / FFprobe executable resolution
+#
+# shutil.which() searches $PATH at import time and returns an absolute path.
+# Fallback to common Linux install locations so the service works even when
+# running under a systemd unit with a minimal PATH (e.g. Ubuntu LXC).
+# ---------------------------------------------------------------------------
+FFMPEG_CMD  = shutil.which("ffmpeg")  or "/usr/bin/ffmpeg"
+FFPROBE_CMD = shutil.which("ffprobe") or "/usr/bin/ffprobe"
+
+# ---------------------------------------------------------------------------
 # Global process registry  { movie_id (str) -> subprocess.Popen }
 # ---------------------------------------------------------------------------
 active_encodes: dict[str, subprocess.Popen] = {}
@@ -102,7 +112,7 @@ async def encoding_worker() -> None:
 
 def get_video_duration(path: str) -> float:
     cmd = [
-        "ffprobe", "-v", "error", "-show_entries",
+        FFPROBE_CMD, "-v", "error", "-show_entries",
         "format=duration", "-of",
         "default=noprint_wrappers=1:nokey=1", path
     ]
@@ -122,7 +132,7 @@ def get_video_dimensions(path: str) -> tuple[int, int]:
     height falls just below a round number (e.g. 1280x714 is still 720p HD).
     """
     cmd = [
-        "ffprobe", "-v", "error",
+        FFPROBE_CMD, "-v", "error",
         "-select_streams", "v:0",
         "-show_entries", "stream=width,height",
         "-of", "default=noprint_wrappers=1:nokey=1",
@@ -148,7 +158,7 @@ def get_video_height(path: str) -> int:
 def has_audio_stream(path: str) -> bool:
     """Return True if the source file contains at least one audio stream."""
     cmd = [
-        "ffprobe", "-v", "error",
+        FFPROBE_CMD, "-v", "error",
         "-select_streams", "a",
         "-show_entries", "stream=index",
         "-of", "default=noprint_wrappers=1:nokey=1",
@@ -276,7 +286,7 @@ def _build_multi_quality_cmd(
     out = f"{output_dir}/v%v_playlist.m3u8"
 
     # ── Maps: video first, then audio ────────────────────────────────────────
-    cmd = ["ffmpeg", "-y", "-i", src, "-filter_complex", filter_complex]
+    cmd = [FFMPEG_CMD, "-y", "-i", src, "-filter_complex", filter_complex]
 
     for label, _, _ in tiers:
         cmd += ["-map", f"[{label}]"]          # v:0, v:1, …
@@ -325,7 +335,7 @@ def _build_single_quality_cmd(src: str, output_dir: str, audio: bool) -> tuple[l
     playlist = f"{output_dir}/playlist.m3u8"
 
     cmd = [
-        "ffmpeg", "-y",
+        FFMPEG_CMD, "-y",
         "-i", src,
         "-vf", "scale=-2:480",
         "-c:v", "libx264", "-b:v", "1200k",
