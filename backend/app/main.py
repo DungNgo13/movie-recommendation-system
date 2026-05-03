@@ -4,6 +4,10 @@ import contextlib
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+from dotenv import load_dotenv
+
+# Load .env FIRST — before any module reads os.getenv().
+load_dotenv()
 
 from .database import engine
 from .models import movie as movie_model
@@ -70,11 +74,11 @@ os.makedirs("media/videos/source", exist_ok=True)
 os.makedirs("media/videos/hls", exist_ok=True)
 app.mount("/media", StaticFiles(directory="media"), name="media")
 
-# Set up CORS
-origins = [
-    "http://localhost:5173",
-    "http://127.0.0.1:5173",
-]
+# ─── CORS ─────────────────────────────────────────────────────────────────────
+# Read allowed origins from the CORS_ORIGINS env var (comma-separated).
+# Falls back to localhost dev defaults if not set.
+_cors_raw = os.getenv("CORS_ORIGINS", "http://localhost:5173,http://127.0.0.1:5173")
+origins = [o.strip() for o in _cors_raw.split(",") if o.strip()]
 
 app.add_middleware(
     CORSMiddleware,

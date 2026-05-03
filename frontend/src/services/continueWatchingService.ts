@@ -1,7 +1,7 @@
 import { getToken } from './authService';
 import type { MovieListItem } from '../models';
 
-const API_BASE_URL = 'http://localhost:8000/api/v1';
+import { API_BASE_URL } from '../config';
 
 export interface HistoryItem extends MovieListItem {
   watched_at: string;

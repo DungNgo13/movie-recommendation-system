@@ -2,6 +2,11 @@ from pydantic import BaseModel, Field, ConfigDict, computed_field, field_validat
 from typing import List, Optional, Union
 from uuid import UUID
 from datetime import date
+import os
+
+# The public base URL of this backend — used to build absolute media URLs.
+# Read from BACKEND_URL env var; defaults to localhost for development.
+_BACKEND_URL = os.getenv("BACKEND_URL", "http://localhost:8000").rstrip("/")
 
 # Helper to normalize local DB paths into public HTTP formats dynamically.
 def normalize_url(path: Optional[str]) -> Optional[str]:
@@ -11,7 +16,7 @@ def normalize_url(path: Optional[str]) -> Optional[str]:
         return path
     # Removes leading slashes effectively ensuring predictable binding.
     clean_path = path.lstrip("/\\")
-    return f"http://localhost:8000/{clean_path}"
+    return f"{_BACKEND_URL}/{clean_path}"
 
 
 def compute_quality_score(

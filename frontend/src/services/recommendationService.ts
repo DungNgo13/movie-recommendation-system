@@ -1,6 +1,6 @@
 import { getToken } from './authService';
 
-const API_BASE_URL = 'http://localhost:8000/api/v1';
+import { API_BASE_URL } from '../config';
 
 export interface RecommendedMovie {
   id: string;

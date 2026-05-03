@@ -7,7 +7,7 @@ import { useAuth } from '../hooks/useAuth';
 import { getToken } from '../services/authService';
 import type { MovieListItem } from '../models';
 
-const API_BASE_URL = 'http://localhost:8000/api/v1';
+import { API_BASE_URL } from '../config';
 
 const FavoritesPage: React.FC = () => {
   const { user } = useAuth();
