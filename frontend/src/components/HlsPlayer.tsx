@@ -31,7 +31,7 @@ interface HlsPlayerProps {
 
 const HlsPlayer: React.FC<HlsPlayerProps> = ({
   src,
-  poster,
+  poster: _poster,
   initialTime = 0,
   onTimeUpdate,
   onPause,

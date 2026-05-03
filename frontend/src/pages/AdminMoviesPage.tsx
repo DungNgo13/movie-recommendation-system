@@ -155,7 +155,7 @@ const AdminMoviesPage: React.FC = () => {
       setMovies((prev) =>
         prev.map((m) =>
           m.id === movie.id
-            ? { ...m, video_status: fresh.video_status, video_step: fresh.video_step, video_progress: fresh.video_progress, available_qualities: fresh.available_qualities }
+            ? { ...m, video_status: fresh.video_status, video_step: fresh.video_step ?? undefined, video_progress: fresh.video_progress, available_qualities: fresh.available_qualities ?? undefined }
             : m
         )
       );
