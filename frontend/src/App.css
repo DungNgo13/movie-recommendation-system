@@ -1486,3 +1486,11 @@
 .plyr--fullscreen-active .plyr__controls {
   border-bottom: 12px solid transparent !important;
 }
+
+/* 5. Force controls to show when hovered, overriding Plyr's hide-controls
+ *    state (opacity: 0 + translateY) triggered by mouseleave at screen edge. */
+.plyr--fullscreen-active.plyr--video .plyr__controls:hover {
+  opacity: 1 !important;
+  transform: translateY(0) !important;
+  visibility: visible !important;
+}
