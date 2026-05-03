@@ -93,9 +93,7 @@ const HlsPlayer: React.FC<HlsPlayerProps> = ({
             'mute', 'volume', 'settings', 'fullscreen',
           ],
           settings: ['quality', 'speed'],
-          // Slightly longer idle timer (3s vs default 2s) so the controls
-          // stay visible a bit longer after the user stops moving the cursor.
-          hideControls: 3000,
+          hideControls: true,
           clickToPlay: true,
           keyboard: { focused: true, global: true },
           quality: {
@@ -124,7 +122,6 @@ const HlsPlayer: React.FC<HlsPlayerProps> = ({
             iosNative: true,   // use iOS native FS instead of pseudo-FS
           },
           i18n: { qualityLabel: { 0: 'Auto' } },
-          poster,
         });
 
         playerRef.current = player;
@@ -170,7 +167,6 @@ const HlsPlayer: React.FC<HlsPlayerProps> = ({
       // iOS Safari — native HLS, Plyr without quality API
       video.src = src;
       const player = new Plyr(video, {
-        poster,
         fullscreen: { enabled: true, fallback: true, iosNative: true },
       });
       playerRef.current = player;

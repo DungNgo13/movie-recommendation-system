@@ -132,8 +132,8 @@ const AdminUsersPage: React.FC = () => {
                   </span>
                 </td>
                 <td>
-                  <span className={`role-badge status-${(user as Record<string, unknown>).status || 'active'}`}>
-                    {((user as Record<string, unknown>).status as string) || 'active'}
+                  <span className={`role-badge status-${(user as unknown as Record<string, unknown>).status || 'active'}`}>
+                    {((user as unknown as Record<string, unknown>).status as string) || 'active'}
                   </span>
                 </td>
                 <td>{new Date(user.created_at).toLocaleDateString()}</td>
