@@ -203,50 +203,6 @@ const HlsPlayer: React.FC<HlsPlayerProps> = ({
     video.addEventListener('ended',      handleEnded);
     video.addEventListener('playing',    handlePlaying);
 
-    // ── Fullscreen bottom-edge hover fix ──────────────────────────────────
-    // Problem: When the cursor reaches the absolute bottom pixel of the
-    // screen in fullscreen, the browser fires `mouseleave` on the player
-    // container, which Plyr interprets as "user stopped interacting" and
-    // hides the control bar.  The CSS ::after pseudo-element catches some
-    // cases, but browsers are inconsistent about hit-testing at y=max.
-    //
-    // Fix: Listen for mousemove on the document (survives the Plyr wrapper
-    // re-parenting during fullscreen transitions).  If the cursor is within
-    // the bottom 50px of the viewport AND Plyr is fullscreen, force the
-    // controls to show via Plyr's toggleControls API.
-    const BOTTOM_THRESHOLD_PX = 50;
-    let fsHideTimer: ReturnType<typeof setTimeout> | null = null;
-
-    const handleFullscreenMouseMove = (e: MouseEvent) => {
-      const player = playerRef.current;
-      if (!player || !player.fullscreen?.active) return;
-
-      const distFromBottom = window.innerHeight - e.clientY;
-
-      if (distFromBottom <= BOTTOM_THRESHOLD_PX) {
-        // Cursor is near the bottom edge — force controls visible
-        player.toggleControls(true);
-
-        // Clear any pending auto-hide so the controls stay up while
-        // the user is hovering the bottom zone.
-        if (fsHideTimer) {
-          clearTimeout(fsHideTimer);
-          fsHideTimer = null;
-        }
-      } else {
-        // Cursor moved away from the bottom zone — let Plyr resume its
-        // normal auto-hide behaviour after a short delay.
-        if (!fsHideTimer) {
-          fsHideTimer = setTimeout(() => {
-            fsHideTimer = null;
-            // No explicit hide call — Plyr's own idle timer will handle it
-          }, 2000);
-        }
-      }
-    };
-
-    document.addEventListener('mousemove', handleFullscreenMouseMove);
-
     // ── STEP 5: Cleanup ──────────────────────────────────────────────────
     // isMounted = false MUST be the very first line so the async
     // MANIFEST_PARSED callback sees it before anything else is torn down.
@@ -256,8 +212,6 @@ const HlsPlayer: React.FC<HlsPlayerProps> = ({
       video.removeEventListener('pause',      handlePause);
       video.removeEventListener('ended',      handleEnded);
       video.removeEventListener('playing',    handlePlaying);
-      document.removeEventListener('mousemove', handleFullscreenMouseMove);
-      if (fsHideTimer) clearTimeout(fsHideTimer);
       playerRef.current?.destroy();
       playerRef.current = null;
       hlsRef.current?.destroy();

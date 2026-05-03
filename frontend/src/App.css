@@ -1447,38 +1447,42 @@
   background: rgba(52, 152, 219, 0.20);
 }
 
-/* ===== Plyr Fullscreen Hover Dead-Zone Fix ================================= *
- * Problem:  When the cursor reaches the absolute bottom pixel of the screen   *
- *           in fullscreen, the browser fires `mouseleave` on the player       *
- *           container, causing the Plyr control bar to hide.                  *
+/* ===== Plyr Fullscreen Controls Fix ======================================== *
+ * Root cause: In fullscreen, Plyr's .plyr wrapper may not stretch to fill the *
+ * full viewport height.  This leaves a ~1px dead zone at the very bottom of   *
+ * the screen where mousemove events don't reach the player container, so Plyr *
+ * thinks the user left and hides the controls.                                *
  *                                                                             *
- * Fix:      1. Pad the control bar so it sits slightly above the screen edge. *
- *           2. Add an invisible ::after pseudo-element that extends the       *
- *              hover-catchment zone to the very bottom of the viewport.       *
+ * Fix: Force the .plyr wrapper and its inner containers to fill 100% of the   *
+ * viewport in fullscreen.  This ensures Plyr's own native hover detection     *
+ * works at every pixel — no external JS event listeners needed.               *
  *                                                                             *
- * Scoped:   Only applies inside .plyr--fullscreen-active so normal/embedded   *
- *           player layout is unaffected.                                      *
+ * Scoped to .plyr--fullscreen-active so normal/embedded layout is unaffected. *
  * =========================================================================== */
 
-/* 1. Keep controls interactive and add breathing room above screen edge. */
-.plyr--fullscreen-active.plyr--video .plyr__controls {
-  padding-bottom: 20px !important;
-  pointer-events: auto;
-}
-
-/* 2. Invisible hover catcher — fills the gap between controls and screen edge. */
+/* 1. Make the Plyr wrapper cover the entire fullscreen viewport. */
 .plyr--fullscreen-active {
-  position: relative;
+  width: 100vw !important;
+  height: 100vh !important;
 }
 
-.plyr--fullscreen-active::after {
-  content: "";
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 15px;
+/* 2. Ensure the video element stretches within the fullscreen wrapper. */
+.plyr--fullscreen-active video,
+.plyr--fullscreen-active .plyr__video-wrapper {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* 3. Controls: pad the bottom so buttons sit above the screen edge,
+ *    and expand the controls wrapper to create a generous hover target. */
+.plyr--fullscreen-active.plyr--video .plyr__controls {
+  padding-bottom: 18px !important;
   pointer-events: auto;
-  z-index: 9999;
-  background: transparent;
+}
+
+/* 4. Extend the clickable/hoverable area of the controls wrapper so
+ *    Plyr detects the mouse before it reaches the dead zone.
+ *    A transparent border-bottom acts as an invisible hit-area extension. */
+.plyr--fullscreen-active .plyr__controls {
+  border-bottom: 12px solid transparent !important;
 }
