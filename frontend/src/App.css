@@ -1446,3 +1446,39 @@
 .detail-keyword-badge:hover {
   background: rgba(52, 152, 219, 0.20);
 }
+
+/* ===== Plyr Fullscreen Hover Dead-Zone Fix ================================= *
+ * Problem:  When the cursor reaches the absolute bottom pixel of the screen   *
+ *           in fullscreen, the browser fires `mouseleave` on the player       *
+ *           container, causing the Plyr control bar to hide.                  *
+ *                                                                             *
+ * Fix:      1. Pad the control bar so it sits slightly above the screen edge. *
+ *           2. Add an invisible ::after pseudo-element that extends the       *
+ *              hover-catchment zone to the very bottom of the viewport.       *
+ *                                                                             *
+ * Scoped:   Only applies inside .plyr--fullscreen-active so normal/embedded   *
+ *           player layout is unaffected.                                      *
+ * =========================================================================== */
+
+/* 1. Keep controls interactive and add breathing room above screen edge. */
+.plyr--fullscreen-active.plyr--video .plyr__controls {
+  padding-bottom: 20px !important;
+  pointer-events: auto;
+}
+
+/* 2. Invisible hover catcher — fills the gap between controls and screen edge. */
+.plyr--fullscreen-active {
+  position: relative;
+}
+
+.plyr--fullscreen-active::after {
+  content: "";
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 15px;
+  pointer-events: auto;
+  z-index: 9999;
+  background: transparent;
+}
