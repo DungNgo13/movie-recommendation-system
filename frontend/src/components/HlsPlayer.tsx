@@ -129,6 +129,22 @@ const HlsPlayer: React.FC<HlsPlayerProps> = ({
 
         playerRef.current = player;
 
+        // ── Fullscreen controls fix (native Plyr events) ─────────────────
+        // In fullscreen, the browser's bottom-edge dead zone can cause Plyr
+        // to think the mouse left the player and auto-hide the controls.
+        //
+        // Fix: Disable auto-hide entirely while in fullscreen mode.
+        // The structural CSS (100vw × 100vh on .plyr--fullscreen-active)
+        // ensures the controls are always reachable.  On exit, restore
+        // the normal 3 s idle timer for embedded playback.
+        player.on('enterfullscreen', () => {
+          player.config.hideControls = 0;
+          player.toggleControls(true);
+        });
+        player.on('exitfullscreen', () => {
+          player.config.hideControls = 3000;
+        });
+
         // Keep the Plyr quality badge in sync with hls.js ABR decisions.
         // hls.js switches levels asynchronously; without this the badge
         // would show the requested level, not the one actually playing.
