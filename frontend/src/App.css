@@ -1495,29 +1495,54 @@
   visibility: visible !important;
 }
 
-/* ===== Navbar Avatar ===== */
-.navbar-avatar-link {
+/* ===== Navbar Profile Block (avatar + email) ===== */
+.navbar-profile-block {
   display: flex;
   align-items: center;
-  padding: 2px !important;
+  gap: 8px;
+  padding: 4px 10px;
+  border-radius: 8px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease, opacity 0.2s ease;
+}
+
+.navbar-profile-block:hover {
+  background-color: rgba(255, 255, 255, 0.12);
 }
 
 .navbar-avatar {
-  width: 30px;
-  height: 30px;
+  width: 35px;
+  height: 35px;
   border-radius: 50%;
   object-fit: cover;
   border: 2px solid rgba(255, 255, 255, 0.4);
   transition: border-color 0.2s ease;
+  flex-shrink: 0;
 }
 
-.navbar-avatar-link:hover .navbar-avatar {
+.navbar-profile-block:hover .navbar-avatar {
   border-color: #fff;
 }
 
+.navbar-profile-email {
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.85rem;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 160px;
+}
+
+.navbar-profile-block:hover .navbar-profile-email {
+  color: #fff;
+}
+
 .navbar-avatar-placeholder {
-  font-size: 1.2rem;
+  font-size: 1.4rem;
   line-height: 1;
+  flex-shrink: 0;
 }
 
 /* ===== Profile Page ===== */
@@ -1571,13 +1596,13 @@
 
 .avatar-upload__preview-wrapper {
   position: relative;
-  width: 140px;
-  height: 140px;
+  width: 161px;
+  height: 161px;
 }
 
 .avatar-upload__preview {
-  width: 140px;
-  height: 140px;
+  width: 161px;
+  height: 161px;
   border-radius: 50%;
   object-fit: cover;
   border: 3px solid #e8e8e8;
@@ -1589,8 +1614,8 @@
 }
 
 .avatar-upload__placeholder {
-  width: 140px;
-  height: 140px;
+  width: 161px;
+  height: 161px;
   border-radius: 50%;
   background: #f0f0f0;
   display: flex;
