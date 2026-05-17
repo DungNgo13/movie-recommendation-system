@@ -128,6 +128,21 @@ def reset_password(db: Session, token: str, new_password: str) -> bool:
     return True
 
 
+def change_password(db: Session, user: User, new_password_hash: str) -> None:
+    """
+    Apply a pre-hashed password to the user record.
+
+    Used by the change-password-confirm flow where the hash was already
+    computed and stored inside a short-lived JWT.
+    """
+    user.password_hash = new_password_hash
+    user.last_password_change = datetime.now(timezone.utc)
+    if user.status == "suspect":
+        user.status = "active"
+    user.failed_login_attempts = 0
+    db.commit()
+
+
 # ─── Guest history merge (Cold Start) ────────────────────────────────────────
 
 

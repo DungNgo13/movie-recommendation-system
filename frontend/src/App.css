@@ -1494,3 +1494,224 @@
   transform: translateY(0) !important;
   visibility: visible !important;
 }
+
+/* ===== Navbar Avatar ===== */
+.navbar-avatar-link {
+  display: flex;
+  align-items: center;
+  padding: 2px !important;
+}
+
+.navbar-avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  transition: border-color 0.2s ease;
+}
+
+.navbar-avatar-link:hover .navbar-avatar {
+  border-color: #fff;
+}
+
+.navbar-avatar-placeholder {
+  font-size: 1.2rem;
+  line-height: 1;
+}
+
+/* ===== Profile Page ===== */
+.profile-page {
+  width: 90%;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.profile-page h1 {
+  font-size: 1.6rem;
+  font-weight: 700;
+  margin-bottom: 24px;
+  color: #1a1a2e;
+}
+
+.profile-page__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+@media (max-width: 768px) {
+  .profile-page__grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.profile-section {
+  background: #fff;
+  padding: 24px;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+}
+
+.profile-section h2 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 16px;
+  color: #1a1a2e;
+}
+
+/* ===== Avatar Upload ===== */
+.avatar-upload {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.avatar-upload__preview-wrapper {
+  position: relative;
+  width: 140px;
+  height: 140px;
+}
+
+.avatar-upload__preview {
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #e8e8e8;
+  transition: border-color 0.2s ease;
+}
+
+.avatar-upload__preview-wrapper:hover .avatar-upload__preview {
+  border-color: #3498db;
+}
+
+.avatar-upload__placeholder {
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  background: #f0f0f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3rem;
+  border: 3px dashed #ddd;
+  color: #bbb;
+}
+
+.avatar-upload__change-btn {
+  position: absolute;
+  bottom: 4px;
+  right: 4px;
+  background: #3498db;
+  color: #fff;
+  border: 2px solid #fff;
+  border-radius: 16px;
+  padding: 4px 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.avatar-upload__change-btn:hover {
+  background: #2980b9;
+}
+
+.avatar-upload__actions {
+  display: flex;
+  gap: 8px;
+}
+
+/* ===== Password Strength ===== */
+.password-strength {
+  margin-top: 8px;
+}
+
+.password-strength-bar {
+  height: 4px;
+  border-radius: 2px;
+  background: #e8e8e8;
+  overflow: hidden;
+  margin-bottom: 4px;
+}
+
+.password-strength-bar__fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.3s ease, background-color 0.3s ease;
+}
+
+.password-strength-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.password-requirements {
+  list-style: none;
+  padding: 0;
+  margin: 8px 0 0;
+}
+
+.password-req {
+  font-size: 0.8rem;
+  padding: 2px 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.password-req__icon {
+  font-size: 0.75rem;
+  width: 14px;
+  text-align: center;
+}
+
+.password-req--met {
+  color: #27ae60;
+}
+
+.password-req--unmet {
+  color: #e74c3c;
+}
+
+/* ===== Change Password Form ===== */
+.change-password-form h3 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 16px;
+  color: #1a1a2e;
+}
+
+/* ===== Email Sent Banner ===== */
+.email-sent-banner {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  background: #e8f5e9;
+  border: 1px solid #a5d6a7;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.email-sent-banner__icon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.email-sent-banner strong {
+  color: #2e7d32;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.email-sent-banner p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #555;
+  line-height: 1.5;
+}
+

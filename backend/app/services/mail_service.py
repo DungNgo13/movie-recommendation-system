@@ -104,3 +104,11 @@ def send_password_reset_email(email: str, token: str) -> None:
     template = _jinja_env.get_template("password_reset_email.html")
     html = template.render(email=email, reset_url=reset_url)
     send_email(to=email, subject="Reset your Mov-Sug password 🔒", html_body=html)
+
+
+def send_password_change_email(email: str, token: str) -> None:
+    """Send a confirmation email for an authenticated password change."""
+    confirm_url = f"{FRONTEND_URL}/confirm-password-change?token={token}"
+    template = _jinja_env.get_template("password_change_confirm_email.html")
+    html = template.render(email=email, confirm_url=confirm_url)
+    send_email(to=email, subject="Confirm your password change 🔐", html_body=html)

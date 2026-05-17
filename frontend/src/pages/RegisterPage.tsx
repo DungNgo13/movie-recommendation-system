@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { registerUser, removeToken } from '../services/authService';
+import { isPasswordValid } from '../utils/passwordValidator';
+import PasswordStrengthIndicator from '../components/PasswordStrengthIndicator';
 // useAuth hook not needed here anymore
 
 const RegisterPage: React.FC = () => {
@@ -19,8 +21,8 @@ const RegisterPage: React.FC = () => {
       setError('Email is required.');
       return;
     }
-    if (!password || password.length < 6) {
-      setError('Password must be at least 6 characters.');
+    if (!password || !isPasswordValid(password, email)) {
+      setError('Password does not meet the complexity requirements.');
       return;
     }
     if (password !== confirmPassword) {
@@ -65,8 +67,9 @@ const RegisterPage: React.FC = () => {
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            placeholder="At least 6 characters"
+            placeholder="Min 8 chars, uppercase, number, special"
           />
+          <PasswordStrengthIndicator password={password} email={email} />
         </div>
 
         <div className="auth-field">

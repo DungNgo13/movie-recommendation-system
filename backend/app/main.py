@@ -27,6 +27,7 @@ from .routers import admin_dashboard
 from .routers import admin_logs
 from .routers import admin_recommendations
 from .routers import watch_progress
+from .routers import users
 
 movie_model.Base.metadata.create_all(bind=engine)
 user_model.Base.metadata.create_all(bind=engine)
@@ -72,6 +73,7 @@ os.makedirs("media/images/posters", exist_ok=True)
 os.makedirs("media/images/backdrops", exist_ok=True)
 os.makedirs("media/videos/source", exist_ok=True)
 os.makedirs("media/videos/hls", exist_ok=True)
+os.makedirs("media/images/avatars", exist_ok=True)
 app.mount("/media", StaticFiles(directory="media"), name="media")
 
 # ─── CORS ─────────────────────────────────────────────────────────────────────
@@ -100,6 +102,7 @@ app.include_router(admin_users.router)
 app.include_router(admin_dashboard.router)
 app.include_router(admin_logs.router)
 app.include_router(admin_recommendations.router)
+app.include_router(users.router)
 
 @app.get("/")
 def read_root():

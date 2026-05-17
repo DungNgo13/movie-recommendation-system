@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { resetPassword } from '../services/authService';
+import { isPasswordValid } from '../utils/passwordValidator';
+import PasswordStrengthIndicator from '../components/PasswordStrengthIndicator';
 
 const ResetPasswordPage: React.FC = () => {
   const [searchParams] = useSearchParams();
@@ -21,8 +23,8 @@ const ResetPasswordPage: React.FC = () => {
       setError('Missing reset token. Please use the link from your email.');
       return;
     }
-    if (!newPassword || newPassword.length < 6) {
-      setError('Password must be at least 6 characters.');
+    if (!newPassword || !isPasswordValid(newPassword)) {
+      setError('Password does not meet the complexity requirements.');
       return;
     }
     if (newPassword !== confirmPassword) {
@@ -65,8 +67,9 @@ const ResetPasswordPage: React.FC = () => {
                 type="password"
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
-                placeholder="At least 6 characters"
+                placeholder="Min 8 chars, uppercase, number, special"
               />
+              <PasswordStrengthIndicator password={newPassword} />
             </div>
 
             <div className="auth-field">

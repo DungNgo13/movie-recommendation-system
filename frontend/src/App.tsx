@@ -14,6 +14,8 @@ import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import ResetPasswordPage from './pages/ResetPasswordPage';
+import ProfilePage from './pages/ProfilePage';
+import ConfirmPasswordChangePage from './pages/ConfirmPasswordChangePage';
 import ProtectedAdminRoute from './components/ProtectedAdminRoute';
 import { useAutoRefreshSession } from './hooks/useAutoRefreshSession';
 import './App.css';
@@ -43,6 +45,8 @@ const App: React.FC = () => {
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
         <Route path="/reset-password" element={<ResetPasswordPage />} />
+        <Route path="/profile" element={<ProfilePage />} />
+        <Route path="/confirm-password-change" element={<ConfirmPasswordChangePage />} />
       </Routes>
     </div>
   );

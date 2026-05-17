@@ -9,6 +9,7 @@ export interface AuthUser {
   status: string;
   created_at: string;
   last_login_at?: string | null;
+  avatar_url?: string | null;
 }
 
 export interface GuestWatchEntryPayload {
@@ -139,4 +140,69 @@ export const refreshToken = async (): Promise<string | null> => {
   } catch {
     return null; // network error — don't disrupt the user
   }
+};
+
+
+// ─── Avatar ─────────────────────────────────────────────────────────────────
+
+export const uploadAvatar = async (file: File): Promise<AuthUser> => {
+  const token = getToken();
+  if (!token) throw new Error('Not authenticated');
+
+  const formData = new FormData();
+  formData.append('file', file);
+
+  const response = await fetch(`${API_BASE_URL}/users/me/avatar`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}` },
+    body: formData,
+  });
+  if (!response.ok) {
+    const err = await response.json().catch(() => null);
+    throw new Error(err?.detail || 'Failed to upload avatar');
+  }
+  return response.json();
+};
+
+
+// ─── Password change ────────────────────────────────────────────────────────
+
+export const requestPasswordChange = async (
+  currentPassword: string,
+  newPassword: string,
+): Promise<string> => {
+  const token = getToken();
+  if (!token) throw new Error('Not authenticated');
+
+  const response = await fetch(`${API_BASE_URL}/auth/change-password-request`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      current_password: currentPassword,
+      new_password: newPassword,
+    }),
+  });
+  if (!response.ok) {
+    const err = await response.json().catch(() => null);
+    throw new Error(err?.detail || 'Failed to request password change');
+  }
+  const data = await response.json();
+  return data.message;
+};
+
+export const confirmPasswordChange = async (token: string): Promise<string> => {
+  const response = await fetch(`${API_BASE_URL}/auth/change-password-confirm`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ token }),
+  });
+  if (!response.ok) {
+    const err = await response.json().catch(() => null);
+    throw new Error(err?.detail || 'Failed to confirm password change');
+  }
+  const data = await response.json();
+  return data.message;
 };

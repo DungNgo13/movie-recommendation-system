@@ -32,6 +32,13 @@ const Navbar: React.FC = () => {
         )}
         {user ? (
           <>
+            <Link to="/profile" className="navbar-link navbar-avatar-link" title="My Profile">
+              {user.avatar_url ? (
+                <img src={user.avatar_url} alt="" className="navbar-avatar" />
+              ) : (
+                <span className="navbar-avatar-placeholder">👤</span>
+              )}
+            </Link>
             <span className="navbar-user">{user.email}</span>
             <button className="navbar-link navbar-logout" onClick={handleLogout}>
               Logout

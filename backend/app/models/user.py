@@ -29,3 +29,6 @@ class User(Base):
     # Password reset flow
     password_reset_token = Column(String(64), nullable=True, index=True)
     password_reset_expires = Column(DateTime, nullable=True)
+
+    # Profile
+    avatar_path = Column(String(255), nullable=True)
