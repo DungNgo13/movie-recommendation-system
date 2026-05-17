@@ -29,12 +29,9 @@ from .routers import admin_recommendations
 from .routers import watch_progress
 from .routers import users
 
-movie_model.Base.metadata.create_all(bind=engine)
-user_model.Base.metadata.create_all(bind=engine)
-user_favorite_model.Base.metadata.create_all(bind=engine)
-watch_history_model.Base.metadata.create_all(bind=engine)
-rating_model.Base.metadata.create_all(bind=engine)
-admin_audit_log_model.Base.metadata.create_all(bind=engine)
+# NOTE: Database schema is now managed by Alembic migrations.
+# Run "python -m alembic upgrade head" to apply pending migrations.
+# Do NOT use Base.metadata.create_all() — it bypasses migration history.
 
 
 @contextlib.asynccontextmanager
