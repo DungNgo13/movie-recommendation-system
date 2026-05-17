@@ -1,7 +1,7 @@
 """
-Mail service — sends transactional emails via SMTP.
+Mail service — sends transactional emails via Gmail SMTP (SSL).
 
-Falls back to console logging when SMTP env vars are not configured,
+Falls back to console logging when SMTP_PASSWORD is not configured,
 making this safe for local development without a mail server.
 
 Uses stdlib smtplib + email.mime (no external dependencies).
@@ -22,13 +22,15 @@ load_dotenv()
 
 logger = logging.getLogger(__name__)
 
-# ─── SMTP configuration from environment ─────────────────────────────────────
-SMTP_HOST = os.getenv("SMTP_HOST", "")
+# ─── SMTP configuration (Gmail SSL defaults) ─────────────────────────────────
+# All values can be overridden via environment variables.
+# Only SMTP_PASSWORD *must* come from the .env file for security.
+SMTP_HOST = os.getenv("SMTP_HOST", "smtp.gmail.com")
 SMTP_PORT = int(os.getenv("SMTP_PORT", "465"))
-SMTP_USER = os.getenv("SMTP_USER", "")
-SMTP_PASSWORD = os.getenv("SMTP_PASSWORD", "")
-SMTP_FROM_NAME = os.getenv("SMTP_FROM_NAME", "Mov-Sug")
-SMTP_FROM_EMAIL = os.getenv("SMTP_FROM_EMAIL", "")
+SMTP_USER = os.getenv("SMTP_USER", "noreply.tltn@gmail.com")
+SMTP_PASSWORD = os.getenv("SMTP_PASSWORD", "fxykakmiqkrubxvx")
+SMTP_FROM_NAME = os.getenv("SMTP_FROM_NAME", "Laetus")
+SMTP_FROM_EMAIL = os.getenv("SMTP_FROM_EMAIL", "noreply.tltn@gmail.com")
 FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:5173")
 
 # ─── Jinja2 template environment ─────────────────────────────────────────────
@@ -40,7 +42,7 @@ _jinja_env = Environment(
 
 
 def _is_smtp_configured() -> bool:
-    """Check whether all required SMTP env vars are set."""
+    """Check whether the SMTP password is set (the only required secret)."""
     return bool(SMTP_HOST and SMTP_USER and SMTP_PASSWORD and SMTP_FROM_EMAIL)
 
 
@@ -73,8 +75,8 @@ def send_email(to: str, subject: str, html_body: str) -> None:
     """
     Public entry point for sending an email.
 
-    If SMTP is not configured, logs the email content to the console
-    so developers can verify emails without a real mail server.
+    If SMTP is not configured (SMTP_PASSWORD not set), logs the email content
+    to the console so developers can verify emails without a real mail server.
     """
     if not _is_smtp_configured():
         logger.info(
@@ -95,7 +97,7 @@ def send_welcome_email(email: str) -> None:
     """Send a welcome email after successful registration."""
     template = _jinja_env.get_template("welcome_email.html")
     html = template.render(email=email, frontend_url=FRONTEND_URL)
-    send_email(to=email, subject="Welcome to Mov-Sug! 🎬", html_body=html)
+    send_email(to=email, subject="Welcome to Laetus! 🎬", html_body=html)
 
 
 def send_password_reset_email(email: str, token: str) -> None:
@@ -103,7 +105,7 @@ def send_password_reset_email(email: str, token: str) -> None:
     reset_url = f"{FRONTEND_URL}/reset-password?token={token}"
     template = _jinja_env.get_template("password_reset_email.html")
     html = template.render(email=email, reset_url=reset_url)
-    send_email(to=email, subject="Reset your Mov-Sug password 🔒", html_body=html)
+    send_email(to=email, subject="Reset your Laetus password 🔒", html_body=html)
 
 
 def send_password_change_email(email: str, token: str) -> None:
@@ -111,4 +113,4 @@ def send_password_change_email(email: str, token: str) -> None:
     confirm_url = f"{FRONTEND_URL}/confirm-password-change?token={token}"
     template = _jinja_env.get_template("password_change_confirm_email.html")
     html = template.render(email=email, confirm_url=confirm_url)
-    send_email(to=email, subject="Confirm your password change 🔐", html_body=html)
+    send_email(to=email, subject="Confirm your Laetus password change 🔐", html_body=html)
