@@ -44,7 +44,7 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie, isFavorite, onToggleFavori
         {isFavorite ? '♥' : '♡'}
       </button>
       <Link to={`/movie/${movie.id}`}>
-        <div style={{ position: 'relative', width: '100%', aspectRatio: '2/3', background: '#eee' }}>
+        <div style={{ position: 'relative', width: '100%', aspectRatio: '2/3', background: '#1e1e22' }}>
           {/* Primary Poster */}
           <img
             src={movie.poster_url || '/placeholder-poster.svg'}

@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { Link } from 'react-router-dom';
 import MovieCard from '../components/MovieCard';
 import RecommendationCard from '../components/RecommendationCard';
-import LoadingSpinner from '../components/LoadingSpinner';
+import SkeletonCard from '../components/SkeletonCard';
 import ErrorMessage from '../components/ErrorMessage';
 import { useMovies } from '../hooks/useMovies';
 import { useFavorites } from '../hooks/useFavorites';
@@ -11,10 +12,19 @@ import { getRecommendations } from '../services/recommendationService';
 import type { HistoryItem } from '../services/continueWatchingService';
 import type { RecommendedMovie } from '../services/recommendationService';
 import type { MovieFilters } from '../services/movieService';
+import type { MovieListItem } from '../models';
 
 type SortOption = 'title-asc' | 'title-desc' | 'year-desc' | 'year-asc';
 
 const DEBOUNCE_MS = 500;
+const SKELETON_COUNT = 12;
+
+/** Pick a random hero movie from those that have a backdrop image. */
+const pickHeroMovie = (movies: MovieListItem[]): MovieListItem | null => {
+  const withBackdrop = movies.filter((m) => m.backdrop_url);
+  if (withBackdrop.length === 0) return movies[0] ?? null;
+  return withBackdrop[Math.floor(Math.random() * withBackdrop.length)];
+};
 
 const HomePage: React.FC = () => {
   const { isFavorite, toggleFavorite } = useFavorites();
@@ -46,6 +56,14 @@ const HomePage: React.FC = () => {
   }), [debouncedSearch, genreFilter, yearFilter]);
 
   const { movies, loading, error } = useMovies(1, 100, filters);
+
+  // Pick hero movie once when movies first load (unfiltered)
+  const [heroMovie, setHeroMovie] = useState<MovieListItem | null>(null);
+  useEffect(() => {
+    if (movies.length > 0 && !heroMovie) {
+      setHeroMovie(pickHeroMovie(movies));
+    }
+  }, [movies, heroMovie]);
 
   // Client-side sort on the already-filtered results from the server
   const sortedMovies = useMemo(() => {
@@ -116,16 +134,43 @@ const HomePage: React.FC = () => {
     return Object.entries(grouped).sort(([a], [b]) => a.localeCompare(b));
   }, [sortedMovies]);
 
-  if (loading) {
-    return <LoadingSpinner />;
-  }
-
   if (error) {
     return <ErrorMessage message={error} />;
   }
 
   return (
     <div className="home-page">
+      {/* ===== Hero Section ===== */}
+      {heroMovie && (
+        <section className="hero-section">
+          <div
+            className="hero-backdrop"
+            style={{
+              backgroundImage: `url(${heroMovie.backdrop_url || heroMovie.poster_url || ''})`,
+            }}
+          />
+          <div className="hero-gradient" />
+          <div className="hero-content">
+            <h1 className="hero-title">{heroMovie.title}</h1>
+            <div className="hero-actions">
+              <Link
+                to={`/movie/${heroMovie.id}`}
+                className="hero-btn hero-btn--primary"
+              >
+                ▶ Watch Now
+              </Link>
+              <Link
+                to={`/movie/${heroMovie.id}`}
+                className="hero-btn hero-btn--secondary"
+              >
+                ℹ More Info
+              </Link>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* ===== Sticky Filter Controls ===== */}
       <div className="sticky-controls">
         <div className="movie-controls">
           <input
@@ -181,77 +226,100 @@ const HomePage: React.FC = () => {
         </div>
       </div>
 
-      {historyItems.filter(item => !item.is_completed && (item.playback_position_seconds ?? 0) >= 30).length > 0 && (
-        <section className="continue-watching-section">
-          <h2>Continue Watching</h2>
-          <div className="movie-list movie-row">
-            {historyItems
-              .filter(item => !item.is_completed && (item.playback_position_seconds ?? 0) >= 30)
-              .map((item) => (
-                <div key={item.id} style={{ position: 'relative' }}>
-                  <MovieCard
-                    movie={item}
-                    isFavorite={isFavorite(item.id)}
-                    onToggleFavorite={toggleFavorite}
-                  />
-                  {/* Progress bar shown at bottom of the card thumbnail */}
-                  {item.progress_percent != null && item.progress_percent > 0 && (
-                    <div style={{
-                      position: 'absolute', bottom: '2.2rem', left: 0, right: 0,
-                      height: '4px', background: 'rgba(0,0,0,0.4)',
-                    }}>
-                      <div style={{
-                        height: '100%',
-                        width: `${Math.min(item.progress_percent, 100)}%`,
-                        background: '#e50914',
-                        borderRadius: '0 2px 2px 0',
-                        transition: 'width 0.3s ease',
-                      }} />
-                    </div>
-                  )}
-                </div>
-              ))}
-          </div>
-        </section>
-      )}
-
-      {recommendations.length > 0 && (
-        <section className="recommendations-section recommendations-home">
-          <h2>🤖 Recommended for You</h2>
-          <div className="movie-list movie-row">
-            {recommendations.map((rec) => (
-              <RecommendationCard
-                key={rec.id}
-                movie={rec}
-                isFavorite={isFavorite(rec.id)}
-                onToggleFavorite={toggleFavorite}
-              />
+      {/* ===== Skeleton Loading State ===== */}
+      {loading && (
+        <>
+          <div className="skeleton-section-title" />
+          <div className="skeleton-row">
+            {Array.from({ length: SKELETON_COUNT }).map((_, i) => (
+              <SkeletonCard key={i} />
             ))}
           </div>
-        </section>
+          <div className="skeleton-section-title" />
+          <div className="skeleton-row">
+            {Array.from({ length: SKELETON_COUNT }).map((_, i) => (
+              <SkeletonCard key={`b-${i}`} />
+            ))}
+          </div>
+        </>
       )}
 
-      <h1>Movies by Genre</h1>
+      {/* ===== Content (shown when not loading) ===== */}
+      {!loading && (
+        <>
+          {historyItems.filter(item => !item.is_completed && (item.playback_position_seconds ?? 0) >= 30).length > 0 && (
+            <section className="continue-watching-section">
+              <h2>Continue Watching</h2>
+              <div className="movie-list movie-row">
+                {historyItems
+                  .filter(item => !item.is_completed && (item.playback_position_seconds ?? 0) >= 30)
+                  .map((item) => (
+                    <div key={item.id} style={{ position: 'relative' }}>
+                      <MovieCard
+                        movie={item}
+                        isFavorite={isFavorite(item.id)}
+                        onToggleFavorite={toggleFavorite}
+                      />
+                      {/* Progress bar shown at bottom of the card thumbnail */}
+                      {item.progress_percent != null && item.progress_percent > 0 && (
+                        <div style={{
+                          position: 'absolute', bottom: '2.2rem', left: 0, right: 0,
+                          height: '4px', background: 'rgba(0,0,0,0.4)',
+                        }}>
+                          <div style={{
+                            height: '100%',
+                            width: `${Math.min(item.progress_percent, 100)}%`,
+                            background: '#e50914',
+                            borderRadius: '0 2px 2px 0',
+                            transition: 'width 0.3s ease',
+                          }} />
+                        </div>
+                      )}
+                    </div>
+                  ))}
+              </div>
+            </section>
+          )}
 
-      {moviesByGenre.length === 0 ? (
-        <p className="no-results">No movies found.</p>
-      ) : (
-        moviesByGenre.map(([genre, genreMovies]) => (
-          <section key={genre} className="genre-section" style={{ marginBottom: '2rem' }}>
-            <h2 style={{ paddingLeft: '1rem' }}>{genre}</h2>
-            <div className="movie-list movie-row">
-              {genreMovies.map((movie) => (
-                <MovieCard
-                  key={movie.id}
-                  movie={movie}
-                  isFavorite={isFavorite(movie.id)}
-                  onToggleFavorite={toggleFavorite}
-                  enableImageSwap={true}
-                />
-              ))}
-            </div>
-          </section>
-        ))
+          {recommendations.length > 0 && (
+            <section className="recommendations-section recommendations-home">
+              <h2>🤖 Recommended for You</h2>
+              <div className="movie-list movie-row">
+                {recommendations.map((rec) => (
+                  <RecommendationCard
+                    key={rec.id}
+                    movie={rec}
+                    isFavorite={isFavorite(rec.id)}
+                    onToggleFavorite={toggleFavorite}
+                  />
+                ))}
+              </div>
+            </section>
+          )}
+
+          <h1>Movies by Genre</h1>
+
+          {moviesByGenre.length === 0 ? (
+            <p className="no-results">No movies found.</p>
+          ) : (
+            moviesByGenre.map(([genre, genreMovies]) => (
+              <section key={genre} className="genre-section" style={{ marginBottom: '2rem' }}>
+                <h2 style={{ paddingLeft: '1rem' }}>{genre}</h2>
+                <div className="movie-list movie-row">
+                  {genreMovies.map((movie) => (
+                    <MovieCard
+                      key={movie.id}
+                      movie={movie}
+                      isFavorite={isFavorite(movie.id)}
+                      onToggleFavorite={toggleFavorite}
+                      enableImageSwap={true}
+                    />
+                  ))}
+                </div>
+              </section>
+            ))
+          )}
+        </>
       )}
     </div>
   );
