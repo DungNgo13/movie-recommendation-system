@@ -254,3 +254,85 @@ def test_create_movie_invalid_year(db_session, seed_movies):
     response = client.post("/api/v1/movies/", json=payload)
     assert response.status_code == 422
     assert "Release date must be 'YYYY' or 'YYYY-MM-DD'" in str(response.json())
+
+
+# ──────────────────────────────────────────────────────────────────────
+# Server-side search & filter tests
+# ──────────────────────────────────────────────────────────────────────
+
+def test_search_movies_by_title(seed_movies):
+    """
+    GET /api/v1/movies?search=incep → returns only 'Inception' (partial, case-insensitive).
+    """
+    response = client.get("/api/v1/movies?search=incep")
+    assert response.status_code == 200
+    data = response.json()
+    assert data["total"] == 1
+    assert data["items"][0]["title"] == "Inception"
+
+
+def test_search_movies_case_insensitive(seed_movies):
+    """
+    Search is case-insensitive: 'MATRIX' should find 'The Matrix'.
+    """
+    response = client.get("/api/v1/movies?search=MATRIX")
+    assert response.status_code == 200
+    data = response.json()
+    assert data["total"] == 1
+    assert data["items"][0]["title"] == "The Matrix"
+
+
+def test_filter_movies_by_year(seed_movies):
+    """
+    GET /api/v1/movies?year=2019 → only 'Parasite'.
+    """
+    response = client.get("/api/v1/movies?year=2019")
+    assert response.status_code == 200
+    data = response.json()
+    assert data["total"] == 1
+    assert data["items"][0]["title"] == "Parasite"
+
+
+def test_filter_movies_by_genre(seed_movies):
+    """
+    GET /api/v1/movies?genre=Comedy → only 'Parasite' (genres: Thriller, Comedy).
+    """
+    response = client.get("/api/v1/movies?genre=Comedy")
+    assert response.status_code == 200
+    data = response.json()
+    assert data["total"] == 1
+    assert data["items"][0]["title"] == "Parasite"
+
+
+def test_filter_movies_by_genre_shared(seed_movies):
+    """
+    GET /api/v1/movies?genre=Action → 'Inception' and 'The Matrix' (both have Action).
+    """
+    response = client.get("/api/v1/movies?genre=Action")
+    assert response.status_code == 200
+    data = response.json()
+    assert data["total"] == 2
+    titles = {item["title"] for item in data["items"]}
+    assert titles == {"Inception", "The Matrix"}
+
+
+def test_filter_movies_combined(seed_movies):
+    """
+    Combine search + genre + year: only Inception matches all three.
+    """
+    response = client.get("/api/v1/movies?search=in&genre=Sci-Fi&year=2010")
+    assert response.status_code == 200
+    data = response.json()
+    assert data["total"] == 1
+    assert data["items"][0]["title"] == "Inception"
+
+
+def test_filter_movies_no_results(seed_movies):
+    """
+    Filters that match nothing should return total=0 and empty items.
+    """
+    response = client.get("/api/v1/movies?search=nonexistent")
+    assert response.status_code == 200
+    data = response.json()
+    assert data["total"] == 0
+    assert data["items"] == []

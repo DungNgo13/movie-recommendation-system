@@ -15,8 +15,32 @@ export interface MovieFormData {
   backdrop_url?: string | null;
 }
 
-export const getMovies = async (page = 1, limit = 20): Promise<PaginatedMovies> => {
-  const response = await fetch(`${API_BASE_URL}/movies?page=${page}&limit=${limit}`);
+export interface MovieFilters {
+  search?: string;
+  genre?: string;
+  year?: number | null;
+}
+
+export const getMovies = async (
+  page = 1,
+  limit = 20,
+  filters?: MovieFilters,
+): Promise<PaginatedMovies> => {
+  const params = new URLSearchParams();
+  params.set('page', String(page));
+  params.set('limit', String(limit));
+
+  if (filters?.search) {
+    params.set('search', filters.search);
+  }
+  if (filters?.genre) {
+    params.set('genre', filters.genre);
+  }
+  if (filters?.year != null) {
+    params.set('year', String(filters.year));
+  }
+
+  const response = await fetch(`${API_BASE_URL}/movies?${params.toString()}`);
   if (!response.ok) {
     throw new Error('Failed to fetch movies');
   }

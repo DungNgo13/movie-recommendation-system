@@ -1,3 +1,5 @@
+from typing import Optional
+
 from fastapi import APIRouter, Depends, HTTPException, Query, UploadFile, File, BackgroundTasks
 from sqlalchemy.orm import Session
 from uuid import UUID
@@ -17,12 +19,17 @@ router = APIRouter(
 def read_movies(
     page: int = Query(1, ge=1, description="Page number"),
     limit: int = Query(20, ge=1, le=100, description="Items per page"),
-    db: Session = Depends(database.get_db)
+    search: Optional[str] = Query(None, description="Case-insensitive title search"),
+    genre: Optional[str] = Query(None, description="Exact genre name filter"),
+    year: Optional[int] = Query(None, ge=1800, le=2100, description="Release year filter"),
+    db: Session = Depends(database.get_db),
 ):
     """
-    Retrieve a paginated list of movies.
+    Retrieve a paginated list of movies with optional filters.
     """
-    movie_data = movie_service.get_movies(db, page=page, limit=limit)
+    movie_data = movie_service.get_movies(
+        db, page=page, limit=limit, search=search, genre=genre, year=year
+    )
     return {
         "items": movie_data["items"],
         "total": movie_data["total"],

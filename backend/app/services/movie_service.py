@@ -1,3 +1,6 @@
+from typing import Optional
+
+from sqlalchemy import extract, func
 from sqlalchemy.orm import Session
 from uuid import UUID
 from ..models import movie as movie_model
@@ -10,15 +13,49 @@ def get_movie(db: Session, movie_id: UUID):
     """
     return db.query(movie_model.Movie).filter(movie_model.Movie.id == movie_id).first()
 
-def get_movies(db: Session, page: int = 1, limit: int = 100):
+def get_movies(
+    db: Session,
+    page: int = 1,
+    limit: int = 100,
+    search: Optional[str] = None,
+    genre: Optional[str] = None,
+    year: Optional[int] = None,
+):
     """
-    Fetches a paginated list of movies.
+    Fetches a paginated list of movies with optional server-side filters.
+
+    Filters:
+      - search: case-insensitive partial match on title (ILIKE).
+      - genre:  exact genre name matched inside the JSON ``genres`` column.
+      - year:   exact match on the year part of ``release_date``.
     """
+    query = db.query(movie_model.Movie)
+
+    if search:
+        query = query.filter(
+            movie_model.Movie.title.ilike(f"%{search}%")
+        )
+
+    if year is not None:
+        query = query.filter(
+            extract("year", movie_model.Movie.release_date) == year
+        )
+
+    if genre:
+        # genres is a JSON list stored as ["Action", "Drama", ...].
+        # Cast to text and do a case-insensitive contains check so it works
+        # on both PostgreSQL (native JSON) and SQLite (text column in tests).
+        from sqlalchemy import String
+        query = query.filter(
+            func.lower(
+                func.cast(movie_model.Movie.genres, String)
+            ).like(f'%"{genre.lower()}"%')
+        )
+
     skip = (page - 1) * limit
-    
-    total = db.query(movie_model.Movie).count()
-    items = db.query(movie_model.Movie).offset(skip).limit(limit).all()
-    
+    total = query.count()
+    items = query.offset(skip).limit(limit).all()
+
     return {"items": items, "total": total}
 
 def create_movie(db: Session, movie_data: MovieCreateSchema):

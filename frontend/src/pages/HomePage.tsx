@@ -10,20 +10,82 @@ import { getWatchHistory } from '../services/continueWatchingService';
 import { getRecommendations } from '../services/recommendationService';
 import type { HistoryItem } from '../services/continueWatchingService';
 import type { RecommendedMovie } from '../services/recommendationService';
-import { applyFilters, getUniqueYears } from '../utils/movieFilters';
-import type { SortOption } from '../utils/movieFilters';
+import type { MovieFilters } from '../services/movieService';
+
+type SortOption = 'title-asc' | 'title-desc' | 'year-desc' | 'year-asc';
+
+const DEBOUNCE_MS = 500;
 
 const HomePage: React.FC = () => {
-  const { movies, loading, error } = useMovies();
   const { isFavorite, toggleFavorite } = useFavorites();
   const { user } = useAuth();
   const [historyItems, setHistoryItems] = useState<HistoryItem[]>([]);
   const [recommendations, setRecommendations] = useState<RecommendedMovie[]>([]);
 
   // Search / Filter / Sort state
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchInput, setSearchInput] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
+  const [genreFilter, setGenreFilter] = useState('');
   const [yearFilter, setYearFilter] = useState<number | null>(null);
   const [sortOption, setSortOption] = useState<SortOption>('title-asc');
+
+  // Debounce the search input: only update debouncedSearch after 500ms of inactivity
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchInput.trim());
+    }, DEBOUNCE_MS);
+
+    return () => clearTimeout(timer);
+  }, [searchInput]);
+
+  // Build filter object for the hook (server-side filtering)
+  const filters: MovieFilters = useMemo(() => ({
+    search: debouncedSearch || undefined,
+    genre: genreFilter || undefined,
+    year: yearFilter,
+  }), [debouncedSearch, genreFilter, yearFilter]);
+
+  const { movies, loading, error } = useMovies(1, 100, filters);
+
+  // Client-side sort on the already-filtered results from the server
+  const sortedMovies = useMemo(() => {
+    const sorted = [...movies];
+    switch (sortOption) {
+      case 'title-asc':
+        sorted.sort((a, b) => a.title.localeCompare(b.title));
+        break;
+      case 'title-desc':
+        sorted.sort((a, b) => b.title.localeCompare(a.title));
+        break;
+      case 'year-desc':
+        sorted.sort((a, b) => (b.release_year ?? 0) - (a.release_year ?? 0));
+        break;
+      case 'year-asc':
+        sorted.sort((a, b) => (a.release_year ?? 0) - (b.release_year ?? 0));
+        break;
+    }
+    return sorted;
+  }, [movies, sortOption]);
+
+  // Extract unique genres from the current results for the genre dropdown
+  const availableGenres = useMemo(() => {
+    const genreSet = new Set<string>();
+    movies.forEach((m) => {
+      m.genres?.forEach((g) => genreSet.add(g));
+    });
+    return Array.from(genreSet).sort();
+  }, [movies]);
+
+  // Extract unique years from the current results for the year dropdown
+  const availableYears = useMemo(() => {
+    const years = new Set<number>();
+    movies.forEach((m) => {
+      if (m.release_year != null) {
+        years.add(m.release_year);
+      }
+    });
+    return Array.from(years).sort((a, b) => b - a);
+  }, [movies]);
 
   useEffect(() => {
     if (!user) {
@@ -42,16 +104,9 @@ const HomePage: React.FC = () => {
     fetchUserData();
   }, [user]);
 
-  const availableYears = useMemo(() => getUniqueYears(movies), [movies]);
-
-  const filteredMovies = useMemo(
-    () => applyFilters(movies, searchQuery, yearFilter, sortOption),
-    [movies, searchQuery, yearFilter, sortOption],
-  );
-
   const moviesByGenre = useMemo(() => {
-    const grouped: Record<string, typeof filteredMovies> = {};
-    filteredMovies.forEach(movie => {
+    const grouped: Record<string, typeof sortedMovies> = {};
+    sortedMovies.forEach(movie => {
       const genres = movie.genres && movie.genres.length > 0 ? movie.genres : ['Uncategorized'];
       genres.forEach(genre => {
         if (!grouped[genre]) grouped[genre] = [];
@@ -59,7 +114,7 @@ const HomePage: React.FC = () => {
       });
     });
     return Object.entries(grouped).sort(([a], [b]) => a.localeCompare(b));
-  }, [filteredMovies]);
+  }, [sortedMovies]);
 
   if (loading) {
     return <LoadingSpinner />;
@@ -77,10 +132,24 @@ const HomePage: React.FC = () => {
             id="search-input"
             type="text"
             placeholder="Search by title..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            value={searchInput}
+            onChange={(e) => setSearchInput(e.target.value)}
             className="search-input"
           />
+
+          <select
+            id="genre-filter"
+            value={genreFilter}
+            onChange={(e) => setGenreFilter(e.target.value)}
+            className="filter-select"
+          >
+            <option value="">All Genres</option>
+            {availableGenres.map((genre) => (
+              <option key={genre} value={genre}>
+                {genre}
+              </option>
+            ))}
+          </select>
 
           <select
             id="year-filter"
