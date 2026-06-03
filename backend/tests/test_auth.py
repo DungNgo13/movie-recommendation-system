@@ -118,3 +118,77 @@ def test_get_me_success(test_user):
     assert data["email"] == user.email
     assert data["id"] == str(user.id)
     assert data["role"] == user.role
+
+
+# ──────────────────────────────────────────────────────────────────────
+# Client IP extraction tests
+# ──────────────────────────────────────────────────────────────────────
+
+def test_login_records_forwarded_ip(test_user, db_session):
+    """
+    When X-Forwarded-For is set (reverse proxy), the first IP in the
+    comma-separated list should be stored as last_login_ip.
+    """
+    user, password = test_user
+    response = client.post(
+        "/api/v1/auth/login",
+        json={"email": user.email, "password": password},
+        headers={"X-Forwarded-For": "203.0.113.50, 10.0.0.1"},
+    )
+    assert response.status_code == 200
+
+    db_session.refresh(user)
+    assert user.last_login_ip == "203.0.113.50"
+
+
+def test_login_records_real_ip(test_user, db_session):
+    """
+    When only X-Real-IP is set (no X-Forwarded-For), that value should be
+    stored as last_login_ip.
+    """
+    user, password = test_user
+    response = client.post(
+        "/api/v1/auth/login",
+        json={"email": user.email, "password": password},
+        headers={"X-Real-IP": "198.51.100.7"},
+    )
+    assert response.status_code == 200
+
+    db_session.refresh(user)
+    assert user.last_login_ip == "198.51.100.7"
+
+
+def test_login_rejects_spoofed_ip_header(test_user, db_session):
+    """
+    If X-Forwarded-For contains garbage (not a valid IP), the helper
+    should fall back rather than storing arbitrary text.
+    """
+    user, password = test_user
+    response = client.post(
+        "/api/v1/auth/login",
+        json={"email": user.email, "password": password},
+        headers={"X-Forwarded-For": "not-an-ip; DROP TABLE users"},
+    )
+    assert response.status_code == 200
+
+    db_session.refresh(user)
+    # Should NOT contain the spoofed value
+    assert user.last_login_ip != "not-an-ip; DROP TABLE users"
+
+
+def test_login_fallback_to_client_host(test_user, db_session):
+    """
+    When no proxy headers are present, request.client.host (testclient)
+    should be recorded.
+    """
+    user, password = test_user
+    response = client.post(
+        "/api/v1/auth/login",
+        json={"email": user.email, "password": password},
+    )
+    assert response.status_code == 200
+
+    db_session.refresh(user)
+    # TestClient uses 'testclient' as the host
+    assert user.last_login_ip is not None
+    assert len(user.last_login_ip) > 0

@@ -1,3 +1,5 @@
+import re
+
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
@@ -86,16 +88,58 @@ def get_current_admin_user(current_user=Depends(get_current_user)):
     return current_user
 
 
+
+
+# Matches valid IPv4 and IPv6 addresses (simplified — rejects obvious garbage).
+_IP_RE = re.compile(
+    r"^("
+    r"(\d{1,3}\.){3}\d{1,3}"           # IPv4: 192.168.1.1
+    r"|"
+    r"[0-9a-fA-F:]{2,45}"              # IPv6: ::1, fe80::1, etc.
+    r")$"
+)
+
+
+def _is_valid_ip(value: str) -> bool:
+    """Return True if *value* looks like a plausible IPv4 or IPv6 address."""
+    return bool(_IP_RE.match(value))
+
+
 def _extract_client_ip(request: Request) -> str:
     """
-    Extract the real client IP from the request.
-    Checks X-Forwarded-For (reverse proxy) first, falls back to request.client.
+    Extract the real client IP from the incoming request.
+
+    Resolution order (first valid value wins):
+      1. ``X-Forwarded-For`` header — set by Nginx / load-balancers.
+         May contain a comma-separated list; the **leftmost** entry is
+         the original client.
+      2. ``X-Real-IP`` header — a single IP set by Nginx.
+      3. ``request.client.host`` — direct connection (no proxy).
+
+    Each candidate is trimmed and validated against a basic IP regex so
+    that a spoofed header containing arbitrary text is never stored
+    verbatim in the database.
     """
+    # 1. X-Forwarded-For (may be "client, proxy1, proxy2")
     forwarded = request.headers.get("X-Forwarded-For")
     if forwarded:
-        # X-Forwarded-For can be a comma-separated list; first entry is the client
-        return forwarded.split(",")[0].strip()
-    return request.client.host if request.client else "unknown"
+        # Take the first (leftmost) IP — the original client.
+        candidate = forwarded.split(",")[0].strip()
+        if _is_valid_ip(candidate):
+            return candidate[:45]   # cap at max IPv6 length
+
+    # 2. X-Real-IP (single IP set by Nginx)
+    real_ip = request.headers.get("X-Real-IP")
+    if real_ip:
+        candidate = real_ip.strip()
+        if _is_valid_ip(candidate):
+            return candidate[:45]
+
+    # 3. Direct connection fallback
+    if request.client:
+        return request.client.host
+
+    return "unknown"
 
 
 @router.post("/register", response_model=UserResponseSchema, status_code=201)
