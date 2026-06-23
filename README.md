@@ -108,7 +108,7 @@ flowchart LR
 - SQLAlchemy
 - Pydantic
 - JWT (`python-jose`)
-- Passlib / bcrypt
+- bcrypt
 - Jinja2
 - SMTP email service
 
@@ -126,8 +126,8 @@ flowchart LR
 
 ### Database
 
-- **Hiện tại:** SQLite cho bản MVP / demo
-- **Có thể mở rộng:** PostgreSQL cho môi trường production
+- **Development:** SQLite (default, zero-config)
+- **Production:** PostgreSQL 14+ (recommended)
 
 ---
 
@@ -223,6 +223,52 @@ http://localhost:8000
 
 ---
 
+### 3.5) Chuyển sang PostgreSQL (Production)
+
+Dự án hỗ trợ cả SQLite (development) và PostgreSQL (production). Để chuyển sang PostgreSQL:
+
+#### a) Cài đặt PostgreSQL
+
+```sql
+-- Trên PostgreSQL server:
+CREATE DATABASE laetus_db;
+CREATE USER laetus_user WITH PASSWORD 'your_secure_password';
+GRANT ALL PRIVILEGES ON DATABASE laetus_db TO laetus_user;
+```
+
+#### b) Cập nhật `.env`
+
+```env
+DATABASE_URL=postgresql://laetus_user:your_secure_password@localhost:5432/laetus_db
+```
+
+#### c) Tạo schema bằng Alembic
+
+```bash
+cd backend
+python -m alembic upgrade head
+```
+
+#### d) Migrate dữ liệu từ SQLite (nếu có)
+
+```bash
+# Đảm bảo DATABASE_URL trỏ tới PostgreSQL và SQLITE_SOURCE trỏ tới file SQLite
+set SQLITE_SOURCE=sqlite:///./test.db
+python scripts/migrate_sqlite_to_pg.py
+```
+
+Script sẽ:
+- Copy toàn bộ users, movies, ratings, favorites, watch history, audit logs
+- Giữ nguyên tất cả ID (UUID), timestamps
+- An toàn để chạy lại (idempotent — dùng ON CONFLICT DO NOTHING)
+- In bảng so sánh row count trước và sau migration
+
+#### e) Rollback (nếu cần)
+
+Đổi `DATABASE_URL` trong `.env` về `sqlite:///./test.db` và restart server. Dữ liệu SQLite không bị thay đổi.
+
+---
+
 ### 4) Chạy Frontend
 
 Mở terminal mới:
@@ -285,11 +331,11 @@ Dự án đã đạt mức **feature-complete cho demo đồ án**, bao gồm:
 
 ### Một số điểm nên cải thiện thêm nếu muốn nâng cấp production
 
-- Chuyển database từ SQLite sang PostgreSQL
-- Đưa API base URL sang biến môi trường
+- ~~Chuyển database từ SQLite sang PostgreSQL~~ ✅ Đã hỗ trợ
+- ~~Đưa API base URL sang biến môi trường~~ ✅ Đã có `VITE_API_BASE_URL`
 - Bổ sung pagination cho một số màn hình admin
-- Chuẩn hóa migration bằng Alembic
-- Mở rộng cấu hình CORS cho môi trường deploy thực tế
+- ~~Chuẩn hóa migration bằng Alembic~~ ✅ Đã có
+- ~~Mở rộng cấu hình CORS cho môi trường deploy thực tế~~ ✅ Đã có `CORS_ORIGINS`
 
 ---
 
