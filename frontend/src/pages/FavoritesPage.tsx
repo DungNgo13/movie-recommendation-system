@@ -50,7 +50,11 @@ const FavoritesPage: React.FC = () => {
     return (
       <div className="favorites-page">
         <h1>♥ My Favorites</h1>
-        <p className="no-results">Please login to see your favorites.</p>
+        <div className="empty-state">
+          <span className="empty-state__icon">🔒</span>
+          <h3 className="empty-state__title">Login required</h3>
+          <p className="empty-state__description">Please login to see your favorite movies.</p>
+        </div>
       </div>
     );
   }
@@ -68,7 +72,11 @@ const FavoritesPage: React.FC = () => {
       <h1>♥ My Favorites</h1>
 
       {displayedMovies.length === 0 ? (
-        <p className="no-results">No favorite movies yet.</p>
+        <div className="empty-state">
+          <span className="empty-state__icon">♡</span>
+          <h3 className="empty-state__title">No favorites yet</h3>
+          <p className="empty-state__description">Browse movies and click the heart icon to save your favorites here.</p>
+        </div>
       ) : (
         <div className="movie-list">
           {displayedMovies.map((movie) => (

@@ -208,24 +208,12 @@ const MovieDetailPage: React.FC = () => {
 
       {/* Resume prompt banner */}
       {showResumePrompt && (
-        <div style={{
-          display: 'flex', alignItems: 'center', gap: '1rem',
-          padding: '0.75rem 1rem', marginBottom: '0.75rem',
-          backgroundColor: '#1a3a5c', borderRadius: '8px',
-          border: '1px solid #1565c0', color: '#90caf9',
-          flexWrap: 'wrap',
-        }}>
+        <div className="resume-prompt">
           <span>▶ Continue from <strong>{formatTime(savedPosition)}</strong>?</span>
-          <button
-            onClick={handleResume}
-            style={{ padding: '0.3rem 0.9rem', background: '#1976d2', color: '#fff', border: 'none', borderRadius: '5px', cursor: 'pointer', fontWeight: 600 }}
-          >
+          <button onClick={handleResume} className="resume-prompt__btn-primary">
             Resume
           </button>
-          <button
-            onClick={handleRestart}
-            style={{ padding: '0.3rem 0.9rem', background: 'transparent', color: '#90caf9', border: '1px solid #1565c0', borderRadius: '5px', cursor: 'pointer' }}
-          >
+          <button onClick={handleRestart} className="resume-prompt__btn-secondary">
             Start over
           </button>
         </div>
@@ -256,12 +244,12 @@ const MovieDetailPage: React.FC = () => {
             />
           </div>
           {movie.video_status === 'processing' && (
-            <div style={{ padding: '1rem', marginTop: '1rem', backgroundColor: '#19426b', color: '#90caf9', borderRadius: '6px', border: '1px solid #1565c0' }}>
+            <div className="video-status-banner video-status-banner--processing">
               <strong>Processing:</strong> High-Definition video is currently being generated. Check back shortly!
             </div>
           )}
           {movie.video_status === 'failed' && (
-            <div style={{ padding: '1rem', marginTop: '1rem', backgroundColor: '#5c1616', color: '#ef9a9a', borderRadius: '6px', border: '1px solid #c62828' }}>
+            <div className="video-status-banner video-status-banner--failed">
               <strong>Error:</strong>{' '}
               {movie.processing_error ?? 'Video stream conversion failed. Please contact an administrator.'}
             </div>

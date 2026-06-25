@@ -240,23 +240,17 @@ const AdminMoviesPage: React.FC = () => {
 
       {/* ── Session-expired toast (401) ───────────────────────────────── */}
       {sessionToast && (
-        <div style={{
-          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          gap: '12px', padding: '12px 16px', marginBottom: '12px',
-          background: '#fff8e1', border: '1px solid #ffe082',
-          borderLeft: '4px solid #f39c12', borderRadius: '6px',
-          fontSize: '0.9rem', color: '#7a5800',
-        }}>
+        <div className="session-toast">
           <span>⚠️ {sessionToast}</span>
           <button
             onClick={() => { setSessionToast(null); window.location.href = '/login'; }}
-            style={{ padding: '4px 14px', borderRadius: '5px', border: 'none', background: '#f39c12', color: '#fff', fontWeight: 700, cursor: 'pointer' }}
+            className="session-toast__login-btn"
           >
             Log in
           </button>
           <button
             onClick={() => setSessionToast(null)}
-            style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '1.1rem', color: '#7a5800', lineHeight: 1 }}
+            className="session-toast__dismiss-btn"
             aria-label="Dismiss"
           >×</button>
         </div>

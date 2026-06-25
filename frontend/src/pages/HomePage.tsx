@@ -300,7 +300,26 @@ const HomePage: React.FC = () => {
           <h1>Movies by Genre</h1>
 
           {moviesByGenre.length === 0 ? (
-            <p className="no-results">No movies found.</p>
+            <div className="empty-state">
+              <span className="empty-state__icon">🎬</span>
+              <h3 className="empty-state__title">No movies found</h3>
+              <p className="empty-state__description">
+                Try adjusting your filters or search query to discover more movies.
+              </p>
+              {(searchInput || genreFilter || yearFilter) && (
+                <button
+                  className="btn btn--primary"
+                  onClick={() => {
+                    setSearchInput('');
+                    setGenreFilter('');
+                    setYearFilter(null);
+                    setSortOption('title-asc');
+                  }}
+                >
+                  Reset Filters
+                </button>
+              )}
+            </div>
           ) : (
             moviesByGenre.map(([genre, genreMovies]) => (
               <section key={genre} className="genre-section" style={{ marginBottom: '2rem' }}>
