@@ -1,3 +1,4 @@
+import os
 import uuid
 import secrets
 from datetime import datetime, timezone, timedelta
@@ -7,6 +8,14 @@ from ..core.security import hash_password, verify_password
 
 # An account is flagged as "suspect" after this many consecutive failed logins.
 MAX_FAILED_ATTEMPTS = 5
+
+# How long a password-reset token stays valid (configurable via .env).
+try:
+    PASSWORD_RESET_TOKEN_EXPIRE_MINUTES = int(
+        os.getenv("PASSWORD_RESET_TOKEN_EXPIRE_MINUTES", "60")
+    )
+except ValueError:
+    PASSWORD_RESET_TOKEN_EXPIRE_MINUTES = 60
 
 
 def get_user_by_id(db: Session, user_id: str) -> User | None:
@@ -92,7 +101,9 @@ def create_password_reset_token(db: Session, email: str) -> str | None:
 
     token = secrets.token_hex(32)  # 64-char hex string
     user.password_reset_token = token
-    user.password_reset_expires = datetime.now(timezone.utc) + timedelta(hours=1)
+    user.password_reset_expires = datetime.now(timezone.utc) + timedelta(
+        minutes=PASSWORD_RESET_TOKEN_EXPIRE_MINUTES,
+    )
     db.commit()
     return token
 
@@ -108,7 +119,17 @@ def reset_password(db: Session, token: str, new_password: str) -> bool:
         return False
 
     now = datetime.now(timezone.utc)
-    expired = user.password_reset_expires is None or user.password_reset_expires < now
+
+    # SQLite returns naive datetimes (no tzinfo); PostgreSQL returns aware ones.
+    # Normalise both to naive-UTC so the comparison never raises TypeError.
+    expires = user.password_reset_expires
+    if expires is not None and expires.tzinfo is not None:
+        expires_naive = expires.replace(tzinfo=None)
+    else:
+        expires_naive = expires
+    now_naive = now.replace(tzinfo=None)
+
+    expired = expires is None or expires_naive < now_naive
 
     # Always clear the token (single-use, even if expired)
     user.password_reset_token = None

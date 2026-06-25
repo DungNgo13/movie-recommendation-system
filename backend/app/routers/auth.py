@@ -90,6 +90,21 @@ def get_current_admin_user(current_user=Depends(get_current_user)):
 
 
 
+# ─── Client IP Extraction ─────────────────────────────────────────────────────
+#
+# Production topology:  Client → Nginx (reverse proxy) → uvicorn (localhost)
+#
+# Nginx appends the real client IP via:
+#     proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+#     proxy_set_header X-Real-IP       $remote_addr;
+#
+# SECURITY NOTE: X-Forwarded-For can be spoofed if a client connects directly
+# to uvicorn bypassing Nginx.  In production, uvicorn must listen only on
+# 127.0.0.1 and NOT be publicly accessible.  All public traffic must come
+# through Nginx.
+# ───────────────────────────────────────────────────────────────────────────────
+
+
 # Matches valid IPv4 and IPv6 addresses (simplified — rejects obvious garbage).
 _IP_RE = re.compile(
     r"^("
@@ -99,20 +114,53 @@ _IP_RE = re.compile(
     r")$"
 )
 
+# Private / loopback / link-local prefixes that should be skipped when
+# extracting the real client IP from X-Forwarded-For.  These are typically
+# the proxy's own address, not the actual user.
+_PRIVATE_PREFIXES = (
+    "127.",         # IPv4 loopback
+    "10.",          # RFC 1918 — Class A private
+    "192.168.",     # RFC 1918 — Class C private
+    "169.254.",     # IPv4 link-local
+)
+_PRIVATE_172 = range(16, 32)  # 172.16.0.0 – 172.31.255.255
+
 
 def _is_valid_ip(value: str) -> bool:
     """Return True if *value* looks like a plausible IPv4 or IPv6 address."""
     return bool(_IP_RE.match(value))
 
 
+def _is_private_ip(ip: str) -> bool:
+    """
+    Return True if *ip* is a loopback, link-local, or RFC-1918 private address.
+    Used to skip proxy-internal IPs when parsing X-Forwarded-For.
+    """
+    if ip in ("::1", "0.0.0.0", "unknown"):
+        return True
+    if ip.startswith(_PRIVATE_PREFIXES):
+        return True
+    # 172.16.0.0 – 172.31.255.255
+    if ip.startswith("172."):
+        parts = ip.split(".")
+        if len(parts) >= 2:
+            try:
+                second_octet = int(parts[1])
+                if second_octet in _PRIVATE_172:
+                    return True
+            except ValueError:
+                pass
+    return False
+
+
 def _extract_client_ip(request: Request) -> str:
     """
     Extract the real client IP from the incoming request.
 
-    Resolution order (first valid value wins):
+    Resolution order (first valid, **public** value wins):
       1. ``X-Forwarded-For`` header — set by Nginx / load-balancers.
-         May contain a comma-separated list; the **leftmost** entry is
-         the original client.
+         May contain a comma-separated list; we walk left-to-right and
+         pick the first **public** IP (skipping private/proxy addresses).
       2. ``X-Real-IP`` header — a single IP set by Nginx.
       3. ``request.client.host`` — direct connection (no proxy).
 
@@ -123,10 +171,10 @@ def _extract_client_ip(request: Request) -> str:
     # 1. X-Forwarded-For (may be "client, proxy1, proxy2")
     forwarded = request.headers.get("X-Forwarded-For")
     if forwarded:
-        # Take the first (leftmost) IP — the original client.
-        candidate = forwarded.split(",")[0].strip()
-        if _is_valid_ip(candidate):
-            return candidate[:45]   # cap at max IPv6 length
+        for part in forwarded.split(","):
+            candidate = part.strip()
+            if _is_valid_ip(candidate) and not _is_private_ip(candidate):
+                return candidate[:45]   # cap at max IPv6 length
 
     # 2. X-Real-IP (single IP set by Nginx)
     real_ip = request.headers.get("X-Real-IP")

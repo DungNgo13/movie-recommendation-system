@@ -46,6 +46,26 @@ def _is_smtp_configured() -> bool:
     return bool(SMTP_HOST and SMTP_USER and SMTP_PASSWORD and SMTP_FROM_EMAIL)
 
 
+# ─── Startup validation ──────────────────────────────────────────────────────
+# Log a clear message so operators know whether email is enabled or disabled.
+# Never reveals actual secrets — only whether they're present.
+if _is_smtp_configured():
+    logger.info(
+        "SMTP configured: host=%s port=%s from=%s — emails will be sent.",
+        SMTP_HOST, SMTP_PORT, SMTP_FROM_EMAIL,
+    )
+else:
+    _missing = []
+    if not SMTP_HOST:     _missing.append("SMTP_HOST")
+    if not SMTP_USER:     _missing.append("SMTP_USER")
+    if not SMTP_PASSWORD: _missing.append("SMTP_PASSWORD")
+    if not SMTP_FROM_EMAIL: _missing.append("SMTP_FROM_EMAIL")
+    logger.warning(
+        "SMTP NOT configured (missing: %s). Emails will be logged to console only.",
+        ", ".join(_missing),
+    )
+
+
 def _send_in_background(to: str, subject: str, html_body: str) -> None:
     """
     Send an email in a background thread so the API response is not blocked.
