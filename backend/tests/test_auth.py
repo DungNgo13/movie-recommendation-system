@@ -335,8 +335,8 @@ def test_reset_password_with_expired_token(test_user, db_session):
     token = create_password_reset_token(db_session, user.email)
     assert token is not None
 
-    # Manually expire the token by setting password_reset_expires to the past
-    user.password_reset_expires = datetime.now(timezone.utc) - timedelta(hours=2)
+    # Manually expire the token — use naive UTC to match the column type
+    user.password_reset_expires = datetime.now(timezone.utc).replace(tzinfo=None) - timedelta(hours=2)
     db_session.commit()
 
     response = client.post(
@@ -349,6 +349,74 @@ def test_reset_password_with_expired_token(test_user, db_session):
     # Token must be cleared even though it was expired
     db_session.refresh(user)
     assert user.password_reset_token is None
+
+
+def test_reset_password_with_naive_expiry(test_user, db_session):
+    """
+    If password_reset_expires is stored as a naive datetime (no tzinfo),
+    the comparison must not crash with TypeError.
+    This simulates SQLite and PostgreSQL TIMESTAMP WITHOUT TIME ZONE.
+    """
+    user, password = test_user
+
+    from app.services.auth_service import create_password_reset_token
+    token = create_password_reset_token(db_session, user.email)
+    assert token is not None
+
+    # Force the expiry to be a naive datetime (1 hour in the future)
+    user.password_reset_expires = datetime.now(timezone.utc).replace(tzinfo=None) + timedelta(hours=1)
+    db_session.commit()
+
+    # Verify tzinfo is actually None
+    db_session.refresh(user)
+    assert user.password_reset_expires.tzinfo is None
+
+    new_password = "NaiveTest123!"
+    response = client.post(
+        "/api/v1/auth/reset-password",
+        json={"token": token, "new_password": new_password},
+    )
+    # Must succeed — no TypeError
+    assert response.status_code == 200
+
+    # Verify the password was actually changed
+    login = client.post(
+        "/api/v1/auth/login",
+        json={"email": user.email, "password": new_password},
+    )
+    assert login.status_code == 200
+
+
+def test_reset_password_with_aware_expiry(test_user, db_session):
+    """
+    If password_reset_expires somehow has tzinfo attached (e.g. an older
+    code-path stored datetime.now(timezone.utc)), the comparison must
+    not crash with TypeError.  The _ensure_naive helper should strip it.
+    """
+    user, password = test_user
+
+    from app.services.auth_service import create_password_reset_token
+    token = create_password_reset_token(db_session, user.email)
+    assert token is not None
+
+    # Force the expiry to be a timezone-AWARE datetime (1 hour in the future)
+    user.password_reset_expires = datetime.now(timezone.utc) + timedelta(hours=1)
+    db_session.commit()
+
+    new_password = "AwareTest123!"
+    response = client.post(
+        "/api/v1/auth/reset-password",
+        json={"token": token, "new_password": new_password},
+    )
+    # Must succeed — _ensure_naive handles the aware datetime
+    assert response.status_code == 200
+
+    # Verify the password was actually changed
+    login = client.post(
+        "/api/v1/auth/login",
+        json={"email": user.email, "password": new_password},
+    )
+    assert login.status_code == 200
 
 
 # ──────────────────────────────────────────────────────────────────────

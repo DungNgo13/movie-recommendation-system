@@ -92,11 +92,42 @@ def record_login_failure(db: Session, email: str) -> None:
 # ─── Password reset ─────────────────────────────────────────────────────────
 
 
+def _utc_now_naive() -> datetime:
+    """
+    Return the current UTC time as a **naive** datetime (tzinfo=None).
+
+    Why naive?  The ``password_reset_expires`` column is declared as
+    ``DateTime`` without ``timezone=True``.  Both SQLite and PostgreSQL
+    (TIMESTAMP WITHOUT TIME ZONE) strip tzinfo on write and return naive
+    datetimes on read.  Using a naive UTC value everywhere avoids the
+    ``TypeError: can't compare offset-naive and offset-aware datetimes``
+    that occurs when mixing styles.
+
+    Uses ``datetime.now(timezone.utc).replace(tzinfo=None)`` instead of
+    the deprecated ``datetime.utcnow()``.
+    """
+    return datetime.now(timezone.utc).replace(tzinfo=None)
+
+
+def _ensure_naive(dt: datetime | None) -> datetime | None:
+    """
+    Normalise *dt* to a naive datetime.
+
+    If the database driver or an earlier code-path attached tzinfo
+    (e.g. PostgreSQL with ``timezone=True``, or ``datetime.now(timezone.utc)``),
+    strip it so the value can safely be compared with ``_utc_now_naive()``.
+    """
+    if dt is None:
+        return None
+    if dt.tzinfo is not None:
+        return dt.replace(tzinfo=None)
+    return dt
+
+
 def create_password_reset_token(db: Session, email: str) -> str | None:
     """
     Generate a secure reset token for the given email.
     Returns the token string, or None if the email doesn't exist.
-    The token expires after 1 hour.
     """
     user = get_user_by_email(db, email)
     if user is None:
@@ -104,7 +135,8 @@ def create_password_reset_token(db: Session, email: str) -> str | None:
 
     token = secrets.token_hex(32)  # 64-char hex string
     user.password_reset_token = token
-    user.password_reset_expires = datetime.now(timezone.utc) + timedelta(
+    # Store as naive-UTC — matches the column type (DateTime without tz).
+    user.password_reset_expires = _utc_now_naive() + timedelta(
         minutes=PASSWORD_RESET_TOKEN_EXPIRE_MINUTES,
     )
     db.commit()
@@ -121,18 +153,12 @@ def reset_password(db: Session, token: str, new_password: str) -> bool:
     if user is None:
         return False
 
-    now = datetime.now(timezone.utc)
+    now = _utc_now_naive()
 
-    # SQLite returns naive datetimes (no tzinfo); PostgreSQL returns aware ones.
-    # Normalise both to naive-UTC so the comparison never raises TypeError.
-    expires = user.password_reset_expires
-    if expires is not None and expires.tzinfo is not None:
-        expires_naive = expires.replace(tzinfo=None)
-    else:
-        expires_naive = expires
-    now_naive = now.replace(tzinfo=None)
-
-    expired = expires is None or expires_naive < now_naive
+    # Normalise the DB value — it *should* already be naive, but guard
+    # against any code-path that may have stored an aware datetime.
+    expires = _ensure_naive(user.password_reset_expires)
+    expired = expires is None or expires < now
 
     # Always clear the token (single-use, even if expired)
     user.password_reset_token = None
