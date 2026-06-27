@@ -1,3 +1,4 @@
+import logging
 import re
 
 from fastapi import APIRouter, Depends, HTTPException, Request, status
@@ -33,6 +34,8 @@ router = APIRouter(
     prefix="/api/v1/auth",
     tags=["auth"],
 )
+
+logger = logging.getLogger(__name__)
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login", auto_error=False)
 
@@ -252,9 +255,13 @@ def forgot_password(
     Request a password reset link.
     Always returns 200 to avoid leaking whether the email exists.
     """
-    token = auth_service.create_password_reset_token(db, payload.email)
-    if token:
-        send_password_reset_email(payload.email, token)
+    try:
+        token = auth_service.create_password_reset_token(db, payload.email)
+        if token:
+            send_password_reset_email(payload.email, token)
+    except Exception:
+        # Log the error but never expose it — always return the same generic message.
+        logger.exception("Unexpected error in forgot-password for email (redacted)")
 
     # Intentionally vague response — don't reveal whether the email exists
     return {"message": "If that email is registered, a reset link has been sent."}
@@ -266,7 +273,17 @@ def reset_password(
     db: Session = Depends(database.get_db),
 ):
     """Reset a user's password using a valid, non-expired token."""
-    success = auth_service.reset_password(db, payload.token, payload.new_password)
+    try:
+        success = auth_service.reset_password(db, payload.token, payload.new_password)
+    except Exception:
+        # Log the full traceback for debugging, but NEVER include the token or
+        # password in the log message — they are security-sensitive values.
+        logger.exception("Unexpected error in reset-password (token/password redacted)")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="An unexpected error occurred. Please try again later.",
+        )
+
     if not success:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,

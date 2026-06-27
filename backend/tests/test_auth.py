@@ -319,3 +319,118 @@ def test_register_creates_user_and_triggers_welcome_email(db_session, monkeypatc
     assert len(email_calls) == 1
     assert email_calls[0] == "newuser@example.com"
 
+
+# ──────────────────────────────────────────────────────────────────────
+# Password reset — expired token
+# ──────────────────────────────────────────────────────────────────────
+
+def test_reset_password_with_expired_token(test_user, db_session):
+    """
+    A token whose expiry timestamp is in the past should return 400.
+    The token must also be cleared (single-use, even if expired).
+    """
+    user, _ = test_user
+
+    from app.services.auth_service import create_password_reset_token
+    token = create_password_reset_token(db_session, user.email)
+    assert token is not None
+
+    # Manually expire the token by setting password_reset_expires to the past
+    user.password_reset_expires = datetime.now(timezone.utc) - timedelta(hours=2)
+    db_session.commit()
+
+    response = client.post(
+        "/api/v1/auth/reset-password",
+        json={"token": token, "new_password": "NewSecure123!"},
+    )
+    assert response.status_code == 400
+    assert "expired" in response.json()["detail"].lower() or "invalid" in response.json()["detail"].lower()
+
+    # Token must be cleared even though it was expired
+    db_session.refresh(user)
+    assert user.password_reset_token is None
+
+
+# ──────────────────────────────────────────────────────────────────────
+# Schema mismatch prevention
+# ──────────────────────────────────────────────────────────────────────
+
+def test_reset_password_rejects_wrong_field_name(db_session):
+    """
+    Sending 'password' instead of 'new_password' should return 422
+    (Pydantic validation error), NOT 500.
+    """
+    response = client.post(
+        "/api/v1/auth/reset-password",
+        json={"token": "some-token", "password": "NewSecure123!"},
+    )
+    # Pydantic should reject this as a missing required field
+    assert response.status_code == 422
+
+
+def test_reset_password_rejects_weak_password(db_session):
+    """
+    A password that fails complexity checks should return 422, NOT 500.
+    """
+    response = client.post(
+        "/api/v1/auth/reset-password",
+        json={"token": "some-token", "new_password": "weak"},
+    )
+    assert response.status_code == 422
+
+
+# ──────────────────────────────────────────────────────────────────────
+# SMTP failure resilience
+# ──────────────────────────────────────────────────────────────────────
+
+def test_forgot_password_succeeds_even_if_smtp_fails(test_user, db_session, monkeypatch):
+    """
+    If SMTP throws an exception, forgot-password should still return 200
+    with the generic message — never a 500.
+    """
+    user, _ = test_user
+
+    # Make the email function throw
+    def _exploding_email(email, token):
+        raise ConnectionError("SMTP server unreachable")
+
+    monkeypatch.setattr(
+        "app.routers.auth.send_password_reset_email",
+        _exploding_email,
+    )
+
+    response = client.post(
+        "/api/v1/auth/forgot-password",
+        json={"email": user.email},
+    )
+    # Must still return 200 with generic message
+    assert response.status_code == 200
+    assert "message" in response.json()
+
+
+def test_reset_password_returns_500_on_unexpected_service_error(test_user, db_session, monkeypatch):
+    """
+    If auth_service.reset_password raises an unexpected exception,
+    the endpoint should return 500 with a safe message, not crash.
+    """
+    user, _ = test_user
+
+    def _exploding_reset(db, token, password):
+        raise RuntimeError("Database connection lost")
+
+    monkeypatch.setattr(
+        "app.routers.auth.auth_service.reset_password",
+        _exploding_reset,
+    )
+
+    response = client.post(
+        "/api/v1/auth/reset-password",
+        json={"token": "some-valid-looking-token", "new_password": "NewSecure123!"},
+    )
+    # Should return a controlled 500, not an unhandled crash
+    assert response.status_code == 500
+    detail = response.json().get("detail", "")
+    # Must NOT leak the actual error message
+    assert "Database connection lost" not in detail
+    assert "unexpected" in detail.lower() or "error" in detail.lower()
+

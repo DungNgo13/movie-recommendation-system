@@ -1,3 +1,4 @@
+import logging
 import os
 import uuid
 import secrets
@@ -5,6 +6,8 @@ from datetime import datetime, timezone, timedelta
 from sqlalchemy.orm import Session
 from ..models.user import User
 from ..core.security import hash_password, verify_password
+
+logger = logging.getLogger(__name__)
 
 # An account is flagged as "suspect" after this many consecutive failed logins.
 MAX_FAILED_ATTEMPTS = 5
