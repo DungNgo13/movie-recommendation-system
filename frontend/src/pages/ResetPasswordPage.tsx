@@ -53,7 +53,7 @@ const ResetPasswordPage: React.FC = () => {
 
         {success && (
           <div className="auth-success-message">
-            {success} <Link to="/login" style={{ fontWeight: 600 }}>Login now →</Link>
+            {success} <Link to="/login" style={{ fontWeight: 600 }}>Login now</Link>
           </div>
         )}
         {error && <p className="auth-error">{error}</p>}
@@ -90,7 +90,7 @@ const ResetPasswordPage: React.FC = () => {
         )}
 
         <p className="auth-link">
-          <Link to="/login">← Back to Login</Link>
+          <Link to="/login">Back to Login</Link>
         </p>
       </form>
     </div>

@@ -351,7 +351,7 @@ const MovieForm: React.FC<MovieFormProps> = ({ movie, onSubmit, onCancel }) => {
 
         {/* Section header */}
         <div className="ai-fields-header">
-          <span className="ai-fields-icon">🤖</span>
+          <span className="ai-fields-icon"></span>
           <div>
             <strong>AI Recommendation Data</strong>
             <span className="ai-fields-desc">
@@ -364,7 +364,7 @@ const MovieForm: React.FC<MovieFormProps> = ({ movie, onSubmit, onCancel }) => {
         {/* Warning — only visible when ALL three fields are empty */}
         {missingAiFields && (
           <div className="ai-fields-warning">
-            ⚠️&nbsp;<strong>Genres, Cast, and Keywords are all empty.</strong> Missing data
+            <strong>Genres, Cast, and Keywords are all empty.</strong> Missing data
             reduces recommendation accuracy — the engine will rely on title and
             overview text alone.
           </div>
@@ -568,7 +568,7 @@ const MovieForm: React.FC<MovieFormProps> = ({ movie, onSubmit, onCancel }) => {
                   disabled={uploading}
                   title={videoStatus === 'ready' ? 'Re-encode with current settings' : 'Start multi-quality HLS encoding'}
                 >
-                  {videoStatus === 'ready' ? '↺ Re-encode' : '▶ Start Multi-Quality Encoding'}
+                  {videoStatus === 'ready' ? 'Re-encode' : 'Start Multi-Quality Encoding'}
                 </button>
               )}
             </div>

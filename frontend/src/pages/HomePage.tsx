@@ -157,13 +157,13 @@ const HomePage: React.FC = () => {
                 to={`/movie/${heroMovie.id}`}
                 className="hero-btn hero-btn--primary"
               >
-                ▶ Watch Now
+                Watch Now
               </Link>
               <Link
                 to={`/movie/${heroMovie.id}`}
                 className="hero-btn hero-btn--secondary"
               >
-                ℹ More Info
+                More Info
               </Link>
             </div>
           </div>
@@ -283,7 +283,7 @@ const HomePage: React.FC = () => {
 
           {recommendations.length > 0 && (
             <section className="recommendations-section recommendations-home">
-              <h2>🤖 Recommended for You</h2>
+              <h2>Recommended for You</h2>
               <div className="movie-list movie-row">
                 {recommendations.map((rec) => (
                   <RecommendationCard
@@ -301,7 +301,7 @@ const HomePage: React.FC = () => {
 
           {moviesByGenre.length === 0 ? (
             <div className="empty-state">
-              <span className="empty-state__icon">🎬</span>
+              <span className="empty-state__icon"></span>
               <h3 className="empty-state__title">No movies found</h3>
               <p className="empty-state__description">
                 Try adjusting your filters or search query to discover more movies.

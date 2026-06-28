@@ -26,18 +26,18 @@ const Navbar: React.FC = () => {
 
   return (
     <nav className="navbar">
-      <Link to="/" className="navbar-brand">🎬 Movies</Link>
+      <Link to="/" className="navbar-brand">Laetus</Link>
       <div className="navbar-links">
         <Link to="/" className={navClass('/')}>Home</Link>
-        <Link to="/favorites" className={navClass('/favorites')}>♥ Favorites</Link>
+        <Link to="/favorites" className={navClass('/favorites')}>Favorites</Link>
         {user?.role === 'admin' && (
           <>
-            <Link to="/admin" className={navClass('/admin')}>📊 Dashboard</Link>
-            <Link to="/admin/movies" className={navClass('/admin/movies')}>⚙ Movies</Link>
-            <Link to="/admin/users" className={navClass('/admin/users')}>👥 Users</Link>
-            <Link to="/admin/logs" className={navClass('/admin/logs')}>📋 Logs</Link>
-            <Link to="/admin/recsys" className={navClass('/admin/recsys')}>🔬 RecSys</Link>
-            <Link to="/admin/security" className={navClass('/admin/security')}>🛡️ Security</Link>
+            <Link to="/admin" className={navClass('/admin')}>Dashboard</Link>
+            <Link to="/admin/movies" className={navClass('/admin/movies')}>Movies</Link>
+            <Link to="/admin/users" className={navClass('/admin/users')}>Users</Link>
+            <Link to="/admin/logs" className={navClass('/admin/logs')}>Logs</Link>
+            <Link to="/admin/recsys" className={navClass('/admin/recsys')}>RecSys</Link>
+            <Link to="/admin/security" className={navClass('/admin/security')}>Security</Link>
           </>
         )}
         {user ? (
@@ -46,7 +46,9 @@ const Navbar: React.FC = () => {
               {user.avatar_url ? (
                 <img src={user.avatar_url} alt="" className="navbar-avatar" />
               ) : (
-                <span className="navbar-avatar-placeholder">👤</span>
+                <span className="navbar-avatar-placeholder">
+                  {user.email?.charAt(0).toUpperCase() || 'U'}
+                </span>
               )}
               <span className="navbar-profile-email">{user.email}</span>
             </Link>

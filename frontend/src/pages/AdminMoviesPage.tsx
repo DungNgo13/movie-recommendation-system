@@ -241,7 +241,7 @@ const AdminMoviesPage: React.FC = () => {
       {/* ── Session-expired toast (401) ───────────────────────────────── */}
       {sessionToast && (
         <div className="session-toast">
-          <span>⚠️ {sessionToast}</span>
+          <span>{sessionToast}</span>
           <button
             onClick={() => { setSessionToast(null); window.location.href = '/login'; }}
             className="session-toast__login-btn"
@@ -257,7 +257,7 @@ const AdminMoviesPage: React.FC = () => {
       )}
 
       <div className="admin-header">
-        <h1>🎬 Movie Management</h1>
+        <h1>Movie Management</h1>
         {!showForm && (
           <button className="btn btn--primary" onClick={handleAdd}>
             + Add Movie

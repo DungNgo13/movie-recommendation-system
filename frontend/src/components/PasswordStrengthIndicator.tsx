@@ -47,7 +47,7 @@ const PasswordStrengthIndicator: React.FC<PasswordStrengthIndicatorProps> = ({
             key={i}
             className={`password-req ${req.met ? 'password-req--met' : 'password-req--unmet'}`}
           >
-            <span className="password-req__icon">{req.met ? '✓' : '✗'}</span>
+            <span className="password-req__icon">{req.met ? 'Pass' : 'Fail'}</span>
             {req.label}
           </li>
         ))}

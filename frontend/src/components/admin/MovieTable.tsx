@@ -119,8 +119,8 @@ const DataQualityCell: React.FC<{ movie: Movie }> = ({ movie }) => {
 
   // Tooltip — shows missing fields or a success message
   const tooltip = missing.length === 0
-    ? '✓ All AI fields complete — engine fully optimised'
-    : `Missing:\n${missing.map(f => `  • ${f}`).join('\n')}`;
+    ? 'All AI fields complete — engine fully optimised'
+    : `Missing:\n${missing.map(f => `  - ${f}`).join('\n')}`;
 
   // Label under the ring — severity text
   const label =
@@ -236,7 +236,7 @@ const VideoStatusCell: React.FC<{
             title="HLS playlist"
             style={{ fontSize: '0.85rem', color: '#155724', lineHeight: 1 }}
           >
-            ▶
+            Play
           </a>
         )}
         {/* ── Cancel encode button — visible only while encoding ── */}
@@ -301,7 +301,7 @@ const VideoStatusCell: React.FC<{
             transition: 'background 0.2s',
           }}
         >
-          {status === 'ready' ? '↺ Re-encode' : '▶ Encode'}
+          {status === 'ready' ? 'Re-encode' : 'Encode'}
         </button>
       )}
 
@@ -340,7 +340,7 @@ const MovieTable: React.FC<MovieTableProps> = ({ movies, onEdit, onDelete, onCan
               title="Data completeness score for the AI recommendation engine (0–100). Hover each row for missing fields."
               style={{ cursor: 'help', whiteSpace: 'nowrap' }}
             >
-              Data Quality ℹ
+              Data Quality
             </th>
             <th>Video Status</th>
             <th>Actions</th>

@@ -13,9 +13,9 @@ import type { AuthUser } from '../services/authService';
 /** Colored badge for signal type */
 function SignalBadge({ type }: { type: SignalEntry['signal_type'] }) {
   const map: Record<string, { label: string; bg: string; color: string }> = {
-    rating:   { label: '⭐ Rating',   bg: '#fff3cd', color: '#856404' },
-    favorite: { label: '♥ Favorite', bg: '#fce8f3', color: '#842029' },
-    watch:    { label: '▶ Watch',    bg: '#d1ecf1', color: '#0c5460' },
+    rating:   { label: 'Rating',   bg: '#fff3cd', color: '#856404' },
+    favorite: { label: 'Favorite', bg: '#fce8f3', color: '#842029' },
+    watch:    { label: 'Watch',    bg: '#d1ecf1', color: '#0c5460' },
   };
   const s = map[type] ?? { label: type, bg: '#eee', color: '#333' };
   return (
@@ -143,7 +143,7 @@ function SignalsTable({ signals }: { signals: SignalEntry[] }) {
                   ? `${s.raw_value}% watched`
                   : s.signal_type === 'rating'
                   ? `${s.raw_value} / 5 stars`
-                  : '♥ saved'}
+                  : 'Saved'}
               </td>
               <td style={{ minWidth: 160 }}>
                 <WeightBar value={s.calculated_weight} />
@@ -326,7 +326,7 @@ const RecsysMonitorPage: React.FC = () => {
       {/* ── Page Header ─────────────────────────────────────────────────── */}
       <div className="admin-header">
         <div>
-          <span className="admin-badge">🔬 Thesis Tool</span>
+          <span className="admin-badge">Thesis Tool</span>
           <h1 style={{ margin: 0 }}>Recommendation System Monitor</h1>
           <p style={{ margin: '6px 0 0', color: '#888', fontSize: '0.9rem' }}>
             Diagnostic explainer — shows exactly how recommendation scores are computed for any user.
@@ -396,13 +396,13 @@ const RecsysMonitorPage: React.FC = () => {
             onClick={handleExplain}
             id="recsys-explain-btn"
           >
-            {loading ? '⏳ Running…' : '🔍 Explain'}
+            {loading ? 'Running...' : 'Explain'}
           </button>
         </div>
 
         {error && (
           <div className="error-message" style={{ marginTop: 16 }}>
-            ⚠️ {error}
+            {error}
           </div>
         )}
       </div>
@@ -444,7 +444,7 @@ const RecsysMonitorPage: React.FC = () => {
             )}
             {payload.is_cold_start && payload.cold_start_reason && (
               <p style={{ margin: '8px 0 0', fontSize: '0.85rem', color: '#f1c40f' }}>
-                ⚠️ {payload.cold_start_reason}
+                {payload.cold_start_reason}
               </p>
             )}
           </div>
@@ -452,7 +452,7 @@ const RecsysMonitorPage: React.FC = () => {
           {/* ── Section 1: User Profile Signals ───────────────────────── */}
           <div className="recsys-section">
             <h2 className="recsys-section-title">
-              📊 Section 1 — User Profile Signals
+              Section 1 — User Profile Signals
               <span className="recsys-section-subtitle">
                 Every interaction that shaped this user's preference vector,
                 with computed weights. Higher weight = stronger influence.
@@ -463,7 +463,7 @@ const RecsysMonitorPage: React.FC = () => {
             <div className="recsys-legend">
               <span>Weight scale:</span>
               {[
-                { label: '5.0 — Loved (5★)', color: '#27ae60' },
+                { label: '5.0 — Loved (5/5)', color: '#27ae60' },
                 { label: '3.0 — Liked / Favorite', color: '#f39c12' },
                 { label: '1.0+  — Watched (scaled by progress + time decay)', color: '#95a5a6' },
               ].map(({ label, color }) => (

@@ -149,10 +149,10 @@ const AdminSecurityAuditPage: React.FC = () => {
   return (
     <div className="admin-page">
       <div className="admin-header">
-        <h1>🛡️ User Security Audit</h1>
+        <h1>User Security Audit</h1>
         <div className="admin-actions">
-          <Link to="/admin/users" className="btn btn-secondary">👥 User Management</Link>
-          <Link to="/admin/logs" className="btn btn-secondary">📋 Audit Logs</Link>
+          <Link to="/admin/users" className="btn btn-secondary">User Management</Link>
+          <Link to="/admin/logs" className="btn btn-secondary">Audit Logs</Link>
         </div>
       </div>
 

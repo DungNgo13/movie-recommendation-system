@@ -25,7 +25,7 @@ const StarRating: React.FC<StarRatingProps> = ({ currentRating, onRate, disabled
             aria-label={`Rate ${star} star${star > 1 ? 's' : ''}`}
             title={`${star} star${star > 1 ? 's' : ''}`}
           >
-            ★
+            {star}
           </button>
         );
       })}

@@ -55,7 +55,7 @@ const ConfirmPasswordChangePage: React.FC = () => {
           <div className="auth-success-message">
             {message}{' '}
             <Link to="/login" style={{ fontWeight: 600 }}>
-              Login now →
+              Login now
             </Link>
           </div>
         )}
@@ -63,7 +63,7 @@ const ConfirmPasswordChangePage: React.FC = () => {
         {status === 'error' && <p className="auth-error">{message}</p>}
 
         <p className="auth-link">
-          <Link to="/login">← Back to Login</Link>
+          <Link to="/login">Back to Login</Link>
         </p>
       </div>
     </div>

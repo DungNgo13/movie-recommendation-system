@@ -209,7 +209,7 @@ const MovieDetailPage: React.FC = () => {
       {/* Resume prompt banner */}
       {showResumePrompt && (
         <div className="resume-prompt">
-          <span>▶ Continue from <strong>{formatTime(savedPosition)}</strong>?</span>
+          <span>Continue from <strong>{formatTime(savedPosition)}</strong>?</span>
           <button onClick={handleResume} className="resume-prompt__btn-primary">
             Resume
           </button>
@@ -317,7 +317,7 @@ const MovieDetailPage: React.FC = () => {
 
       {recommendations.length > 0 && (
         <section className="recommendations-section">
-          <h2>🤖 Recommended for You</h2>
+          <h2>Recommended for You</h2>
           <div className="movie-list">
             {recommendations.map((rec) => (
               <RecommendationCard
