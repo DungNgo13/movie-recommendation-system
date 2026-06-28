@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
+import { getAvatarUrl } from '../utils/avatarUrl';
 
 const Navbar: React.FC = () => {
   const { user, logout } = useAuth();
@@ -24,6 +25,9 @@ const Navbar: React.FC = () => {
     return `navbar-link${isActive ? ' active' : ''}`;
   };
 
+  const avatarSrc = getAvatarUrl(user?.avatar_url);
+  const initial = user?.email?.charAt(0).toUpperCase() || 'U';
+
   return (
     <nav className="navbar">
       <Link to="/" className="navbar-brand">Laetus</Link>
@@ -43,13 +47,25 @@ const Navbar: React.FC = () => {
         {user ? (
           <>
             <Link to="/profile" className="navbar-profile-block" title="My Profile">
-              {user.avatar_url ? (
-                <img src={user.avatar_url} alt="" className="navbar-avatar" />
-              ) : (
-                <span className="navbar-avatar-placeholder">
-                  {user.email?.charAt(0).toUpperCase() || 'U'}
-                </span>
-              )}
+              {avatarSrc ? (
+                <img
+                  src={avatarSrc}
+                  alt=""
+                  className="navbar-avatar"
+                  onError={(e) => {
+                    // Hide broken image, show fallback placeholder
+                    e.currentTarget.style.display = 'none';
+                    const next = e.currentTarget.nextElementSibling as HTMLElement | null;
+                    if (next) next.style.display = '';
+                  }}
+                />
+              ) : null}
+              <span
+                className="navbar-avatar-placeholder"
+                style={avatarSrc ? { display: 'none' } : undefined}
+              >
+                {initial}
+              </span>
               <span className="navbar-profile-email">{user.email}</span>
             </Link>
             <button className="navbar-link navbar-logout" onClick={handleLogout}>

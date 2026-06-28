@@ -2,23 +2,25 @@ from pydantic import BaseModel, EmailStr, ConfigDict, Field, field_validator, co
 from uuid import UUID
 from datetime import datetime
 from typing import Optional
-import os
 
 from ..core.password_validator import validate_password_complexity
 
 
-# The public base URL of this backend — used to build absolute avatar URLs.
-_BACKEND_URL = os.getenv("BACKEND_URL", "http://localhost:8000").rstrip("/")
-
-
 def _normalize_avatar_url(path: Optional[str]) -> Optional[str]:
-    """Convert a relative avatar path to a full public URL."""
+    """Convert a stored avatar path to a public URL path.
+
+    Returns a root-relative path (e.g. ``/media/images/avatars/...``) so the
+    browser fetches it from the same origin as the frontend.  This avoids
+    hard-coding a backend host/port that may differ between dev and prod.
+    """
     if not path:
         return None
+    # Already a full URL (e.g. social-login avatar) — return as-is.
     if path.startswith("http"):
         return path
+    # Strip leading slashes / backslashes, then prefix with /.
     clean = path.lstrip("/\\")
-    return f"{_BACKEND_URL}/{clean}"
+    return f"/{clean}"
 
 
 # ─── Password validation mixin ───────────────────────────────────────────────

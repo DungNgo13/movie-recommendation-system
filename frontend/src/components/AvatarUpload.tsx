@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { uploadAvatar } from '../services/authService';
 import { useAuth } from '../hooks/useAuth';
+import { getAvatarUrl } from '../utils/avatarUrl';
 
 const MAX_SIZE_BYTES = 2 * 1024 * 1024; // 2 MB
 const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
@@ -73,7 +74,8 @@ const AvatarUpload: React.FC = () => {
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
-  const displayUrl = preview || user?.avatar_url || null;
+  const displayUrl = preview || getAvatarUrl(user?.avatar_url) || null;
+  const initial = user?.email?.charAt(0).toUpperCase() || 'U';
 
   return (
     <div className="avatar-upload" id="avatar-upload">
@@ -83,12 +85,20 @@ const AvatarUpload: React.FC = () => {
             src={displayUrl}
             alt="Avatar"
             className="avatar-upload__preview"
+            onError={(e) => {
+              // Hide broken image and show text placeholder
+              e.currentTarget.style.display = 'none';
+              const next = e.currentTarget.nextElementSibling as HTMLElement | null;
+              if (next) next.style.display = '';
+            }}
           />
-        ) : (
-          <div className="avatar-upload__placeholder">
-            <span>📷</span>
-          </div>
-        )}
+        ) : null}
+        <div
+          className="avatar-upload__placeholder"
+          style={displayUrl ? { display: 'none' } : undefined}
+        >
+          <span>{initial}</span>
+        </div>
         <button
           type="button"
           className="avatar-upload__change-btn"
