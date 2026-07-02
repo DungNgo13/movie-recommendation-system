@@ -4,6 +4,9 @@ from uuid import UUID
 from datetime import date
 import os
 
+# Allowed values for Movie.media_rights_status
+ALLOWED_MEDIA_RIGHTS = {"safe_to_use", "attribution_required", "non_commercial_only", "unknown", "blocked"}
+
 # The public base URL of this backend — used to build absolute media URLs.
 # Read from BACKEND_URL env var; defaults to localhost for development.
 _BACKEND_URL = os.getenv("BACKEND_URL", "http://localhost:8000").rstrip("/")
@@ -140,6 +143,15 @@ class MovieDetailSchema(BaseModel):
     processing_error: Optional[str] = None
     available_qualities: Optional[str] = None
 
+    # Source & license — public-facing fields
+    source_name: Optional[str] = None
+    source_url: Optional[str] = None
+    license_type: Optional[str] = None
+    license_url: Optional[str] = None
+    attribution: Optional[str] = None
+    is_public_domain: bool = False
+    media_rights_status: Optional[str] = "unknown"
+
     # Excluded Physical Native Paths
     poster_path: Optional[str] = Field(None, exclude=True)
     backdrop_path: Optional[str] = Field(None, exclude=True)
@@ -210,6 +222,15 @@ class MovieCreateSchema(BaseModel):
     poster_url: Optional[str] = None
     backdrop_url: Optional[str] = None
 
+    # Source & license — optional on create
+    source_name: Optional[str] = None
+    source_url: Optional[str] = None
+    license_type: Optional[str] = None
+    license_url: Optional[str] = None
+    attribution: Optional[str] = None
+    is_public_domain: Optional[bool] = None
+    media_rights_status: Optional[str] = None
+
     @field_validator('release_date')
     @classmethod
     def parse_release_date(cls, v):
@@ -217,16 +238,22 @@ class MovieCreateSchema(BaseModel):
             return None
         if isinstance(v, date):
             return v
-        # Assuming it's a 4-digit string or int
         v_str = str(v).strip()
         if len(v_str) == 4 and v_str.isdigit():
-            # Pad to first of year so DB handles it properly
             return date(int(v_str), 1, 1)
-        # Attempt standard parse if given full "YYYY-MM-DD"
         try:
             return date.fromisoformat(v_str)
         except ValueError:
             raise ValueError("Release date must be 'YYYY' or 'YYYY-MM-DD'")
+
+    @field_validator('media_rights_status')
+    @classmethod
+    def validate_media_rights(cls, v):
+        if v is not None and v not in ALLOWED_MEDIA_RIGHTS:
+            raise ValueError(
+                f"media_rights_status must be one of: {', '.join(sorted(ALLOWED_MEDIA_RIGHTS))}"
+            )
+        return v
 
 # Schema for updating an existing movie (All fields optional)
 class MovieUpdateSchema(BaseModel):
@@ -240,6 +267,15 @@ class MovieUpdateSchema(BaseModel):
     poster_url: Optional[str] = None
     backdrop_url: Optional[str] = None
 
+    # Source & license — optional on update
+    source_name: Optional[str] = None
+    source_url: Optional[str] = None
+    license_type: Optional[str] = None
+    license_url: Optional[str] = None
+    attribution: Optional[str] = None
+    is_public_domain: Optional[bool] = None
+    media_rights_status: Optional[str] = None
+
     @field_validator('release_date')
     @classmethod
     def parse_release_date(cls, v):
@@ -247,7 +283,6 @@ class MovieUpdateSchema(BaseModel):
             return None
         if isinstance(v, date):
             return v
-        # Assuming it's a 4-digit string or int
         v_str = str(v).strip()
         if len(v_str) == 4 and v_str.isdigit():
             return date(int(v_str), 1, 1)
@@ -255,6 +290,15 @@ class MovieUpdateSchema(BaseModel):
             return date.fromisoformat(v_str)
         except ValueError:
             raise ValueError("Release date must be 'YYYY' or 'YYYY-MM-DD'")
+
+    @field_validator('media_rights_status')
+    @classmethod
+    def validate_media_rights(cls, v):
+        if v is not None and v not in ALLOWED_MEDIA_RIGHTS:
+            raise ValueError(
+                f"media_rights_status must be one of: {', '.join(sorted(ALLOWED_MEDIA_RIGHTS))}"
+            )
+        return v
 
 # Schema for the paginated movie list response
 class MovieListResponseSchema(BaseModel):

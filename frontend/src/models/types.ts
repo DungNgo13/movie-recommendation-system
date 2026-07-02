@@ -19,6 +19,15 @@ export interface Movie {
   available_qualities?: string | null;
   /** 0–100 data-completeness score computed on-the-fly by the backend schema. Not stored in DB. */
   quality_score?: number;
+
+  // Source & license tracking
+  source_name?: string | null;
+  source_url?: string | null;
+  license_type?: string | null;
+  license_url?: string | null;
+  attribution?: string | null;
+  is_public_domain?: boolean;
+  media_rights_status?: string | null;
 }
 
 export interface MovieListItem {

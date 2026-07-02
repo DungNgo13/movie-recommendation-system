@@ -1,5 +1,5 @@
 import uuid
-from sqlalchemy import Column, String, Text, Date, Integer
+from sqlalchemy import Column, String, Text, Date, Integer, Boolean
 from sqlalchemy.dialects.postgresql import UUID, JSON
 from ..database import Base
 
@@ -26,3 +26,14 @@ class Movie(Base):
     # Comma-separated list of successfully encoded quality labels, e.g. "360p,720p,1080p"
     available_qualities = Column(String(100), nullable=True)
 
+    # ── Source & license tracking ────────────────────────────────────────────
+    source_name = Column(String(100), nullable=True)       # e.g. "Library of Congress", "TMDB"
+    source_url = Column(String(500), nullable=True)         # URL to the original source page
+    license_type = Column(String(100), nullable=True)       # e.g. "CC BY 4.0", "Public Domain"
+    license_url = Column(String(500), nullable=True)        # URL to the full license text
+    attribution = Column(Text, nullable=True)               # Required attribution text
+    is_public_domain = Column(Boolean, default=False, nullable=False, server_default="false")
+    media_rights_status = Column(
+        String(30), default="unknown", nullable=False, server_default="unknown",
+    )
+    # Allowed values: safe_to_use, attribution_required, non_commercial_only, unknown, blocked

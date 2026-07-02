@@ -72,6 +72,23 @@ def create_movie(db: Session, movie_data: MovieCreateSchema):
         keywords=movie_data.keywords,
         director=movie_data.director,
     )
+
+    # Source & license fields — only set if provided (model defaults apply otherwise)
+    if movie_data.source_name is not None:
+        db_movie.source_name = movie_data.source_name
+    if movie_data.source_url is not None:
+        db_movie.source_url = movie_data.source_url
+    if movie_data.license_type is not None:
+        db_movie.license_type = movie_data.license_type
+    if movie_data.license_url is not None:
+        db_movie.license_url = movie_data.license_url
+    if movie_data.attribution is not None:
+        db_movie.attribution = movie_data.attribution
+    if movie_data.is_public_domain is not None:
+        db_movie.is_public_domain = movie_data.is_public_domain
+    if movie_data.media_rights_status is not None:
+        db_movie.media_rights_status = movie_data.media_rights_status
+
     db.add(db_movie)
     db.commit()
     db.refresh(db_movie)

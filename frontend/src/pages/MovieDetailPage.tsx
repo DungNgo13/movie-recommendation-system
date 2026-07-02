@@ -19,6 +19,7 @@ import StarRating from '../components/StarRating';
 import LoadingSpinner from '../components/LoadingSpinner';
 import ErrorMessage from '../components/ErrorMessage';
 import HlsPlayer from '../components/HlsPlayer';
+import SourceAttribution from '../components/SourceAttribution';
 
 const PLACEHOLDER_IMAGE = '/placeholder-poster.svg';
 // Save position every N seconds of playback change
@@ -302,6 +303,9 @@ const MovieDetailPage: React.FC = () => {
         )}
 
       </div>
+
+      {/* ── Source & License ───────────────────────────────────────────── */}
+      <SourceAttribution movie={movie} />
 
       <div className="rating-section">
         <h3>Your Rating</h3>
