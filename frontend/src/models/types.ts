@@ -45,3 +45,20 @@ export interface PaginatedMovies {
     page: number;
     limit: number;
 }
+
+export interface MovieAsset {
+  id: string;
+  movie_id: string;
+  asset_type: string;
+  url: string | null;
+  source_name: string | null;
+  source_url: string | null;
+  license_type: string | null;
+  license_url: string | null;
+  attribution: string | null;
+  is_public_domain: boolean;
+  media_rights_status: string;
+  created_at: string;
+  /** Set by the backend when status is 'unknown' — frontend should show placeholder */
+  _placeholder?: boolean;
+}

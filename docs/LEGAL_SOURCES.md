@@ -130,6 +130,71 @@ For public domain films:
 
 ---
 
+## Movie-Level vs Asset-Level Licensing
+
+The system tracks licenses at **two levels**:
+
+### Movie-level (on `movies` table)
+
+Covers the **metadata** license — who provided the title, overview, genres, cast, and director data. For example:
+- MovieLens provides recommendation data under a research license (`non_commercial_only`).
+- Wikidata provides structured metadata under CC0 (`safe_to_use`).
+- TMDB provides metadata under their API terms (`attribution_required`).
+
+### Asset-level (on `movie_assets` table)
+
+Covers the **media** license — who provided each individual image, poster, video, or trailer. For example:
+- A poster from Wikimedia Commons might be CC BY-SA (`attribution_required`).
+- A video from Library of Congress might be Public Domain (`safe_to_use`).
+- A backdrop from Pexels is free for any use (`safe_to_use`).
+
+**Why separate?** A single movie can have metadata from Wikidata (CC0) but its poster from Wikimedia Commons (CC BY-SA) and its video from Library of Congress (Public Domain). Each asset has its own license chain.
+
+---
+
+## Source-Specific Import Rules
+
+### MovieLens — Recommendation/Rating Data Only
+
+- **Import**: `movieId`, `title`, `genres`, `ratings`, `tags`.
+- **Do NOT import**: poster images, trailer links, or any media files.
+- **Reason**: MovieLens provides no media content. Its data is for research use only.
+- **Importer**: `scripts/importers/import_movielens.py`
+- **Status**: `non_commercial_only`
+
+### Wikidata — Structured Metadata Only
+
+- **Import**: `title`, `original_title`, `year`, `country`, `language`, `director`, `cast`, `runtime`, `QID`.
+- **Do NOT import**: images, unless verified through Wikimedia Commons.
+- **Reason**: Wikidata contains image URLs that point to Wikimedia Commons files, but the license of each file must be verified individually. Wikidata itself (the structured data) is CC0.
+- **Importer**: `scripts/importers/import_wikidata.py`
+- **Status**: `safe_to_use` (for metadata)
+
+### Wikimedia Commons — Per-File License Check Required
+
+- **Import**: images and videos ONLY if the file license is one of: `Public Domain`, `CC0`, `CC BY`, `CC BY-SA`.
+- **Reject**: `CC BY-NC`, `CC BY-ND`, `CC BY-NC-SA`, `All Rights Reserved`, and unknown licenses.
+- **Reason**: Wikimedia Commons hosts files under many different licenses. Each file's license page must be checked before import.
+- **Importer**: `scripts/importers/import_wikimedia_commons.py`
+- **Status**: varies per file — determined by `license_checker.get_media_rights_status()`
+
+### Library of Congress — Preferred for Public-Domain Videos
+
+- **Import**: full films, stills, and metadata from pre-1929 works or explicitly public-domain releases.
+- **Reason**: LOC is the most reliable source for verified public-domain films. Pre-1929 US works are definitively in the public domain.
+- **Importer**: `scripts/importers/import_loc_public_domain.py`
+- **Status**: `safe_to_use` with `is_public_domain = true`
+
+### Stock Images (Pexels/Pixabay/Unsplash) — Placeholders/Backgrounds Only
+
+- **Import**: images ONLY as `backdrop`, `banner`, or `placeholder` asset types.
+- **Do NOT import as**: `poster` (stock photos are not official movie posters).
+- **Reason**: Stock images are generic. Using them as movie posters would be misleading.
+- **Importer**: `scripts/importers/import_stock_assets.py`
+- **Status**: `safe_to_use`
+
+---
+
 ## Import Workflow
 
 1. **Identify source** — determine where the movie data and media come from.
@@ -137,10 +202,13 @@ For public domain films:
 3. **Set fields** — populate `source_name`, `license_type`, `media_rights_status`, and `attribution` accordingly.
 4. **Review unknowns** — any record with `media_rights_status = "unknown"` should be investigated before production deployment.
 5. **Replace blocked** — if a record is marked `blocked`, replace its media assets with legitimate alternatives (Wikimedia, Pexels, or Library of Congress).
+6. **Use the license checker** — `license_checker.py` provides `allow_license()`, `normalize_license()`, and `get_media_rights_status()` to automate license classification.
 
 ---
 
 ## Database Fields Reference
+
+### `movies` table (metadata license)
 
 | Column | Type | Purpose |
 |--------|------|---------|
@@ -151,3 +219,21 @@ For public domain films:
 | `attribution` | `Text` | Required attribution text to display |
 | `is_public_domain` | `Boolean` | Whether the work is in the public domain |
 | `media_rights_status` | `String(30)` | One of: `safe_to_use`, `attribution_required`, `non_commercial_only`, `unknown`, `blocked` |
+
+### `movie_assets` table (per-asset media license)
+
+| Column | Type | Purpose |
+|--------|------|---------|
+| `id` | `UUID` | Primary key |
+| `movie_id` | `UUID` | FK → movies.id |
+| `asset_type` | `String(30)` | poster, backdrop, banner, trailer, full_video, actor_image, director_image, placeholder |
+| `url` | `String(500)` | External URL (CDN, Wikimedia, etc.) |
+| `local_path` | `String(500)` | Local file path (not exposed via API) |
+| `source_name` | `String(100)` | Name of the media provider |
+| `source_url` | `String(500)` | Link to the original file/page |
+| `license_type` | `String(100)` | License identifier |
+| `license_url` | `String(500)` | Link to license text |
+| `attribution` | `Text` | Required attribution text |
+| `is_public_domain` | `Boolean` | Whether the asset is public domain |
+| `media_rights_status` | `String(30)` | Same enum as movies table |
+| `created_at` | `DateTime` | When the asset was imported |

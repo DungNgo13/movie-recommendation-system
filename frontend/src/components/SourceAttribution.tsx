@@ -1,15 +1,30 @@
 import React from 'react';
-import type { Movie } from '../models';
+import type { Movie, MovieAsset } from '../models';
+
+interface SourceData {
+  source_name?: string | null;
+  source_url?: string | null;
+  license_type?: string | null;
+  license_url?: string | null;
+  attribution?: string | null;
+  is_public_domain?: boolean;
+}
 
 interface SourceAttributionProps {
-  movie: Movie;
+  /** Pass either a movie or an individual asset — both carry the same source fields */
+  movie?: Movie;
+  asset?: MovieAsset;
+  /** Optional label shown as the heading (default: "Source and License") */
+  label?: string;
 }
 
 /**
- * Displays source, license, and attribution information for a movie.
- * Renders nothing if all source fields are empty (zero impact on existing movies).
+ * Displays source, license, and attribution information.
+ * Accepts either a Movie or a MovieAsset — renders nothing if all source fields are empty.
  */
-const SourceAttribution: React.FC<SourceAttributionProps> = ({ movie }) => {
+const SourceAttribution: React.FC<SourceAttributionProps> = ({ movie, asset, label }) => {
+  const data: SourceData = asset ?? movie ?? {};
+
   const {
     source_name,
     source_url,
@@ -17,7 +32,7 @@ const SourceAttribution: React.FC<SourceAttributionProps> = ({ movie }) => {
     license_url,
     attribution,
     is_public_domain,
-  } = movie;
+  } = data;
 
   // Don't render anything if there is no source data at all
   const hasAnyData = source_name || license_type || attribution || is_public_domain;
@@ -28,7 +43,7 @@ const SourceAttribution: React.FC<SourceAttributionProps> = ({ movie }) => {
 
   return (
     <aside className="source-attribution" id="source-attribution">
-      <h3 className="source-attribution__heading">Source and License</h3>
+      <h3 className="source-attribution__heading">{label || 'Source and License'}</h3>
 
       <dl className="source-attribution__list">
         {source_name && (

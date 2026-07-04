@@ -1,7 +1,8 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useParams } from 'react-router-dom';
-import type { Movie } from '../models';
+import type { Movie, MovieAsset } from '../models';
 import { getMovieById } from '../services/movieService';
+import { API_BASE_URL } from '../config';
 import {
   saveWatchProgress,
   getWatchProgress,
@@ -44,6 +45,7 @@ const MovieDetailPage: React.FC = () => {
   const [imageSrc, setImageSrc] = useState<string>(PLACEHOLDER_IMAGE);
   const [myRating, setMyRating] = useState<number | null>(null);
   const [recommendations, setRecommendations] = useState<RecommendedMovie[]>([]);
+  const [assets, setAssets] = useState<MovieAsset[]>([]);
 
   // Resume state
   const [initialTime, setInitialTime] = useState<number>(0);
@@ -129,6 +131,27 @@ const MovieDetailPage: React.FC = () => {
         const data = await getMovieById(id);
         setMovie(data);
         setImageSrc(data.backdrop_url || data.poster_url || PLACEHOLDER_IMAGE);
+
+        // Fetch per-asset license data
+        try {
+          const assetRes = await fetch(`${API_BASE_URL}/movies/${id}/assets`);
+          if (assetRes.ok) {
+            const assetData = await assetRes.json();
+            setAssets(assetData.items || []);
+            // Use asset poster/backdrop if available and not blocked/unknown
+            const posterAsset = (assetData.items || []).find(
+              (a: MovieAsset) => a.asset_type === 'poster' && a.media_rights_status !== 'blocked' && a.media_rights_status !== 'unknown' && a.url
+            );
+            const backdropAsset = (assetData.items || []).find(
+              (a: MovieAsset) => a.asset_type === 'backdrop' && a.media_rights_status !== 'blocked' && a.media_rights_status !== 'unknown' && a.url
+            );
+            if (backdropAsset?.url || posterAsset?.url) {
+              setImageSrc(backdropAsset?.url || posterAsset?.url || data.backdrop_url || data.poster_url || PLACEHOLDER_IMAGE);
+            }
+          }
+        } catch {
+          // Non-blocking — assets endpoint is optional
+        }
 
         if (user) {
           try {
@@ -306,6 +329,11 @@ const MovieDetailPage: React.FC = () => {
 
       {/* ── Source & License ───────────────────────────────────────────── */}
       <SourceAttribution movie={movie} />
+
+      {/* Per-asset attribution (only shown for assets with source data) */}
+      {assets.filter(a => a.source_name || a.attribution || a.license_type).map(a => (
+        <SourceAttribution key={a.id} asset={a} label={`${a.asset_type} — Source`} />
+      ))}
 
       <div className="rating-section">
         <h3>Your Rating</h3>

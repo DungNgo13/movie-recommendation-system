@@ -16,6 +16,7 @@ from .models import user_favorite as user_favorite_model
 from .models import watch_history as watch_history_model
 from .models import rating as rating_model
 from .models import admin_audit_log as admin_audit_log_model
+from .models import movie_asset as movie_asset_model  # noqa: F401
 from .routers import movies
 from .routers import auth
 from .routers import favorites
@@ -28,6 +29,7 @@ from .routers import admin_logs
 from .routers import admin_recommendations
 from .routers import watch_progress
 from .routers import users
+from .routers import movie_assets
 
 # NOTE: Database schema is now managed by Alembic migrations.
 # Run "python -m alembic upgrade head" to apply pending migrations.
@@ -100,6 +102,7 @@ app.include_router(admin_dashboard.router)
 app.include_router(admin_logs.router)
 app.include_router(admin_recommendations.router)
 app.include_router(users.router)
+app.include_router(movie_assets.router)
 
 @app.get("/")
 def read_root():
