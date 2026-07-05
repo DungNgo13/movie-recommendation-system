@@ -13,6 +13,15 @@ export interface MovieFormData {
   director?: string | null;
   poster_url?: string | null;
   backdrop_url?: string | null;
+
+  // Source & license (movie-level metadata)
+  source_name?: string | null;
+  source_url?: string | null;
+  license_type?: string | null;
+  license_url?: string | null;
+  attribution?: string | null;
+  media_rights_status?: string | null;
+  is_public_domain?: boolean | null;
 }
 
 export interface MovieFilters {

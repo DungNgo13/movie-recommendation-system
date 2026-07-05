@@ -277,7 +277,7 @@ const AdminMoviesPage: React.FC = () => {
         <>
           {movies.length === 0 ? (
             <div className="admin-empty">
-              <p>📭 No movies available.</p>
+              <p>No movies available.</p>
               <button className="btn btn--primary" onClick={handleAdd}>
                 + Add Movie
               </button>
