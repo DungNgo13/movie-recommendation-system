@@ -13,7 +13,7 @@ from sqlalchemy.orm import Session
 from uuid import UUID
 
 from .user_profile import build_user_profile, get_interaction_summary
-from .vectorizer import get_movie_vectors
+from .vectorizer import get_movie_vectors, _candidate_query
 from ..favorite_service import get_user_favorite_ids
 from .explainer import generate_reason
 from ...models.movie import Movie
@@ -27,6 +27,10 @@ def get_recommendations(
 ) -> list[dict]:
     """
     Generate personalized movie recommendations for a user.
+
+    The candidate pool is determined by the RECOMMEND_ONLY_UPLOADED_MOVIES
+    environment flag (see vectorizer.py).  When enabled, only movies with
+    uploaded media are considered.
 
     Args:
         db: Database session
@@ -99,10 +103,11 @@ def get_recommendations(
 
 def _cold_start_fallback(db: Session, top_n: int) -> list[dict]:
     """
-    Fallback for cold-start users: return the most recent movies.
+    Fallback for cold-start users: return the most recent movies
+    from the candidate pool (respects RECOMMEND_ONLY_UPLOADED_MOVIES).
     """
     movies = (
-        db.query(Movie)
+        _candidate_query(db)
         .order_by(Movie.release_date.desc())
         .limit(top_n)
         .all()
@@ -122,3 +127,4 @@ def _cold_start_fallback(db: Session, top_n: int) -> list[dict]:
             "reason": "Popular movie — rate or favorite some movies for personalized picks!",
         })
     return results
+

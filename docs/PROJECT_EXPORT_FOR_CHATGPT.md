@@ -23,7 +23,8 @@ AI-based Movie Recommendation Website using Content-Based Filtering (TF-IDF + Co
    - Per-movie: takes MAX weight across signals (no double-counting)
    - Final: weighted average of movie vectors → L2 normalized
 4. `engine.py` → `cosine_similarity(user_vector, movie_matrix)` → rank → exclude favorited → top-N
-5. Cold-start: returns recent movies when user has no interactions
+5. Cold-start: returns recent uploaded movies when user has no interactions
+6. **Candidate pool**: controlled by `RECOMMEND_ONLY_UPLOADED_MOVIES` env flag (default `true`). When true, only movies with uploaded video are recommendation candidates. AI does NOT fetch or recommend from external sources.
 
 **Key files:** `backend/app/services/recommendation/` (6 files)
 **API:** `GET /api/v1/recommendations/me?top_n=10` (auth required)

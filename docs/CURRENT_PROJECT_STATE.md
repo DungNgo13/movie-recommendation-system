@@ -340,16 +340,26 @@ backend/
 
 **Đây là thuật toán thực tế được cài đặt trong code, không phải giả định.**
 
+> **Quan trọng:** Hệ thống AI chỉ gợi ý phim có trong catalog của website — tức phim đã được admin upload lên hệ thống. AI không tự lấy hoặc gợi ý phim từ nguồn bên ngoài. Các công cụ nhập dữ liệu (MovieLens, Wikidata) chỉ là tiện ích seed/enrich metadata tùy chọn.
+
+### Candidate Pool (Tập phim ứng viên)
+
+Biến `RECOMMEND_ONLY_UPLOADED_MOVIES` (mặc định `true`) kiểm soát:
+- **true:** Chỉ gợi ý phim có `video_source_path` hoặc `hls_playlist_path` hoặc `processing_status = "ready"`
+- **false:** Tất cả phim trong bảng `movies`
+
 ### Pipeline hoàn chỉnh
 
 ```
+Admin upload phim + metadata (genres, cast, keywords, video)
+    ↓
 User tương tác (rating/favorite/watch)
     ↓
 Dữ liệu lưu vào DB (ratings, user_favorites, watch_history)
     ↓
 build_user_profile() — xây dựng user preference vector
     ↓
-get_movie_vectors() — TF-IDF vectorize tất cả phim
+get_movie_vectors() — TF-IDF vectorize phim trong catalog (chỉ phim đã upload)
     ↓
 cosine_similarity() — so sánh user vector vs movie vectors
     ↓
@@ -490,11 +500,13 @@ Khi user chưa có tương tác nào → `build_user_profile()` trả về `None
 
 ## 7. Data Sources & Importers
 
+> **Lưu ý:** Tất cả dữ liệu phim trong hệ thống đều do admin nhập/upload. Các importer script dưới đây chỉ là tiện ích tùy chọn để seed hoặc enrich metadata — KHÔNG phải nguồn gợi ý của AI. Hệ thống AI chỉ gợi ý phim có trong catalog website.
+
 ### Seed data
 - `backend/app/seed.py` — 20 phim mẫu (Inception, Shawshank Redemption, etc.)
 - Dùng poster URL từ TMDB (cho mục đích demo)
 
-### Importer scripts (chưa wire vào production)
+### Importer scripts (công cụ seed/enrich tùy chọn, KHÔNG phải nguồn gợi ý)
 
 | Script | Nguồn | Import gì |
 |--------|-------|-----------|

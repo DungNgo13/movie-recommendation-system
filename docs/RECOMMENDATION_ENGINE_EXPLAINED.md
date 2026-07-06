@@ -14,8 +14,11 @@
 | **Cold-start** | Fallback về phim mới nhất |
 | **Collaborative filtering** | Không có |
 | **Deep learning** | Không có |
+| **Candidate pool** | Chỉ phim đã upload vào website (khi `RECOMMEND_ONLY_UPLOADED_MOVIES=true`) |
 
 **Thuật toán này là Content-Based Filtering thuần — nó gợi ý phim dựa trên nội dung metadata của phim (thể loại, diễn viên, từ khóa, đạo diễn, mô tả) kết hợp với lịch sử tương tác của user.**
+
+> **Quan trọng:** Hệ thống AI chỉ gợi ý phim có trong catalog của website — tức phim đã được admin upload lên hệ thống. AI không tự lấy hoặc gợi ý phim từ nguồn bên ngoài (TMDB, IMDb, Netflix...). Các công cụ nhập dữ liệu từ MovieLens, Wikidata, v.v. chỉ là tiện ích seed/enrich metadata tùy chọn, không phải nguồn gợi ý.
 
 ---
 
@@ -33,7 +36,29 @@ backend/app/services/recommendation/
 
 ---
 
-## 3. Pipeline Chi Tiết
+## 3. Candidate Pool — Nguồn Phim Gợi Ý
+
+### Quy tắc
+
+Biến môi trường `RECOMMEND_ONLY_UPLOADED_MOVIES` (mặc định: `true`) kiểm soát tập phim ứng viên:
+
+| Flag | Hành vi |
+|------|--------|
+| `true` (default) | Chỉ phim có `video_source_path IS NOT NULL` HOẶC `hls_playlist_path IS NOT NULL` HOẶC `processing_status = "ready"` |
+| `false` | Tất cả phim trong bảng `movies` |
+
+**Tại sao cần filter?**
+- Trong demo production, user mong đợi gợi ý phim mà họ có thể xem được
+- Phim chỉ có metadata nhưng chưa upload video → không nên gợi ý cho user xem
+- Filter đảm bảo AI chỉ gợi ý phim admin đã upload đầy đủ
+
+**Lưu ý:**
+- Phim dùng để xây dựng user profile (rating/favorite/watch) vẫn ảnh hưởng preference vector kể cả khi phim đó bị lọc khỏi candidate pool
+- Khi `false`, tất cả phim đều là ứng viên — phù hợp cho development/testing
+
+---
+
+## 4. Pipeline Chi Tiết
 
 ### Bước 1: Movie Text Profile (`movie_profile.py`)
 
