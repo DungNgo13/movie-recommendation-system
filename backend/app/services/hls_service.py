@@ -8,6 +8,7 @@ import threading
 from uuid import UUID
 from ..database import SessionLocal
 from ..models import movie as movie_model
+from .recommendation.vectorizer import invalidate_cache as _invalidate_rec_cache
 
 logger = logging.getLogger(__name__)
 
@@ -450,6 +451,8 @@ def process_hls_conversion(movie_id: UUID):
             db_movie.available_qualities = ",".join(quality_labels)
             db_movie.processing_error = None
             db.commit()
+            # Movie is now playable → make it eligible for recommendations
+            _invalidate_rec_cache()
             logger.info("[HLS] Multi-quality conversion complete for movie %s (%s)",
                         movie_id, tier_str)
             return
@@ -486,6 +489,8 @@ def process_hls_conversion(movie_id: UUID):
             db_movie.available_qualities = "480p"
             db_movie.processing_error = None
             db.commit()
+            # Movie is now playable → make it eligible for recommendations
+            _invalidate_rec_cache()
             logger.info("[HLS] Single-quality fallback complete for movie %s", movie_id)
         else:
             # Both attempts failed

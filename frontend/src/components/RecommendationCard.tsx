@@ -8,6 +8,10 @@ interface RecommendationCardProps {
   onToggleFavorite: (id: string) => void | Promise<void>;
 }
 
+/** True when this recommendation came from the cold-start fallback. */
+const isColdStart = (movie: RecommendedMovie): boolean =>
+  movie.score === 0 || (movie.reason ?? '').toLowerCase().includes('popular movie');
+
 const RecommendationCard: React.FC<RecommendationCardProps> = ({
   movie,
   isFavorite,
@@ -18,6 +22,8 @@ const RecommendationCard: React.FC<RecommendationCardProps> = ({
     e.stopPropagation();
     onToggleFavorite(movie.id);
   };
+
+  const coldStart = isColdStart(movie);
 
   return (
     <div className="movie-card rec-card">
@@ -40,10 +46,13 @@ const RecommendationCard: React.FC<RecommendationCardProps> = ({
         />
         <h3>{movie.title}</h3>
         <p className="rec-reason">{movie.reason}</p>
-        <span className="rec-score">{Math.round(movie.score * 100)}% match</span>
+        <span className="rec-score">
+          {coldStart ? 'New for you' : `${Math.round(movie.score * 100)}% match`}
+        </span>
       </Link>
     </div>
   );
 };
 
 export default RecommendationCard;
+

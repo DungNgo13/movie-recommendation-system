@@ -107,11 +107,8 @@ def force_reset_password(
             detail="User not found",
         )
 
-    if len(payload.new_password) < 6:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Password must be at least 6 characters",
-        )
+    # Password complexity is enforced by ForceResetPasswordSchema (Pydantic).
+    # No inline check needed here.
 
     user.password_hash = hash_password(payload.new_password)
     user.password_reset_token = None

@@ -6,8 +6,15 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# In production, use env variable for SECRET_KEY
-SECRET_KEY = os.getenv("SECRET_KEY", "movie-rec-secret-key-change-in-production")
+# SECRET_KEY MUST be set in the environment (via .env or OS env vars).
+# No fallback — a missing or empty key is a fatal configuration error.
+SECRET_KEY = os.getenv("SECRET_KEY", "").strip()
+if not SECRET_KEY:
+    raise RuntimeError(
+        "FATAL: SECRET_KEY environment variable is not set or is empty. "
+        "Create a backend/.env file with a strong random SECRET_KEY value. "
+        "See backend/.env.example for the expected format."
+    )
 ALGORITHM = "HS256"
 try:
     ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 480))

@@ -251,6 +251,11 @@ def explain_recommendations(
     id_to_idx: dict[str, int] = {mid: i for i, mid in enumerate(movie_ids)}
     n_features = matrix.shape[1]
 
+    # Annotate each signal with whether its movie is in the TF-IDF candidate
+    # pool.  Only in-pool movies contribute to the user preference vector.
+    for entry in signal_log:
+        entry["in_candidate_pool"] = entry["movie_id"] in id_to_idx
+
     user_vector = np.zeros(n_features, dtype=np.float64)
     total_weight = 0.0
     for mid, w in movie_weights.items():

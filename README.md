@@ -353,6 +353,51 @@ Dự án có lợi thế vì kết hợp được nhiều mảng trong cùng m�
 
 ---
 
+## 📋 Change Log
+
+### 2026-07-10 — Audit-Driven Fixes
+
+Changes from the comprehensive project audit ([AUDIT_REPORT.md](docs/AUDIT_REPORT.md)).
+
+#### 🔐 Security Fixes
+
+- **Removed hard-coded JWT secret fallback** — `backend/app/core/security.py` no longer falls back to a guessable default. The app raises `RuntimeError` at startup if `SECRET_KEY` is missing.
+- **Updated `.env.example`** — Placeholder is clearly marked as `CHANGE-ME-generate-a-strong-random-key-here` with generation instructions.
+- **Added upload file size limits** — Images max 10 MB, videos max 5 GB. Oversized uploads are rejected with HTTP 400.
+- **Restricted CORS methods/headers** — Replaced wildcard `*` with explicit list of HTTP methods and headers used by the frontend.
+
+#### 🤖 Recommendation Engine Fixes
+
+- **Cache invalidation on HLS completion** — When a movie finishes HLS encoding and becomes `"ready"`, the recommendation vectorizer cache is invalidated so the movie is immediately eligible for recommendations.
+- **Cold-start display fix** — `RecommendationCard` now shows `"New for you"` instead of `"0% match"` for cold-start recommendations.
+- **Admin explainer annotation** — Each signal in the admin recommendation explainer now includes `"in_candidate_pool"` flag.
+
+#### 🧪 Tests Added
+
+- `test_recommendation_engine.py` — 19 tests covering: end-to-end pipeline, cold-start, empty catalog, cache invalidation, negative signal exclusion.
+- `test_upload_limits.py` — 8 tests covering: size validation, exact limits, oversized rejection, pointer rewinding, chunked reading.
+
+#### 🧹 Cleanup
+
+- Removed dead inline password length check in `admin_users.py` (Pydantic already validates).
+
+#### How to Verify
+
+```bash
+# Backend
+cd backend
+python -m compileall app            # Syntax check — should pass
+python -m pytest tests/ -v          # 109 passed (7 pre-existing failures unrelated to these changes)
+
+# Frontend
+cd frontend
+npm install
+npm run build                       # TypeScript + Vite build — should pass
+npm run test:run                    # 30 tests passed
+```
+
+---
+
 ## 🔗 Repository
 
 ```text
@@ -371,4 +416,5 @@ Nếu dùng README này để public repo, có thể bổ sung thêm:
 - link demo video
 - sơ đồ database
 - tài liệu báo cáo / slide bảo vệ
+
 
