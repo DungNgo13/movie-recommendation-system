@@ -208,7 +208,7 @@ def test_trigger_hls_conversion(seed_movies, db_session):
     with patch("subprocess.run") as mock_run:
         response = client.post(f"/api/v1/movies/{movie_id}/process-hls")
         assert response.status_code == 202
-        assert response.json() == {"message": "HLS conversion started in the background."}
+        assert response.json()["message"] == "HLS conversion queued successfully."
         
 def test_get_hls_status(seed_movies, db_session):
     """

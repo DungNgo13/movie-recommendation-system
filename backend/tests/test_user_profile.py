@@ -7,6 +7,14 @@ from fastapi.testclient import TestClient
 
 from app.main import app
 from app.core.security import create_access_token, create_short_lived_token, hash_password
+from app.routers.auth import get_current_user
+
+@pytest.fixture
+def override_auth():
+    fake_user = _make_fake_user()
+    app.dependency_overrides[get_current_user] = lambda: fake_user
+    yield fake_user
+    app.dependency_overrides.clear()
 
 
 client = TestClient(app)
@@ -42,12 +50,10 @@ def _make_fake_user(**overrides):
 
 class TestAvatarUpload:
 
-    @patch("app.routers.auth.get_current_user")
     @patch("app.services.avatar_service.upload_avatar")
-    def test_upload_valid_avatar(self, mock_upload, mock_auth):
+    def test_upload_valid_avatar(self, mock_upload, override_auth):
         """A valid JPEG upload should succeed."""
-        fake_user = _make_fake_user()
-        mock_auth.return_value = fake_user
+        fake_user = override_auth
         mock_upload.return_value = fake_user
 
         file_data = io.BytesIO(b"\xff\xd8\xff\xe0" + b"\x00" * 100)
@@ -58,10 +64,8 @@ class TestAvatarUpload:
         )
         assert response.status_code == 200
 
-    @patch("app.routers.auth.get_current_user")
-    def test_upload_invalid_type_rejected(self, mock_auth):
+    def test_upload_invalid_type_rejected(self, override_auth):
         """A non-image file type should be rejected with 400."""
-        mock_auth.return_value = _make_fake_user()
 
         file_data = io.BytesIO(b"not an image")
         response = client.post(
@@ -72,13 +76,10 @@ class TestAvatarUpload:
         assert response.status_code == 400
         assert "Invalid file type" in response.json()["detail"]
 
-    @patch("app.routers.auth.get_current_user")
-    def test_upload_oversized_file_rejected(self, mock_auth):
-        """A file larger than 2 MB should be rejected with 400."""
-        mock_auth.return_value = _make_fake_user()
-
-        # 2 MB + 1 byte
-        big_data = io.BytesIO(b"\x00" * (2 * 1024 * 1024 + 1))
+    def test_upload_oversized_file_rejected(self, override_auth):
+        """A file larger than 10 MB should be rejected with 400."""
+        # 10 MB + 1 byte
+        big_data = io.BytesIO(b"\x00" * (10 * 1024 * 1024 + 1))
         response = client.post(
             "/api/v1/users/me/avatar",
             files={"file": ("big.jpg", big_data, "image/jpeg")},
@@ -93,11 +94,9 @@ class TestAvatarUpload:
 
 class TestChangePasswordRequest:
 
-    @patch("app.routers.auth.get_current_user")
-    @patch("app.services.mail_service.send_password_change_email")
-    def test_valid_request(self, mock_mail, mock_auth):
+    @patch("app.routers.auth.send_password_change_email")
+    def test_valid_request(self, mock_mail, override_auth):
         """A valid current + strong new password should trigger a confirmation email."""
-        mock_auth.return_value = _make_fake_user()
         response = client.post(
             "/api/v1/auth/change-password-request",
             json={
@@ -110,10 +109,8 @@ class TestChangePasswordRequest:
         assert "Confirmation email sent" in response.json()["message"]
         mock_mail.assert_called_once()
 
-    @patch("app.routers.auth.get_current_user")
-    def test_wrong_current_password(self, mock_auth):
+    def test_wrong_current_password(self, override_auth):
         """Wrong current password should return 400."""
-        mock_auth.return_value = _make_fake_user()
         response = client.post(
             "/api/v1/auth/change-password-request",
             json={
@@ -124,7 +121,7 @@ class TestChangePasswordRequest:
         )
         assert response.status_code == 400
 
-    def test_weak_new_password_rejected(self):
+    def test_weak_new_password_rejected(self, override_auth):
         """A weak new password should fail Pydantic validation (422)."""
         response = client.post(
             "/api/v1/auth/change-password-request",

@@ -425,6 +425,27 @@ npm run build     # ✅ TypeScript + Vite build passes
 npm run test:run  # ✅ 30 tests passed
 ```
 
+### 2026-07-10 — Backend Test Fixes (Deployment)
+
+Fixed all 7 backend test failures reported during Ubuntu VM deployment.
+
+#### Files Changed
+
+| File | Change | Issue Fixed |
+|------|--------|-------------|
+| `backend/tests/test_movies.py` | Updated `test_trigger_hls_conversion` expectation. | Matches the new HLS background queue API response. |
+| `backend/tests/test_user_profile.py` | Added `override_auth` fixture to correctly use `app.dependency_overrides[get_current_user]`. Also updated oversized file test to >10MB limit. | Fixed 401 Unauthorized errors caused by ineffective `mock.patch` of FastAPI dependencies. |
+
+#### How to Verify
+
+```bash
+cd backend
+source .venv/bin/activate || true
+python -m compileall app        # ✅ Passes
+python -m alembic upgrade head  # ✅ Passes
+python -m pytest tests/ -v      # ✅ 116 tests passed (0 failures)
+```
+
 ---
 
 ## 🔗 Repository
