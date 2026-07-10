@@ -18,10 +18,10 @@ const Navbar: React.FC = () => {
 
   /** Return 'active' class when current path matches the link target */
   const navClass = (path: string) => {
-    const isActive =
-      path === '/'
-        ? location.pathname === '/'
-        : location.pathname.startsWith(path);
+    const exactMatchRequired = ['/', '/admin', '/favorites'].includes(path);
+    const isActive = exactMatchRequired
+      ? location.pathname === path
+      : location.pathname.startsWith(path);
     return `navbar-link${isActive ? ' active' : ''}`;
   };
 

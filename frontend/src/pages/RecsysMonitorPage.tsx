@@ -13,9 +13,9 @@ import type { AuthUser } from '../services/authService';
 /** Colored badge for signal type */
 function SignalBadge({ type }: { type: SignalEntry['signal_type'] }) {
   const map: Record<string, { label: string; bg: string; color: string }> = {
-    rating:   { label: 'Rating',   bg: '#fff3cd', color: '#856404' },
+    rating: { label: 'Rating', bg: '#fff3cd', color: '#856404' },
     favorite: { label: 'Favorite', bg: '#fce8f3', color: '#842029' },
-    watch:    { label: 'Watch',    bg: '#d1ecf1', color: '#0c5460' },
+    watch: { label: 'Watch', bg: '#d1ecf1', color: '#0c5460' },
   };
   const s = map[type] ?? { label: type, bg: '#eee', color: '#333' };
   return (
@@ -38,9 +38,9 @@ function SignalBadge({ type }: { type: SignalEntry['signal_type'] }) {
 function WeightBar({ value }: { value: number }) {
   const pct = Math.min(100, (value / 5) * 100);
   const color =
-    value >= 4   ? '#27ae60' :   // high — green
-    value >= 2.5 ? '#f39c12' :   // mid  — amber
-                   '#95a5a6';    // low  — grey
+    value >= 4 ? '#27ae60' :   // high — green
+      value >= 2.5 ? '#f39c12' :   // mid  — amber
+        '#95a5a6';    // low  — grey
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
       <div style={{
@@ -68,11 +68,11 @@ function WeightBar({ value }: { value: number }) {
 
 /** Score badge — green / yellow / grey */
 function ScoreBadge({ score }: { score: number }) {
-  const pct   = Math.round(score * 100);
+  const pct = Math.round(score * 100);
   const color =
-    score >= 0.5  ? '#27ae60' :
-    score >= 0.15 ? '#f39c12' :
-                    '#95a5a6';
+    score >= 0.5 ? '#27ae60' :
+      score >= 0.15 ? '#f39c12' :
+        '#95a5a6';
   return (
     <span style={{
       display: 'inline-block',
@@ -142,8 +142,8 @@ function SignalsTable({ signals }: { signals: SignalEntry[] }) {
                 {s.signal_type === 'watch'
                   ? `${s.raw_value}% watched`
                   : s.signal_type === 'rating'
-                  ? `${s.raw_value} / 5 stars`
-                  : 'Saved'}
+                    ? `${s.raw_value} / 5 stars`
+                    : 'Saved'}
               </td>
               <td style={{ minWidth: 160 }}>
                 <WeightBar value={s.calculated_weight} />
@@ -232,8 +232,8 @@ function ScoringTable({ recs }: { recs: RecommendationEntry[] }) {
                       width: `${Math.round(r.total_score * 100)}%`,
                       borderRadius: 3,
                       background:
-                        r.total_score >= 0.5  ? '#27ae60' :
-                        r.total_score >= 0.15 ? '#f39c12' : '#95a5a6',
+                        r.total_score >= 0.5 ? '#27ae60' :
+                          r.total_score >= 0.15 ? '#f39c12' : '#95a5a6',
                     }} />
                   </div>
                   <span style={{ fontSize: '0.7rem', color: '#888', fontFamily: 'monospace' }}>
@@ -249,9 +249,9 @@ function ScoringTable({ recs }: { recs: RecommendationEntry[] }) {
                   fontWeight: 500,
                   color:
                     r.score_interpretation === 'Very strong match' ? '#27ae60' :
-                    r.score_interpretation === 'Strong match'      ? '#2980b9' :
-                    r.score_interpretation === 'Good match'        ? '#f39c12' :
-                                                                     '#95a5a6',
+                      r.score_interpretation === 'Strong match' ? '#2980b9' :
+                        r.score_interpretation === 'Good match' ? '#f39c12' :
+                          '#95a5a6',
                 }}>
                   {r.score_interpretation}
                 </span>
@@ -277,18 +277,18 @@ function ScoringTable({ recs }: { recs: RecommendationEntry[] }) {
 
 const RecsysMonitorPage: React.FC = () => {
   // User list for the dropdown selector
-  const [users, setUsers]             = useState<AuthUser[]>([]);
+  const [users, setUsers] = useState<AuthUser[]>([]);
   const [usersLoaded, setUsersLoaded] = useState(false);
   const [usersLoading, setUsersLoading] = useState(false);
 
   // Selected user + query state
   const [selectedUserId, setSelectedUserId] = useState('');
-  const [topN, setTopN]                     = useState(10);
+  const [topN, setTopN] = useState(10);
 
   // Diagnostic result state
-  const [payload, setPayload]   = useState<ExplainPayload | null>(null);
-  const [loading, setLoading]   = useState(false);
-  const [error, setError]       = useState<string | null>(null);
+  const [payload, setPayload] = useState<ExplainPayload | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   // Load user list once when the dropdown is first opened
   const loadUsers = async () => {
@@ -336,7 +336,7 @@ const RecsysMonitorPage: React.FC = () => {
 
       {/* ── User Selector Card ───────────────────────────────────────────── */}
       <div className="recsys-selector-card">
-        <h2 className="recsys-section-title">🎯 Select User</h2>
+        <h2 className="recsys-section-title">Select User</h2>
 
         <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'flex-end' }}>
 
@@ -483,7 +483,7 @@ const RecsysMonitorPage: React.FC = () => {
           {/* ── Section 2: Scoring Breakdown ──────────────────────────── */}
           <div className="recsys-section">
             <h2 className="recsys-section-title">
-              🏆 Section 2 — Scoring Breakdown
+              Section 2 — Scoring Breakdown
               <span className="recsys-section-subtitle">
                 Top {payload.top_recommendations.length} movies ranked by cosine similarity
                 between the user's weighted preference vector and each movie's TF-IDF vector.

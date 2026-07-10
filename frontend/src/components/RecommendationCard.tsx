@@ -33,7 +33,7 @@ const RecommendationCard: React.FC<RecommendationCardProps> = ({
         aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
         title={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
       >
-        {isFavorite ? 'Saved' : 'Save'}
+        {isFavorite ? 'Favorited' : 'Favorite'}
       </button>
       <Link to={`/movie/${movie.id}`}>
         <img
