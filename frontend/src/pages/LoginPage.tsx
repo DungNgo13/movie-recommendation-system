@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { loginUser } from '../services/authService';
 import { getGuestWatchHistory, clearGuestWatchHistory } from '../services/continueWatchingService';
-import { useAuth } from '../hooks/useAuth';
+import { useAuth } from '../hooks/useAuthHook';
 
 const LoginPage: React.FC = () => {
   const [email, setEmail] = useState('');

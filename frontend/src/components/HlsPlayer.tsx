@@ -1,20 +1,3 @@
-/**
- * HlsPlayer — Plyr + hls.js integration
- *
- * RACE CONDITION FIX — isMounted flag pattern:
- *
- * Problem: new Plyr() must be called INSIDE MANIFEST_PARSED (async) because
- * Plyr builds its quality-selector DOM at init time and requires the level
- * heights to be known. But if React's cleanup runs before the callback fires
- * (e.g. parent re-renders), a zombie Plyr instance gets created on an
- * already-unmounted video element — its fullscreen listeners are then orphaned.
- *
- * Solution: `let isMounted = true` is declared in the effect closure.
- * The cleanup sets it to false FIRST, before destroying anything.
- * The MANIFEST_PARSED callback checks the flag before touching the DOM.
- * If the effect has already cleaned up, the callback exits immediately and
- * no second Plyr instance is ever created.
- */
 import React, { useEffect, useRef } from 'react';
 import Hls from 'hls.js';
 import Plyr from 'plyr';
@@ -31,7 +14,7 @@ interface HlsPlayerProps {
 
 const HlsPlayer: React.FC<HlsPlayerProps> = ({
   src,
-  poster: _poster,
+  poster,
   initialTime = 0,
   onTimeUpdate,
   onPause,
@@ -40,6 +23,22 @@ const HlsPlayer: React.FC<HlsPlayerProps> = ({
   const videoRef  = useRef<HTMLVideoElement>(null);
   const hlsRef    = useRef<Hls | null>(null);
   const playerRef = useRef<Plyr | null>(null);
+
+  // Stable refs for callback props — lets Effect 1 read the latest callback
+  // without listing them as dependencies (which would destroy and re-create
+  // the entire HLS + Plyr stack on every parent render).
+  const onTimeUpdateRef = useRef(onTimeUpdate);
+  const onPauseRef = useRef(onPause);
+  const onEndedRef = useRef(onEnded);
+  const initialTimeRef = useRef(initialTime);
+
+  // Sync refs in a layout-safe effect (runs after every render).
+  useEffect(() => {
+    onTimeUpdateRef.current = onTimeUpdate;
+    onPauseRef.current = onPause;
+    onEndedRef.current = onEnded;
+    initialTimeRef.current = initialTime;
+  });
 
   // ─────────────────────────────────────────────────────────────────────────
   // Effect 1 — init HLS + Plyr whenever the stream URL changes
@@ -141,8 +140,8 @@ const HlsPlayer: React.FC<HlsPlayerProps> = ({
         });
 
         // Seek to resume position once the manifest is ready
-        if (initialTime > 0) {
-          video.currentTime = initialTime;
+        if (initialTimeRef.current > 0) {
+          video.currentTime = initialTimeRef.current;
         }
       });
 
@@ -171,20 +170,20 @@ const HlsPlayer: React.FC<HlsPlayerProps> = ({
       });
       playerRef.current = player;
       video.addEventListener('loadedmetadata', () => {
-        if (initialTime > 0) video.currentTime = initialTime;
+        if (initialTimeRef.current > 0) video.currentTime = initialTimeRef.current;
       }, { once: true });
     }
 
     // Native video event listeners — attached to the <video> element directly
     // so they survive any internal Plyr DOM operations.
     const handleTimeUpdate = () => {
-      onTimeUpdate?.(video.currentTime, video.duration || 0);
+      onTimeUpdateRef.current?.(video.currentTime, video.duration || 0);
     };
     const handlePause = () => {
-      onPause?.(video.currentTime, video.duration || 0);
+      onPauseRef.current?.(video.currentTime, video.duration || 0);
     };
     const handleEnded = () => {
-      onEnded?.(video.duration || 0);
+      onEndedRef.current?.(video.duration || 0);
     };
 
     // Sliding Session: signal user activity while video is playing.
@@ -276,7 +275,7 @@ const HlsPlayer: React.FC<HlsPlayerProps> = ({
         changing key — Plyr binds directly to this DOM node and re-mounting
         it would silently detach all event listeners.
       */}
-      <video ref={videoRef} />
+      <video ref={videoRef} poster={poster} />
     </div>
   );
 };

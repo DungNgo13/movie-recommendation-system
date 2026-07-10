@@ -396,6 +396,35 @@ npm run build                       # TypeScript + Vite build — should pass
 npm run test:run                    # 30 tests passed
 ```
 
+### 2026-07-10 — Frontend Lint Fixes (Deployment)
+
+Fixed all 6 lint errors reported during Ubuntu VM deployment (`npm run lint`).
+
+#### Files Changed
+
+| File | Change | Lint Rule Fixed |
+|------|--------|----------------|
+| `HlsPlayer.tsx` | Removed unused `_poster` alias; used `poster` prop on `<video>` element. Added `useRef` + sync effect for callback props to fix exhaustive-deps. | `@typescript-eslint/no-unused-vars`, `react-hooks/exhaustive-deps` |
+| `useAuth.tsx` | Split into 3 files: `AuthContext.ts` (context + type), `useAuthHook.ts` (hook), `useAuth.tsx` (AuthProvider component only). | `react-refresh/only-export-components` |
+| `ConfirmPasswordChangePage.tsx` | Derived initial `status`/`message` from token presence at render time instead of synchronous `setState` in `useEffect`. | `react-hooks/set-state-in-effect` |
+| `HomePage.tsx` | Hero movie: inline `eslint-disable` with explanation (idempotent, fires once). History/recs: removed synchronous `setState` clearing; gated render on `user`. | `react-hooks/set-state-in-effect` |
+| 10 consumer files | Updated `import { useAuth }` path from `useAuth` → `useAuthHook`. | — |
+
+#### New Files
+
+- `frontend/src/hooks/AuthContext.ts` — Context object + `AuthContextType` interface
+- `frontend/src/hooks/useAuthHook.ts` — `useAuth()` hook
+
+#### How to Verify
+
+```bash
+cd frontend
+npm install
+npm run lint      # ✅ 0 errors, 0 warnings
+npm run build     # ✅ TypeScript + Vite build passes
+npm run test:run  # ✅ 30 tests passed
+```
+
 ---
 
 ## 🔗 Repository

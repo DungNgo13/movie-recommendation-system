@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { uploadAvatar } from '../services/authService';
-import { useAuth } from '../hooks/useAuth';
+import { useAuth } from '../hooks/useAuthHook';
 import { getAvatarUrl } from '../utils/avatarUrl';
 
 const MAX_SIZE_BYTES = 2 * 1024 * 1024; // 2 MB

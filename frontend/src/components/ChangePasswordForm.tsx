@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { requestPasswordChange } from '../services/authService';
-import { useAuth } from '../hooks/useAuth';
+import { useAuth } from '../hooks/useAuthHook';
 import { isPasswordValid } from '../utils/passwordValidator';
 import PasswordStrengthIndicator from './PasswordStrengthIndicator';
 

@@ -1,21 +1,17 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import type { AuthUser } from '../services/authService';
+import React, { useState, useEffect, useCallback } from 'react';
 import { fetchCurrentUser, logoutUser, getToken } from '../services/authService';
+import { AuthContext } from './AuthContext';
+import type { AuthUser } from '../services/authService';
 
-interface AuthContextType {
-  user: AuthUser | null;
-  loading: boolean;
-  refreshUser: () => Promise<void>;
-  logout: () => void;
-}
-
-const AuthContext = createContext<AuthContextType>({
-  user: null,
-  loading: true,
-  refreshUser: async () => {},
-  logout: () => {},
-});
-
+/**
+ * AuthProvider — wraps the app and provides auth state to all children.
+ *
+ * This file exports ONLY the AuthProvider React component, satisfying
+ * react-refresh/only-export-components.
+ *
+ * For the useAuth hook, import from './useAuthHook' (or the barrel
+ * re-export in index.ts).
+ */
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [loading, setLoading] = useState(true);
@@ -51,8 +47,4 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       {children}
     </AuthContext.Provider>
   );
-};
-
-export const useAuth = (): AuthContextType => {
-  return useContext(AuthContext);
 };

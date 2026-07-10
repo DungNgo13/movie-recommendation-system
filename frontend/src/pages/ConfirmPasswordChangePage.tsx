@@ -6,15 +6,18 @@ const ConfirmPasswordChangePage: React.FC = () => {
   const [searchParams] = useSearchParams();
   const token = searchParams.get('token') || '';
 
-  const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
-  const [message, setMessage] = useState('');
+  // Derive initial state from token presence — avoids synchronous setState
+  // inside useEffect which triggers the react-hooks/set-state-in-effect rule.
+  const [status, setStatus] = useState<'loading' | 'success' | 'error'>(
+    token ? 'loading' : 'error',
+  );
+  const [message, setMessage] = useState(
+    token ? '' : 'Missing confirmation token. Please use the link from your email.',
+  );
 
   useEffect(() => {
-    if (!token) {
-      setStatus('error');
-      setMessage('Missing confirmation token. Please use the link from your email.');
-      return;
-    }
+    // If there's no token, the initial state already shows the error.
+    if (!token) return;
 
     let cancelled = false;
 

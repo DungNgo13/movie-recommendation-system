@@ -14,7 +14,7 @@ import { getMyRating, rateMovie } from '../services/ratingService';
 import { getRecommendations } from '../services/recommendationService';
 import type { RecommendedMovie } from '../services/recommendationService';
 import { useFavorites } from '../hooks/useFavorites';
-import { useAuth } from '../hooks/useAuth';
+import { useAuth } from '../hooks/useAuthHook';
 import RecommendationCard from '../components/RecommendationCard';
 import StarRating from '../components/StarRating';
 import LoadingSpinner from '../components/LoadingSpinner';

@@ -6,7 +6,7 @@ import SkeletonCard from '../components/SkeletonCard';
 import ErrorMessage from '../components/ErrorMessage';
 import { useMovies } from '../hooks/useMovies';
 import { useFavorites } from '../hooks/useFavorites';
-import { useAuth } from '../hooks/useAuth';
+import { useAuth } from '../hooks/useAuthHook';
 import { getWatchHistory } from '../services/continueWatchingService';
 import { getRecommendations } from '../services/recommendationService';
 import type { HistoryItem } from '../services/continueWatchingService';
@@ -57,10 +57,15 @@ const HomePage: React.FC = () => {
 
   const { movies, loading, error } = useMovies(1, 100, filters);
 
-  // Pick hero movie once when movies first load (unfiltered)
+  // Pick hero movie once when movies first load (unfiltered).
+  // The effect is idempotent: it only calls setHeroMovie when heroMovie is
+  // still null, so it fires exactly once and cannot cascade.
   const [heroMovie, setHeroMovie] = useState<MovieListItem | null>(null);
   useEffect(() => {
     if (movies.length > 0 && !heroMovie) {
+      // Idempotent: fires once (heroMovie goes from null → value), then the
+      // guard prevents further calls. No cascading renders possible.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setHeroMovie(pickHeroMovie(movies));
     }
   }, [movies, heroMovie]);
@@ -106,20 +111,25 @@ const HomePage: React.FC = () => {
   }, [movies]);
 
   useEffect(() => {
-    if (!user) {
-      setHistoryItems([]);
-      setRecommendations([]);
-      return;
-    }
+    // When user is null (logged out), we don't fetch and don't call setState.
+    // The render section below uses `user` to gate display, so empty arrays
+    // will naturally be shown once `user` becomes null and the next effect
+    // run fetches nothing.
+    if (!user) return;
+
+    let cancelled = false;
     const fetchUserData = async () => {
       const [history, recs] = await Promise.all([
         getWatchHistory(5),
         getRecommendations(6),
       ]);
-      setHistoryItems(history);
-      setRecommendations(recs);
+      if (!cancelled) {
+        setHistoryItems(history);
+        setRecommendations(recs);
+      }
     };
     fetchUserData();
+    return () => { cancelled = true; };
   }, [user]);
 
   const moviesByGenre = useMemo(() => {
@@ -247,7 +257,7 @@ const HomePage: React.FC = () => {
       {/* ===== Content (shown when not loading) ===== */}
       {!loading && (
         <>
-          {historyItems.filter(item => !item.is_completed && (item.playback_position_seconds ?? 0) >= 30).length > 0 && (
+          {user && historyItems.filter(item => !item.is_completed && (item.playback_position_seconds ?? 0) >= 30).length > 0 && (
             <section className="continue-watching-section">
               <h2>Continue Watching</h2>
               <div className="movie-list movie-row">
@@ -281,7 +291,7 @@ const HomePage: React.FC = () => {
             </section>
           )}
 
-          {recommendations.length > 0 && (
+          {user && recommendations.length > 0 && (
             <section className="recommendations-section recommendations-home">
               <h2>Recommended for You</h2>
               <div className="movie-list movie-row">
