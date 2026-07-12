@@ -355,9 +355,9 @@ Dự án có lợi thế vì kết hợp được nhiều mảng trong cùng m�
 
 ## 📋 Change Log
 
-### 2026-07-12 — HLS 4K Support & Quality Switching Fix
+### 2026-07-12 — HLS 4K Support & Quality Switching Fix (v2)
 
-Two major HLS/video playback fixes:
+Two HLS/video playback fixes (backend quality ladder + frontend player).
 
 #### 1. HLS Converter — 4K/1440p Quality Ladder
 
@@ -378,27 +378,48 @@ No upscaling ever occurs — only tiers ≤ source height are generated.
 
 **Files changed**:
 - `backend/app/services/hls_service.py` — new `select_hls_qualities()` + updated `_build_multi_quality_cmd()`
-- `backend/tests/test_movies.py` — 5 new quality ladder unit tests
+- `backend/tests/test_movies.py` — 5 quality ladder unit tests
 
 **How to verify 4K output**:
 ```bash
-# After processing a 4K movie, inspect master playlist:
+# After re-processing a 4K movie, inspect master playlist:
 grep "RESOLUTION" media/videos/hls/movie_<id>/master.m3u8
 # Expected: RESOLUTION=3840x2160, 2560x1440, 1920x1080, 1280x720, 854x480, 640x360
 ```
 
-#### 2. HLS Player — Quality Switching Playback Fix
+> **Important**: Movies processed before this fix must be re-processed (click "Process HLS" again in admin) to generate the new 4K variants. The old master playlist only contains up to 1080p.
 
-**Root cause**: The Plyr `onChange` callback set `hls.currentLevel` but didn't preserve playback state. hls.js flushes buffers during a level switch, and without explicitly resuming, the video image would freeze while the progress bar kept moving.
+#### 2. HLS Player — Quality Switching & 4K Menu Fix
 
-**Fix**: Updated the `onChange` handler to capture `wasPlaying`/`currentTime` before the switch, call `hls.startLoad(pos)` to force segment loading from the current position, and call `video.play()` to resume. Added a belt-and-suspenders check in the `LEVEL_SWITCHED` handler.
+Three root causes were found and fixed in `HlsPlayer.tsx`:
 
-**File changed**: `frontend/src/components/HlsPlayer.tsx`
+**Root cause 1 — Circular LEVEL_SWITCHED → onChange loop**:
+When hls.js completed a level switch, the `LEVEL_SWITCHED` handler updated `player.quality` to sync the Plyr badge. But setting `player.quality` triggers Plyr's `set quality()` setter, which calls our `onChange` callback **again**, which sets `hls.currentLevel` **again** — creating a circular loop that caused the video to freeze while the progress bar kept moving.
+
+**Fix**: Added a `levelSwitchInProgress` guard flag. The `LEVEL_SWITCHED` handler sets it before touching `player.quality`, and `onChange` checks it to bail out immediately if the change was triggered by the level-switch sync, not by the user.
+
+**Root cause 2 — Harmful `startLoad()` call**:
+The previous fix called `hls.startLoad(pos)` after setting `currentLevel`. This interfered with hls.js's internal level-switch state machine, which already handles segment loading when `currentLevel` changes. The double-load caused buffer confusion and stalls.
+
+**Fix**: Removed the `startLoad()` call from `onChange`. hls.js handles segment loading internally. Used `requestAnimationFrame` before `video.play()` to give the browser one frame to process the level change.
+
+**Root cause 3 — Stale cached .m3u8 hiding 4K qualities**:
+After re-processing a movie with 4K support, the browser could serve the old cached master playlist that only contained 1080p variants. This made the Plyr quality menu not show 1440p/2160p even though the backend generated them.
+
+**Fix**: Added cache-busting timestamp query parameter to the HLS playlist URL (`?v=<timestamp>`), ensuring the browser always fetches the latest master playlist.
+
+**Additional improvements**:
+- Development-only diagnostic logs for MANIFEST_PARSED, LEVEL_SWITCHED, and ERROR events
+- Improved error recovery: NETWORK_ERROR passes current position to `startLoad()`, MEDIA_ERROR resumes playback after recovery
 
 **How to verify quality switching**:
-1. Play a movie with multiple HLS qualities
-2. Switch quality (e.g. 1080p → 720p → 2160p)
-3. Confirm: video image continues, audio continues, progress bar continues, no manual pause/play needed
+1. Hard refresh browser (Ctrl+Shift+R)
+2. Open a movie with multiple HLS qualities
+3. Open DevTools Console (development mode shows `[HLS]` level logs)
+4. Start playback
+5. Confirm quality menu shows Auto, 2160p, 1440p, 1080p, 720p, 480p, 360p (for 4K source)
+6. Switch quality: 2160p → 1080p → 720p → 2160p
+7. Confirm: video image continues, audio continues, progress bar continues, no manual pause/play needed
 
 #### Verification
 
@@ -415,7 +436,7 @@ npm run build     # ✅ Passes
 npm run test:run  # ✅ 30 tests passed
 ```
 
-> **Note**: 4K encoding is CPU-intensive (may take 10–30+ minutes depending on source length and server). Disk usage for 4K HLS output can be substantial. For demo purposes, shorter clips are recommended.
+> **Note**: 4K encoding is CPU-intensive (may take 10–30+ minutes depending on source length and server). Disk usage for 4K HLS output can be substantial. For demo purposes, shorter clips (30s–2min) are recommended.
 
 ---
 

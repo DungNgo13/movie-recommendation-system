@@ -53,6 +53,10 @@ const HlsPlayer: React.FC<HlsPlayerProps> = ({
     // any DOM nodes or creating a Plyr instance.
     let isMounted = true;
 
+    // Guard flag: prevents LEVEL_SWITCHED → player.quality setter from
+    // triggering onChange, which would set currentLevel again in a loop.
+    let levelSwitchInProgress = false;
+
     // Tear down any surviving instances from a previous src
     playerRef.current?.destroy();
     playerRef.current = null;
@@ -64,7 +68,10 @@ const HlsPlayer: React.FC<HlsPlayerProps> = ({
       const hls = new Hls({ maxBufferLength: 30, enableWorker: true });
       hlsRef.current = hls;
 
-      hls.loadSource(src);
+      // Cache-bust the master playlist URL so the browser never serves a
+      // stale old .m3u8 (e.g. one that predates 4K support).
+      const cacheBustedSrc = `${src}${src.includes('?') ? '&' : '?'}v=${Date.now()}`;
+      hls.loadSource(cacheBustedSrc);
       hls.attachMedia(video);
 
       // ── STEP 3: Async callback with isMounted guard ───────────────────
@@ -74,7 +81,7 @@ const HlsPlayer: React.FC<HlsPlayerProps> = ({
         if (!isMounted) return;
 
         // ── STEP 4: Build quality list, then init Plyr ───────────────────
-        // De-duplicate heights and sort descending (e.g. [1080, 720, 480, 360])
+        // De-duplicate heights and sort descending (e.g. [2160, 1440, 1080, 720, 480, 360])
         const heights = Array.from(
           new Set(
             data.levels
@@ -82,6 +89,11 @@ const HlsPlayer: React.FC<HlsPlayerProps> = ({
               .filter((h): h is number => Boolean(h))
           )
         ).sort((a, b) => b - a);
+
+        if (import.meta.env.DEV) {
+          console.debug('[HLS] Manifest parsed — levels:', data.levels.map(l => `${l.width}x${l.height}`));
+          console.debug('[HLS] Quality menu will show:', [0, ...heights]);
+        }
 
         const qualityOptions = [0, ...heights]; // 0 = Auto
 
@@ -97,35 +109,49 @@ const HlsPlayer: React.FC<HlsPlayerProps> = ({
           keyboard: { focused: true, global: true },
           quality: {
             default: 0,              // start on Auto
-            options: qualityOptions, // full list available at init time
+            options: qualityOptions, // dynamic from manifest
             forced: true,
-            // Called by Plyr when the user picks a resolution in the menu
+            // Called by Plyr when the user picks a resolution in the menu.
+            //
+            // CRITICAL: This is ALSO called when we set player.quality in
+            // the LEVEL_SWITCHED handler below. The levelSwitchInProgress
+            // guard prevents that from turning into an infinite loop.
             onChange: (selectedQuality: number) => {
+              // If this call was triggered by our own LEVEL_SWITCHED handler
+              // updating the Plyr badge, ignore it — the level is already set.
+              if (levelSwitchInProgress) return;
+
               const hlsInstance = hlsRef.current;
               const vid = videoRef.current;
               if (!hlsInstance || !vid) return;
 
-              // Capture playback state BEFORE the level switch
-              const wasPlaying = !vid.paused;
-              const pos = vid.currentTime;
+              // Capture play state BEFORE the switch
+              const wasPlaying = !vid.paused && !vid.ended;
 
               if (selectedQuality === 0) {
-                hlsInstance.currentLevel = -1; // -1 = ABR auto
+                // Auto ABR
+                hlsInstance.currentLevel = -1;
               } else {
                 const idx = hlsInstance.levels.findIndex(
                   (lvl) => lvl.height === selectedQuality,
                 );
-                if (idx >= 0) hlsInstance.currentLevel = idx;
+                if (idx >= 0) {
+                  hlsInstance.currentLevel = idx;
+                }
               }
 
-              // Force hls.js to reload segments from the current position
-              // so the new quality starts rendering immediately.
-              hlsInstance.startLoad(pos);
+              // DO NOT call hls.startLoad() here — hls.js already handles
+              // segment loading internally when currentLevel changes.
+              // Calling startLoad() interferes with the level-switch state
+              // machine and can cause buffer stalls.
 
-              // Resume playback if the video was playing before the switch
+              // Resume playback if needed. requestAnimationFrame ensures the
+              // browser has processed the level change before we nudge play.
               if (wasPlaying) {
-                vid.play().catch(() => {
-                  // Ignore autoplay policy errors (no user gesture)
+                requestAnimationFrame(() => {
+                  vid.play().catch(() => {
+                    // Browser may reject play() without user gesture — safe to ignore
+                  });
                 });
               }
             },
@@ -142,25 +168,31 @@ const HlsPlayer: React.FC<HlsPlayerProps> = ({
 
         playerRef.current = player;
 
-        // Keep the Plyr quality badge in sync with hls.js ABR decisions
-        // AND ensure playback continues after the level actually switches.
+        // Keep the Plyr quality badge in sync with hls.js ABR decisions.
+        //
+        // When hls.js finishes switching to a new level (either from user
+        // selection or ABR), update Plyr's displayed quality label.
+        //
+        // The levelSwitchInProgress flag prevents the circular loop:
+        //   LEVEL_SWITCHED → set player.quality → Plyr calls onChange
+        //   → onChange sets currentLevel → triggers another LEVEL_SWITCHED
         hls.on(Hls.Events.LEVEL_SWITCHED, (_ev, { level }) => {
-          if (!playerRef.current) return;
-          const activeHeight = hlsRef.current?.levels[level]?.height ?? 0;
+          if (!playerRef.current || !hlsRef.current) return;
+          const activeHeight = hlsRef.current.levels[level]?.height ?? 0;
+
+          if (import.meta.env.DEV) {
+            console.debug('[HLS] Level switched to:', level, `(${activeHeight}p)`);
+          }
+
+          // Set flag BEFORE touching player.quality to block the onChange callback
+          levelSwitchInProgress = true;
           try {
             (playerRef.current as unknown as { quality: number }).quality =
               activeHeight;
           } catch {
             // Plyr teardown may race this callback — safe to ignore
           }
-
-          // Belt-and-suspenders: if the video stalled during the level
-          // switch, nudge it back into playing.  This covers edge cases
-          // where startLoad() in onChange wasn't sufficient.
-          const vid = videoRef.current;
-          if (vid && !vid.paused && vid.readyState >= HTMLMediaElement.HAVE_FUTURE_DATA) {
-            vid.play().catch(() => { /* ignore */ });
-          }
+          levelSwitchInProgress = false;
         });
 
         // Seek to resume position once the manifest is ready
@@ -171,19 +203,29 @@ const HlsPlayer: React.FC<HlsPlayerProps> = ({
 
       // Fatal HLS error recovery
       hls.on(Hls.Events.ERROR, (_event, data) => {
-        if (data.fatal) {
-          switch (data.type) {
-            case Hls.ErrorTypes.NETWORK_ERROR:
-              hls.startLoad();
-              break;
-            case Hls.ErrorTypes.MEDIA_ERROR:
-              hls.recoverMediaError();
-              break;
-            default:
-              hls.destroy();
-              break;
-          }
+        if (import.meta.env.DEV) {
+          console.debug('[HLS] Error:', data.type, data.details, 'fatal:', data.fatal);
         }
+        if (!data.fatal) return;
+
+        const vid = videoRef.current;
+
+        if (data.type === Hls.ErrorTypes.MEDIA_ERROR) {
+          hls.recoverMediaError();
+          // After recovery, resume playback if the video was playing
+          if (vid && !vid.paused) {
+            vid.play().catch(() => {});
+          }
+          return;
+        }
+
+        if (data.type === Hls.ErrorTypes.NETWORK_ERROR) {
+          hls.startLoad(vid?.currentTime ?? 0);
+          return;
+        }
+
+        // Unrecoverable error — destroy
+        hls.destroy();
       });
 
     } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
