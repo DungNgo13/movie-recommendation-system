@@ -353,6 +353,72 @@ Dự án có lợi thế vì kết hợp được nhiều mảng trong cùng m�
 
 ---
 
+## 📋 Change Log
+
+### 2026-07-12 — HLS 4K Support & Quality Switching Fix
+
+Two major HLS/video playback fixes:
+
+#### 1. HLS Converter — 4K/1440p Quality Ladder
+
+**Root cause**: The quality ladder in `hls_service.py` only defined tiers up to 1080p. A 4K source (3840×2160) would only produce 1080p/720p/480p/360p output.
+
+**Fix**: Extracted a testable `select_hls_qualities(source_height)` helper function and added two new tiers:
+
+| Quality | Bitrate | Condition |
+|---------|---------|-----------|
+| 2160p | 14 000 kbps | source ≥ 2160px |
+| 1440p | 9 000 kbps | source ≥ 1440px |
+| 1080p | 5 000 kbps | source ≥ 1080px *(was 4000k)* |
+| 720p | 2 800 kbps | source ≥ 720px *(was 2000k)* |
+| 480p | 1 200 kbps | source ≥ 480px |
+| 360p | 800 kbps | always included |
+
+No upscaling ever occurs — only tiers ≤ source height are generated.
+
+**Files changed**:
+- `backend/app/services/hls_service.py` — new `select_hls_qualities()` + updated `_build_multi_quality_cmd()`
+- `backend/tests/test_movies.py` — 5 new quality ladder unit tests
+
+**How to verify 4K output**:
+```bash
+# After processing a 4K movie, inspect master playlist:
+grep "RESOLUTION" media/videos/hls/movie_<id>/master.m3u8
+# Expected: RESOLUTION=3840x2160, 2560x1440, 1920x1080, 1280x720, 854x480, 640x360
+```
+
+#### 2. HLS Player — Quality Switching Playback Fix
+
+**Root cause**: The Plyr `onChange` callback set `hls.currentLevel` but didn't preserve playback state. hls.js flushes buffers during a level switch, and without explicitly resuming, the video image would freeze while the progress bar kept moving.
+
+**Fix**: Updated the `onChange` handler to capture `wasPlaying`/`currentTime` before the switch, call `hls.startLoad(pos)` to force segment loading from the current position, and call `video.play()` to resume. Added a belt-and-suspenders check in the `LEVEL_SWITCHED` handler.
+
+**File changed**: `frontend/src/components/HlsPlayer.tsx`
+
+**How to verify quality switching**:
+1. Play a movie with multiple HLS qualities
+2. Switch quality (e.g. 1080p → 720p → 2160p)
+3. Confirm: video image continues, audio continues, progress bar continues, no manual pause/play needed
+
+#### Verification
+
+```bash
+# Backend
+cd backend
+python -m pytest tests/test_movies.py::TestSelectHlsQualities -v  # 5 passed
+python -m pytest tests/ -v                                         # 120 passed, 1 pre-existing failure
+
+# Frontend
+cd frontend
+npm run lint      # ✅ 0 errors
+npm run build     # ✅ Passes
+npm run test:run  # ✅ 30 tests passed
+```
+
+> **Note**: 4K encoding is CPU-intensive (may take 10–30+ minutes depending on source length and server). Disk usage for 4K HLS output can be substantial. For demo purposes, shorter clips are recommended.
+
+---
+
 ## 🔗 Repository
 
 ```text

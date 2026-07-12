@@ -102,14 +102,31 @@ const HlsPlayer: React.FC<HlsPlayerProps> = ({
             // Called by Plyr when the user picks a resolution in the menu
             onChange: (selectedQuality: number) => {
               const hlsInstance = hlsRef.current;
-              if (!hlsInstance) return;
+              const vid = videoRef.current;
+              if (!hlsInstance || !vid) return;
+
+              // Capture playback state BEFORE the level switch
+              const wasPlaying = !vid.paused;
+              const pos = vid.currentTime;
+
               if (selectedQuality === 0) {
                 hlsInstance.currentLevel = -1; // -1 = ABR auto
               } else {
                 const idx = hlsInstance.levels.findIndex(
                   (lvl) => lvl.height === selectedQuality,
                 );
-                hlsInstance.currentLevel = idx;
+                if (idx >= 0) hlsInstance.currentLevel = idx;
+              }
+
+              // Force hls.js to reload segments from the current position
+              // so the new quality starts rendering immediately.
+              hlsInstance.startLoad(pos);
+
+              // Resume playback if the video was playing before the switch
+              if (wasPlaying) {
+                vid.play().catch(() => {
+                  // Ignore autoplay policy errors (no user gesture)
+                });
               }
             },
           },
@@ -125,9 +142,8 @@ const HlsPlayer: React.FC<HlsPlayerProps> = ({
 
         playerRef.current = player;
 
-        // Keep the Plyr quality badge in sync with hls.js ABR decisions.
-        // hls.js switches levels asynchronously; without this the badge
-        // would show the requested level, not the one actually playing.
+        // Keep the Plyr quality badge in sync with hls.js ABR decisions
+        // AND ensure playback continues after the level actually switches.
         hls.on(Hls.Events.LEVEL_SWITCHED, (_ev, { level }) => {
           if (!playerRef.current) return;
           const activeHeight = hlsRef.current?.levels[level]?.height ?? 0;
@@ -136,6 +152,14 @@ const HlsPlayer: React.FC<HlsPlayerProps> = ({
               activeHeight;
           } catch {
             // Plyr teardown may race this callback — safe to ignore
+          }
+
+          // Belt-and-suspenders: if the video stalled during the level
+          // switch, nudge it back into playing.  This covers edge cases
+          // where startLoad() in onChange wasn't sufficient.
+          const vid = videoRef.current;
+          if (vid && !vid.paused && vid.readyState >= HTMLMediaElement.HAVE_FUTURE_DATA) {
+            vid.play().catch(() => { /* ignore */ });
           }
         });
 

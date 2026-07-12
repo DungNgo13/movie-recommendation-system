@@ -228,19 +228,54 @@ def _spawn_ffmpeg(
     return process.returncode, stderr_lines
 
 
+def select_hls_qualities(source_height: int) -> list[tuple[str, int, str]]:
+    """
+    Return the HLS quality tiers appropriate for a source video of the
+    given *source_height* (in pixels).
+
+    Each tier is a tuple of (filter_label, target_height, bitrate_string).
+    Only tiers whose target height ≤ source_height are included — no
+    upscaling ever occurs.
+
+    Quality ladder (all heights that the source can provide):
+
+        2160p  →  14 000 kbps   (source ≥ 2160)
+        1440p  →   9 000 kbps   (source ≥ 1440)
+        1080p  →   5 000 kbps   (source ≥ 1080)
+         720p  →   2 800 kbps   (source ≥  720)
+         480p  →   1 200 kbps   (source ≥  480)
+         360p  →     800 kbps   (always included)
+
+    The function is intentionally a pure function of *source_height* so
+    it can be unit-tested without FFmpeg or a database.
+    """
+    # Full ladder from lowest to highest — order matters for FFmpeg stream
+    # indexing, but callers may re-sort the label list for display.
+    ALL_TIERS: list[tuple[str, int, str, int]] = [
+        # (filter_label, target_height, bitrate, min_source_height)
+        ("v360p",   360,  "800k",     0),     # always included
+        ("v480p",   480, "1200k",   480),
+        ("v720p",   720, "2800k",   720),
+        ("v1080p", 1080, "5000k",  1080),
+        ("v1440p", 1440, "9000k",  1440),
+        ("v2160p", 2160, "14000k", 2160),
+    ]
+
+    return [
+        (label, height, bitrate)
+        for label, height, bitrate, min_h in ALL_TIERS
+        if source_height >= min_h
+    ]
+
+
 def _build_multi_quality_cmd(
     src: str, output_dir: str, audio: bool, source_width: int, source_height: int
 ) -> tuple[list, list[str]]:
     """
     Build a single-pass multi-variant HLS FFmpeg command.
 
-    Tier thresholds use width OR height so cinematic aspect ratios
-    (e.g. 1280x714) are not incorrectly downgraded:
-
-      1080p: width >= 1900  OR  height >= 1000
-       720p: width >= 1200  OR  height >=  680
-       480p: width >=  854  OR  height >=  460
-       360p: always included (base quality)
+    Uses :func:`select_hls_qualities` to decide which tiers to include
+    based on the source video height.
 
     Audio strategy:
       Use [0:a]asplit=N to create N independent audio outputs (ao0, ao1…).
@@ -251,14 +286,7 @@ def _build_multi_quality_cmd(
     Returns (cmd, quality_labels) so callers know which tiers were built.
     """
     # ── Tier selection (no upscaling) ────────────────────────────────────────
-    tiers: list[tuple[str, int, str]] = []   # (filter_label, target_height, bitrate)
-    tiers.append(("v360p",  360,  "800k"))                                   # always
-    if source_width >= 854  or source_height >= 460:                         # SD+
-        tiers.append(("v480p",  480, "1200k"))
-    if source_width >= 1200 or source_height >= 680:                         # HD
-        tiers.append(("v720p",  720, "2000k"))
-    if source_width >= 1900 or source_height >= 1000:                        # Full HD
-        tiers.append(("v1080p", 1080, "4000k"))
+    tiers = select_hls_qualities(source_height)
 
     quality_labels = [f"{t[1]}p" for t in tiers]
     n = len(tiers)

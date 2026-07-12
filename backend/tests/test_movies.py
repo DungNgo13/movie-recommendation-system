@@ -336,3 +336,48 @@ def test_filter_movies_no_results(seed_movies):
     data = response.json()
     assert data["total"] == 0
     assert data["items"] == []
+
+
+# ─── Quality Ladder Tests ────────────────────────────────────────────────────
+
+from app.services.hls_service import select_hls_qualities
+
+
+class TestSelectHlsQualities:
+    """Unit tests for the HLS quality-ladder selection helper."""
+
+    def _labels(self, source_height: int) -> list[str]:
+        """Helper: return quality labels for a given source height."""
+        return [f"{h}p" for _, h, _ in select_hls_qualities(source_height)]
+
+    def test_4k_source_includes_all_tiers(self):
+        """2160p source should generate all 6 quality tiers."""
+        labels = self._labels(2160)
+        assert labels == ["360p", "480p", "720p", "1080p", "1440p", "2160p"]
+
+    def test_1440p_source_excludes_2160p(self):
+        """1440p source should include up to 1440p but not 2160p."""
+        labels = self._labels(1440)
+        assert "1440p" in labels
+        assert "2160p" not in labels
+        assert labels == ["360p", "480p", "720p", "1080p", "1440p"]
+
+    def test_1080p_source_excludes_1440p_and_2160p(self):
+        """1080p source should include up to 1080p."""
+        labels = self._labels(1080)
+        assert "1080p" in labels
+        assert "1440p" not in labels
+        assert "2160p" not in labels
+        assert labels == ["360p", "480p", "720p", "1080p"]
+
+    def test_720p_source_excludes_1080p_and_above(self):
+        """720p source should include 720p, 480p, 360p only."""
+        labels = self._labels(720)
+        assert labels == ["360p", "480p", "720p"]
+        assert "1080p" not in labels
+
+    def test_480p_source(self):
+        """480p source should include 480p and 360p only."""
+        labels = self._labels(480)
+        assert labels == ["360p", "480p"]
+        assert "720p" not in labels
