@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import HeartIcon from './HeartIcon';
 import type { MovieListItem } from '../models';
 
 interface MovieCardProps {
   movie: Pick<MovieListItem, 'id' | 'title' | 'poster_url' | 'backdrop_url'>;
   isFavorite: boolean;
   onToggleFavorite: (id: string) => void | Promise<void>;
+  favoriteLoading?: boolean;
   enableImageSwap?: boolean;
 }
 
-const MovieCard: React.FC<MovieCardProps> = ({ movie, isFavorite, onToggleFavorite, enableImageSwap = false }) => {
+const MovieCard: React.FC<MovieCardProps> = ({ movie, isFavorite, onToggleFavorite, favoriteLoading = false, enableImageSwap = false }) => {
   const [showBackdrop, setShowBackdrop] = useState(false);
 
   useEffect(() => {
@@ -30,19 +32,16 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie, isFavorite, onToggleFavori
   const handleFavoriteClick = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
+    if (favoriteLoading) return;
     onToggleFavorite(movie.id);
   };
 
+  const favoriteLabel = isFavorite
+    ? `Remove ${movie.title} from favorites`
+    : `Add ${movie.title} to favorites`;
+
   return (
     <div className="movie-card">
-      <button
-        className={`favorite-btn${isFavorite ? ' favorite-btn--active' : ''}`}
-        onClick={handleFavoriteClick}
-        aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
-        title={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
-      >
-        {isFavorite ? 'Favorited' : 'Favorite'}
-      </button>
       <Link to={`/movie/${movie.id}`}>
         <div style={{ position: 'relative', width: '100%', aspectRatio: '2/3', background: '#1e1e22' }}>
           {/* Primary Poster */}
@@ -69,6 +68,17 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie, isFavorite, onToggleFavori
               }}
             />
           )}
+          {/* Favorite Heart Button — inside poster area so it stays positioned correctly */}
+          <button
+            type="button"
+            className={`movie-card__favorite-button${isFavorite ? ' movie-card__favorite-button--active' : ''}`}
+            onClick={handleFavoriteClick}
+            disabled={favoriteLoading}
+            aria-label={favoriteLabel}
+            title={favoriteLabel}
+          >
+            <HeartIcon filled={isFavorite} className="movie-card__favorite-icon" />
+          </button>
         </div>
         <h3>{movie.title}</h3>
       </Link>

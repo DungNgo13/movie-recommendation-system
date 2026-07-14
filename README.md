@@ -355,6 +355,49 @@ Dự án có lợi thế vì kết hợp được nhiều mảng trong cùng m�
 
 ## 📋 Change Log
 
+### 2026-07-14 — Movie Card Favorite Heart Icon UI
+
+Replaced the clipped text-based "Favorite" button on movie cards with a compact SVG heart icon button.
+
+**Root cause**: The previous `.favorite-btn` rendered the text "Favorite" / "Favorited" inside a 34×34px circular button. The text overflowed the button and was clipped by `.movie-card { overflow: hidden }`, producing a visually broken control.
+
+**Fix**: Replaced the text content with a small inline SVG heart icon (`HeartIcon` component). The heart renders as an outlined gray icon when not favorited and a solid red icon when favorited. The button is now positioned inside the poster container (not on the card root) so it cannot be clipped by the card boundary.
+
+**Files changed**:
+- `frontend/src/components/HeartIcon.tsx` — **[NEW]** Inline SVG heart icon component (filled / outlined)
+- `frontend/src/components/MovieCard.tsx` — Replaced text button with `HeartIcon`; added `favoriteLoading` prop; improved `aria-label` with movie title
+- `frontend/src/components/RecommendationCard.tsx` — Same heart icon treatment; added poster wrapper div for correct positioning
+- `frontend/src/App.css` — Replaced `.favorite-btn` styles with BEM-named `.movie-card__favorite-button` styles (38px, blurred backdrop, focus-visible ring, disabled state, responsive sizing)
+- `frontend/src/components/FavoriteHeart.test.tsx` — **[NEW]** 18 component tests covering visual states, click behavior, navigation prevention, disabled state, accessible labels, rollback, and both card types
+- `frontend/src/test/setup.ts` — **[NEW]** Vitest setup for `@testing-library/jest-dom`
+- `frontend/vite.config.ts` — Added Vitest `test` config with `jsdom` environment
+
+**How favorite state is loaded and synchronized**:
+1. `useFavorites` hook fetches all favorite IDs once via `GET /api/v1/favorites/me/ids`
+2. Pages pass `isFavorite(id)` and `toggleFavorite` to each card
+3. `toggleFavorite` uses optimistic updating — UI updates immediately, rolls back on API failure
+4. Both `MovieCard` and `RecommendationCard` share the same state via the hook
+
+**How navigation is prevented when clicking the heart**:
+The `handleFavoriteClick` handler calls both `e.preventDefault()` and `e.stopPropagation()` to prevent the click from propagating to the wrapping `<Link>` element.
+
+**Verification steps**:
+1. Open Home page → standard movie cards show gray/red heart icons (not text)
+2. Open Recommended for You → same heart icon treatment
+3. Click gray heart → turns red (favorited)
+4. Refresh page → favorite state persists
+5. Click red heart → turns gray (unfavorited)
+6. Click heart → does not open movie detail page
+7. Open Favorites page → click red heart → movie removed without page refresh
+8. Cards with missing posters → heart correctly positioned on placeholder
+
+```bash
+cd frontend
+npm run lint      # ✅ 0 errors
+npm run build     # ✅ Passes
+npm run test:run  # ✅ 48 tests passed (18 new + 30 existing)
+```
+
 ### 2026-07-12 — HLS 4K Support & Quality Switching Fix (v2)
 
 Two HLS/video playback fixes (backend quality ladder + frontend player).
