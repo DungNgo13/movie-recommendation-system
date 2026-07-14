@@ -2,24 +2,45 @@ from pydantic import BaseModel, Field, ConfigDict, computed_field, field_validat
 from typing import List, Optional, Union
 from uuid import UUID
 from datetime import date
-import os
 
 # Allowed values for Movie.media_rights_status
 ALLOWED_MEDIA_RIGHTS = {"safe_to_use", "attribution_required", "non_commercial_only", "unknown", "blocked"}
 
-# The public base URL of this backend — used to build absolute media URLs.
-# Read from BACKEND_URL env var; defaults to localhost for development.
-_BACKEND_URL = os.getenv("BACKEND_URL", "http://localhost:8000").rstrip("/")
 
-# Helper to normalize local DB paths into public HTTP formats dynamically.
 def normalize_url(path: Optional[str]) -> Optional[str]:
+    """Normalize a stored media path to a root-relative URL.
+
+    Returns a root-relative path (e.g. ``/media/videos/hls/…``) so the
+    browser fetches it from the same origin as the frontend.  This avoids
+    hard-coding a backend host/port that may differ between dev and prod,
+    and eliminates Mixed Content errors on HTTPS deployments.
+
+    Handles:
+    - None / empty          → None
+    - Relative:   media/…   → /media/…
+    - Absolute:   /media/…  → /media/… (unchanged)
+    - Stale HTTP: http://old-ip/media/… → /media/…
+    - Valid HTTPS external:  https://cdn.example.com/poster.jpg → preserved
+    """
     if not path:
         return None
-    if path.startswith("http"):
+
+    # Legitimate external HTTPS URL — preserve as-is.
+    if path.startswith("https://"):
         return path
-    # Removes leading slashes effectively ensuring predictable binding.
-    clean_path = path.lstrip("/\\")
-    return f"{_BACKEND_URL}/{clean_path}"
+
+    # Stale internal HTTP URL (e.g. http://172.35.53.158/media/...).
+    # Extract the /media/… portion and discard the scheme + host.
+    if path.startswith("http://"):
+        media_idx = path.find("/media/")
+        if media_idx >= 0:
+            return path[media_idx:]
+        # Non-media HTTP URL with no /media/ segment — not safe to use.
+        return None
+
+    # Local relative or absolute path — ensure leading slash.
+    clean = path.lstrip("/\\")
+    return f"/{clean}"
 
 
 def compute_quality_score(

@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import type { Movie, MovieAsset } from '../models';
 import { getMovieById } from '../services/movieService';
-import { API_BASE_URL } from '../config';
+import { API_BASE_URL, resolveMediaUrl } from '../config';
 import {
   saveWatchProgress,
   getWatchProgress,
@@ -130,7 +130,7 @@ const MovieDetailPage: React.FC = () => {
 
         const data = await getMovieById(id);
         setMovie(data);
-        setImageSrc(data.backdrop_url || data.poster_url || PLACEHOLDER_IMAGE);
+        setImageSrc(resolveMediaUrl(data.backdrop_url) || resolveMediaUrl(data.poster_url) || PLACEHOLDER_IMAGE);
 
         // Fetch per-asset license data
         try {
@@ -245,7 +245,7 @@ const MovieDetailPage: React.FC = () => {
 
       {movie.video_status === 'ready' && movie.hls_playlist_url ? (
         <HlsPlayer
-          src={movie.hls_playlist_url}
+          src={resolveMediaUrl(movie.hls_playlist_url) || movie.hls_playlist_url}
           poster={imageSrc}
           initialTime={initialTime}
           onTimeUpdate={handleTimeUpdate}

@@ -2296,3 +2296,69 @@
   margin: 0 0 var(--space-md);
   line-height: 1.5;
 }
+
+
+/* ─── Star Rating ──────────────────────────────────────────────────────────── */
+
+.star-rating {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.star-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  padding: 2px;
+  cursor: pointer;
+  color: #9ca3af; /* neutral gray for outlined stars */
+  transition: color 0.15s ease, transform 0.15s ease;
+  border-radius: 4px;
+  line-height: 1;
+}
+
+.star-btn:hover:not(:disabled) {
+  transform: scale(1.15);
+}
+
+.star-btn--filled {
+  color: #f5c518; /* IMDB-style gold */
+}
+
+.star-btn:disabled {
+  cursor: default;
+  opacity: 0.5;
+}
+
+.star-btn:focus-visible {
+  outline: 2px solid #f5c518;
+  outline-offset: 2px;
+}
+
+.star-btn__icon {
+  display: block;
+  width: 28px;
+  height: 28px;
+}
+
+.rating-section {
+  margin-top: var(--space-lg, 1.5rem);
+}
+
+.rating-section h3 {
+  margin-bottom: var(--space-sm, 0.5rem);
+}
+
+.rating-label {
+  margin-left: var(--space-sm, 0.5rem);
+  font-weight: 600;
+  color: var(--muted-foreground, #9ca3af);
+}
+
+.rating-login-hint {
+  color: var(--muted-foreground, #9ca3af);
+  font-size: var(--text-sm, 0.875rem);
+}

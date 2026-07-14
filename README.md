@@ -356,6 +356,67 @@ Dự án có lợi thế vì kết hợp được nhiều mảng trong cùng m�
 
 ## 📋 Change Log
 
+### 2026-07-14 — Fix Production Media URLs (Mixed Content) & Star Rating UI
+
+Two focused production fixes:
+
+#### Issue A — Media URLs / Mixed Content
+
+**Root cause**: The backend `normalize_url()` function in `movie.py` prepended the `BACKEND_URL` env var (e.g. `http://172.35.53.158`) to every relative media path, producing absolute HTTP URLs. When the frontend loaded on HTTPS (`https://tltn.laetus.io.vn`), Chrome blocked these insecure media requests as Mixed Content.
+
+**Fix**: Rewrote `normalize_url()` to return **root-relative paths** (`/media/...`) instead of absolute URLs. This matches the existing avatar URL pattern (`_normalize_avatar_url` in `user.py`) and is scheme-agnostic — no Mixed Content possible. Stale HTTP URLs stored in the database are stripped to their `/media/...` path. Valid external HTTPS URLs are preserved.
+
+Additionally, added a frontend `resolveMediaUrl()` safety function in `config.ts` that provides a second layer of defense against stale HTTP URLs reaching the browser.
+
+**Production configuration**: No `BACKEND_URL` change needed. Media URLs are now root-relative and served via the existing Nginx `/media/` proxy rule. The `BACKEND_URL` env var is retained for backwards compatibility but is no longer used for media URL generation.
+
+**Files changed**:
+- `backend/app/schemas/movie.py` — Rewrote `normalize_url()` to root-relative paths, removed `_BACKEND_URL` and `import os`
+- `backend/.env.example` — Updated `BACKEND_URL` documentation
+- `backend/tests/test_normalize_url.py` — **[NEW]** 19 tests (unit + schema integration)
+- `frontend/src/config.ts` — Added `resolveMediaUrl()` safety function
+- `frontend/src/pages/MovieDetailPage.tsx` — Applied `resolveMediaUrl()` to HLS and image URLs
+- `frontend/src/services/mediaUrl.test.ts` — **[NEW]** 14 tests for frontend resolver
+
+#### Issue B — Star Rating Shows Numbers Instead of Icons
+
+**Root cause**: `StarRating.tsx` rendered `{star}` (the loop variable 1–5) as button content instead of a star icon. No CSS existed to replace the number with a visual star.
+
+**Fix**: Replaced `{star}` with an inline SVG 5-pointed star icon:
+- **Filled** (gold `#f5c518`) when the star is ≤ current rating or hover position
+- **Outlined** (gray stroke) when unselected
+- 28px size, 4px gap between stars
+- Hover preview across all 5 stars; restores saved rating on mouse leave
+- `aria-label="Rate N out of 5"` and `aria-pressed` for screen readers
+- Keyboard accessible: Tab, Enter, Space
+- `disabled` prop disables all interactions
+
+**Files changed**:
+- `frontend/src/components/StarRating.tsx` — Full rewrite with inline SVG stars
+- `frontend/src/App.css` — Added `.star-rating`, `.star-btn`, `.star-btn--filled` styles
+- `frontend/src/components/StarRating.test.tsx` — **[NEW]** 18 tests
+
+**Verification steps**:
+1. Open a movie detail page → rating section shows 5 star icons (not numbers)
+2. Hover across stars → preview fills stars up to hover position
+3. Click star 4 → first 4 stars filled gold, rating saved
+4. Refresh page → rating 4 persists
+5. Open DevTools Network → no `http://` media requests (no Mixed Content)
+6. Poster, backdrop, and HLS playlist load over same-origin `/media/...`
+7. HLS video plays without errors
+
+```bash
+# Backend
+cd backend
+python -m pytest tests/test_normalize_url.py -v  # ✅ 19 passed
+
+# Frontend
+cd frontend
+npm run lint      # ✅ 0 errors
+npm run build     # ✅ Passes
+npm run test:run  # ✅ 92 tests passed (32 new + 60 existing)
+```
+
 ### 2026-07-14 — Guest Favorites (localStorage + Login Merge)
 
 Guest users can now mark/unmark movies as favorites before logging in. Guest favorites are stored in `localStorage` and merged into the authenticated user's server-side favorites on login.
