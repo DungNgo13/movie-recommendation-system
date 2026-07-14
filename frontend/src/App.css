@@ -457,6 +457,8 @@
   position: relative;
   width: 100%;
   height: 650px;
+  max-height: 70vh;
+  min-height: 420px;
   border-radius: var(--radius-md);
   overflow: hidden;
   margin-bottom: var(--space-lg);
@@ -464,15 +466,20 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  isolation: isolate;
 }
 
 .movie-banner__bg {
   position: absolute;
   inset: 0;
+  width: 100%;
+  height: 100%;
   background-size: cover;
   background-position: center;
+  background-repeat: no-repeat;
   filter: blur(18px) brightness(0.45);
   transform: scale(1.05);
+  pointer-events: none;
 }
 
 .movie-banner__img {
@@ -492,6 +499,29 @@
   object-fit: cover;
   border-radius: var(--radius-md);
   margin-bottom: var(--space-md);
+}
+
+/* ── Banner responsive breakpoints ──────────────────────────────────────── */
+
+@media (max-width: 1024px) {
+  .movie-banner {
+    height: 480px;
+    min-height: 380px;
+  }
+  .movie-banner__img {
+    max-height: 440px;
+  }
+}
+
+@media (max-width: 480px) {
+  .movie-banner {
+    height: 320px;
+    min-height: 280px;
+    border-radius: var(--radius-sm);
+  }
+  .movie-banner__img {
+    max-height: 290px;
+  }
 }
 
 .movie-detail-page h1 {
@@ -1189,7 +1219,8 @@
   }
 
   .movie-banner {
-    height: 340px;
+    height: 360px;
+    min-height: 300px;
   }
 
   .movie-banner__img {

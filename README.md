@@ -356,6 +356,58 @@ Dự án có lợi thế vì kết hợp được nhiều mảng trong cùng m�
 
 ## 📋 Change Log
 
+### 2026-07-14 — Movie Detail Banner Height Fix
+
+Fixed the `.movie-banner__bg` element rendering at 2095px instead of the intended 650px on a 1920×1080 viewport.
+
+**Root cause**: The `.movie-banner` CSS lacked `max-height`, `min-height`, and `isolation` constraints. While `height: 650px` was set and `overflow: hidden` clipped the visual overflow, the absolutely-positioned `.movie-banner__bg` (with `inset: 0`) could report an inflated `clientHeight` in certain layout conditions. The `__bg` also lacked explicit `width: 100%; height: 100%` alongside `inset: 0`, and had no `pointer-events: none`.
+
+**Fix**: Hardened `.movie-banner` and `.movie-banner__bg` CSS:
+- Added `max-height: 70vh`, `min-height: 420px`, `isolation: isolate` to `.movie-banner`
+- Added explicit `width: 100%; height: 100%; pointer-events: none; background-repeat: no-repeat` to `__bg`
+- Added responsive banner breakpoints at 1024px, 768px, and 480px
+
+**DOM structure verified**: `.movie-player-container` is a sibling of `.movie-banner`, NOT a descendant. Rating, metadata, and recommendations are also outside the banner.
+
+**Final desktop banner dimensions (1920×1080)**:
+```
+bannerHeight:           650
+backgroundHeight:       650
+backgroundParent:       movie-banner
+playerInsideBanner:     false
+```
+
+**Responsive banner heights**:
+| Viewport | Banner height | Min height |
+|----------|--------------|------------|
+| ≥1025px (desktop) | 650px | 420px |
+| 769–1024px (tablet) | 480px | 380px |
+| 481–768px (mobile) | 360px | 300px |
+| ≤480px (small mobile) | 320px | 280px |
+
+**Files changed**:
+- `frontend/src/App.css` — Hardened `.movie-banner` and `__bg`, added responsive breakpoints
+- `frontend/src/pages/MovieDetailPage.test.tsx` — **[NEW]** 12 DOM structure tests
+
+**Verification**:
+```javascript
+// Run in DevTools at 1920×1080
+const banner = document.querySelector(".movie-banner");
+const bg = document.querySelector(".movie-banner__bg");
+console.table({
+  bannerHeight: banner?.clientHeight,      // 650
+  backgroundHeight: bg?.clientHeight,      // 650
+  backgroundParent: bg?.parentElement?.className,  // movie-banner
+});
+```
+
+```bash
+cd frontend
+npm run lint      # ✅ 0 errors
+npm run build     # ✅ Passes
+npm run test:run  # ✅ 104 tests passed (12 new)
+```
+
 ### 2026-07-14 — Responsive Video Player Sizing
 
 Fixed oversized Plyr/HLS video player on the Movie Detail page. On a 1920×1080 desktop screen, the player previously expanded to the full page width (~1440px). It's now constrained to a centered 16:9 container capped at 1280×720px.
