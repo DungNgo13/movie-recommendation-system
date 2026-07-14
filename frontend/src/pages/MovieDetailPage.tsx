@@ -244,14 +244,22 @@ const MovieDetailPage: React.FC = () => {
       )}
 
       {movie.video_status === 'ready' && movie.hls_playlist_url ? (
-        <HlsPlayer
-          src={resolveMediaUrl(movie.hls_playlist_url) || movie.hls_playlist_url}
-          poster={imageSrc}
-          initialTime={initialTime}
-          onTimeUpdate={handleTimeUpdate}
-          onPause={handlePause}
-          onEnded={handleEnded}
-        />
+        <div
+          className={`movie-player-container ${
+            movie.backdrop_url
+              ? 'movie-player-container--backdrop'
+              : 'movie-player-container--portrait-poster'
+          }`}
+        >
+          <HlsPlayer
+            src={resolveMediaUrl(movie.hls_playlist_url) || movie.hls_playlist_url}
+            poster={imageSrc}
+            initialTime={initialTime}
+            onTimeUpdate={handleTimeUpdate}
+            onPause={handlePause}
+            onEnded={handleEnded}
+          />
+        </div>
       ) : (
         <>
           <div className="movie-banner">

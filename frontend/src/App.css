@@ -377,6 +377,81 @@
   margin: 0 auto;
 }
 
+/* ─── Video Player Container ─────────────────────────────────────────────── */
+/* Constrains the Plyr player to a centered 16:9 box capped at 1280px.      */
+/* Uses min() with viewport height to prevent the player from exceeding the */
+/* visible area on shorter screens.                                          */
+
+.movie-player-container {
+  width: min(100%, 1280px, calc((100vh - 160px) * 16 / 9));
+  aspect-ratio: 16 / 9;
+  margin: 0 auto 2rem;
+  overflow: hidden;
+  border-radius: 12px;
+  background: #000;
+}
+
+/* Internal HlsPlayer wrapper */
+.hls-player-inner {
+  width: 100%;
+  height: 100%;
+}
+
+/* Plyr and video elements fill the container */
+.movie-player-container .plyr,
+.movie-player-container .plyr__video-wrapper {
+  width: 100%;
+  height: 100%;
+  aspect-ratio: 16 / 9;
+}
+
+.movie-player-container video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: #000;
+}
+
+/* ── Poster sizing variants ────────────────────────────────────────────── */
+
+.movie-player-container .plyr__poster {
+  background-position: center;
+  background-repeat: no-repeat;
+  background-color: #000;
+}
+
+/* Landscape backdrop: fill the 16:9 player fully */
+.movie-player-container--backdrop .plyr__poster {
+  background-size: cover;
+}
+
+/* Portrait poster: contain without distortion, black letterbox bars */
+.movie-player-container--portrait-poster .plyr__poster {
+  background-size: contain;
+}
+
+/* ── Fullscreen: remove normal-page constraints ──────────────────────── */
+
+.movie-player-container:fullscreen,
+.movie-player-container:has(.plyr--fullscreen-active) {
+  width: 100% !important;
+  max-width: none !important;
+  max-height: none !important;
+  border-radius: 0;
+  aspect-ratio: auto;
+}
+
+/* ── Responsive: mobile ──────────────────────────────────────────────── */
+
+@media (max-width: 768px) {
+  .movie-player-container {
+    width: 100%;
+    margin-bottom: 1.25rem;
+    border-radius: 8px;
+  }
+}
+
+
 /* Cinema-style banner: blurred background + contained foreground image */
 .movie-banner {
   position: relative;

@@ -356,6 +356,54 @@ Dự án có lợi thế vì kết hợp được nhiều mảng trong cùng m�
 
 ## 📋 Change Log
 
+### 2026-07-14 — Responsive Video Player Sizing
+
+Fixed oversized Plyr/HLS video player on the Movie Detail page. On a 1920×1080 desktop screen, the player previously expanded to the full page width (~1440px). It's now constrained to a centered 16:9 container capped at 1280×720px.
+
+**Root cause**: The `<HlsPlayer>` component had an inline `style={{ width: '100%' }}` with no max-width constraint, and `.movie-detail-page` allowed up to 1600px width. Nothing bounded the player to a reasonable size.
+
+**Fix**: Wrapped the HlsPlayer in a `.movie-player-container` div with:
+- `width: min(100%, 1280px, calc((100vh - 160px) * 16 / 9))` — caps width at 1280px and shrinks on short viewports
+- `aspect-ratio: 16 / 9` — maintains correct proportions
+- `margin: 0 auto` — centered horizontally
+- `border-radius: 12px` — rounded corners
+- Viewport height protection — player won't exceed visible area on shorter screens
+
+**Poster handling**:
+- `.movie-player-container--backdrop` → `background-size: cover` (landscape backdrop fills the 16:9 area)
+- `.movie-player-container--portrait-poster` → `background-size: contain` (portrait poster letterboxed with black bars, no distortion)
+
+**Responsive breakpoints**:
+| Viewport | Player width | Behavior |
+|----------|-------------|----------|
+| ≥1440px (large desktop) | 1280px max | Centered, 16:9 |
+| 768–1439px (laptop/tablet) | 100% of content | Maintains 16:9 |
+| <768px (mobile) | 100% | Reduced border-radius, 16:9 maintained |
+
+**Fullscreen**: Normal-page max-width does NOT restrict fullscreen. When Plyr enters fullscreen, the container constraints are removed via `:has(.plyr--fullscreen-active)`.
+
+**Files changed**:
+- `frontend/src/pages/MovieDetailPage.tsx` — Wrapped HlsPlayer in `.movie-player-container` with backdrop/portrait modifier
+- `frontend/src/components/HlsPlayer.tsx` — Replaced inline `style={}` with `.hls-player-inner` class
+- `frontend/src/App.css` — Added `.movie-player-container` rules, poster variants, fullscreen override, mobile breakpoint
+
+**Verification steps**:
+1. Open a movie detail page at 1920×1080 → player is ~1280×720, centered
+2. Resize to 1366×768 → player fills available width, maintains 16:9
+3. Resize to mobile (390×844) → player is full-width, no horizontal scroll
+4. Enter fullscreen → player fills entire screen
+5. Exit fullscreen → player returns to 1280px max
+6. Landscape backdrop fills the player area
+7. Portrait-only poster is contained with black bars, not cropped
+8. Quality switching, resume, progress bar all work normally
+
+```bash
+cd frontend
+npm run lint      # ✅ 0 errors
+npm run build     # ✅ Passes
+npm run test:run  # ✅ 92 tests passed
+```
+
 ### 2026-07-14 — Fix Production Media URLs (Mixed Content) & Star Rating UI
 
 Two focused production fixes:

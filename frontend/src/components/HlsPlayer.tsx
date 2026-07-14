@@ -335,7 +335,7 @@ const HlsPlayer: React.FC<HlsPlayerProps> = ({
   }, [initialTime]);
 
   return (
-    <div style={{ width: '100%', marginBottom: '1.5rem' }}>
+    <div className="hls-player-inner">
       {/*
         This <video> element must NEVER be conditionally rendered or given a
         changing key — Plyr binds directly to this DOM node and re-mounting
