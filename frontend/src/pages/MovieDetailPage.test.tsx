@@ -54,7 +54,6 @@ vi.mock('../services/recommendationService', () => ({
 vi.mock('../services/continueWatchingService', () => ({
   saveWatchProgress: vi.fn(),
   getWatchProgress: vi.fn().mockResolvedValue({ current_time_seconds: 0, is_completed: false }),
-  recordWatch: vi.fn(),
   saveGuestWatchProgress: vi.fn(),
   getGuestWatchProgressForMovie: vi.fn().mockReturnValue(null),
 }));

@@ -356,6 +356,60 @@ Dự án có lợi thế vì kết hợp được nhiều mảng trong cùng m�
 
 ## 📋 Change Log
 
+### 2026-07-14 — Fix Continue Watching / Resume Playback Regression
+
+Restored the complete Continue Watching flow for both authenticated users and guests.
+
+**Root cause**: `MovieDetailPage.tsx` called `recordWatch(data.id, 0)` on every page load (line 177–179). This fired `POST /api/v1/history/{movieId}` with `playback_position_seconds: 0`, which upserted the watch history record and **reset the saved playback position to zero**. The resume prompt would show the correct position (fetched on lines 158–163), but the database record was immediately overwritten to 0 by the `recordWatch` call that followed. On the next page load, the position was always 0 — too small to trigger the resume prompt.
+
+**Fix**:
+1. **Removed `recordWatch(data.id, 0)` call** — the watch history record is already created/updated by `saveWatchProgress()` during actual playback, so the initial zero-position write was unnecessary and destructive.
+2. **Added `visibilitychange` handler** — saves progress when the tab becomes hidden (user switches tabs).
+3. **Added `beforeunload` handler** — saves progress when the page/tab is closed.
+4. **Added validation guards** — `Number.isFinite(currentTime)`, `Number.isFinite(duration)`, `duration > 0` checks in all save callbacks to prevent saving NaN/invalid values.
+5. **Cleaned orphaned code** in `config.ts` (`configuredApiBaseUrl` variable and stale expression).
+
+**Save behavior**:
+| Trigger | Authenticated | Guest |
+|---------|--------------|-------|
+| Every 15s during playback | `POST /api/v1/watch-progress` | `localStorage` |
+| On pause | ✅ immediate save | ✅ localStorage |
+| On ended (100%) | ✅ marks completed | ✅ localStorage |
+| On tab hidden | ✅ | ✅ |
+| On page close | ✅ | ✅ |
+| On route change (unmount) | ✅ | ✅ |
+
+**Resume behavior**:
+- Authenticated: `GET /api/v1/watch-progress/{movieId}` → show resume prompt if position ≥ 30s and not completed
+- Guest: read `localStorage` `guest_watch_history` → show resume prompt if position ≥ 30s and progress < 95%
+- User clicks "Resume" → `initialTime` set → HlsPlayer seeks to saved position
+- User clicks "Start over" → `initialTime` set to 0
+
+**Completion threshold**: ≥ 95% (backend `COMPLETION_THRESHOLD`). Completed movies return `current_time_seconds: 0` so replay starts from the beginning.
+
+**Files changed**:
+- `frontend/src/pages/MovieDetailPage.tsx` — Removed `recordWatch(data.id, 0)`, added `visibilitychange`/`beforeunload` handlers, added `Number.isFinite` guards
+- `frontend/src/pages/MovieDetailPage.test.tsx` — Removed `recordWatch` mock
+- `frontend/src/config.ts` — Removed orphaned `configuredApiBaseUrl` variable
+
+**Verification steps**:
+1. Play a movie for 30+ seconds → confirm progress save in Network tab
+2. Pause → confirm immediate save request
+3. Refresh → resume prompt appears with correct position
+4. Click Resume → playback jumps to saved position
+5. Switch tabs and return → progress preserved
+6. Navigate away and return → resume prompt appears
+7. Watch past 95% → movie disappears from Continue Watching
+8. Guest: repeat steps 1–6 → localStorage updated, no API calls
+9. Guest login → guest progress merged into authenticated data
+
+```bash
+cd frontend
+npm run lint      # ✅ 0 errors
+npm run build     # ✅ Passes
+npm run test:run  # ✅ 104 tests passed
+```
+
 ### 2026-07-14 — Movie Detail Banner Height Fix
 
 Fixed the `.movie-banner__bg` element rendering at 2095px instead of the intended 650px on a 1920×1080 viewport.

@@ -6,7 +6,6 @@ import { API_BASE_URL, resolveMediaUrl } from '../config';
 import {
   saveWatchProgress,
   getWatchProgress,
-  recordWatch,
   saveGuestWatchProgress,
   getGuestWatchProgressForMovie,
 } from '../services/continueWatchingService';
@@ -60,6 +59,7 @@ const MovieDetailPage: React.FC = () => {
   // Throttled: only saves to backend every SAVE_INTERVAL_SECONDS.
   // Falls through to guest localStorage save when no user is authenticated.
   const handleTimeUpdate = (currentTime: number, duration: number) => {
+    if (!Number.isFinite(currentTime) || !Number.isFinite(duration) || duration <= 0) return;
     lastDurationRef.current = duration;
     if (!movie) return;
     if (Math.abs(currentTime - lastSavedTimeRef.current) >= SAVE_INTERVAL_SECONDS) {
@@ -75,6 +75,7 @@ const MovieDetailPage: React.FC = () => {
   // Save immediately on pause
   const handlePause = (currentTime: number, duration: number) => {
     if (!movie || currentTime < 1) return;
+    if (!Number.isFinite(currentTime) || !Number.isFinite(duration) || duration <= 0) return;
     lastSavedTimeRef.current = currentTime;
     lastDurationRef.current = duration;
     if (user) {
@@ -87,6 +88,7 @@ const MovieDetailPage: React.FC = () => {
   // Save as completed when video ends
   const handleEnded = (duration: number) => {
     if (!movie) return;
+    if (!Number.isFinite(duration) || duration <= 0) return;
     // Save at 100% — backend will mark is_completed = true
     if (user) {
       saveWatchProgress(movie.id, duration, duration);
@@ -100,17 +102,39 @@ const MovieDetailPage: React.FC = () => {
   movieRef.current = movie;
   const userRef = useRef(user);
   userRef.current = user;
-  useEffect(() => {
-    return () => {
-      const pos = lastSavedTimeRef.current;
-      const dur = lastDurationRef.current;
-      if (movieRef.current && pos > 1 && dur > 0) {
-        if (userRef.current) {
-          saveWatchProgress(movieRef.current.id, pos, dur);
-        } else {
-          saveGuestWatchProgress(movieRef.current.id, pos, dur);
-        }
+
+  /** Shared helper — saves current progress from refs. */
+  const saveProgressFromRefs = () => {
+    const pos = lastSavedTimeRef.current;
+    const dur = lastDurationRef.current;
+    if (movieRef.current && Number.isFinite(pos) && Number.isFinite(dur) && pos > 1 && dur > 0) {
+      if (userRef.current) {
+        saveWatchProgress(movieRef.current.id, pos, dur);
+      } else {
+        saveGuestWatchProgress(movieRef.current.id, pos, dur);
       }
+    }
+  };
+
+  // Save on: unmount, visibilitychange (tab hidden), beforeunload (page close)
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'hidden') {
+        saveProgressFromRefs();
+      }
+    };
+    const handleBeforeUnload = () => {
+      saveProgressFromRefs();
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('beforeunload', handleBeforeUnload);
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+      // Final save on component unmount (route change)
+      saveProgressFromRefs();
     };
   }, []);
 
@@ -173,10 +197,11 @@ const MovieDetailPage: React.FC = () => {
           }
         }
 
-        // Record initial watch event (lightweight, only for logged-in users)
-        if (user) {
-          recordWatch(data.id, 0);
-        }
+        // NOTE: Do NOT call recordWatch(data.id, 0) here.
+        // The old call reset playback_position_seconds to 0 in the database,
+        // destroying the saved resume position that was just fetched above.
+        // The watch_progress save during actual playback already creates/updates
+        // the history record via the upsert in save_watch_progress.
       } catch {
         setError('Failed to fetch movie details.');
       } finally {

@@ -9,10 +9,7 @@
  *
  * Every service file imports from here — no hardcoded URLs anywhere else.
  */
-const configuredApiBaseUrl = import.meta.env.VITE_API_BASE_URL;
-
 export const API_BASE_URL: string =
-
   import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api/v1';
 
 /**
@@ -46,6 +43,3 @@ export function resolveMediaUrl(path: string | null | undefined): string | null 
 
   return path;
 }
-
-  configuredApiBaseUrl?.replace(/\/+$/, '') || '/api/v1';
-
