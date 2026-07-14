@@ -66,3 +66,25 @@ def remove_favorite(db: Session, user_id: UUID, movie_id: UUID) -> bool:
     db.delete(fav)
     db.commit()
     return True
+
+
+def merge_guest_favorites(db: Session, user_id: UUID, movie_ids: list[str]) -> int:
+    """
+    Merge guest favorite movie IDs into the authenticated user's favorites.
+    Skips already-favorited movies and invalid UUIDs.
+    Returns the number of newly added favorites.
+    Non-fatal: individual failures are skipped so login always succeeds.
+    """
+    import uuid as _uuid
+
+    merged = 0
+    for mid in movie_ids:
+        try:
+            movie_id = _uuid.UUID(mid)
+            if add_favorite(db, user_id, movie_id):
+                merged += 1
+        except (ValueError, Exception):
+            # Skip invalid UUIDs or DB errors — don't block the merge
+            continue
+    return merged
+

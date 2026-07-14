@@ -314,6 +314,7 @@ pytest
 - Queue encode HLS giúp hệ thống ổn định hơn
 - Fallback quality nếu encode multi-quality thất bại
 - Guest watch history có thể merge vào tài khoản sau khi đăng nhập
+- Guest favorites có thể merge vào tài khoản sau khi đăng nhập
 - Dashboard hỗ trợ demo tốt cho phần báo cáo đồ án
 
 ---
@@ -354,6 +355,67 @@ Dự án có lợi thế vì kết hợp được nhiều mảng trong cùng m�
 ---
 
 ## 📋 Change Log
+
+### 2026-07-14 — Guest Favorites (localStorage + Login Merge)
+
+Guest users can now mark/unmark movies as favorites before logging in. Guest favorites are stored in `localStorage` and merged into the authenticated user's server-side favorites on login.
+
+**Guest favorite behavior**:
+- Clicking the heart icon on a movie card as a guest saves the movie ID to `localStorage` key `guest_favorite_ids`
+- The heart icon turns red/gray immediately, same visual behavior as authenticated users
+- Guest favorites persist across page refreshes (stored in `localStorage`)
+- The Favorites page shows "You have N favorites saved locally" with a login/register prompt for guests
+
+**Guest-to-user favorite migration flow**:
+1. User logs in via Login page
+2. Frontend reads `guest_favorite_ids` from `localStorage`
+3. If any exist, frontend POSTs them to `POST /api/v1/favorites/me/merge`
+4. Backend adds each movie ID to the user's favorites (skips duplicates and invalid IDs)
+5. On success, frontend clears `localStorage` key `guest_favorite_ids`
+6. On failure, `localStorage` data is preserved — will retry on next login
+
+**localStorage key**: `guest_favorite_ids` — stores a JSON array of movie ID strings.
+
+**API endpoint added**: `POST /api/v1/favorites/me/merge`
+- Body: `{ "movie_ids": ["uuid-1", "uuid-2", ...] }` (max 100 IDs)
+- Response: `{ "merged": <count> }` — number of newly added favorites
+- Auth required (JWT)
+- Invalid UUIDs and already-favorited movies are silently skipped
+
+**Files changed**:
+- `backend/app/schemas/favorite.py` — Added `GuestFavoriteMergeSchema`
+- `backend/app/services/favorite_service.py` — Added `merge_guest_favorites()`
+- `backend/app/routers/favorites.py` — Added `POST /me/merge` endpoint
+- `backend/tests/test_favorites.py` — **[NEW]** 10 tests (service + endpoint)
+- `frontend/src/services/favoriteService.ts` — Added guest localStorage functions + `mergeGuestFavorites()` API call
+- `frontend/src/hooks/useFavorites.ts` — Guest mode: loads from localStorage when no user, toggles via localStorage
+- `frontend/src/pages/LoginPage.tsx` — Merges guest favorites after login
+- `frontend/src/pages/FavoritesPage.tsx` — Shows guest favorites count + login prompt
+- `frontend/src/services/guestFavorites.test.ts` — **[NEW]** 12 tests for localStorage functions
+
+**Verification steps**:
+1. Open app in incognito (guest) → click heart on a movie → heart turns red
+2. Refresh page → guest favorite persists (localStorage)
+3. Click red heart → turns gray (unfavorited locally)
+4. Open Favorites page as guest → shows "You have N favorites saved locally"
+5. Mark 3 movies as favorites as guest
+6. Register a new account → redirected to login
+7. Log in → guest favorites merge into server-side favorites
+8. Open Favorites page → all 3 movies appear
+9. Confirm `localStorage.getItem('guest_favorite_ids')` returns `null` after login
+10. Log out → hearts are gray on Home page (localStorage was cleared)
+
+```bash
+# Backend
+cd backend
+python -m pytest tests/test_favorites.py -v  # ✅ 10 passed
+
+# Frontend
+cd frontend
+npm run lint      # ✅ 0 errors
+npm run build     # ✅ Passes
+npm run test:run  # ✅ 60 tests passed (12 new + 48 existing)
+```
 
 ### 2026-07-14 — Movie Card Favorite Heart Icon UI
 

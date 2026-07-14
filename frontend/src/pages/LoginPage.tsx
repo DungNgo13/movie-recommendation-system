@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { loginUser } from '../services/authService';
 import { getGuestWatchHistory, clearGuestWatchHistory } from '../services/continueWatchingService';
+import { getGuestFavoriteIds, mergeGuestFavorites, clearGuestFavorites } from '../services/favoriteService';
 import { useAuth } from '../hooks/useAuthHook';
 
 const LoginPage: React.FC = () => {
@@ -40,8 +41,19 @@ const LoginPage: React.FC = () => {
         ...(guestHistory.length > 0 ? { guest_history: guestHistory } : {}),
       });
 
-      // Merge succeeded with login — clear guest data
+      // Merge succeeded with login — clear guest watch data
       clearGuestWatchHistory();
+
+      // Merge guest favorites into the authenticated account (non-blocking)
+      const guestFavIds = getGuestFavoriteIds();
+      if (guestFavIds.length > 0) {
+        try {
+          await mergeGuestFavorites(guestFavIds);
+          clearGuestFavorites();
+        } catch {
+          // Non-fatal: guest favorites stay in localStorage for next login attempt
+        }
+      }
 
       await refreshUser();
       navigate('/');
