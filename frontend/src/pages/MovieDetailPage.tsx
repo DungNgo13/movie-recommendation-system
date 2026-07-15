@@ -5,6 +5,7 @@ import { getMovieById } from '../services/movieService';
 import { API_BASE_URL, resolveMediaUrl } from '../config';
 import {
   saveWatchProgress,
+  saveWatchProgressBeacon,
   getWatchProgress,
   saveGuestWatchProgress,
   getGuestWatchProgressForMovie,
@@ -59,11 +60,23 @@ const MovieDetailPage: React.FC = () => {
   // Throttled: only saves to backend every SAVE_INTERVAL_SECONDS.
   // Falls through to guest localStorage save when no user is authenticated.
   const handleTimeUpdate = (currentTime: number, duration: number) => {
-    if (!Number.isFinite(currentTime) || !Number.isFinite(duration) || duration <= 0) return;
+    if (!Number.isFinite(currentTime) || !Number.isFinite(duration) || duration <= 0) {
+      if (import.meta.env.DEV) {
+        console.debug('[watch-progress] save skipped — invalid values', {
+          currentTime, duration, reason: 'non-finite or duration<=0',
+        });
+      }
+      return;
+    }
     lastDurationRef.current = duration;
     if (!movie) return;
     if (Math.abs(currentTime - lastSavedTimeRef.current) >= SAVE_INTERVAL_SECONDS) {
       lastSavedTimeRef.current = currentTime;
+      if (import.meta.env.DEV) {
+        console.debug('[watch-progress] save accepted', {
+          movieId: movie.id, currentTime, duration, trigger: 'timeupdate',
+        });
+      }
       if (user) {
         saveWatchProgress(movie.id, currentTime, duration);
       } else {
@@ -78,6 +91,11 @@ const MovieDetailPage: React.FC = () => {
     if (!Number.isFinite(currentTime) || !Number.isFinite(duration) || duration <= 0) return;
     lastSavedTimeRef.current = currentTime;
     lastDurationRef.current = duration;
+    if (import.meta.env.DEV) {
+      console.debug('[watch-progress] save accepted', {
+        movieId: movie.id, currentTime, duration, trigger: 'pause',
+      });
+    }
     if (user) {
       saveWatchProgress(movie.id, currentTime, duration);
     } else {
@@ -103,13 +121,27 @@ const MovieDetailPage: React.FC = () => {
   const userRef = useRef(user);
   userRef.current = user;
 
-  /** Shared helper — saves current progress from refs. */
-  const saveProgressFromRefs = () => {
+  /**
+   * Shared helper — saves current progress from refs.
+   * @param beacon  Use keepalive/beacon transport (for page-exit events).
+   */
+  const saveProgressFromRefs = (beacon = false) => {
     const pos = lastSavedTimeRef.current;
     const dur = lastDurationRef.current;
     if (movieRef.current && Number.isFinite(pos) && Number.isFinite(dur) && pos > 1 && dur > 0) {
+      if (import.meta.env.DEV) {
+        console.debug('[watch-progress] save accepted', {
+          movieId: movieRef.current.id, currentTime: pos, duration: dur,
+          trigger: beacon ? 'page-exit (beacon)' : 'unmount',
+        });
+      }
       if (userRef.current) {
-        saveWatchProgress(movieRef.current.id, pos, dur);
+        if (beacon) {
+          // Use keepalive fetch — survives page unload
+          saveWatchProgressBeacon(movieRef.current.id, pos, dur);
+        } else {
+          saveWatchProgress(movieRef.current.id, pos, dur);
+        }
       } else {
         saveGuestWatchProgress(movieRef.current.id, pos, dur);
       }
@@ -120,11 +152,13 @@ const MovieDetailPage: React.FC = () => {
   useEffect(() => {
     const handleVisibilityChange = () => {
       if (document.visibilityState === 'hidden') {
-        saveProgressFromRefs();
+        // Use beacon transport — page may be closing
+        saveProgressFromRefs(true);
       }
     };
     const handleBeforeUnload = () => {
-      saveProgressFromRefs();
+      // Use beacon transport — regular fetch gets cancelled during unload
+      saveProgressFromRefs(true);
     };
 
     document.addEventListener('visibilitychange', handleVisibilityChange);
@@ -133,7 +167,7 @@ const MovieDetailPage: React.FC = () => {
     return () => {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
       window.removeEventListener('beforeunload', handleBeforeUnload);
-      // Final save on component unmount (route change)
+      // Final save on component unmount (route change) — regular fetch is fine here
       saveProgressFromRefs();
     };
   }, []);
@@ -181,6 +215,13 @@ const MovieDetailPage: React.FC = () => {
           try {
             const progress = await getWatchProgress(data.id);
             const pos = progress.current_time_seconds;
+            if (import.meta.env.DEV) {
+              console.debug('[watch-progress] resume check', {
+                movieId: data.id, savedPosition: pos,
+                isCompleted: progress.is_completed,
+                meetsMinimum: pos >= MIN_RESUME_SECONDS,
+              });
+            }
             if (pos >= MIN_RESUME_SECONDS && !progress.is_completed) {
               setSavedPosition(pos);
               setShowResumePrompt(true);

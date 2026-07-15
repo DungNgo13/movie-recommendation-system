@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import MovieCard from '../components/MovieCard';
 import RecommendationCard from '../components/RecommendationCard';
 import SkeletonCard from '../components/SkeletonCard';
@@ -29,6 +29,7 @@ const pickHeroMovie = (movies: MovieListItem[]): MovieListItem | null => {
 const HomePage: React.FC = () => {
   const { isFavorite, toggleFavorite } = useFavorites();
   const { user } = useAuth();
+  const location = useLocation();
   const [historyItems, setHistoryItems] = useState<HistoryItem[]>([]);
   const [recommendations, setRecommendations] = useState<RecommendedMovie[]>([]);
 
@@ -130,7 +131,9 @@ const HomePage: React.FC = () => {
     };
     fetchUserData();
     return () => { cancelled = true; };
-  }, [user]);
+    // location.key changes on every navigation, so returning from a movie
+    // detail page triggers a fresh fetch of watch history.
+  }, [user, location.key]);
 
   const moviesByGenre = useMemo(() => {
     const grouped: Record<string, typeof sortedMovies> = {};

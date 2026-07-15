@@ -198,6 +198,11 @@ const HlsPlayer: React.FC<HlsPlayerProps> = ({
         // Seek to resume position once the manifest is ready
         if (initialTimeRef.current > 0) {
           video.currentTime = initialTimeRef.current;
+          if (import.meta.env.DEV) {
+            console.debug('[watch-progress] resume applied', {
+              appliedPosition: initialTimeRef.current,
+            });
+          }
         }
       });
 
@@ -242,13 +247,36 @@ const HlsPlayer: React.FC<HlsPlayerProps> = ({
 
     // Native video event listeners — attached to the <video> element directly
     // so they survive any internal Plyr DOM operations.
+    let tuCount = 0;
     const handleTimeUpdate = () => {
-      onTimeUpdateRef.current?.(video.currentTime, video.duration || 0);
+      const ct = video.currentTime;
+      const dur = video.duration || 0;
+      // Log every ~60th timeupdate (~once per 15s at 4Hz) to avoid flooding
+      if (import.meta.env.DEV && tuCount % 60 === 0) {
+        console.debug('[watch-progress] video event', {
+          event: 'timeupdate', movieSrc: src.split('/').pop(),
+          currentTime: ct, duration: dur,
+          paused: video.paused, readyState: video.readyState,
+        });
+      }
+      tuCount++;
+      onTimeUpdateRef.current?.(ct, dur);
     };
     const handlePause = () => {
+      if (import.meta.env.DEV) {
+        console.debug('[watch-progress] video event', {
+          event: 'pause', currentTime: video.currentTime,
+          duration: video.duration || 0,
+        });
+      }
       onPauseRef.current?.(video.currentTime, video.duration || 0);
     };
     const handleEnded = () => {
+      if (import.meta.env.DEV) {
+        console.debug('[watch-progress] video event', {
+          event: 'ended', duration: video.duration || 0,
+        });
+      }
       onEndedRef.current?.(video.duration || 0);
     };
 

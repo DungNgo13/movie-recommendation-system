@@ -760,6 +760,114 @@ npm run test:run  # ✅ 30 tests passed
 
 ---
 
+## 🔄 Continue Watching — Data Flow & Architecture
+
+### Canonical save/load data flow
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│  HlsPlayer.tsx                                                  │
+│  <video> dispatches: timeupdate, pause, ended                   │
+│  Handlers read: video.currentTime, video.duration               │
+└────────────────────┬────────────────────────────────────────────┘
+                     │ callbacks (onTimeUpdate, onPause, onEnded)
+                     ▼
+┌─────────────────────────────────────────────────────────────────┐
+│  MovieDetailPage.tsx                                             │
+│  handleTimeUpdate: throttled every 15s of position change       │
+│  handlePause: saves immediately on pause                        │
+│  handleEnded: saves at 100% progress                            │
+│  saveProgressFromRefs: saves on unmount / visibilitychange /     │
+│    beforeunload (uses keepalive fetch for page-exit reliability) │
+└────────────────────┬────────────────────────────────────────────┘
+                     │ saveWatchProgress(movieId, currentTime, duration)
+                     ▼
+┌─────────────────────────────────────────────────────────────────┐
+│  continueWatchingService.ts                                      │
+│  POST ${API_BASE_URL}/watch-progress                             │
+│  Body: { movie_id, current_time_seconds, duration_seconds,       │
+│          progress_percent }                                      │
+│  Headers: Authorization: Bearer <token>                          │
+└────────────────────┬────────────────────────────────────────────┘
+                     │ HTTP POST
+                     ▼
+┌─────────────────────────────────────────────────────────────────┐
+│  Backend: watch_progress.py → history_service.save_watch_progress│
+│  Upsert into watch_history table (unique: user_id + movie_id)   │
+│  Sets is_completed = true when progress_percent >= 95           │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### API endpoints
+
+| Purpose | Method | Endpoint | Used by |
+|---------|--------|----------|---------|
+| Save progress | POST | `/api/v1/watch-progress` | `saveWatchProgress()` |
+| Get resume position | GET | `/api/v1/watch-progress/{movie_id}` | `getWatchProgress()` |
+| Continue Watching list | GET | `/api/v1/history/me?limit=N` | `getWatchHistory()` |
+| Legacy record watch | POST | `/api/v1/history/{movie_id}` | `recordWatch()` (unused in normal flow) |
+
+Both `/watch-progress` and `/history` endpoints read/write the **same `watch_history` table**.
+
+### Database verification
+
+```sql
+-- Check a user's watch progress
+SELECT user_id, movie_id, playback_position_seconds, duration_seconds,
+       progress_percent, is_completed, watched_at
+FROM watch_history
+WHERE user_id = '<user-uuid>'
+ORDER BY watched_at DESC;
+```
+
+### Deployment verification
+
+```bash
+# Verify frontend build matches deployed files
+grep -oE 'assets/[^"]+\.js' frontend/dist/index.html
+# Compare with production
+curl -s https://tltn.laetus.io.vn | grep -oE 'assets/[^"]+\.js'
+
+# Verify CORS allows the frontend origin
+# In backend .env on the production server:
+# CORS_ORIGINS must include the frontend domain (e.g. https://tltn.laetus.io.vn)
+```
+
+### Verified root cause (2025-07-15)
+
+The Continue Watching feature was not working in production due to **four compounding issues**:
+
+1. **Silent error swallowing**: `saveWatchProgress()` had no `try/catch` and no response status checking. Failed saves (401, CORS errors, network failures) were invisible.
+
+2. **Unreliable page-exit saves**: `beforeunload` and `visibilitychange` handlers used regular async `fetch()` which browsers cancel during page close. Saves on tab-close or navigation were lost.
+
+3. **Stale Continue Watching list**: The HomePage `useEffect` for fetching watch history only depended on `user` — navigating Home→Movie→Home did not trigger a refetch, so newly saved progress never appeared.
+
+4. **Production CORS configuration**: The backend `CORS_ORIGINS` env var must include the actual frontend domain. If missing, all cross-origin `POST /watch-progress` requests are silently blocked by the browser.
+
+**Backend was correct** — upsert semantics, shared `watch_history` table, proper schema. No backend changes were needed.
+
+---
+
+## 📋 Change Log
+
+### 2025-07-15 — Fix Continue Watching save/load/display
+
+**Files changed:**
+- `frontend/src/services/continueWatchingService.ts` — Added error handling, response logging, `keepalive` fetch option, new `saveWatchProgressBeacon()` for page-exit saves
+- `frontend/src/pages/MovieDetailPage.tsx` — Uses beacon save for `beforeunload`/`visibilitychange`, added dev diagnostics
+- `frontend/src/pages/HomePage.tsx` — Added `location.key` dependency so Continue Watching list refetches on navigation
+- `frontend/src/components/HlsPlayer.tsx` — Added dev-only video event diagnostics
+- `frontend/src/services/continueWatchingService.test.ts` — New: 20 tests for service HTTP calls, error handling, and guest localStorage
+- `frontend/src/pages/MovieDetailPage.test.tsx` — Updated mock to include `saveWatchProgressBeacon`
+
+**Test results:**
+- Frontend: 124 tests passed, 0 failed
+- Backend: 15 watch-progress tests passed, 0 failed
+- Build: clean (`tsc -b && vite build`)
+
+---
+
 ## 🔗 Repository
 
 ```text
@@ -778,5 +886,4 @@ Nếu dùng README này để public repo, có thể bổ sung thêm:
 - link demo video
 - sơ đồ database
 - tài liệu báo cáo / slide bảo vệ
-
 
