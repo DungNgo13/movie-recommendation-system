@@ -1,0 +1,120 @@
+import React from 'react';
+import { Link } from 'react-router-dom';
+import HeartIcon from './HeartIcon';
+import { formatPlaybackTime } from '../services/continueWatchingService';
+
+interface ContinueWatchingCardProps {
+  movie: {
+    id: string;
+    title: string;
+    poster_url: string | null;
+  };
+  progressPercent: number;
+  playbackPositionSeconds: number;
+  isFavorite: boolean;
+  onToggleFavorite: (id: string) => void | Promise<void>;
+  favoriteLoading?: boolean;
+}
+
+/** Inline SVG play icon — decorative. */
+const PlayIcon: React.FC<{ className?: string }> = ({ className }) => (
+  <svg
+    viewBox="0 0 24 24"
+    fill="currentColor"
+    className={className}
+    aria-hidden="true"
+  >
+    <path d="M8 5v14l11-7z" />
+  </svg>
+);
+
+const ContinueWatchingCard: React.FC<ContinueWatchingCardProps> = ({
+  movie,
+  progressPercent,
+  playbackPositionSeconds,
+  isFavorite,
+  onToggleFavorite,
+  favoriteLoading = false,
+}) => {
+  // ── Progress data safety ──────────────────────────────────────────
+  const clampedProgress = Math.min(
+    100,
+    Math.max(0, Number.isFinite(progressPercent) ? progressPercent : 0),
+  );
+  const roundedProgress = Math.round(clampedProgress);
+  const formattedPosition = formatPlaybackTime(playbackPositionSeconds);
+
+  const handleFavoriteClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (favoriteLoading) return;
+    onToggleFavorite(movie.id);
+  };
+
+  const favoriteLabel = isFavorite
+    ? `Remove ${movie.title} from favorites`
+    : `Add ${movie.title} to favorites`;
+
+  return (
+    <article className="cw-card">
+      <Link to={`/movie/${movie.id}`} className="cw-card__link">
+        {/* ── Media area ── */}
+        <div className="cw-card__media">
+          <img
+            src={movie.poster_url || '/placeholder-poster.svg'}
+            alt={`${movie.title} poster`}
+            className="cw-card__poster"
+            onError={(e) => {
+              e.currentTarget.onerror = null;
+              e.currentTarget.src = '/placeholder-poster.svg';
+            }}
+          />
+          {/* Favorite heart */}
+          <button
+            type="button"
+            className={`movie-card__favorite-button${isFavorite ? ' movie-card__favorite-button--active' : ''}`}
+            onClick={handleFavoriteClick}
+            disabled={favoriteLoading}
+            aria-label={favoriteLabel}
+            title={favoriteLabel}
+          >
+            <HeartIcon filled={isFavorite} className="movie-card__favorite-icon" />
+          </button>
+        </div>
+
+        {/* ── Content footer ── */}
+        <div className="cw-card__content">
+          <h3 className="cw-card__title">{movie.title}</h3>
+
+          {/* Accessible progress bar */}
+          <div
+            className="cw-card__progress"
+            role="progressbar"
+            aria-label={`Watched ${roundedProgress}% of ${movie.title}`}
+            aria-valuemin={0}
+            aria-valuemax={100}
+            aria-valuenow={roundedProgress}
+          >
+            <div
+              className="cw-card__progress-fill"
+              style={{ width: `${clampedProgress}%` }}
+            />
+          </div>
+
+          {/* Resume time + percentage */}
+          <div className="cw-card__meta">
+            <span className="cw-card__resume">
+              <PlayIcon className="cw-card__play-icon" />
+              {formattedPosition}
+            </span>
+            <span className="cw-card__percentage">
+              {roundedProgress}%
+            </span>
+          </div>
+        </div>
+      </Link>
+    </article>
+  );
+};
+
+export default ContinueWatchingCard;

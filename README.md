@@ -943,6 +943,61 @@ interface GuestWatchEntry {
 - Backend: 15 watch-progress tests passed, 0 failed
 - Build: clean (`tsc -b && vite build`)
 
+### 2025-07-15 — Redesign Continue Watching card presentation
+
+**Root cause:** The previous CW card used inline styles to overlay a 4px progress bar directly on the movie poster edge, with metadata (`▶ 00:29 · 91%`) rendered outside the card in a disconnected badge. There was no proper footer, no title spacing from the progress bar, and no accessible markup.
+
+**New design — `ContinueWatchingCard` component:**
+```
+┌──────────────────────────┐
+│         Poster           │
+│      (2:3 aspect)        │
+│                   ❤      │
+├──────────────────────────┤
+│  Movie Title             │
+│  ▬▬▬▬▬▬▬▬▬▬▬▬░░░░ 6px   │  ← progress bar with rounded ends
+│  ▶ 02:00           42%  │  ← playback time + percentage
+└──────────────────────────┘
+```
+
+**Progress bar styling:**
+- Height: 6px desktop, 5px mobile
+- Fully rounded ends (`border-radius: 9999px`)
+- Track: `oklch(0.49 0.028 255 / 0.18)` (muted, blends with design system)
+- Fill: gradient from `--destructive` to `oklch(0.66 0.18 18)` (warm accent gradient)
+- Smooth 240ms width transition
+- All values clamped 0–100 and NaN/Infinity → 0
+
+**Accessibility:**
+- `role="progressbar"` with `aria-valuemin`, `aria-valuemax`, `aria-valuenow`
+- `aria-label="Watched N% of Movie Title"`
+- Play icon marked `aria-hidden="true"`
+- Percentage text remains visible alongside the bar
+
+**Responsive behavior:**
+- Desktop: 200px card width, 16px content padding, 6px progress bar
+- Mobile (≤640px): 160px card width, 13px padding, 5px progress bar, 0.8125rem meta text
+
+**Verification steps:**
+1. Open a movie as guest, watch to ~42%, pause
+2. Navigate Home → CW card shows poster + title + 42% bar + "▶ 01:08 42%"
+3. All metadata is inside the card footer — nothing floats outside
+4. Progress bar has rounded ends and accent gradient fill
+5. Favorite heart button remains clickable on the poster
+6. Clicking the card navigates to `/movie/{id}`
+7. Test with 2%, 23%, 50%, 91%, 94% — bar fill matches each value accurately
+8. On mobile viewport, card and text remain readable without horizontal overflow
+
+**Files changed:**
+- `frontend/src/components/ContinueWatchingCard.tsx` — **New**: dedicated card component with clamped progress, accessible progressbar, formatted time, poster + footer layout
+- `frontend/src/components/ContinueWatchingCard.test.tsx` — **New**: 23 tests for progress rendering, clamping, accessibility, card navigation, favorites
+- `frontend/src/pages/HomePage.tsx` — Both auth and guest CW sections now use `ContinueWatchingCard` instead of inline styles
+- `frontend/src/App.css` — New `.cw-card` ruleset with design-system OKLCH tokens, responsive breakpoint
+
+**Test results:**
+- Frontend: 175 tests passed, 0 failed
+- Build: clean (`tsc -b && vite build`)
+
 ---
 
 ## 🔗 Repository

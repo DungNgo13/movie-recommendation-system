@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import MovieCard from '../components/MovieCard';
+import ContinueWatchingCard from '../components/ContinueWatchingCard';
 import RecommendationCard from '../components/RecommendationCard';
 import SkeletonCard from '../components/SkeletonCard';
 import ErrorMessage from '../components/ErrorMessage';
@@ -11,7 +12,6 @@ import {
   getWatchHistory,
   getGuestWatchHistory,
   isWatchCompleted,
-  formatPlaybackTime,
   GUEST_HISTORY_EVENT,
 } from '../services/continueWatchingService';
 import type { HistoryItem } from '../services/continueWatchingService';
@@ -346,29 +346,15 @@ const HomePage: React.FC = () => {
               <h2>Continue Watching</h2>
               <div className="movie-list movie-row">
                 {authContinueItems.map((item) => (
-                    <div key={item.id} style={{ position: 'relative' }}>
-                      <MovieCard
-                        movie={item}
-                        isFavorite={isFavorite(item.id)}
-                        onToggleFavorite={toggleFavorite}
-                      />
-                      {/* Progress bar shown at bottom of the card thumbnail */}
-                      {item.progress_percent != null && item.progress_percent > 0 && (
-                        <div style={{
-                          position: 'absolute', bottom: '2.2rem', left: 0, right: 0,
-                          height: '4px', background: 'rgba(0,0,0,0.4)',
-                        }}>
-                          <div style={{
-                            height: '100%',
-                            width: `${Math.min(item.progress_percent, 100)}%`,
-                            background: '#e50914',
-                            borderRadius: '0 2px 2px 0',
-                            transition: 'width 0.3s ease',
-                          }} />
-                        </div>
-                      )}
-                    </div>
-                  ))}
+                  <ContinueWatchingCard
+                    key={item.id}
+                    movie={item}
+                    progressPercent={item.progress_percent ?? 0}
+                    playbackPositionSeconds={item.playback_position_seconds ?? 0}
+                    isFavorite={isFavorite(item.id)}
+                    onToggleFavorite={toggleFavorite}
+                  />
+                ))}
               </div>
             </section>
           )}
@@ -379,37 +365,14 @@ const HomePage: React.FC = () => {
               <h2>Continue Watching</h2>
               <div className="movie-list movie-row">
                 {guestContinueItems.map((item) => (
-                  <div key={item.id} style={{ position: 'relative' }}>
-                    <Link to={`/movie/${item.id}`} className="guest-cw-card" style={{ textDecoration: 'none', color: 'inherit' }}>
-                      <MovieCard
-                        movie={item}
-                        isFavorite={isFavorite(item.id)}
-                        onToggleFavorite={toggleFavorite}
-                      />
-                    </Link>
-                    {/* Progress bar + percentage overlay */}
-                    {item.progress_percent > 0 && (
-                      <div style={{
-                        position: 'absolute', bottom: '2.2rem', left: 0, right: 0,
-                        height: '4px', background: 'rgba(0,0,0,0.4)',
-                      }}>
-                        <div style={{
-                          height: '100%',
-                          width: `${Math.min(item.progress_percent, 100)}%`,
-                          background: '#e50914',
-                          borderRadius: '0 2px 2px 0',
-                          transition: 'width 0.3s ease',
-                        }} />
-                      </div>
-                    )}
-                    {/* Resume badge with time */}
-                    <div className="guest-cw-resume-badge">
-                      <Link to={`/movie/${item.id}`} className="guest-cw-resume-link">
-                        ▶ {formatPlaybackTime(item.playback_position_seconds)}
-                        <span className="guest-cw-percent"> · {Math.round(item.progress_percent)}%</span>
-                      </Link>
-                    </div>
-                  </div>
+                  <ContinueWatchingCard
+                    key={item.id}
+                    movie={item}
+                    progressPercent={item.progress_percent}
+                    playbackPositionSeconds={item.playback_position_seconds}
+                    isFavorite={isFavorite(item.id)}
+                    onToggleFavorite={toggleFavorite}
+                  />
                 ))}
               </div>
             </section>
