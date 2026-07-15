@@ -866,6 +866,83 @@ The Continue Watching feature was not working in production due to **four compou
 - Backend: 15 watch-progress tests passed, 0 failed
 - Build: clean (`tsc -b && vite build`)
 
+### 2025-07-15 — Fix Guest Continue Watching (complete read/render/resume flow)
+
+**Root cause:** Guest watch progress was written to localStorage but never consumed.
+- `HomePage.tsx` returned early with `if (!user) return;` — guest CW was never loaded
+- `MovieDetailPage.tsx` used `MIN_RESUME_SECONDS = 30` — a 31-second movie at 92% (position ≈ 28s) could never trigger resume
+- `GuestWatchEntry` schema was missing `is_completed`, `updated_at`, and used `current_time_seconds` instead of `playback_position_seconds`
+
+**Guest localStorage Schema (`guest_watch_history`):**
+```typescript
+interface GuestWatchEntry {
+  movie_id: string;                // UUID of the movie
+  playback_position_seconds: number; // current position in seconds (integer)
+  duration_seconds: number;        // total duration in seconds (integer)
+  progress_percent: number;        // 0–100 (clamped, 2 decimals)
+  is_completed: boolean;           // true when progress_percent >= 95
+  updated_at: string;              // ISO 8601 timestamp of last save
+}
+```
+
+**Completion threshold:**
+- `isWatchCompleted(progressPercent) → progressPercent >= 95` (shared function)
+- Same 95% rule for both guest and authenticated users
+- Backend uses identical threshold in `history_service.py`
+- A 31-second movie at 92.17% is **not completed** and appears in Continue Watching
+
+**Guest Continue Watching on HomePage:**
+- When `user === null`, reads `guest_watch_history` from localStorage
+- Resolves movie metadata by matching `movie_id` against already-loaded catalog (no extra API calls)
+- Filters: `!is_completed && progress_percent > 0 && playback_position_seconds > 0`
+- Sorted by `updated_at` descending (most recently watched first)
+- Shows poster, title, progress bar, percentage, and resume time badge
+- Refreshes on: mount, navigation (location.key), `guest-watch-history-updated` custom event, `storage` event (cross-tab)
+
+**Guest Resume on MovieDetailPage:**
+- `MIN_RESUME_SECONDS` lowered to 3 (was 30) for both guest and authenticated
+- When `playback_position_seconds >= 3 && !isWatchCompleted(progress_percent)`, shows resume prompt
+- Resume prompt: "Continue from **00:28**?" with Resume / Start Over buttons
+- Resume seeks to saved position; Start Over begins at 0
+
+**Old localStorage Migration:**
+- Old entries `{ movie_id, duration_seconds, progress_percent }` auto-migrate on read
+- Derives `playback_position_seconds = floor(duration * percent / 100)`
+- Old `current_time_seconds` field mapped to `playback_position_seconds`
+- Missing `is_completed` computed from 95% rule
+- Missing `updated_at` set to epoch (sorts last)
+
+**Guest-to-Account Merge:**
+- On login, `getGuestWatchHistory()` reads + migrates entries
+- Maps `playback_position_seconds` → `current_time_seconds` for backend payload
+- Sends via `guest_history` field in login request
+- localStorage cleared only after successful login
+- Failed login preserves guest history
+
+**Verification steps:**
+1. Log out. Clear `guest_watch_history` in DevTools
+2. Open a 31-second movie, watch to ~50%, pause
+3. Verify `guest_watch_history` in localStorage has `playback_position_seconds ≈ 15`, `is_completed: false`
+4. Navigate to Home → "Continue Watching" section visible
+5. Open movie → "Continue from 00:15?" prompt visible
+6. Click Resume → playback starts near 15s
+7. Watch to 92% → still shows in Continue Watching (below 95%)
+8. Finish the movie → disappears from Continue Watching (`is_completed: true`)
+9. Log in → guest progress merges to server, localStorage cleared
+
+**Files changed:**
+- `frontend/src/services/continueWatchingService.ts` — Canonical `GuestWatchEntry` with `is_completed`/`updated_at`/`playback_position_seconds`, shared `isWatchCompleted(95%)`, `formatPlaybackTime()`, old entry migration, `GUEST_HISTORY_EVENT` custom event
+- `frontend/src/pages/HomePage.tsx` — Guest Continue Watching section reading localStorage, resolving movie metadata from catalog, custom event + storage event listeners
+- `frontend/src/pages/MovieDetailPage.tsx` — `MIN_RESUME_SECONDS` lowered to 3, uses `isWatchCompleted()` and `formatPlaybackTime()`
+- `frontend/src/pages/LoginPage.tsx` — Maps canonical `playback_position_seconds` → `current_time_seconds` for backend merge payload
+- `frontend/src/services/continueWatchingService.test.ts` — 48 tests covering completion threshold, formatPlaybackTime, guest schema, old migration, short videos, custom event
+- `frontend/src/pages/MovieDetailPage.test.tsx` — Updated mock with new exports
+
+**Test results:**
+- Frontend: 152 tests passed, 0 failed
+- Backend: 15 watch-progress tests passed, 0 failed
+- Build: clean (`tsc -b && vite build`)
+
 ---
 
 ## 🔗 Repository

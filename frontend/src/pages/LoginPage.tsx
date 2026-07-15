@@ -32,8 +32,15 @@ const LoginPage: React.FC = () => {
     try {
       setSubmitting(true);
 
-      // Grab guest watch history from localStorage for cold-start merge
-      const guestHistory = getGuestWatchHistory();
+      // Grab guest watch history from localStorage for cold-start merge.
+      // getGuestWatchHistory() auto-migrates old entries to canonical schema.
+      // Map to backend's expected field names before sending.
+      const guestHistory = getGuestWatchHistory().map((entry) => ({
+        movie_id: entry.movie_id,
+        current_time_seconds: entry.playback_position_seconds,
+        duration_seconds: entry.duration_seconds,
+        progress_percent: entry.progress_percent,
+      }));
 
       await loginUser({
         email: email.trim(),

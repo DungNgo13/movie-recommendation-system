@@ -57,6 +57,14 @@ vi.mock('../services/continueWatchingService', () => ({
   getWatchProgress: vi.fn().mockResolvedValue({ current_time_seconds: 0, is_completed: false }),
   saveGuestWatchProgress: vi.fn(),
   getGuestWatchProgressForMovie: vi.fn().mockReturnValue(null),
+  isWatchCompleted: (p: number) => p >= 95,
+  formatPlaybackTime: (s: number) => {
+    const m = Math.floor(s / 60);
+    const sec = Math.floor(s % 60);
+    return `${String(m).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
+  },
+  COMPLETION_THRESHOLD: 95,
+  GUEST_HISTORY_EVENT: 'guest-watch-history-updated',
 }));
 
 // Mock HlsPlayer — renders a simple div so we can verify props

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import MovieCard from '../components/MovieCard';
 import RecommendationCard from '../components/RecommendationCard';
@@ -7,9 +7,15 @@ import ErrorMessage from '../components/ErrorMessage';
 import { useMovies } from '../hooks/useMovies';
 import { useFavorites } from '../hooks/useFavorites';
 import { useAuth } from '../hooks/useAuthHook';
-import { getWatchHistory } from '../services/continueWatchingService';
-import { getRecommendations } from '../services/recommendationService';
+import {
+  getWatchHistory,
+  getGuestWatchHistory,
+  isWatchCompleted,
+  formatPlaybackTime,
+  GUEST_HISTORY_EVENT,
+} from '../services/continueWatchingService';
 import type { HistoryItem } from '../services/continueWatchingService';
+import { getRecommendations } from '../services/recommendationService';
 import type { RecommendedMovie } from '../services/recommendationService';
 import type { MovieFilters } from '../services/movieService';
 import type { MovieListItem } from '../models';
@@ -26,12 +32,21 @@ const pickHeroMovie = (movies: MovieListItem[]): MovieListItem | null => {
   return withBackdrop[Math.floor(Math.random() * withBackdrop.length)];
 };
 
+/** Guest CW item: guest entry enriched with movie metadata from catalog. */
+interface GuestContinueItem extends MovieListItem {
+  playback_position_seconds: number;
+  progress_percent: number;
+  is_completed: boolean;
+  updated_at: string;
+}
+
 const HomePage: React.FC = () => {
   const { isFavorite, toggleFavorite } = useFavorites();
   const { user } = useAuth();
   const location = useLocation();
   const [historyItems, setHistoryItems] = useState<HistoryItem[]>([]);
   const [recommendations, setRecommendations] = useState<RecommendedMovie[]>([]);
+  const [guestContinueItems, setGuestContinueItems] = useState<GuestContinueItem[]>([]);
 
   // Search / Filter / Sort state
   const [searchInput, setSearchInput] = useState('');
@@ -111,11 +126,8 @@ const HomePage: React.FC = () => {
     return Array.from(years).sort((a, b) => b - a);
   }, [movies]);
 
+  // ── Authenticated: fetch watch history + recommendations ────────────────
   useEffect(() => {
-    // When user is null (logged out), we don't fetch and don't call setState.
-    // The render section below uses `user` to gate display, so empty arrays
-    // will naturally be shown once `user` becomes null and the next effect
-    // run fetches nothing.
     if (!user) return;
 
     let cancelled = false;
@@ -135,6 +147,69 @@ const HomePage: React.FC = () => {
     // detail page triggers a fresh fetch of watch history.
   }, [user, location.key]);
 
+  // ── Guest: build Continue Watching from localStorage + movie catalog ────
+  const refreshGuestContinue = useCallback(() => {
+    if (user || movies.length === 0) {
+      setGuestContinueItems([]);
+      return;
+    }
+
+    const guestEntries = getGuestWatchHistory();
+    // Build a movie lookup map from the already-loaded catalog
+    const movieMap = new Map<string, MovieListItem>();
+    for (const m of movies) {
+      movieMap.set(m.id, m);
+    }
+
+    const items: GuestContinueItem[] = [];
+    for (const entry of guestEntries) {
+      // Filter: unfinished, has meaningful progress, has meaningful position
+      if (isWatchCompleted(entry.progress_percent)) continue;
+      if (entry.is_completed) continue;
+      if (entry.progress_percent <= 0) continue;
+      if (entry.playback_position_seconds <= 0) continue;
+
+      const movieData = movieMap.get(entry.movie_id);
+      if (!movieData) continue; // Movie no longer in catalog — skip stale entry
+
+      items.push({
+        ...movieData,
+        playback_position_seconds: entry.playback_position_seconds,
+        progress_percent: entry.progress_percent,
+        is_completed: entry.is_completed,
+        updated_at: entry.updated_at,
+      });
+    }
+
+    // Sort by most recently updated first
+    items.sort((a, b) => b.updated_at.localeCompare(a.updated_at));
+
+    setGuestContinueItems(items);
+  }, [user, movies]);
+
+  // Refresh guest CW on mount, navigation, and whenever movies load
+  useEffect(() => {
+    refreshGuestContinue();
+  }, [refreshGuestContinue, location.key]);
+
+  // Listen for guest-watch-history-updated custom event + cross-tab storage event
+  useEffect(() => {
+    if (user) return; // Only for guests
+
+    const handleGuestUpdate = () => refreshGuestContinue();
+    const handleStorage = (e: StorageEvent) => {
+      if (e.key === 'guest_watch_history') refreshGuestContinue();
+    };
+
+    window.addEventListener(GUEST_HISTORY_EVENT, handleGuestUpdate);
+    window.addEventListener('storage', handleStorage);
+
+    return () => {
+      window.removeEventListener(GUEST_HISTORY_EVENT, handleGuestUpdate);
+      window.removeEventListener('storage', handleStorage);
+    };
+  }, [user, refreshGuestContinue]);
+
   const moviesByGenre = useMemo(() => {
     const grouped: Record<string, typeof sortedMovies> = {};
     sortedMovies.forEach(movie => {
@@ -150,6 +225,11 @@ const HomePage: React.FC = () => {
   if (error) {
     return <ErrorMessage message={error} />;
   }
+
+  // ── Authenticated Continue Watching items (filtered) ────────────────────
+  const authContinueItems = historyItems.filter(
+    (item) => !item.is_completed && (item.playback_position_seconds ?? 0) > 0,
+  );
 
   return (
     <div className="home-page">
@@ -260,13 +340,12 @@ const HomePage: React.FC = () => {
       {/* ===== Content (shown when not loading) ===== */}
       {!loading && (
         <>
-          {user && historyItems.filter(item => !item.is_completed && (item.playback_position_seconds ?? 0) >= 30).length > 0 && (
+          {/* ── Authenticated Continue Watching ── */}
+          {user && authContinueItems.length > 0 && (
             <section className="continue-watching-section">
               <h2>Continue Watching</h2>
               <div className="movie-list movie-row">
-                {historyItems
-                  .filter(item => !item.is_completed && (item.playback_position_seconds ?? 0) >= 30)
-                  .map((item) => (
+                {authContinueItems.map((item) => (
                     <div key={item.id} style={{ position: 'relative' }}>
                       <MovieCard
                         movie={item}
@@ -290,6 +369,48 @@ const HomePage: React.FC = () => {
                       )}
                     </div>
                   ))}
+              </div>
+            </section>
+          )}
+
+          {/* ── Guest Continue Watching ── */}
+          {!user && guestContinueItems.length > 0 && (
+            <section className="continue-watching-section" data-testid="guest-continue-watching">
+              <h2>Continue Watching</h2>
+              <div className="movie-list movie-row">
+                {guestContinueItems.map((item) => (
+                  <div key={item.id} style={{ position: 'relative' }}>
+                    <Link to={`/movie/${item.id}`} className="guest-cw-card" style={{ textDecoration: 'none', color: 'inherit' }}>
+                      <MovieCard
+                        movie={item}
+                        isFavorite={isFavorite(item.id)}
+                        onToggleFavorite={toggleFavorite}
+                      />
+                    </Link>
+                    {/* Progress bar + percentage overlay */}
+                    {item.progress_percent > 0 && (
+                      <div style={{
+                        position: 'absolute', bottom: '2.2rem', left: 0, right: 0,
+                        height: '4px', background: 'rgba(0,0,0,0.4)',
+                      }}>
+                        <div style={{
+                          height: '100%',
+                          width: `${Math.min(item.progress_percent, 100)}%`,
+                          background: '#e50914',
+                          borderRadius: '0 2px 2px 0',
+                          transition: 'width 0.3s ease',
+                        }} />
+                      </div>
+                    )}
+                    {/* Resume badge with time */}
+                    <div className="guest-cw-resume-badge">
+                      <Link to={`/movie/${item.id}`} className="guest-cw-resume-link">
+                        ▶ {formatPlaybackTime(item.playback_position_seconds)}
+                        <span className="guest-cw-percent"> · {Math.round(item.progress_percent)}%</span>
+                      </Link>
+                    </div>
+                  </div>
+                ))}
               </div>
             </section>
           )}

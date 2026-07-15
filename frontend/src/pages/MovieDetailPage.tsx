@@ -9,6 +9,8 @@ import {
   getWatchProgress,
   saveGuestWatchProgress,
   getGuestWatchProgressForMovie,
+  isWatchCompleted,
+  formatPlaybackTime,
 } from '../services/continueWatchingService';
 import { getMyRating, rateMovie } from '../services/ratingService';
 import { getRecommendations } from '../services/recommendationService';
@@ -25,16 +27,9 @@ import SourceAttribution from '../components/SourceAttribution';
 const PLACEHOLDER_IMAGE = '/placeholder-poster.svg';
 // Save position every N seconds of playback change
 const SAVE_INTERVAL_SECONDS = 15;
-// Only prompt to resume if position is more than this many seconds in
-const MIN_RESUME_SECONDS = 30;
-
-const formatTime = (seconds: number): string => {
-  const h = Math.floor(seconds / 3600);
-  const m = Math.floor((seconds % 3600) / 60);
-  const s = Math.floor(seconds % 60);
-  if (h > 0) return `${h}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
-  return `${m}:${String(s).padStart(2, '0')}`;
-};
+// Only prompt to resume if position is at least this many seconds in.
+// Lowered to 3 so short videos (e.g. 31s) can show a resume prompt.
+const MIN_RESUME_SECONDS = 3;
 
 const MovieDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -232,8 +227,12 @@ const MovieDetailPage: React.FC = () => {
         } else {
           // Guest: check localStorage for a saved resume position
           const guestProgress = getGuestWatchProgressForMovie(data.id);
-          if (guestProgress && guestProgress.current_time_seconds >= MIN_RESUME_SECONDS && guestProgress.progress_percent < 95) {
-            setSavedPosition(guestProgress.current_time_seconds);
+          if (
+            guestProgress &&
+            guestProgress.playback_position_seconds >= MIN_RESUME_SECONDS &&
+            !isWatchCompleted(guestProgress.progress_percent)
+          ) {
+            setSavedPosition(guestProgress.playback_position_seconds);
             setShowResumePrompt(true);
           }
         }
@@ -299,7 +298,7 @@ const MovieDetailPage: React.FC = () => {
       {/* Resume prompt banner */}
       {showResumePrompt && (
         <div className="resume-prompt">
-          <span>Continue from <strong>{formatTime(savedPosition)}</strong>?</span>
+          <span>Continue from <strong>{formatPlaybackTime(savedPosition)}</strong>?</span>
           <button onClick={handleResume} className="resume-prompt__btn-primary">
             Resume
           </button>
