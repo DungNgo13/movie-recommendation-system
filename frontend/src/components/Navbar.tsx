@@ -2,6 +2,7 @@ import React from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuthHook';
 import { getAvatarUrl } from '../utils/avatarUrl';
+import ThemeSelector from './ThemeSelector';
 
 const Navbar: React.FC = () => {
   const { user, logout } = useAuth();
@@ -44,6 +45,7 @@ const Navbar: React.FC = () => {
             <Link to="/admin/security" className={navClass('/admin/security')}>Security</Link>
           </>
         )}
+        <ThemeSelector />
         {user ? (
           <>
             <Link to="/profile" className="navbar-profile-block" title="My Profile">

@@ -40,6 +40,7 @@ Hệ thống hiện đã có đầy đủ các nhóm chức năng quan trọng n
 - Thêm / xóa phim yêu thích
 - Nhận gợi ý cá nhân hóa dựa trên hành vi
 - **Metadata Discovery**: bấm vào đạo diễn, diễn viên hoặc keyword trên trang chi tiết phim để khám phá các phim liên quan ngay trong mục "Recommended for You" mà không rời trang
+- **Chế độ giao diện (Theme)**: hỗ trợ 3 chế độ **Light**, **Dark** và **System** — chuyển đổi qua nút trên Navbar. Chế độ `System` tự động theo tùy chọn hệ điều hành (prefers-color-scheme) và cập nhật ngay khi thay đổi. Lựa chọn được lưu vào `localStorage` (key: `movie-app-theme`), giữ nguyên khi refresh, đăng nhập/đăng xuất và chuyển trang.
 
 ### 🤖 Recommendation Engine
 

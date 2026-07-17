@@ -13,6 +13,14 @@
 </head>
 
 <body>
+  <script>
+    // Theme init — runs before React to prevent flash of wrong theme
+    !function(){try{var t=localStorage.getItem("movie-app-theme");
+    if(t!=="light"&&t!=="dark"&&t!=="system")t="system";
+    var r=t==="system"?(matchMedia("(prefers-color-scheme:dark)").matches?"dark":"light"):t;
+    document.documentElement.dataset.theme=r;
+    document.documentElement.style.colorScheme=r}catch(e){}}()
+  </script>
   <div id="root"></div>
   <script type="module" src="/src/main.tsx"></script>
 </body>

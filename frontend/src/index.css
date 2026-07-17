@@ -6,6 +6,8 @@
    =================================================================== */
 
 :root {
+  color-scheme: light;
+
   /* ── Color Palette (OKLCH) ──────────────────────────────────────── */
   --background:           oklch(0.985 0.004 250);
   --foreground:           oklch(0.22 0.035 260);
@@ -43,6 +45,35 @@
   --warning-bg:           oklch(0.95 0.05 85);
   --warning-foreground:   oklch(0.38 0.08 65);
   --danger-bg:            oklch(0.94 0.04 25);
+
+  /* ── Theme-aware utility tokens ─────────────────────────────────── */
+  --sticky-bg:            oklch(0.985 0.004 250 / 0.92);
+  --overlay:              oklch(0.22 0.035 260 / 0.4);
+  --ring-shadow:          oklch(0.58 0.12 260 / 0.15);
+  --border-hover:         oklch(0.85 0.025 250);
+  --focus-ring-color:     oklch(0.58 0.12 260 / 0.2);
+  --heart-bg:             oklch(0.15 0.02 260 / 0.55);
+  --heart-bg-hover:       oklch(0.15 0.02 260 / 0.75);
+  --heart-color:          oklch(0.92 0.01 250);
+  --heart-active-hover:   oklch(0.50 0.20 25);
+  --border-danger:        oklch(0.78 0.08 25);
+  --border-warning:       oklch(0.82 0.08 85);
+  --border-success:       oklch(0.78 0.08 145);
+  --progress-gradient-end: oklch(0.65 0.16 50);
+  --banner-shadow:        oklch(0.22 0.035 260 / 0.5);
+  --banner-gradient-start: oklch(0.985 0.004 250 / 0.85);
+  --banner-gradient-end:  oklch(0.985 0.004 250 / 0.4);
+  --banner-text-shadow:   oklch(0.985 0.004 250 / 0.6);
+  --checkbox-active:      oklch(0.42 0.13 260);
+  --checkbox-accent:      oklch(0.75 0.12 260);
+  --rec-hover-bg:         oklch(0.48 0.13 260 / 0.08);
+  --rec-hover-border:     oklch(0.48 0.13 260 / 0.22);
+  --rec-active-bg:        oklch(0.48 0.13 260 / 0.15);
+  --quality-active-bg:    oklch(0.45 0.15 145 / 0.15);
+  --quality-active-color: oklch(0.45 0.15 145);
+  --nav-muted-alpha:      oklch(0.985 0.004 250 / 0.6);
+  --progress-bar-track:   oklch(0.49 0.028 255 / 0.18);
+  --progress-gradient-accent: oklch(0.66 0.18 18);
 
   /* ── Spacing Scale ─────────────────────────────────────────────── */
   --space-xs:   4px;
@@ -87,6 +118,90 @@
   --skeleton-shine: oklch(0.97 0.004 250);
 }
 
+/* ===================================================================
+   Dark Theme Tokens
+   =================================================================== */
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
+  --background:           oklch(0.145 0.014 260);
+  --foreground:           oklch(0.93 0.008 250);
+
+  --card:                 oklch(0.185 0.016 260);
+  --card-foreground:      oklch(0.93 0.008 250);
+
+  --popover:              oklch(0.20 0.018 260);
+  --popover-foreground:   oklch(0.93 0.008 250);
+
+  --muted:                oklch(0.24 0.018 260);
+  --muted-foreground:     oklch(0.65 0.020 255);
+
+  --border:               oklch(0.30 0.018 260);
+  --input:                oklch(0.22 0.016 260);
+
+  --primary:              oklch(0.60 0.14 260);
+  --primary-foreground:   oklch(0.98 0.004 250);
+
+  --secondary:            oklch(0.26 0.020 260);
+  --secondary-foreground: oklch(0.88 0.010 250);
+
+  --accent:               oklch(0.26 0.030 250);
+  --accent-foreground:    oklch(0.88 0.020 250);
+
+  --destructive:          oklch(0.62 0.20 25);
+  --destructive-foreground: oklch(0.97 0.01 25);
+
+  --ring:                 oklch(0.60 0.14 260);
+
+  /* Semantic status */
+  --success:              oklch(0.62 0.16 145);
+  --success-bg:           oklch(0.22 0.04 145);
+  --warning:              oklch(0.74 0.14 75);
+  --warning-bg:           oklch(0.25 0.04 75);
+  --warning-foreground:   oklch(0.82 0.08 75);
+  --danger-bg:            oklch(0.22 0.05 25);
+
+  /* Theme-aware utility tokens — dark */
+  --sticky-bg:            oklch(0.145 0.014 260 / 0.92);
+  --overlay:              oklch(0.05 0.01 260 / 0.65);
+  --ring-shadow:          oklch(0.60 0.14 260 / 0.25);
+  --border-hover:         oklch(0.38 0.025 260);
+  --focus-ring-color:     oklch(0.60 0.14 260 / 0.3);
+  --heart-bg:             oklch(0.12 0.02 260 / 0.65);
+  --heart-bg-hover:       oklch(0.12 0.02 260 / 0.85);
+  --heart-color:          oklch(0.92 0.01 250);
+  --heart-active-hover:   oklch(0.55 0.22 25);
+  --border-danger:        oklch(0.45 0.12 25);
+  --border-warning:       oklch(0.45 0.10 75);
+  --border-success:       oklch(0.45 0.10 145);
+  --progress-gradient-end: oklch(0.60 0.16 50);
+  --banner-shadow:        oklch(0.05 0.01 260 / 0.6);
+  --banner-gradient-start: oklch(0.145 0.014 260 / 0.85);
+  --banner-gradient-end:  oklch(0.145 0.014 260 / 0.4);
+  --banner-text-shadow:   oklch(0.05 0.01 260 / 0.7);
+  --checkbox-active:      oklch(0.55 0.14 260);
+  --checkbox-accent:      oklch(0.60 0.14 260);
+  --rec-hover-bg:         oklch(0.60 0.14 260 / 0.10);
+  --rec-hover-border:     oklch(0.60 0.14 260 / 0.25);
+  --rec-active-bg:        oklch(0.60 0.14 260 / 0.18);
+  --quality-active-bg:    oklch(0.50 0.16 145 / 0.20);
+  --quality-active-color: oklch(0.62 0.16 145);
+  --nav-muted-alpha:      oklch(0.93 0.008 250 / 0.6);
+  --progress-bar-track:   oklch(0.65 0.020 255 / 0.20);
+  --progress-gradient-accent: oklch(0.62 0.20 18);
+
+  /* Shadows — darker environment needs stronger shadows */
+  --shadow-xs:   0 1px 2px oklch(0.05 0.01 260 / 0.20);
+  --shadow-sm:   0 1px 4px oklch(0.05 0.01 260 / 0.25);
+  --shadow-md:   0 4px 12px oklch(0.05 0.01 260 / 0.30);
+  --shadow-lg:   0 8px 28px oklch(0.05 0.01 260 / 0.40);
+
+  /* Skeleton */
+  --skeleton-base:  oklch(0.24 0.010 260);
+  --skeleton-shine: oklch(0.30 0.012 260);
+}
+
 /* ===== Base Reset & Typography ===== */
 *, *::before, *::after {
   box-sizing: border-box;
@@ -115,4 +230,40 @@ h1, h2, h3 {
   margin: 0 0 0.5em;
   line-height: 1.3;
   color: var(--foreground);
+}
+
+/* ===== Theme Transitions ===== */
+body,
+.navbar,
+.movie-card,
+.auth-form,
+.admin-form,
+.admin-table,
+.confirm-dialog,
+.resume-prompt,
+input,
+textarea,
+select,
+button {
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease,
+    color 160ms ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body,
+  .navbar,
+  .movie-card,
+  .auth-form,
+  .admin-form,
+  .admin-table,
+  .confirm-dialog,
+  .resume-prompt,
+  input,
+  textarea,
+  select,
+  button {
+    transition: none;
+  }
 }
