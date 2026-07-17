@@ -1,0 +1,29 @@
+{
+  "language": {
+    "title": "Cài đặt ngôn ngữ",
+    "en": "Sử dụng tiếng Anh",
+    "vi": "Sử dụng tiếng Việt"
+  },
+  "theme": {
+    "title": "Cài đặt giao diện",
+    "light": "Sáng",
+    "dark": "Tối",
+    "system": "Hệ thống"
+  },
+  "navbar": {
+    "home": "Trang chủ",
+    "search": "Tìm kiếm phim...",
+    "favorites": "Yêu thích",
+    "admin": "Quản trị",
+    "profile": "Hồ sơ",
+    "login": "Đăng nhập",
+    "searchPlaceholder": "Tìm kiếm phim, thể loại, diễn viên...",
+    "theme": "Giao diện"
+  },
+  "loading": "Đang tải...",
+  "errorPrefix": "Lỗi:",
+  "error": {
+    "default": "Đã xảy ra lỗi không mong muốn.",
+    "retry": "Thử lại"
+  }
+}

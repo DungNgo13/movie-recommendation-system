@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { registerUser, removeToken } from '../services/authService';
 import { isPasswordValid } from '../utils/passwordValidator';
 import PasswordStrengthIndicator from '../components/PasswordStrengthIndicator';
+import { useTranslation } from 'react-i18next';
 // useAuth hook not needed here anymore
 
 const RegisterPage: React.FC = () => {
@@ -12,6 +13,7 @@ const RegisterPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const navigate = useNavigate();
+  const { t } = useTranslation(['auth', 'common']);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -45,12 +47,12 @@ const RegisterPage: React.FC = () => {
   return (
     <div className="auth-page">
       <form className="auth-form" onSubmit={handleSubmit}>
-        <h1>Register</h1>
+        <h1>{t("auth:register.title", "Register")}</h1>
 
         {error && <p className="auth-error">{error}</p>}
 
         <div className="auth-field">
-          <label htmlFor="register-email">Email</label>
+          <label htmlFor="register-email">{t("auth:register.email", "Email")}</label>
           <input
             id="register-email"
             type="email"
@@ -61,7 +63,7 @@ const RegisterPage: React.FC = () => {
         </div>
 
         <div className="auth-field">
-          <label htmlFor="register-password">Password</label>
+          <label htmlFor="register-password">{t("auth:register.password", "Password")}</label>
           <input
             id="register-password"
             type="password"
@@ -73,7 +75,7 @@ const RegisterPage: React.FC = () => {
         </div>
 
         <div className="auth-field">
-          <label htmlFor="register-confirm">Confirm Password</label>
+          <label htmlFor="register-confirm">{t("auth:register.confirmPassword", "Confirm Password")}</label>
           <input
             id="register-confirm"
             type="password"
@@ -84,11 +86,11 @@ const RegisterPage: React.FC = () => {
         </div>
 
         <button type="submit" className="btn btn--primary auth-submit" disabled={submitting}>
-          {submitting ? 'Creating account...' : 'Register'}
+          {submitting ? t("common:loading", "Creating account...") : t("auth:register.submit", "Register")}
         </button>
 
         <p className="auth-link">
-          Already have an account? <Link to="/login">Login</Link>
+          {t("auth:register.loginPrompt", "Already have an account?")} <Link to="/login">{t("auth:register.loginLink", "Sign in")}</Link>
         </p>
       </form>
     </div>

@@ -1,0 +1,42 @@
+{
+  "navigation": {
+    "dashboard": "Bảng điều khiển",
+    "movies": "Phim",
+    "users": "Người dùng",
+    "auditLogs": "Nhật ký hệ thống",
+    "security": "Bảo mật",
+    "recsysMonitor": "Giám sát Gợi ý"
+  },
+  "movieForm": {
+    "title": "Chi tiết phim",
+    "aiMetadataLabel": "Dữ liệu tiếng Anh / AI",
+    "aiMetadataDescription": "Các trường tiếng Anh này được sử dụng bởi hệ thống gợi ý.",
+    "viMetadataLabel": "Dữ liệu hiển thị tiếng Việt",
+    "viMetadataDescription": "Các trường này chỉ dùng để hiển thị tiếng Việt và không ảnh hưởng đến gợi ý.",
+    "fields": {
+      "title": "Tiêu đề (Tiếng Anh)",
+      "overview": "Mô tả (Tiếng Anh)",
+      "genres": "Thể loại",
+      "keywords": "Từ khóa (Tiếng Anh)",
+      "cast": "Diễn viên",
+      "director": "Đạo diễn",
+      "titleVi": "Tiêu đề (Tiếng Việt)",
+      "overviewVi": "Mô tả (Tiếng Việt)",
+      "keywordLabelsVi": "Nhãn từ khóa (Tiếng Việt)"
+    },
+    "keywordLabel": "Nhãn tiếng Việt cho",
+    "submit": "Lưu phim",
+    "cancel": "Hủy"
+  },
+  "tables": {
+    "noTitleVi": "Không có tiêu đề tiếng Việt",
+    "actions": "Hành động",
+    "edit": "Sửa",
+    "delete": "Xóa"
+  },
+  "status": {
+    "processing": "Đang xử lý",
+    "ready": "Sẵn sàng",
+    "error": "Lỗi"
+  }
+}

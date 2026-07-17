@@ -6,6 +6,7 @@ from uuid import UUID
 from ..models import movie as movie_model
 from ..schemas.movie import MovieCreateSchema, MovieUpdateSchema
 from .recommendation.vectorizer import invalidate_cache
+from .keyword_label_helpers import normalize_keyword_labels
 
 def get_movie(db: Session, movie_id: UUID):
     """
@@ -50,7 +51,8 @@ def get_movies(
 
     if search:
         query = query.filter(
-            movie_model.Movie.title.ilike(f"%{search}%")
+            movie_model.Movie.title.ilike(f"%{search}%") |
+            movie_model.Movie.title_vi.ilike(f"%{search}%")
         )
 
     if year is not None:
@@ -143,6 +145,9 @@ def create_movie(db: Session, movie_data: MovieCreateSchema):
         cast=movie_data.cast,
         keywords=movie_data.keywords,
         director=movie_data.director,
+        title_vi=movie_data.title_vi,
+        overview_vi=movie_data.overview_vi,
+        keyword_labels_vi=normalize_keyword_labels(movie_data.keywords, movie_data.keyword_labels_vi),
     )
 
     # Source & license fields — only set if provided (model defaults apply otherwise)
@@ -186,6 +191,12 @@ def update_movie(db: Session, movie_id: UUID, movie_data: MovieUpdateSchema):
     for field, value in update_data.items():
         if hasattr(db_movie, field):
             setattr(db_movie, field, value)
+
+    # Re-normalize keyword_labels_vi whenever keywords or keyword_labels_vi change.
+    if "keywords" in update_data or "keyword_labels_vi" in update_data:
+        db_movie.keyword_labels_vi = normalize_keyword_labels(
+            db_movie.keywords, db_movie.keyword_labels_vi
+        )
 
     db.commit()
     db.refresh(db_movie)

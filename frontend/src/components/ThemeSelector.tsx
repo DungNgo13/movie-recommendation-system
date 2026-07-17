@@ -1,6 +1,7 @@
 import React from 'react';
 import { useTheme } from '../hooks/useTheme';
 import type { ThemeMode } from '../theme/themeStorage';
+import { useTranslation } from 'react-i18next';
 
 // ── Inline SVG icons (no external dependency) ──────────────────────────
 
@@ -39,34 +40,34 @@ const MonitorIcon: React.FC = () => (
 
 interface ThemeOption {
   mode: ThemeMode;
-  label: string;
-  ariaLabel: string;
+  labelKey: string;
+  defaultLabel: string;
   Icon: React.FC;
 }
 
 const OPTIONS: ThemeOption[] = [
-  { mode: 'light',  label: 'Light',  ariaLabel: 'Use light theme',  Icon: SunIcon },
-  { mode: 'dark',   label: 'Dark',   ariaLabel: 'Use dark theme',   Icon: MoonIcon },
-  { mode: 'system', label: 'System', ariaLabel: 'Use system theme', Icon: MonitorIcon },
+  { mode: 'light',  labelKey: 'common:theme.light',  defaultLabel: 'Light',  Icon: SunIcon },
+  { mode: 'dark',   labelKey: 'common:theme.dark',   defaultLabel: 'Dark',   Icon: MoonIcon },
+  { mode: 'system', labelKey: 'common:theme.system', defaultLabel: 'System', Icon: MonitorIcon },
 ];
 
 const ThemeSelector: React.FC = () => {
   const { mode, setMode } = useTheme();
+  const { t } = useTranslation();
 
   return (
-    <div className="theme-selector" role="group" aria-label="Theme settings">
-      {OPTIONS.map(({ mode: optionMode, label, ariaLabel, Icon }) => (
+    <div className="theme-selector" role="group" aria-label={t('common:theme.title', 'Theme settings')}>
+      {OPTIONS.map(({ mode: optionMode, labelKey, defaultLabel, Icon }) => (
         <button
           key={optionMode}
           type="button"
-          className={`theme-selector__btn${optionMode === mode ? ' theme-selector__btn--active' : ''}`}
+          className={`theme-btn ${mode === optionMode ? 'active' : ''}`}
           onClick={() => setMode(optionMode)}
-          aria-label={ariaLabel}
-          aria-pressed={optionMode === mode}
-          title={ariaLabel}
+          aria-pressed={mode === optionMode}
+          title={t(labelKey, defaultLabel)}
         >
           <Icon />
-          <span className="theme-selector__label">{label}</span>
+          <span className="theme-selector__label">{t(labelKey, defaultLabel)}</span>
         </button>
       ))}
     </div>

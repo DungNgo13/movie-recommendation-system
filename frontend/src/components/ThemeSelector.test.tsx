@@ -53,32 +53,32 @@ describe('ThemeSelector', () => {
 
   it('renders Light, Dark, and System buttons', () => {
     renderSelector();
-    expect(screen.getByRole('button', { name: /use light theme/i })).toBeTruthy();
-    expect(screen.getByRole('button', { name: /use dark theme/i })).toBeTruthy();
-    expect(screen.getByRole('button', { name: /use system theme/i })).toBeTruthy();
+    expect(screen.getByRole('button', { name: /light/i })).toBeTruthy();
+    expect(screen.getByRole('button', { name: /dark/i })).toBeTruthy();
+    expect(screen.getByRole('button', { name: /system/i })).toBeTruthy();
   });
 
   // ── Active state ──
 
   it('marks System as active by default', () => {
     renderSelector();
-    const sysBtn = screen.getByRole('button', { name: /use system theme/i });
-    expect(sysBtn.getAttribute('aria-pressed')).toBe('true');
+    const systemBtn = screen.getByRole('button', { name: /system/i });
+    expect(systemBtn.getAttribute('aria-pressed')).toBe('true');
   });
 
   it('marks Light as active when selected', async () => {
     renderSelector();
-    const lightBtn = screen.getByRole('button', { name: /use light theme/i });
+    const lightBtn = screen.getByRole('button', { name: /light/i });
     await userEvent.click(lightBtn);
     expect(lightBtn.getAttribute('aria-pressed')).toBe('true');
 
-    const darkBtn = screen.getByRole('button', { name: /use dark theme/i });
+    const darkBtn = screen.getByRole('button', { name: /dark/i });
     expect(darkBtn.getAttribute('aria-pressed')).toBe('false');
   });
 
   it('marks Dark as active when selected', async () => {
     renderSelector();
-    const darkBtn = screen.getByRole('button', { name: /use dark theme/i });
+    const darkBtn = screen.getByRole('button', { name: /dark/i });
     await userEvent.click(darkBtn);
     expect(darkBtn.getAttribute('aria-pressed')).toBe('true');
   });
@@ -87,14 +87,14 @@ describe('ThemeSelector', () => {
 
   it('clicking Dark sets data-theme="dark"', async () => {
     renderSelector();
-    await userEvent.click(screen.getByRole('button', { name: /use dark theme/i }));
+    await userEvent.click(screen.getByRole('button', { name: /dark/i }));
     expect(document.documentElement.dataset.theme).toBe('dark');
   });
 
   it('clicking Light sets data-theme="light"', async () => {
     renderSelector();
-    await userEvent.click(screen.getByRole('button', { name: /use dark theme/i }));
-    await userEvent.click(screen.getByRole('button', { name: /use light theme/i }));
+    await userEvent.click(screen.getByRole('button', { name: /dark/i }));
+    await userEvent.click(screen.getByRole('button', { name: /light/i }));
     expect(document.documentElement.dataset.theme).toBe('light');
   });
 
@@ -102,7 +102,7 @@ describe('ThemeSelector', () => {
 
   it('saves selection to localStorage', async () => {
     renderSelector();
-    await userEvent.click(screen.getByRole('button', { name: /use dark theme/i }));
+    await userEvent.click(screen.getByRole('button', { name: /dark/i }));
     expect(localStorage.getItem(THEME_STORAGE_KEY)).toBe('dark');
   });
 
@@ -114,7 +114,7 @@ describe('ThemeSelector', () => {
 
     // Tab to Light button
     await user.tab();
-    const lightBtn = screen.getByRole('button', { name: /use light theme/i });
+    const lightBtn = screen.getByRole('button', { name: /light/i });
     expect(document.activeElement).toBe(lightBtn);
 
     // Press Enter to activate
@@ -138,7 +138,7 @@ describe('ThemeSelector', () => {
   it('loads stored "dark" on mount', () => {
     localStorage.setItem(THEME_STORAGE_KEY, 'dark');
     renderSelector();
-    const darkBtn = screen.getByRole('button', { name: /use dark theme/i });
+    const darkBtn = screen.getByRole('button', { name: /dark/i });
     expect(darkBtn.getAttribute('aria-pressed')).toBe('true');
   });
 });

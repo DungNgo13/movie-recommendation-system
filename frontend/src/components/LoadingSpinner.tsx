@@ -1,7 +1,9 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 const LoadingSpinner: React.FC = () => {
-  return <div className="loading-spinner">Loading...</div>;
+  const { t } = useTranslation(['common']);
+  return <div className="loading-spinner">{t("common:loading", "Loading...")}</div>;
 };
 
 export default LoadingSpinner;

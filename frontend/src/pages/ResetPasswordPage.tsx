@@ -3,6 +3,7 @@ import { Link, useSearchParams } from 'react-router-dom';
 import { resetPassword } from '../services/authService';
 import { isPasswordValid } from '../utils/passwordValidator';
 import PasswordStrengthIndicator from '../components/PasswordStrengthIndicator';
+import { useTranslation } from 'react-i18next';
 
 const ResetPasswordPage: React.FC = () => {
   const [searchParams] = useSearchParams();
@@ -13,6 +14,7 @@ const ResetPasswordPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const { t } = useTranslation(['auth', 'common']);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -46,9 +48,9 @@ const ResetPasswordPage: React.FC = () => {
   return (
     <div className="auth-page">
       <form className="auth-form" onSubmit={handleSubmit}>
-        <h1>Reset Password</h1>
+        <h1>{t("auth:resetPassword.title", "Set New Password")}</h1>
         <p style={{ color: '#888', fontSize: '0.9rem', textAlign: 'center', marginBottom: '20px' }}>
-          Enter your new password below.
+          {t("auth:resetPassword.description", "Enter your new password below.")}
         </p>
 
         {success && (
@@ -61,7 +63,7 @@ const ResetPasswordPage: React.FC = () => {
         {!success && (
           <>
             <div className="auth-field">
-              <label htmlFor="reset-password">New Password</label>
+              <label htmlFor="reset-password">{t("auth:resetPassword.password", "New Password")}</label>
               <input
                 id="reset-password"
                 type="password"
@@ -73,7 +75,7 @@ const ResetPasswordPage: React.FC = () => {
             </div>
 
             <div className="auth-field">
-              <label htmlFor="reset-confirm">Confirm Password</label>
+              <label htmlFor="reset-confirm">{t("auth:resetPassword.confirm", "Confirm Password")}</label>
               <input
                 id="reset-confirm"
                 type="password"
@@ -84,7 +86,7 @@ const ResetPasswordPage: React.FC = () => {
             </div>
 
             <button type="submit" className="btn btn--primary auth-submit" disabled={submitting}>
-              {submitting ? 'Resetting...' : 'Reset Password'}
+              {submitting ? t("common:loading", "Updating...") : t("auth:resetPassword.submit", "Update Password")}
             </button>
           </>
         )}

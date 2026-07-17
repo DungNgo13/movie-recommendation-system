@@ -4,11 +4,13 @@ import { getDashboardMetrics } from '../services/adminService';
 import type { AdminDashboardData } from '../services/adminService';
 import LoadingSpinner from '../components/LoadingSpinner';
 import ErrorMessage from '../components/ErrorMessage';
+import { useTranslation } from 'react-i18next';
 
 const AdminDashboardPage: React.FC = () => {
   const [metrics, setMetrics] = useState<AdminDashboardData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { t } = useTranslation(['admin', 'common']);
 
   useEffect(() => {
     fetchMetrics();
@@ -35,11 +37,11 @@ const AdminDashboardPage: React.FC = () => {
   return (
     <div className="admin-page">
       <div className="admin-header">
-        <h1>Admin Dashboard</h1>
+        <h1>{t("admin:navigation.dashboard", "Admin Dashboard")}</h1>
         <div className="admin-actions">
-          <Link to="/admin/movies" className="btn btn-secondary">Manage Movies</Link>
-          <Link to="/admin/users" className="btn btn-secondary">Manage Users</Link>
-          <Link to="/admin/logs" className="btn btn-secondary">Audit Logs</Link>
+          <Link to="/admin/movies" className="btn btn-secondary">{t("admin:navigation.movies", "Manage Movies")}</Link>
+          <Link to="/admin/users" className="btn btn-secondary">{t("admin:navigation.users", "Manage Users")}</Link>
+          <Link to="/admin/logs" className="btn btn-secondary">{t("admin:navigation.auditLogs", "Audit Logs")}</Link>
         </div>
       </div>
       

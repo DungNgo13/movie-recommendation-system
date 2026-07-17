@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { getLocalizedTitle } from '../utils/localizedMovie';
 import MovieCard from '../components/MovieCard';
 import ContinueWatchingCard from '../components/ContinueWatchingCard';
 import RecommendationCard from '../components/RecommendationCard';
@@ -41,6 +43,7 @@ interface GuestContinueItem extends MovieListItem {
 }
 
 const HomePage: React.FC = () => {
+  const { t, i18n } = useTranslation(['movies', 'recommendation']);
   const { isFavorite, toggleFavorite } = useFavorites();
   const { user } = useAuth();
   const location = useLocation();
@@ -244,7 +247,7 @@ const HomePage: React.FC = () => {
           />
           <div className="hero-gradient" />
           <div className="hero-content">
-            <h1 className="hero-title">{heroMovie.title}</h1>
+            <h1 className="hero-title">{getLocalizedTitle(heroMovie, i18n.language as any)}</h1>
             <div className="hero-actions">
               <Link
                 to={`/movie/${heroMovie.id}`}
@@ -269,7 +272,7 @@ const HomePage: React.FC = () => {
           <input
             id="search-input"
             type="text"
-            placeholder="Search by title..."
+            placeholder={t("movies:home.searchPlaceholder")}
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
             className="search-input"
@@ -281,10 +284,10 @@ const HomePage: React.FC = () => {
             onChange={(e) => setGenreFilter(e.target.value)}
             className="filter-select"
           >
-            <option value="">All Genres</option>
+            <option value="">{t("movies:home.allGenres")}</option>
             {availableGenres.map((genre) => (
               <option key={genre} value={genre}>
-                {genre}
+                {t(`movies:genres.${genre}`, genre)}
               </option>
             ))}
           </select>
@@ -297,7 +300,7 @@ const HomePage: React.FC = () => {
             }
             className="filter-select"
           >
-            <option value="">All Years</option>
+            <option value="">{t("movies:home.allYears")}</option>
             {availableYears.map((year) => (
               <option key={year} value={year}>
                 {year}
@@ -311,10 +314,10 @@ const HomePage: React.FC = () => {
             onChange={(e) => setSortOption(e.target.value as SortOption)}
             className="filter-select"
           >
-            <option value="title-asc">Title A–Z</option>
-            <option value="title-desc">Title Z–A</option>
-            <option value="year-desc">Newest First</option>
-            <option value="year-asc">Oldest First</option>
+            <option value="title-asc">{t("movies:home.sort.titleAsc")}</option>
+            <option value="title-desc">{t("movies:home.sort.titleDesc")}</option>
+            <option value="year-desc">{t("movies:home.sort.yearDesc")}</option>
+            <option value="year-asc">{t("movies:home.sort.yearAsc")}</option>
           </select>
         </div>
       </div>
@@ -343,7 +346,7 @@ const HomePage: React.FC = () => {
           {/* ── Authenticated Continue Watching ── */}
           {user && authContinueItems.length > 0 && (
             <section className="continue-watching-section">
-              <h2>Continue Watching</h2>
+              <h2>{t("movies:continueWatching.title")}</h2>
               <div className="movie-list movie-row">
                 {authContinueItems.map((item) => (
                   <ContinueWatchingCard
@@ -362,7 +365,7 @@ const HomePage: React.FC = () => {
           {/* ── Guest Continue Watching ── */}
           {!user && guestContinueItems.length > 0 && (
             <section className="continue-watching-section" data-testid="guest-continue-watching">
-              <h2>Continue Watching</h2>
+              <h2>{t("movies:continueWatching.title")}</h2>
               <div className="movie-list movie-row">
                 {guestContinueItems.map((item) => (
                   <ContinueWatchingCard
@@ -380,7 +383,7 @@ const HomePage: React.FC = () => {
 
           {user && recommendations.length > 0 && (
             <section className="recommendations-section recommendations-home">
-              <h2>Recommended for You</h2>
+              <h2>{t("recommendation:title")}</h2>
               <div className="movie-list movie-row">
                 {recommendations.map((rec) => (
                   <RecommendationCard
@@ -394,14 +397,14 @@ const HomePage: React.FC = () => {
             </section>
           )}
 
-          <h1>Movies by Genre</h1>
+          <h1>{t("movies:home.moviesByGenre")}</h1>
 
           {moviesByGenre.length === 0 ? (
             <div className="empty-state">
               <span className="empty-state__icon"></span>
-              <h3 className="empty-state__title">No movies found</h3>
+              <h3 className="empty-state__title">{t("movies:home.noMoviesFound")}</h3>
               <p className="empty-state__description">
-                Try adjusting your filters or search query to discover more movies.
+                {t("movies:home.noMoviesDesc")}
               </p>
               {(searchInput || genreFilter || yearFilter) && (
                 <button
@@ -413,14 +416,14 @@ const HomePage: React.FC = () => {
                     setSortOption('title-asc');
                   }}
                 >
-                  Reset Filters
+                  {t("movies:home.resetFilters")}
                 </button>
               )}
             </div>
           ) : (
             moviesByGenre.map(([genre, genreMovies]) => (
               <section key={genre} className="genre-section" style={{ marginBottom: '2rem' }}>
-                <h2 style={{ paddingLeft: '1rem' }}>{genre}</h2>
+                <h2 style={{ paddingLeft: '1rem' }}>{t(`movies:genres.${genre}`, genre)}</h2>
                 <div className="movie-list movie-row">
                   {genreMovies.map((movie) => (
                     <MovieCard

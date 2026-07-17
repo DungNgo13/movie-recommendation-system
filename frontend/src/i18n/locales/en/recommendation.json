@@ -1,0 +1,18 @@
+{
+  "title": "Recommended for You",
+  "reasons": {
+    "ratings_strong": "Based on your ratings · Strong match",
+    "ratings_good": "Based on your ratings · Good match",
+    "ratings_might_like": "Based on your ratings · You might like this",
+    "favorites_strong": "Based on your favorites · Strong match",
+    "favorites_good": "Based on your favorites · Good match",
+    "favorites_might_like": "Based on your favorites · You might like this",
+    "history_strong": "Similar to movies you watched · Strong match",
+    "history_good": "Similar to movies you watched · Good match",
+    "history_might_like": "Similar to movies you watched · You might like this",
+    "default": "Recommended for you",
+    "fallback": "Popular movie — rate or favorite some movies for personalized picks!"
+  },
+  "new_for_you": "New for you",
+  "match": "{{percent}}% match"
+}

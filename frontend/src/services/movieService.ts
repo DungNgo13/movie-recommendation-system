@@ -14,6 +14,11 @@ export interface MovieFormData {
   poster_url?: string | null;
   backdrop_url?: string | null;
 
+  // Vietnamese display metadata (optional)
+  title_vi?: string | null;
+  overview_vi?: string | null;
+  keyword_labels_vi?: Record<string, string> | null;
+
   // Source & license (movie-level metadata)
   source_name?: string | null;
   source_url?: string | null;

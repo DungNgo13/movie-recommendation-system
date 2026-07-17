@@ -9,6 +9,11 @@ export interface Movie {
   director: string | null;
   poster_url: string | null;
   backdrop_url: string | null;
+
+  // Vietnamese display metadata (optional)
+  title_vi?: string | null;
+  overview_vi?: string | null;
+  keyword_labels_vi?: Record<string, string> | null;
   video_url?: string | null;
   video_status?: string;
   video_progress?: number;
@@ -33,6 +38,7 @@ export interface Movie {
 export interface MovieListItem {
     id: string;
     title: string;
+    title_vi?: string | null;
     poster_url: string | null;
     backdrop_url?: string | null;
     release_year: number | null;

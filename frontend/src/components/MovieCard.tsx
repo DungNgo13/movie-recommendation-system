@@ -2,9 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import HeartIcon from './HeartIcon';
 import type { MovieListItem } from '../models';
+import { useTranslation } from 'react-i18next';
+import { getLocalizedTitle } from '../utils/localizedMovie';
 
 interface MovieCardProps {
-  movie: Pick<MovieListItem, 'id' | 'title' | 'poster_url' | 'backdrop_url'>;
+  movie: Pick<MovieListItem, 'id' | 'title' | 'title_vi' | 'poster_url' | 'backdrop_url'>;
   isFavorite: boolean;
   onToggleFavorite: (id: string) => void | Promise<void>;
   favoriteLoading?: boolean;
@@ -13,6 +15,8 @@ interface MovieCardProps {
 
 const MovieCard: React.FC<MovieCardProps> = ({ movie, isFavorite, onToggleFavorite, favoriteLoading = false, enableImageSwap = false }) => {
   const [showBackdrop, setShowBackdrop] = useState(false);
+  const { i18n } = useTranslation();
+  const localizedTitle = getLocalizedTitle(movie, i18n.language as any);
 
   useEffect(() => {
     let interval: number;
@@ -37,8 +41,8 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie, isFavorite, onToggleFavori
   };
 
   const favoriteLabel = isFavorite
-    ? `Remove ${movie.title} from favorites`
-    : `Add ${movie.title} to favorites`;
+    ? `Remove ${localizedTitle} from favorites`
+    : `Add ${localizedTitle} to favorites`;
 
   return (
     <div className="movie-card">
@@ -47,7 +51,7 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie, isFavorite, onToggleFavori
           {/* Primary Poster */}
           <img
             src={movie.poster_url || '/placeholder-poster.svg'}
-            alt={`${movie.title} poster`}
+            alt={`${localizedTitle} poster`}
             style={{ 
               position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover',
               opacity: showBackdrop ? 0 : 1, transition: 'opacity 0.6s ease-in-out' 
@@ -61,7 +65,7 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie, isFavorite, onToggleFavori
           {enableImageSwap && movie.backdrop_url && (
             <img
               src={movie.backdrop_url}
-              alt={`${movie.title} backdrop`}
+              alt={`${localizedTitle} backdrop`}
               style={{ 
                 position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover',
                 opacity: showBackdrop ? 1 : 0, transition: 'opacity 0.6s ease-in-out' 

@@ -2,6 +2,9 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import HeartIcon from './HeartIcon';
 import type { RecommendedMovie } from '../services/recommendationService';
+import { useTranslation } from 'react-i18next';
+import { getLocalizedTitle } from '../utils/localizedMovie';
+import { getLocalizedRecommendationReason } from '../utils/recommendationReason';
 
 interface RecommendationCardProps {
   movie: RecommendedMovie;
@@ -20,6 +23,9 @@ const RecommendationCard: React.FC<RecommendationCardProps> = ({
   onToggleFavorite,
   favoriteLoading = false,
 }) => {
+  const { t, i18n } = useTranslation(['recommendation']);
+  const localizedTitle = getLocalizedTitle(movie as any, i18n.language as any);
+  const localizedReason = getLocalizedRecommendationReason(movie.reason, t);
   const handleFavoriteClick = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -30,8 +36,8 @@ const RecommendationCard: React.FC<RecommendationCardProps> = ({
   const coldStart = isColdStart(movie);
 
   const favoriteLabel = isFavorite
-    ? `Remove ${movie.title} from favorites`
-    : `Add ${movie.title} to favorites`;
+    ? `Remove ${localizedTitle} from favorites`
+    : `Add ${localizedTitle} to favorites`;
 
   return (
     <div className="movie-card rec-card">
@@ -39,7 +45,7 @@ const RecommendationCard: React.FC<RecommendationCardProps> = ({
         <div style={{ position: 'relative', width: '100%', aspectRatio: '2/3', background: '#1e1e22' }}>
           <img
             src={movie.poster_url || '/placeholder-poster.svg'}
-            alt={`${movie.title} poster`}
+            alt={`${localizedTitle} poster`}
             style={{ width: '100%', height: '100%', objectFit: 'cover' }}
             onError={(e) => {
               e.currentTarget.onerror = null;
@@ -58,10 +64,10 @@ const RecommendationCard: React.FC<RecommendationCardProps> = ({
             <HeartIcon filled={isFavorite} className="movie-card__favorite-icon" />
           </button>
         </div>
-        <h3>{movie.title}</h3>
-        <p className="rec-reason">{movie.reason}</p>
+        <h3>{localizedTitle}</h3>
+        <p className="rec-reason">{localizedReason}</p>
         <span className="rec-score">
-          {coldStart ? 'New for you' : `${Math.round(movie.score * 100)}% match`}
+          {coldStart ? t('recommendation:new_for_you', 'New for you') : t('recommendation:match', '{{percent}}% match', { percent: Math.round(movie.score * 100) })}
         </span>
       </Link>
     </div>

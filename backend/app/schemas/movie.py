@@ -1,10 +1,65 @@
-from pydantic import BaseModel, Field, ConfigDict, computed_field, field_validator
-from typing import List, Optional, Union
+from pydantic import BaseModel, Field, ConfigDict, computed_field, field_validator, model_validator
+from typing import Any, Dict, List, Optional, Union
 from uuid import UUID
 from datetime import date
 
 # Allowed values for Movie.media_rights_status
 ALLOWED_MEDIA_RIGHTS = {"safe_to_use", "attribution_required", "non_commercial_only", "unknown", "blocked"}
+
+# ── Vietnamese field validation helpers ──────────────────────────────────────
+
+_MAX_TITLE_VI_LEN = 255
+_MAX_OVERVIEW_VI_LEN = 5000
+_MAX_KW_LABEL_KEY_LEN = 200
+_MAX_KW_LABEL_VAL_LEN = 200
+
+
+def _trim_or_none(v: Any) -> str | None:
+    """Trim whitespace; return None for empty/non-string values."""
+    if v is None:
+        return None
+    if not isinstance(v, str):
+        return None
+    trimmed = v.strip()
+    return trimmed if trimmed else None
+
+
+def _validate_title_vi(v: Any) -> str | None:
+    result = _trim_or_none(v)
+    if result and len(result) > _MAX_TITLE_VI_LEN:
+        raise ValueError(f"title_vi must be at most {_MAX_TITLE_VI_LEN} characters")
+    return result
+
+
+def _validate_overview_vi(v: Any) -> str | None:
+    result = _trim_or_none(v)
+    if result and len(result) > _MAX_OVERVIEW_VI_LEN:
+        raise ValueError(f"overview_vi must be at most {_MAX_OVERVIEW_VI_LEN} characters")
+    return result
+
+
+def _validate_keyword_labels_vi(v: Any) -> Dict[str, str] | None:
+    """Validate keyword_labels_vi as a flat {string: string} mapping."""
+    if v is None:
+        return None
+    if not isinstance(v, dict):
+        raise ValueError("keyword_labels_vi must be a JSON object (dict)")
+
+    result: Dict[str, str] = {}
+    for key, value in v.items():
+        if not isinstance(key, str) or not isinstance(value, str):
+            raise ValueError("keyword_labels_vi keys and values must be strings")
+        k = key.strip()
+        val = value.strip()
+        if not k or not val:
+            continue  # skip empty entries
+        if len(k) > _MAX_KW_LABEL_KEY_LEN:
+            raise ValueError(f"keyword_labels_vi key too long (max {_MAX_KW_LABEL_KEY_LEN})")
+        if len(val) > _MAX_KW_LABEL_VAL_LEN:
+            raise ValueError(f"keyword_labels_vi value too long (max {_MAX_KW_LABEL_VAL_LEN})")
+        result[k] = val
+
+    return result if result else None
 
 
 def normalize_url(path: Optional[str]) -> Optional[str]:
@@ -79,6 +134,7 @@ class MovieListItemSchema(BaseModel):
 
     id: UUID
     title: str
+    title_vi: Optional[str] = None
 
     # Exclude raw DB columns — exposed only through computed_field properties below
     poster_path: Optional[str] = Field(None, exclude=True)
@@ -153,11 +209,14 @@ class MovieDetailSchema(BaseModel):
 
     id: UUID
     title: str
+    title_vi: Optional[str] = None
     overview: Optional[str] = None
+    overview_vi: Optional[str] = None
     release_date: Optional[date] = None
     genres: Optional[List[str]] = []
     cast: Optional[List[str]] = []
     keywords: Optional[List[str]] = []
+    keyword_labels_vi: Optional[Dict[str, str]] = None
     director: Optional[str] = None
 
     video_original_filename: Optional[str] = None
@@ -243,6 +302,11 @@ class MovieCreateSchema(BaseModel):
     poster_url: Optional[str] = None
     backdrop_url: Optional[str] = None
 
+    # Vietnamese display metadata (optional)
+    title_vi: Optional[str] = None
+    overview_vi: Optional[str] = None
+    keyword_labels_vi: Optional[Dict[str, str]] = None
+
     # Source & license — optional on create
     source_name: Optional[str] = None
     source_url: Optional[str] = None
@@ -276,6 +340,21 @@ class MovieCreateSchema(BaseModel):
             )
         return v
 
+    @field_validator('title_vi')
+    @classmethod
+    def clean_title_vi(cls, v: Any) -> str | None:
+        return _validate_title_vi(v)
+
+    @field_validator('overview_vi')
+    @classmethod
+    def clean_overview_vi(cls, v: Any) -> str | None:
+        return _validate_overview_vi(v)
+
+    @field_validator('keyword_labels_vi')
+    @classmethod
+    def clean_keyword_labels_vi(cls, v: Any) -> Dict[str, str] | None:
+        return _validate_keyword_labels_vi(v)
+
 # Schema for updating an existing movie (All fields optional)
 class MovieUpdateSchema(BaseModel):
     title: Optional[str] = None
@@ -287,6 +366,11 @@ class MovieUpdateSchema(BaseModel):
     director: Optional[str] = None
     poster_url: Optional[str] = None
     backdrop_url: Optional[str] = None
+
+    # Vietnamese display metadata (optional)
+    title_vi: Optional[str] = None
+    overview_vi: Optional[str] = None
+    keyword_labels_vi: Optional[Dict[str, str]] = None
 
     # Source & license — optional on update
     source_name: Optional[str] = None

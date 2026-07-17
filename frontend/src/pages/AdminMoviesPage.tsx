@@ -15,6 +15,7 @@ import {
   cancelEncodeMovie,
   processMovieVideo,
 } from '../services/movieService';
+import { useTranslation } from 'react-i18next';
 
 const AdminMoviesPage: React.FC = () => {
   const [movies, setMovies]           = useState<Movie[]>([]);
@@ -25,6 +26,7 @@ const AdminMoviesPage: React.FC = () => {
   const [showForm, setShowForm]       = useState(false);
   const [editingMovie, setEditingMovie] = useState<Movie | null>(null);
   const [deletingMovie, setDeletingMovie] = useState<Movie | null>(null);
+  const { t } = useTranslation(['admin', 'common']);
 
   const fetchMovies = useCallback(async () => {
     try {
@@ -246,7 +248,7 @@ const AdminMoviesPage: React.FC = () => {
             onClick={() => { setSessionToast(null); window.location.href = '/login'; }}
             className="session-toast__login-btn"
           >
-            Log in
+            {t("common:login", "Log in")}
           </button>
           <button
             onClick={() => setSessionToast(null)}
@@ -257,10 +259,10 @@ const AdminMoviesPage: React.FC = () => {
       )}
 
       <div className="admin-header">
-        <h1>Movie Management</h1>
+        <h1>{t("admin:navigation.movies", "Movie Management")}</h1>
         {!showForm && (
           <button className="btn btn--primary" onClick={handleAdd}>
-            + Add Movie
+            + {t("admin:movieForm.addMovie", "Add Movie")}
           </button>
         )}
       </div>
@@ -277,9 +279,9 @@ const AdminMoviesPage: React.FC = () => {
         <>
           {movies.length === 0 ? (
             <div className="admin-empty">
-              <p>No movies available.</p>
+              <p>{t("admin:movies.empty", "No movies available.")}</p>
               <button className="btn btn--primary" onClick={handleAdd}>
-                + Add Movie
+                + {t("admin:movieForm.addMovie", "Add Movie")}
               </button>
             </div>
           ) : (
@@ -297,17 +299,17 @@ const AdminMoviesPage: React.FC = () => {
       {deletingMovie && (
         <div className="confirm-overlay">
           <div className="confirm-dialog">
-            <h3>Delete Movie</h3>
+            <h3>{t("admin:tables.delete", "Delete Movie")}</h3>
             <p>
-              Are you sure you want to delete <strong>"{deletingMovie.title}"</strong>?
-              This action cannot be undone.
+              {t("admin:movies.deleteConfirm", "Are you sure you want to delete")} <strong>"{deletingMovie.title}"</strong>?
+              {t("admin:movies.deleteWarning", "This action cannot be undone.")}
             </p>
             <div className="confirm-actions">
               <button className="btn btn--delete" onClick={handleDeleteConfirm}>
-                Delete
+                {t("admin:tables.delete", "Delete")}
               </button>
               <button className="btn btn--secondary" onClick={handleDeleteCancel}>
-                Cancel
+                {t("admin:movieForm.cancel", "Cancel")}
               </button>
             </div>
           </div>

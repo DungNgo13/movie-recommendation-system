@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { confirmPasswordChange } from '../services/authService';
+import { useTranslation } from 'react-i18next';
 
 const ConfirmPasswordChangePage: React.FC = () => {
   const [searchParams] = useSearchParams();
@@ -8,11 +9,12 @@ const ConfirmPasswordChangePage: React.FC = () => {
 
   // Derive initial state from token presence — avoids synchronous setState
   // inside useEffect which triggers the react-hooks/set-state-in-effect rule.
+  const { t } = useTranslation(['auth']);
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>(
     token ? 'loading' : 'error',
   );
   const [message, setMessage] = useState(
-    token ? '' : 'Missing confirmation token. Please use the link from your email.',
+    token ? '' : t("auth:confirmPasswordChange.missingToken", "Missing confirmation token. Please use the link from your email."),
   );
 
   useEffect(() => {
@@ -32,7 +34,7 @@ const ConfirmPasswordChangePage: React.FC = () => {
         if (!cancelled) {
           setStatus('error');
           setMessage(
-            err instanceof Error ? err.message : 'Failed to confirm password change',
+            err instanceof Error ? err.message : t("auth:confirmPasswordChange.error", "Failed to confirm password change"),
           );
         }
       }
@@ -48,17 +50,17 @@ const ConfirmPasswordChangePage: React.FC = () => {
   return (
     <div className="auth-page">
       <div className="auth-form" id="confirm-password-change">
-        <h1>Password Change</h1>
+        <h1>{t("auth:confirmPasswordChange.title", "Password Change")}</h1>
 
         {status === 'loading' && (
-          <div className="loading-spinner">Confirming your password change...</div>
+          <div className="loading-spinner">{t("auth:confirmPasswordChange.loading", "Confirming your password change...")}</div>
         )}
 
         {status === 'success' && (
           <div className="auth-success-message">
             {message}{' '}
             <Link to="/login" style={{ fontWeight: 600 }}>
-              Login now
+              {t("auth:confirmPasswordChange.loginNow", "Login now")}
             </Link>
           </div>
         )}
@@ -66,7 +68,7 @@ const ConfirmPasswordChangePage: React.FC = () => {
         {status === 'error' && <p className="auth-error">{message}</p>}
 
         <p className="auth-link">
-          <Link to="/login">Back to Login</Link>
+          <Link to="/login">{t("auth:confirmPasswordChange.backToLogin", "Back to Login")}</Link>
         </p>
       </div>
     </div>

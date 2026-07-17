@@ -585,3 +585,87 @@ def test_pagination_with_metadata_filter(metadata_movies):
     r = client.get("/api/v1/movies?director=Pexels Creator&limit=1&page=1")
     assert r.status_code == 200
     assert len(r.json()["items"]) == 1
+
+# ── Vietnamese Display Metadata Tests ────────────────────────────────────────
+
+def test_create_movie_with_vietnamese_metadata(db_session):
+    app.dependency_overrides[get_current_admin_user] = override_get_current_admin_user
+    payload = {
+        "title": "English Title",
+        "title_vi": "Tiêu đề tiếng Việt",
+        "overview": "English overview",
+        "overview_vi": "Mô tả tiếng Việt",
+        "keywords": ["forest", "nature"],
+        "keyword_labels_vi": {
+            "forest": "rừng",
+            "nature": "thiên nhiên"
+        }
+    }
+    r = client.post("/api/v1/movies", json=payload)
+    assert r.status_code == 201
+    data = r.json()
+    assert data["title_vi"] == "Tiêu đề tiếng Việt"
+    assert data["overview_vi"] == "Mô tả tiếng Việt"
+    assert data["keyword_labels_vi"]["forest"] == "rừng"
+    
+def test_empty_title_vi_normalizes_to_none(db_session):
+    app.dependency_overrides[get_current_admin_user] = override_get_current_admin_user
+    payload = {
+        "title": "English Title 2",
+        "title_vi": "   ",
+        "overview_vi": ""
+    }
+    r = client.post("/api/v1/movies", json=payload)
+    assert r.status_code == 201
+    data = r.json()
+    assert data["title_vi"] is None
+    assert data["overview_vi"] is None
+
+def test_invalid_keyword_labels_vi_rejected(db_session):
+    app.dependency_overrides[get_current_admin_user] = override_get_current_admin_user
+    payload = {
+        "title": "English Title 3",
+        "keyword_labels_vi": {
+            "nested": {"invalid": "object"}
+        }
+    }
+    r = client.post("/api/v1/movies", json=payload)
+    assert r.status_code == 422
+    
+def test_update_movie_prunes_stale_keyword_labels(db_session, seed_movies):
+    app.dependency_overrides[get_current_admin_user] = override_get_current_admin_user
+    movie_id = str(seed_movies[0].id)
+    # 1. Update with keywords and labels
+    payload1 = {
+        "keywords": ["apple", "banana"],
+        "keyword_labels_vi": {"apple": "táo", "banana": "chuối", "stale": "cũ"}
+    }
+    r1 = client.put(f"/api/v1/movies/{movie_id}", json=payload1)
+    assert r1.status_code == 200
+    assert r1.json()["keyword_labels_vi"] == {"apple": "táo", "banana": "chuối"}
+    
+    # 2. Update keywords (remove banana) -> should prune banana label
+    payload2 = {
+        "keywords": ["apple"]
+    }
+    r2 = client.put(f"/api/v1/movies/{movie_id}", json=payload2)
+    assert r2.status_code == 200
+    assert r2.json()["keyword_labels_vi"] == {"apple": "táo"}
+
+def test_search_by_title_vi(db_session):
+    app.dependency_overrides[get_current_admin_user] = override_get_current_admin_user
+    # Create movie with Vietnamese title
+    payload = {
+        "title": "Hidden English",
+        "title_vi": "Đặc vụ ngầm"
+    }
+    r_post = client.post("/api/v1/movies", json=payload)
+    assert r_post.status_code == 201
+    
+    # Search by Vietnamese title (use exact case for the first letter since SQLite ilike is ASCII-only)
+    r_search = client.get("/api/v1/movies?search=Đặc vụ")
+    assert r_search.status_code == 200
+    data = r_search.json()
+    assert data["total"] >= 1
+    # Check that at least one result has the correct title_vi
+    assert any(m["title_vi"] == "Đặc vụ ngầm" for m in data["items"])

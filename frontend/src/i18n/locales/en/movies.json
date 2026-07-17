@@ -1,0 +1,80 @@
+{
+  "genres": {
+    "Action": "Action",
+    "Adventure": "Adventure",
+    "Comedy": "Comedy",
+    "Documentary": "Documentary",
+    "Sci-Fi": "Sci-Fi",
+    "Thriller": "Thriller",
+    "Drama": "Drama",
+    "Horror": "Horror",
+    "Romance": "Romance",
+    "Animation": "Animation",
+    "Fantasy": "Fantasy"
+  },
+  "detail": {
+    "director": "Director",
+    "cast": "Cast",
+    "genres": "Genres",
+    "keywords": "Tags",
+    "posterAlt": "{{title}} poster"
+  },
+  "continueWatching": {
+    "title": "Continue Watching",
+    "resume": "Resume",
+    "progress": "▶ {{time}} · {{percent}}%"
+  },
+  "favorites": {
+    "title": "My Favorites",
+    "empty": "You have no favorite movies yet."
+  },
+  "metadata": {
+    "moreByDirector": "More movies by {{director}}",
+    "featuringCast": "Movies featuring {{cast}}",
+    "taggedKeyword": "Movies tagged #{{keyword}}",
+    "backToRecommendations": "Back to personalized recommendations",
+    "noOtherMovies": "No other movies found."
+  },
+  "home": {
+    "moviesByGenre": "Movies by Genre",
+    "noMoviesFound": "No movies found",
+    "noMoviesDesc": "Try adjusting your filters or search query to discover more movies.",
+    "resetFilters": "Reset Filters",
+    "searchPlaceholder": "Search by title...",
+    "allGenres": "All Genres",
+    "allYears": "All Years",
+    "sort": {
+      "titleAsc": "Title A–Z",
+      "titleDesc": "Title Z–A",
+      "yearDesc": "Newest First",
+      "yearAsc": "Oldest First"
+    }
+  },
+  "favorites": {
+    "title": "My Favorites",
+    "guestSync": "You have {{count}} favorite saved locally",
+    "guestSyncPlural": "You have {{count}} favorites saved locally",
+    "guestSyncDesc": " to sync your favorites and access them from any device.",
+    "noFavorites": "No favorites yet",
+    "noFavoritesGuestDesc": "Browse movies and tap the heart icon to save your favorites. ",
+    "noFavoritesDesc": "Browse movies and save your favorites here."
+  },
+  "sourceAttribution": {
+    "title": "Source and License",
+    "source": "Source",
+    "license": "License",
+    "attribution": "Attribution",
+    "publicDomain": "Public Domain",
+    "tmdbDisclaimer": "This product uses the TMDB API but is not endorsed or certified by TMDB."
+  },
+  "starRating": {
+    "rate": "Rate {{star}} out of 5",
+    "outOf": "{{star}} out of 5"
+  },
+  "plyr": {
+    "quality": "Quality",
+    "speed": "Speed",
+    "normal": "Normal",
+    "auto": "Auto"
+  }
+}

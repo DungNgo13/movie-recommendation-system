@@ -100,12 +100,12 @@ describe('ContinueWatchingCard', () => {
 
   it('renders playback time inside the card', () => {
     renderCard({ playbackPositionSeconds: 120 });
-    expect(screen.getByText('02:00')).toBeTruthy();
+    expect(screen.getByText(/02:00/)).toBeTruthy();
   });
 
   it('renders rounded percentage inside the card', () => {
     renderCard({ progressPercent: 91 });
-    expect(screen.getByText('91%')).toBeTruthy();
+    expect(screen.getByText(/91%/)).toBeTruthy();
   });
 
   it('renders movie title inside the card', () => {
@@ -188,23 +188,23 @@ describe('ContinueWatchingCard', () => {
     const { container } = renderCard();
     expect(container.querySelector('.cw-card')).toBeTruthy();
     expect(container.querySelector('.cw-card__progress')).toBeTruthy();
-    expect(container.querySelector('.cw-card__meta')).toBeTruthy();
+    expect(container.querySelector('.cw-card-progress')).toBeTruthy();
   });
 
   // ── Various percentage display ──
 
   it('renders 2% correctly', () => {
     renderCard({ progressPercent: 2 });
-    expect(screen.getByText('2%')).toBeTruthy();
+    expect(screen.getByText(/2%/)).toBeTruthy();
   });
 
   it('renders 50% correctly', () => {
     renderCard({ progressPercent: 50 });
-    expect(screen.getByText('50%')).toBeTruthy();
+    expect(screen.getByText(/50%/)).toBeTruthy();
   });
 
   it('renders 94% correctly', () => {
     renderCard({ progressPercent: 94 });
-    expect(screen.getByText('94%')).toBeTruthy();
+    expect(screen.getByText(/94%/)).toBeTruthy();
   });
 });

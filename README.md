@@ -41,6 +41,8 @@ Hệ thống hiện đã có đầy đủ các nhóm chức năng quan trọng n
 - Nhận gợi ý cá nhân hóa dựa trên hành vi
 - **Metadata Discovery**: bấm vào đạo diễn, diễn viên hoặc keyword trên trang chi tiết phim để khám phá các phim liên quan ngay trong mục "Recommended for You" mà không rời trang
 - **Chế độ giao diện (Theme)**: hỗ trợ 3 chế độ **Light**, **Dark** và **System** — chuyển đổi qua nút trên Navbar. Chế độ `System` tự động theo tùy chọn hệ điều hành (prefers-color-scheme) và cập nhật ngay khi thay đổi. Lựa chọn được lưu vào `localStorage` (key: `movie-app-theme`), giữ nguyên khi refresh, đăng nhập/đăng xuất và chuyển trang.
+- **Đa ngôn ngữ (i18n)**: hỗ trợ tiếng Việt và tiếng Anh. Cho phép chuyển đổi ngôn ngữ toàn bộ giao diện thông qua Navbar. Lựa chọn ngôn ngữ được lưu vào `localStorage` (key: `movie-app-language`).
+- **Metadata hiển thị song ngữ**: Hỗ trợ hiển thị tên phim, tóm tắt và từ khóa bằng tiếng Việt nếu có, trong khi vẫn giữ nguyên metadata tiếng Anh cho mục đích chạy AI / Recommendation.
 
 ### 🤖 Recommendation Engine
 
@@ -65,6 +67,7 @@ Hệ thống hiện đã có đầy đủ các nhóm chức năng quan trọng n
 - Trigger encode HLS và theo dõi trạng thái xử lý
 - Quản lý người dùng và phân quyền admin/user
 - Force reset password cho user
+- Quản lý metadata song ngữ (Nhập tiêu đề, mô tả và từ khóa bằng tiếng Việt độc lập với tiếng Anh)
 - Dashboard thống kê hệ thống
 - Audit log cho thao tác quản trị
 - Security audit cho tài khoản người dùng

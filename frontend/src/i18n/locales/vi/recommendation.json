@@ -1,0 +1,18 @@
+{
+  "title": "Gợi ý dành cho bạn",
+  "reasons": {
+    "ratings_strong": "Dựa trên đánh giá của bạn · Phù hợp rất cao",
+    "ratings_good": "Dựa trên đánh giá của bạn · Phù hợp cao",
+    "ratings_might_like": "Dựa trên đánh giá của bạn · Bạn có thể thích",
+    "favorites_strong": "Dựa trên phim yêu thích · Phù hợp rất cao",
+    "favorites_good": "Dựa trên phim yêu thích · Phù hợp cao",
+    "favorites_might_like": "Dựa trên phim yêu thích · Bạn có thể thích",
+    "history_strong": "Tương tự các phim bạn đã xem · Phù hợp rất cao",
+    "history_good": "Tương tự các phim bạn đã xem · Phù hợp cao",
+    "history_might_like": "Tương tự các phim bạn đã xem · Bạn có thể thích",
+    "default": "Gợi ý dành cho bạn",
+    "fallback": "Phim phổ biến — hãy đánh giá hoặc yêu thích để nhận gợi ý cá nhân hóa!"
+  },
+  "new_for_you": "Mới dành cho bạn",
+  "match": "Phù hợp {{percent}}%"
+}

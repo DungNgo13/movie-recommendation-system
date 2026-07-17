@@ -420,7 +420,7 @@ describe('MovieDetailPage — Metadata Discovery', () => {
     const dirBtn = screen.getByRole('button', { name: /show movies directed by pexels creator/i });
     await userEvent.click(dirBtn);
 
-    await screen.findByText('More movies by Pexels Creator');
+    await screen.findByText('More by Pexels Creator');
   });
 
   it('metadata mode changes section title for keyword', async () => {
@@ -478,10 +478,10 @@ describe('MovieDetailPage — Metadata Discovery', () => {
     // Activate metadata
     const dirBtn = screen.getByRole('button', { name: /show movies directed by pexels creator/i });
     await userEvent.click(dirBtn);
-    await screen.findByText('More movies by Pexels Creator');
+    await screen.findByText('More by Pexels Creator');
 
     // Clear
-    const clearBtn = screen.getByRole('button', { name: /back to personalized/i });
+    const clearBtn = screen.getByRole('button', { name: /back to recommendations/i });
     await userEvent.click(clearBtn);
 
     // Personalized cards restored
@@ -501,7 +501,7 @@ describe('MovieDetailPage — Metadata Discovery', () => {
     const kwBtn = screen.getByRole('button', { name: /show movies tagged forest$/i });
     await userEvent.click(kwBtn);
 
-    await screen.findByText(/no other movies found with keyword #forest/i);
+    await screen.findByText(/no other movies found/i);
   });
 
   // ── Error state ──
@@ -520,7 +520,7 @@ describe('MovieDetailPage — Metadata Discovery', () => {
     await screen.findByText(/unable to load movies for pexels creator/i);
 
     // Clear restores personalized — use first match (header has one, error body has another)
-    const clearBtns = screen.getAllByRole('button', { name: /back to personalized/i });
+    const clearBtns = screen.getAllByRole('button', { name: /back to recommendations/i });
     await userEvent.click(clearBtns[0]);
 
     await screen.findByText('Recommended for You');

@@ -3,6 +3,7 @@ import type { KeyboardEvent } from 'react';
 import type { Movie } from '../../models';
 import type { MovieFormData } from '../../services/movieService';
 import { uploadMovieImage, uploadMovieVideo, processMovieVideo, getMovieProcessingStatus } from '../../services/movieService';
+import { useTranslation } from 'react-i18next';
 
 // ─── TagInput ─────────────────────────────────────────────────────────────────
 // Self-contained chip/tag input — no external library needed.
@@ -141,6 +142,7 @@ interface MovieFormProps {
 }
 
 const MovieForm: React.FC<MovieFormProps> = ({ movie, onSubmit, onCancel }) => {
+  const { t } = useTranslation(['admin', 'common']);
 
   // ── Metadata state ───────────────────────────────────────────────────────
   const [title, setTitle]               = useState('');
@@ -152,6 +154,10 @@ const MovieForm: React.FC<MovieFormProps> = ({ movie, onSubmit, onCancel }) => {
   const [keywords, setKeywords]         = useState<string[]>([]);
   const [posterUrl, setPosterUrl]       = useState('');
   const [backdropUrl, setBackdropUrl]   = useState('');
+
+  const [titleVi, setTitleVi]           = useState('');
+  const [overviewVi, setOverviewVi]     = useState('');
+  const [keywordLabelsVi, setKeywordLabelsVi] = useState<Record<string, string>>({});
 
   // ── Advanced source info (collapsed by default) ─────────────────────────
   const [sourceName, setSourceName]     = useState('');
@@ -185,6 +191,9 @@ const MovieForm: React.FC<MovieFormProps> = ({ movie, onSubmit, onCancel }) => {
       setKeywords(movie.keywords ?? []);
       setPosterUrl(movie.poster_url || '');
       setBackdropUrl(movie.backdrop_url || '');
+      setTitleVi(movie.title_vi || '');
+      setOverviewVi(movie.overview_vi || '');
+      setKeywordLabelsVi(movie.keyword_labels_vi || {});
       setVideoUrl(movie.video_url || '');
       setVideoStatus(movie.video_status || 'pending');
       setHlsUrl(movie.hls_playlist_url || '');
@@ -301,6 +310,10 @@ const MovieForm: React.FC<MovieFormProps> = ({ movie, onSubmit, onCancel }) => {
       source_name:  sourceName.trim()  || null,
       source_url:   sourceUrl.trim()   || null,
       license_type: licenseType.trim() || null,
+      
+      title_vi:     titleVi.trim() || null,
+      overview_vi:  overviewVi.trim() || null,
+      keyword_labels_vi: Object.keys(keywordLabelsVi).length > 0 ? keywordLabelsVi : null,
     });
   };
 
@@ -310,13 +323,13 @@ const MovieForm: React.FC<MovieFormProps> = ({ movie, onSubmit, onCancel }) => {
   // ── Render ───────────────────────────────────────────────────────────────
   return (
     <form className="admin-form" onSubmit={handleSubmit}>
-      <h2>{movie ? 'Edit Movie' : 'Add Movie'}</h2>
+      <h2>{movie ? t("admin:movieForm.editMovie", "Edit Movie") : t("admin:movieForm.addMovie", "Add Movie")}</h2>
 
       {error && <p className="admin-form-error">{error}</p>}
 
       {/* ── Basic metadata ───────────────────────────────────────────── */}
       <div className="admin-form-group">
-        <label htmlFor="title">Title *</label>
+        <label htmlFor="title">{t("admin:movieForm.fields.title", "Title (English)")} *</label>
         <input
           id="title"
           type="text"
@@ -327,7 +340,7 @@ const MovieForm: React.FC<MovieFormProps> = ({ movie, onSubmit, onCancel }) => {
       </div>
 
       <div className="admin-form-group">
-        <label htmlFor="overview">Overview</label>
+        <label htmlFor="overview">{t("admin:movieForm.fields.overview", "Overview (English)")}</label>
         <textarea
           id="overview"
           value={overview}
@@ -339,7 +352,7 @@ const MovieForm: React.FC<MovieFormProps> = ({ movie, onSubmit, onCancel }) => {
 
       <div className="admin-form-row">
         <div className="admin-form-group">
-          <label htmlFor="release_date">Release Year</label>
+          <label htmlFor="release_date">{t("admin:movieForm.fields.releaseDate", "Release Year")}</label>
           <input
             id="release_date"
             type="number"
@@ -352,7 +365,7 @@ const MovieForm: React.FC<MovieFormProps> = ({ movie, onSubmit, onCancel }) => {
         </div>
 
         <div className="admin-form-group">
-          <label htmlFor="director">Director</label>
+          <label htmlFor="director">{t("admin:movieForm.fields.director", "Director")}</label>
           <input
             id="director"
             type="text"
@@ -370,10 +383,9 @@ const MovieForm: React.FC<MovieFormProps> = ({ movie, onSubmit, onCancel }) => {
         <div className="ai-fields-header">
           <span className="ai-fields-icon"></span>
           <div>
-            <strong>AI Recommendation Data</strong>
+            <strong>{t("admin:movieForm.aiMetadataLabel", "English / AI metadata")}</strong>
             <span className="ai-fields-desc">
-              Used directly by the TF-IDF recommendation engine.
-              Filling these fields improves personalisation accuracy.
+              {t("admin:movieForm.aiMetadataDescription", "These English fields are used by the recommendation engine.")}
             </span>
           </div>
         </div>
@@ -390,7 +402,7 @@ const MovieForm: React.FC<MovieFormProps> = ({ movie, onSubmit, onCancel }) => {
         {/* Genres */}
         <div className="admin-form-group">
           <label>
-            Genres
+            {t("admin:movieForm.fields.genres", "Genres")}
             <span className="field-hint">Select all applicable genres from the list below</span>
           </label>
           <GenreCheckboxGrid
@@ -407,7 +419,7 @@ const MovieForm: React.FC<MovieFormProps> = ({ movie, onSubmit, onCancel }) => {
         {/* Cast */}
         <div className="admin-form-group">
           <label htmlFor="cast">
-            Cast / Actors
+            {t("admin:movieForm.fields.cast", "Cast")}
             <span className="field-hint">Press Enter or comma to add each actor</span>
           </label>
           <TagInput
@@ -421,7 +433,7 @@ const MovieForm: React.FC<MovieFormProps> = ({ movie, onSubmit, onCancel }) => {
         {/* Keywords */}
         <div className="admin-form-group">
           <label htmlFor="keywords">
-            Keywords / Tags
+            {t("admin:movieForm.fields.keywords", "Keywords (English)")}
             <span className="field-hint">Thematic tags — press Enter or comma to add each</span>
           </label>
           <TagInput
@@ -431,6 +443,62 @@ const MovieForm: React.FC<MovieFormProps> = ({ movie, onSubmit, onCancel }) => {
             placeholder="e.g. heist, space, based on true story…"
           />
         </div>
+      </div>
+
+      {/* ── Vietnamese Display Metadata ─────────────────────────────────── */}
+      <div className="ai-fields-section" style={{ marginTop: '20px' }}>
+        <div className="ai-fields-header">
+          <span className="ai-fields-icon" style={{ filter: 'hue-rotate(120deg)' }}></span>
+          <div>
+            <strong>{t("admin:movieForm.viMetadataLabel", "Vietnamese display metadata")}</strong>
+            <span className="ai-fields-desc">
+              {t("admin:movieForm.viMetadataDescription", "These fields are used only for Vietnamese display and do not affect recommendations.")}
+            </span>
+          </div>
+        </div>
+
+        <div className="admin-form-group">
+          <label htmlFor="title_vi">{t("admin:movieForm.fields.titleVi", "Title (Vietnamese)")}</label>
+          <input
+            id="title_vi"
+            type="text"
+            value={titleVi}
+            onChange={(e) => setTitleVi(e.target.value)}
+            placeholder="Vietnamese title (optional)"
+          />
+        </div>
+
+        <div className="admin-form-group">
+          <label htmlFor="overview_vi">{t("admin:movieForm.fields.overviewVi", "Overview (Vietnamese)")}</label>
+          <textarea
+            id="overview_vi"
+            value={overviewVi}
+            onChange={(e) => setOverviewVi(e.target.value)}
+            placeholder="Vietnamese overview (optional)"
+            rows={3}
+          />
+        </div>
+
+        {/* Dynamic Keyword Label Inputs */}
+        {keywords.length > 0 && (
+          <div className="admin-form-group">
+            <label>{t("admin:movieForm.fields.keywordLabelsVi", "Vietnamese Keyword Labels")}</label>
+            <div className="keyword-labels-grid" style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '8px' }}>
+              {keywords.map(kw => (
+                <div key={kw} className="keyword-label-row" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  <span className="keyword-label-key" style={{ minWidth: '150px', fontWeight: 600, color: 'var(--text-secondary)' }}>#{kw}</span>
+                  <input
+                    type="text"
+                    value={keywordLabelsVi[kw] || ''}
+                    onChange={(e) => setKeywordLabelsVi({...keywordLabelsVi, [kw]: e.target.value})}
+                    placeholder={`${t("admin:movieForm.keywordLabel", "Vietnamese label for")} ${kw}`}
+                    style={{ flex: 1 }}
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* ── Image fields ─────────────────────────────────────────────── */}
@@ -637,10 +705,10 @@ const MovieForm: React.FC<MovieFormProps> = ({ movie, onSubmit, onCancel }) => {
       {/* ── Form actions ──────────────────────────────────────────────── */}
       <div className="admin-form-actions">
         <button type="submit" className="btn btn--primary">
-          {movie ? 'Save Changes' : 'Create Movie'}
+          {movie ? t("admin:movieForm.submit", "Save Changes") : t("admin:movieForm.submit", "Create Movie")}
         </button>
         <button type="button" className="btn btn--secondary" onClick={onCancel}>
-          Cancel
+          {t("admin:movieForm.cancel", "Cancel")}
         </button>
       </div>
     </form>

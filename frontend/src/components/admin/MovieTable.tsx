@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import type { Movie } from '../../models';
+import { useTranslation } from 'react-i18next';
 
 interface MovieTableProps {
   movies: Movie[];
@@ -327,14 +328,16 @@ const VideoStatusCell: React.FC<{
 };
 
 const MovieTable: React.FC<MovieTableProps> = ({ movies, onEdit, onDelete, onCancelEncode, onStartEncode }) => {
+  const { t } = useTranslation(['admin', 'common']);
+
   return (
     <div className="admin-table-wrapper">
       <table className="admin-table">
         <thead>
           <tr>
-            <th>Title</th>
-            <th>Director</th>
-            <th>Release Year</th>
+            <th>{t("admin:movieForm.fields.title", "Title (English)")}</th>
+            <th>{t("admin:movieForm.fields.director", "Director")}</th>
+            <th>{t("admin:movieForm.fields.releaseDate", "Release Year")}</th>
             <th>Quality</th>
             <th
               title="Data completeness score for the AI recommendation engine (0–100). Hover each row for missing fields."
@@ -343,13 +346,18 @@ const MovieTable: React.FC<MovieTableProps> = ({ movies, onEdit, onDelete, onCan
               Data Quality
             </th>
             <th>Video Status</th>
-            <th>Actions</th>
+            <th>{t("admin:tables.actions", "Actions")}</th>
           </tr>
         </thead>
         <tbody>
           {movies.map((movie) => (
             <tr key={movie.id}>
-              <td>{movie.title}</td>
+              <td>
+                <div style={{ fontWeight: 500 }}>{movie.title}</div>
+                <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary, #6c757d)' }}>
+                  {movie.title_vi || <span style={{ fontStyle: 'italic', opacity: 0.7 }}>{t("admin:tables.noTitleVi", "No Vietnamese title")}</span>}
+                </div>
+              </td>
               <td>{movie.director || '—'}</td>
               <td>{movie.release_date ? movie.release_date.split('-')[0] : '—'}</td>
               <td><QualityCell movie={movie} /></td>
@@ -362,13 +370,13 @@ const MovieTable: React.FC<MovieTableProps> = ({ movies, onEdit, onDelete, onCan
                   className="btn btn--edit"
                   onClick={() => onEdit(movie)}
                 >
-                  Edit
+                  {t("admin:tables.edit", "Edit")}
                 </button>
                 <button
                   className="btn btn--delete"
                   onClick={() => onDelete(movie)}
                 >
-                  Delete
+                  {t("admin:tables.delete", "Delete")}
                 </button>
               </td>
             </tr>

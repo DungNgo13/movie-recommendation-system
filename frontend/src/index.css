@@ -267,3 +267,40 @@ button {
     transition: none;
   }
 }
+
+/* ===== Language Selector ===== */
+.language-selector {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--muted);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  padding: 4px 8px;
+}
+
+.lang-btn {
+  background: none;
+  border: none;
+  padding: 2px 4px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--muted-foreground);
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  transition: var(--transition-fast);
+}
+
+.lang-btn:hover {
+  color: var(--foreground);
+}
+
+.lang-btn.active {
+  color: var(--foreground);
+}
+
+.lang-divider {
+  font-size: 0.8rem;
+  color: var(--border-hover);
+  user-select: none;
+}

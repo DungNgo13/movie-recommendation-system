@@ -1,0 +1,29 @@
+{
+  "language": {
+    "title": "Language settings",
+    "en": "Use English",
+    "vi": "Use Vietnamese"
+  },
+  "theme": {
+    "title": "Theme settings",
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System"
+  },
+  "navbar": {
+    "home": "Home",
+    "search": "Search for movies...",
+    "favorites": "Favorites",
+    "admin": "Admin",
+    "profile": "Profile",
+    "login": "Login",
+    "searchPlaceholder": "Search movies, genres, actors...",
+    "theme": "Theme"
+  },
+  "loading": "Loading...",
+  "errorPrefix": "Error:",
+  "error": {
+    "default": "An unexpected error occurred.",
+    "retry": "Try again"
+  }
+}

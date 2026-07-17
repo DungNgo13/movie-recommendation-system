@@ -2,11 +2,14 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import HeartIcon from './HeartIcon';
 import { formatPlaybackTime } from '../services/continueWatchingService';
+import { useTranslation } from 'react-i18next';
+import { getLocalizedTitle } from '../utils/localizedMovie';
 
 interface ContinueWatchingCardProps {
   movie: {
     id: string;
     title: string;
+    title_vi?: string | null;
     poster_url: string | null;
   };
   progressPercent: number;
@@ -36,6 +39,8 @@ const ContinueWatchingCard: React.FC<ContinueWatchingCardProps> = ({
   onToggleFavorite,
   favoriteLoading = false,
 }) => {
+  const { t, i18n } = useTranslation(['movies']);
+  const localizedTitle = getLocalizedTitle(movie as any, i18n.language as any);
   // ── Progress data safety ──────────────────────────────────────────
   const clampedProgress = Math.min(
     100,
@@ -52,8 +57,8 @@ const ContinueWatchingCard: React.FC<ContinueWatchingCardProps> = ({
   };
 
   const favoriteLabel = isFavorite
-    ? `Remove ${movie.title} from favorites`
-    : `Add ${movie.title} to favorites`;
+    ? `Remove ${localizedTitle} from favorites`
+    : `Add ${localizedTitle} to favorites`;
 
   return (
     <article className="cw-card">
@@ -62,7 +67,7 @@ const ContinueWatchingCard: React.FC<ContinueWatchingCardProps> = ({
         <div className="cw-card__media">
           <img
             src={movie.poster_url || '/placeholder-poster.svg'}
-            alt={`${movie.title} poster`}
+            alt={`${localizedTitle} poster`}
             className="cw-card__poster"
             onError={(e) => {
               e.currentTarget.onerror = null;
@@ -84,13 +89,19 @@ const ContinueWatchingCard: React.FC<ContinueWatchingCardProps> = ({
 
         {/* ── Content footer ── */}
         <div className="cw-card__content">
-          <h3 className="cw-card__title">{movie.title}</h3>
+          <h3 className="cw-card-title">{localizedTitle}</h3>
+          <p className="cw-card-progress">
+            {t("movies:continueWatching.progress", "▶ {{time}} · {{percent}}%", {
+              time: formatPlaybackTime(playbackPositionSeconds),
+              percent: progressPercent > 0 && progressPercent < 1 ? '<1' : Math.floor(progressPercent)
+            })}
+          </p>
 
           {/* Accessible progress bar */}
           <div
             className="cw-card__progress"
             role="progressbar"
-            aria-label={`Watched ${roundedProgress}% of ${movie.title}`}
+            aria-label={`Watched ${roundedProgress}% of ${localizedTitle}`}
             aria-valuemin={0}
             aria-valuemax={100}
             aria-valuenow={roundedProgress}
@@ -102,14 +113,9 @@ const ContinueWatchingCard: React.FC<ContinueWatchingCardProps> = ({
           </div>
 
           {/* Resume time + percentage */}
-          <div className="cw-card__meta">
-            <span className="cw-card__resume">
-              <PlayIcon className="cw-card__play-icon" />
-              {formattedPosition}
-            </span>
-            <span className="cw-card__percentage">
-              {roundedProgress}%
-            </span>
+          <div className="cw-resume-indicator">
+            <span className="cw-resume-text">{t("movies:continueWatching.resume", "Resume")}</span>
+            <PlayIcon className="cw-resume-icon" />
           </div>
         </div>
       </Link>

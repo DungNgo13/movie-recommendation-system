@@ -2,12 +2,14 @@ import React from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuthHook';
 import { getAvatarUrl } from '../utils/avatarUrl';
+import { useTranslation } from 'react-i18next';
 import ThemeSelector from './ThemeSelector';
-
+import { LanguageSelector } from './LanguageSelector';
 const Navbar: React.FC = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const { t } = useTranslation();
 
   const handleLogout = () => {
     navigate('/', { replace: true });
@@ -33,11 +35,11 @@ const Navbar: React.FC = () => {
     <nav className="navbar">
       <Link to="/" className="navbar-brand">Laetus</Link>
       <div className="navbar-links">
-        <Link to="/" className={navClass('/')}>Home</Link>
-        <Link to="/favorites" className={navClass('/favorites')}>Favorites</Link>
+        <Link to="/" className={navClass('/')}>{t("navbar:home", "Home")}</Link>
+        <Link to="/favorites" className={navClass('/favorites')}>{t("navbar:favorites", "Favorites")}</Link>
         {user?.role === 'admin' && (
           <>
-            <Link to="/admin" className={navClass('/admin')}>Dashboard</Link>
+            <Link to="/admin" className={navClass('/admin')}>{t("navbar:admin", "Dashboard")}</Link>
             <Link to="/admin/movies" className={navClass('/admin/movies')}>Movies</Link>
             <Link to="/admin/users" className={navClass('/admin/users')}>Users</Link>
             <Link to="/admin/logs" className={navClass('/admin/logs')}>Logs</Link>
@@ -45,6 +47,7 @@ const Navbar: React.FC = () => {
             <Link to="/admin/security" className={navClass('/admin/security')}>Security</Link>
           </>
         )}
+        <LanguageSelector />
         <ThemeSelector />
         {user ? (
           <>
@@ -75,7 +78,7 @@ const Navbar: React.FC = () => {
             </button>
           </>
         ) : (
-          <Link to="/login" className="navbar-link navbar-login">Login</Link>
+          <Link to="/login" className="navbar-link navbar-login">{t("navbar:login", "Login")}</Link>
         )}
       </div>
     </nav>

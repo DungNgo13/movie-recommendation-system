@@ -5,6 +5,7 @@ import { API_BASE_URL } from '../config';
 export interface RecommendedMovie {
   id: string;
   title: string;
+  title_vi?: string | null;
   poster_url: string | null;
   release_year: number | null;
   score: number;

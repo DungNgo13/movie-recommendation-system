@@ -7,6 +7,7 @@ import { useFavorites } from '../hooks/useFavorites';
 import { useAuth } from '../hooks/useAuthHook';
 import { getToken } from '../services/authService';
 import type { MovieListItem } from '../models';
+import { useTranslation } from 'react-i18next';
 
 import { API_BASE_URL } from '../config';
 
@@ -16,6 +17,7 @@ const FavoritesPage: React.FC = () => {
   const [movies, setMovies] = useState<MovieListItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { t } = useTranslation(['movies', 'auth']);
 
   useEffect(() => {
     if (!user) {
@@ -52,25 +54,25 @@ const FavoritesPage: React.FC = () => {
     const guestCount = favoriteIds.length;
     return (
       <div className="favorites-page">
-        <h1>My Favorites</h1>
+        <h1>{t("movies:favorites.title")}</h1>
         <div className="empty-state">
           {guestCount > 0 ? (
             <>
               <h3 className="empty-state__title">
-                You have {guestCount} favorite{guestCount !== 1 ? 's' : ''} saved locally
+                {guestCount !== 1 ? t("movies:favorites.guestSyncPlural", { count: guestCount }) : t("movies:favorites.guestSync", { count: guestCount })}
               </h3>
               <p className="empty-state__description">
-                <Link to="/login">Log in</Link> or{' '}
-                <Link to="/register">register</Link> to sync your favorites
-                and access them from any device.
+                <Link to="/login">{t("auth:login.title", "Log in")}</Link> or{' '}
+                <Link to="/register">{t("auth:register.title", "Register")}</Link>
+                {t("movies:favorites.guestSyncDesc")}
               </p>
             </>
           ) : (
             <>
-              <h3 className="empty-state__title">No favorites yet</h3>
+              <h3 className="empty-state__title">{t("movies:favorites.noFavorites")}</h3>
               <p className="empty-state__description">
-                Browse movies and tap the heart icon to save your favorites.{' '}
-                <Link to="/login">Log in</Link> to sync them across devices.
+                {t("movies:favorites.noFavoritesGuestDesc")}
+                <Link to="/login">{t("auth:login.title", "Log in")}</Link>
               </p>
             </>
           )}
@@ -89,12 +91,12 @@ const FavoritesPage: React.FC = () => {
 
   return (
     <div className="favorites-page">
-      <h1>My Favorites</h1>
+      <h1>{t("movies:favorites.title")}</h1>
 
       {displayedMovies.length === 0 ? (
         <div className="empty-state">
-          <h3 className="empty-state__title">No favorites yet</h3>
-          <p className="empty-state__description">Browse movies and save your favorites here.</p>
+          <h3 className="empty-state__title">{t("movies:favorites.noFavorites")}</h3>
+          <p className="empty-state__description">{t("movies:favorites.noFavoritesDesc")}</p>
         </div>
       ) : (
         <div className="movie-list">

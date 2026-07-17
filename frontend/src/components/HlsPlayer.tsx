@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import Hls from 'hls.js';
 import Plyr from 'plyr';
 import 'plyr/dist/plyr.css';
+import { useTranslation } from 'react-i18next';
 
 interface HlsPlayerProps {
   src: string;
@@ -23,6 +24,7 @@ const HlsPlayer: React.FC<HlsPlayerProps> = ({
   const videoRef  = useRef<HTMLVideoElement>(null);
   const hlsRef    = useRef<Hls | null>(null);
   const playerRef = useRef<Plyr | null>(null);
+  const { t } = useTranslation(['movies']);
 
   // Stable refs for callback props — lets Effect 1 read the latest callback
   // without listing them as dependencies (which would destroy and re-create
@@ -163,7 +165,12 @@ const HlsPlayer: React.FC<HlsPlayerProps> = ({
             fallback:  true,   // CSS pseudo-fullscreen if native API fails
             iosNative: true,   // use iOS native FS instead of pseudo-FS
           },
-          i18n: { qualityLabel: { 0: 'Auto' } },
+          i18n: { 
+            qualityLabel: { 0: t('movies:plyr.auto', 'Auto') },
+            quality: t('movies:plyr.quality', 'Quality'),
+            speed: t('movies:plyr.speed', 'Speed'),
+            normal: t('movies:plyr.normal', 'Normal'),
+          },
         });
 
         playerRef.current = player;

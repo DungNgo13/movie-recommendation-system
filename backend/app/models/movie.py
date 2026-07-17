@@ -26,6 +26,11 @@ class Movie(Base):
     # Comma-separated list of successfully encoded quality labels, e.g. "360p,720p,1080p"
     available_qualities = Column(String(100), nullable=True)
 
+    # ── Vietnamese display metadata (display-only, not used by AI/recommendation) ─
+    title_vi = Column(String(255), nullable=True)
+    overview_vi = Column(Text, nullable=True)
+    keyword_labels_vi = Column(JSON, nullable=True)  # {"forest": "rừng", "nature": "thiên nhiên"}
+
     # ── Source & license tracking ────────────────────────────────────────────
     source_name = Column(String(100), nullable=True)       # e.g. "Library of Congress", "TMDB"
     source_url = Column(String(500), nullable=True)         # URL to the original source page

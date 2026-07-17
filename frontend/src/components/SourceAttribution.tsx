@@ -1,5 +1,6 @@
 import React from 'react';
 import type { Movie, MovieAsset } from '../models';
+import { useTranslation } from 'react-i18next';
 
 interface SourceData {
   source_name?: string | null;
@@ -23,6 +24,7 @@ interface SourceAttributionProps {
  * Accepts either a Movie or a MovieAsset — renders nothing if all source fields are empty.
  */
 const SourceAttribution: React.FC<SourceAttributionProps> = ({ movie, asset, label }) => {
+  const { t } = useTranslation(['movies']);
   const data: SourceData = asset ?? movie ?? {};
 
   const {
@@ -43,12 +45,12 @@ const SourceAttribution: React.FC<SourceAttributionProps> = ({ movie, asset, lab
 
   return (
     <aside className="source-attribution" id="source-attribution">
-      <h3 className="source-attribution__heading">{label || 'Source and License'}</h3>
+      <h3 className="source-attribution__heading">{label || t("movies:sourceAttribution.title", "Source and License")}</h3>
 
       <dl className="source-attribution__list">
         {source_name && (
           <>
-            <dt>Source</dt>
+            <dt>{t("movies:sourceAttribution.source", "Source")}</dt>
             <dd>
               {source_url ? (
                 <a
@@ -68,7 +70,7 @@ const SourceAttribution: React.FC<SourceAttributionProps> = ({ movie, asset, lab
 
         {license_type && (
           <>
-            <dt>License</dt>
+            <dt>{t("movies:sourceAttribution.license", "License")}</dt>
             <dd>
               {license_url ? (
                 <a
@@ -83,7 +85,7 @@ const SourceAttribution: React.FC<SourceAttributionProps> = ({ movie, asset, lab
                 license_type
               )}
               {is_public_domain && (
-                <span className="source-attribution__badge">Public Domain</span>
+                <span className="source-attribution__badge">{t("movies:sourceAttribution.publicDomain", "Public Domain")}</span>
               )}
             </dd>
           </>
@@ -91,16 +93,16 @@ const SourceAttribution: React.FC<SourceAttributionProps> = ({ movie, asset, lab
 
         {!license_type && is_public_domain && (
           <>
-            <dt>License</dt>
+            <dt>{t("movies:sourceAttribution.license", "License")}</dt>
             <dd>
-              <span className="source-attribution__badge">Public Domain</span>
+              <span className="source-attribution__badge">{t("movies:sourceAttribution.publicDomain", "Public Domain")}</span>
             </dd>
           </>
         )}
 
         {attribution && (
           <>
-            <dt>Attribution</dt>
+            <dt>{t("movies:sourceAttribution.attribution", "Attribution")}</dt>
             <dd className="source-attribution__text">{attribution}</dd>
           </>
         )}
@@ -108,7 +110,7 @@ const SourceAttribution: React.FC<SourceAttributionProps> = ({ movie, asset, lab
 
       {isTmdb && (
         <p className="source-attribution__disclaimer">
-          This product uses the TMDB API but is not endorsed or certified by TMDB.
+          {t("movies:sourceAttribution.tmdbDisclaimer", "This product uses the TMDB API but is not endorsed or certified by TMDB.")}
         </p>
       )}
     </aside>

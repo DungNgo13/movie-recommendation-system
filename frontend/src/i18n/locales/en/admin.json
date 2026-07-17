@@ -1,0 +1,42 @@
+{
+  "navigation": {
+    "dashboard": "Dashboard",
+    "movies": "Movies",
+    "users": "Users",
+    "auditLogs": "Audit Logs",
+    "security": "Security",
+    "recsysMonitor": "Recsys Monitor"
+  },
+  "movieForm": {
+    "title": "Movie Details",
+    "aiMetadataLabel": "English / AI metadata",
+    "aiMetadataDescription": "These English fields are used by the recommendation engine.",
+    "viMetadataLabel": "Vietnamese display metadata",
+    "viMetadataDescription": "These fields are used only for Vietnamese display and do not affect recommendations.",
+    "fields": {
+      "title": "Title (English)",
+      "overview": "Overview (English)",
+      "genres": "Genres",
+      "keywords": "Keywords (English)",
+      "cast": "Cast",
+      "director": "Director",
+      "titleVi": "Title (Vietnamese)",
+      "overviewVi": "Overview (Vietnamese)",
+      "keywordLabelsVi": "Vietnamese Keyword Labels"
+    },
+    "keywordLabel": "Vietnamese label for",
+    "submit": "Save Movie",
+    "cancel": "Cancel"
+  },
+  "tables": {
+    "noTitleVi": "No Vietnamese title",
+    "actions": "Actions",
+    "edit": "Edit",
+    "delete": "Delete"
+  },
+  "status": {
+    "processing": "Processing",
+    "ready": "Ready",
+    "error": "Error"
+  }
+}

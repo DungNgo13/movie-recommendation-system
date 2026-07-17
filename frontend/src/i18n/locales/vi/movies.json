@@ -1,0 +1,80 @@
+{
+  "genres": {
+    "Action": "Hành động",
+    "Adventure": "Phiêu lưu",
+    "Comedy": "Hài kịch",
+    "Documentary": "Tài liệu",
+    "Sci-Fi": "Khoa học viễn tưởng",
+    "Thriller": "Giật gân",
+    "Drama": "Chính kịch",
+    "Horror": "Kinh dị",
+    "Romance": "Lãng mạn",
+    "Animation": "Hoạt hình",
+    "Fantasy": "Kỳ ảo"
+  },
+  "detail": {
+    "director": "Đạo diễn",
+    "cast": "Diễn viên",
+    "genres": "Thể loại",
+    "keywords": "Từ khóa",
+    "posterAlt": "Áp phích phim {{title}}"
+  },
+  "continueWatching": {
+    "title": "Tiếp tục xem",
+    "resume": "Tiếp tục",
+    "progress": "▶ {{time}} · {{percent}}%"
+  },
+  "favorites": {
+    "title": "Phim yêu thích",
+    "empty": "Bạn chưa có phim yêu thích nào."
+  },
+  "metadata": {
+    "moreByDirector": "Thêm phim của {{director}}",
+    "featuringCast": "Phim có {{cast}} tham gia",
+    "taggedKeyword": "Phim có từ khóa #{{keyword}}",
+    "backToRecommendations": "Quay lại gợi ý dành cho bạn",
+    "noOtherMovies": "Không tìm thấy phim khác."
+  },
+  "home": {
+    "moviesByGenre": "Phim theo Thể loại",
+    "noMoviesFound": "Không tìm thấy phim",
+    "noMoviesDesc": "Hãy thử thay đổi bộ lọc hoặc từ khóa tìm kiếm để khám phá thêm phim.",
+    "resetFilters": "Xóa bộ lọc",
+    "searchPlaceholder": "Tìm kiếm theo tiêu đề...",
+    "allGenres": "Tất cả thể loại",
+    "allYears": "Tất cả các năm",
+    "sort": {
+      "titleAsc": "Tiêu đề A–Z",
+      "titleDesc": "Tiêu đề Z–A",
+      "yearDesc": "Mới nhất",
+      "yearAsc": "Cũ nhất"
+    }
+  },
+  "favorites": {
+    "title": "Phim yêu thích của tôi",
+    "guestSync": "Bạn có {{count}} phim yêu thích đã lưu",
+    "guestSyncPlural": "Bạn có {{count}} phim yêu thích đã lưu",
+    "guestSyncDesc": " để đồng bộ phim yêu thích và truy cập từ mọi thiết bị.",
+    "noFavorites": "Chưa có phim yêu thích",
+    "noFavoritesGuestDesc": "Khám phá phim và nhấn biểu tượng trái tim để lưu. ",
+    "noFavoritesDesc": "Khám phá phim và lưu phim yêu thích của bạn tại đây."
+  },
+  "sourceAttribution": {
+    "title": "Nguồn và Giấy phép",
+    "source": "Nguồn",
+    "license": "Giấy phép",
+    "attribution": "Ghi công",
+    "publicDomain": "Phạm vi Công cộng (Public Domain)",
+    "tmdbDisclaimer": "Sản phẩm này sử dụng TMDB API nhưng không được TMDB xác nhận hay chứng nhận."
+  },
+  "starRating": {
+    "rate": "Đánh giá {{star}} trên 5",
+    "outOf": "{{star}} trên 5"
+  },
+  "plyr": {
+    "quality": "Chất lượng",
+    "speed": "Tốc độ",
+    "normal": "Bình thường",
+    "auto": "Tự động"
+  }
+}

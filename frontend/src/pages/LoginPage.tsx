@@ -4,6 +4,7 @@ import { loginUser } from '../services/authService';
 import { getGuestWatchHistory, clearGuestWatchHistory } from '../services/continueWatchingService';
 import { getGuestFavoriteIds, mergeGuestFavorites, clearGuestFavorites } from '../services/favoriteService';
 import { useAuth } from '../hooks/useAuthHook';
+import { useTranslation } from 'react-i18next';
 
 const LoginPage: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -13,6 +14,7 @@ const LoginPage: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { refreshUser } = useAuth();
+  const { t } = useTranslation(['auth', 'common']);
   
   const successMessage = location.state?.message;
 
@@ -74,13 +76,13 @@ const LoginPage: React.FC = () => {
   return (
     <div className="auth-page">
       <form className="auth-form" onSubmit={handleSubmit}>
-        <h1>Login</h1>
+        <h1>{t("auth:login.title", "Login")}</h1>
 
         {successMessage && <div className="auth-success-message">{successMessage}</div>}
         {error && <p className="auth-error">{error}</p>}
 
         <div className="auth-field">
-          <label htmlFor="login-email">Email</label>
+          <label htmlFor="login-email">{t("auth:login.email", "Email")}</label>
           <input
             id="login-email"
             type="email"
@@ -91,7 +93,7 @@ const LoginPage: React.FC = () => {
         </div>
 
         <div className="auth-field">
-          <label htmlFor="login-password">Password</label>
+          <label htmlFor="login-password">{t("auth:login.password", "Password")}</label>
           <input
             id="login-password"
             type="password"
@@ -101,16 +103,17 @@ const LoginPage: React.FC = () => {
           />
         </div>
 
-        <button type="submit" className="btn btn--primary auth-submit" disabled={submitting}>
-          {submitting ? 'Logging in...' : 'Login'}
+        <button type="submit" className="btn btn--primary" disabled={submitting}>
+          {submitting ? t("common:loading", "Loading...") : t("auth:login.submit", "Sign In")}
         </button>
 
-        <p className="auth-link">
-          <Link to="/forgot-password">Forgot password?</Link>
+        <p className="auth-switch">
+          {t("auth:login.registerPrompt", "Don't have an account?")}{' '}
+          <Link to="/register">{t("auth:login.registerLink", "Sign up")}</Link>
         </p>
-
-        <p className="auth-link">
-          Don't have an account? <Link to="/register">Register</Link>
+        
+        <p className="auth-forgot-password">
+          <Link to="/forgot-password">{t("auth:login.forgotPassword", "Forgot password?")}</Link>
         </p>
       </form>
     </div>

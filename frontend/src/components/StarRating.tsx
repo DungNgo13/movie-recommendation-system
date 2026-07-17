@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface StarRatingProps {
   currentRating: number | null;
@@ -34,6 +35,7 @@ const StarIcon: React.FC<{ filled: boolean; size?: number }> = ({ filled, size =
 
 const StarRating: React.FC<StarRatingProps> = ({ currentRating, onRate, disabled }) => {
   const [hoverRating, setHoverRating] = useState(0);
+  const { t } = useTranslation(['movies']);
 
   return (
     <div
@@ -51,9 +53,9 @@ const StarRating: React.FC<StarRatingProps> = ({ currentRating, onRate, disabled
             onClick={() => !disabled && onRate(star)}
             onMouseEnter={() => !disabled && setHoverRating(star)}
             disabled={disabled}
-            aria-label={`Rate ${star} out of 5`}
+            aria-label={t("movies:starRating.rate", "Rate {{star}} out of 5", { star })}
             aria-pressed={star <= (currentRating || 0)}
-            title={`${star} out of 5`}
+            title={t("movies:starRating.outOf", "{{star}} out of 5", { star })}
           >
             <StarIcon filled={isFilled} />
           </button>

@@ -92,6 +92,7 @@ def get_recommendations(
         results.append({
             "id": str(movie.id),
             "title": movie.title,
+            "title_vi": getattr(movie, "title_vi", None),
             "poster_url": normalize_url(movie.poster_path),
             "release_year": release_year,
             "score": round(score, 4),
@@ -121,6 +122,7 @@ def _cold_start_fallback(db: Session, top_n: int) -> list[dict]:
         results.append({
             "id": str(movie.id),
             "title": movie.title,
+            "title_vi": getattr(movie, "title_vi", None),
             "poster_url": normalize_url(movie.poster_path),
             "release_year": release_year,
             "score": 0.0,

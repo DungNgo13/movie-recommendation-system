@@ -1,5 +1,7 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { getLocalizedTitle, getLocalizedOverview, getLocalizedKeywordLabel } from '../utils/localizedMovie';
 import type { Movie, MovieAsset, MovieListItem } from '../models';
 import { getMovieById, getMoviesByMetadata } from '../services/movieService';
 import type { MetadataFilterType } from '../services/movieService';
@@ -41,6 +43,7 @@ const MIN_RESUME_SECONDS = 3;
 const MovieDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const { user } = useAuth();
+  const { t, i18n } = useTranslation(['movies', 'recommendation']);
   const [movie, setMovie] = useState<Movie | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -425,8 +428,8 @@ const MovieDetailPage: React.FC = () => {
         </>
       )}
 
-      <h1>{movie.title}</h1>
-      <p>{movie.overview}</p>
+      <h1>{getLocalizedTitle(movie as any, i18n.language as any)}</h1>
+      <p>{getLocalizedOverview(movie as any, i18n.language as any)}</p>
 
       {/* ── Metadata block ────────────────────────────────────────────── */}
       <div className="movie-meta-block">
@@ -439,7 +442,7 @@ const MovieDetailPage: React.FC = () => {
 
         {/* Director — clickable button */}
         <p className="movie-meta-row">
-          <span className="movie-meta-label">Director</span>
+          <span className="movie-meta-label">{t("movies:detail.director", "Director")}</span>
           {movie.director ? (
             <button
               type="button"
@@ -457,7 +460,7 @@ const MovieDetailPage: React.FC = () => {
         {/* Cast — clickable chips */}
         {movie.cast && movie.cast.length > 0 && (
           <div className="movie-meta-row movie-meta-scroll-row">
-            <span className="movie-meta-label">Cast</span>
+            <span className="movie-meta-label">{t("movies:detail.cast", "Cast")}</span>
             <div className="movie-meta-scroll-track">
               {movie.cast.map((actor) => (
                 <button
@@ -477,19 +480,22 @@ const MovieDetailPage: React.FC = () => {
         {/* Keywords — clickable chips */}
         {movie.keywords && movie.keywords.length > 0 && (
           <div className="movie-meta-row movie-meta-scroll-row">
-            <span className="movie-meta-label">Keywords</span>
+            <span className="movie-meta-label">{t("movies:detail.keywords", "Keywords")}</span>
             <div className="movie-meta-scroll-track">
-              {movie.keywords.map((kw) => (
-                <button
-                  key={kw}
-                  type="button"
-                  className="movie-metadata-chip detail-keyword-badge"
-                  onClick={() => handleMetadataFilter('keyword', kw)}
-                  aria-label={`Show movies tagged ${kw}`}
-                >
-                  #{kw}
-                </button>
-              ))}
+              {movie.keywords.map((kw) => {
+                const localizedKw = getLocalizedKeywordLabel(kw, movie.keyword_labels_vi, i18n.language as any);
+                return (
+                  <button
+                    key={kw}
+                    type="button"
+                    className="movie-metadata-chip detail-keyword-badge"
+                    onClick={() => handleMetadataFilter('keyword', kw)}
+                    aria-label={`Show movies tagged ${localizedKw}`}
+                  >
+                    #{localizedKw}
+                  </button>
+                );
+              })}
             </div>
           </div>
         )}
@@ -524,13 +530,13 @@ const MovieDetailPage: React.FC = () => {
           {isMetadataMode ? (
             <div className="recommendation-mode-header">
               <h2>
-                {activeMetadataFilter.type === 'director' && `More movies by ${activeMetadataFilter.value}`}
-                {activeMetadataFilter.type === 'cast' && `Movies featuring ${activeMetadataFilter.value}`}
-                {activeMetadataFilter.type === 'keyword' && `Movies tagged #${activeMetadataFilter.value}`}
+                {activeMetadataFilter.type === 'director' && t("movies:metadata.moreByDirector", "More by {{director}}", { director: activeMetadataFilter.value })}
+                {activeMetadataFilter.type === 'cast' && t("movies:metadata.featuringCast", "Movies featuring {{cast}}", { cast: activeMetadataFilter.value })}
+                {activeMetadataFilter.type === 'keyword' && t("movies:metadata.taggedKeyword", "Movies tagged #{{keyword}}", { keyword: getLocalizedKeywordLabel(activeMetadataFilter.value, movie.keyword_labels_vi, i18n.language as any) })}
               </h2>
               <div className="recommendation-filter-controls">
                 <span className="recommendation-filter-chip">
-                  {activeMetadataFilter.type === 'keyword' ? `#${activeMetadataFilter.value}` : activeMetadataFilter.value}
+                  {activeMetadataFilter.type === 'keyword' ? `#${getLocalizedKeywordLabel(activeMetadataFilter.value, movie.keyword_labels_vi, i18n.language as any)}` : activeMetadataFilter.value}
                   <button
                     type="button"
                     className="recommendation-filter-chip__dismiss"
@@ -545,12 +551,12 @@ const MovieDetailPage: React.FC = () => {
                   className="recommendation-filter-clear"
                   onClick={clearMetadataFilter}
                 >
-                  Back to personalized recommendations
+                  {t("movies:metadata.backToRecommendations", "Back to Recommendations")}
                 </button>
               </div>
             </div>
           ) : (
-            <h2>Recommended for You</h2>
+            <h2>{t("recommendation:title", "Recommended for You")}</h2>
           )}
 
           {/* Metadata mode content */}
@@ -567,13 +573,9 @@ const MovieDetailPage: React.FC = () => {
               )}
               {!metadataLoading && !metadataError && metadataMovies.length === 0 && (
                 <div className="metadata-empty-state">
-                  <p>
-                    {activeMetadataFilter.type === 'director' && `No other movies found by ${activeMetadataFilter.value}.`}
-                    {activeMetadataFilter.type === 'cast' && `No other movies found featuring ${activeMetadataFilter.value}.`}
-                    {activeMetadataFilter.type === 'keyword' && `No other movies found with keyword #${activeMetadataFilter.value}.`}
-                  </p>
+                  <p>{t("movies:metadata.noOtherMovies", "No other movies found.")}</p>
                   <button type="button" className="btn btn--secondary" onClick={clearMetadataFilter}>
-                    Back to personalized recommendations
+                    {t("movies:metadata.backToRecommendations", "Back to Recommendations")}
                   </button>
                 </div>
               )}
