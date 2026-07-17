@@ -13,6 +13,12 @@ def get_movie(db: Session, movie_id: UUID):
     """
     return db.query(movie_model.Movie).filter(movie_model.Movie.id == movie_id).first()
 
+def _normalize_ws(s: str) -> str:
+    """Trim and collapse internal whitespace for safe comparison."""
+    import re
+    return re.sub(r"\s+", " ", s.strip())
+
+
 def get_movies(
     db: Session,
     page: int = 1,
@@ -20,15 +26,26 @@ def get_movies(
     search: Optional[str] = None,
     genre: Optional[str] = None,
     year: Optional[int] = None,
+    director: Optional[str] = None,
+    cast_member: Optional[str] = None,
+    keyword: Optional[str] = None,
+    exclude_id: Optional[UUID] = None,
 ):
     """
     Fetches a paginated list of movies with optional server-side filters.
 
     Filters:
-      - search: case-insensitive partial match on title (ILIKE).
-      - genre:  exact genre name matched inside the JSON ``genres`` column.
-      - year:   exact match on the year part of ``release_date``.
+      - search:      case-insensitive partial match on title (ILIKE).
+      - genre:       exact genre name matched inside the JSON ``genres`` column.
+      - year:        exact match on the year part of ``release_date``.
+      - director:    exact, case-insensitive, whitespace-normalized director match.
+      - cast_member: exact array-item match inside the JSON ``cast`` column.
+      - keyword:     exact array-item match inside the JSON ``keywords`` column.
+                     A leading ``#`` is stripped automatically.
+      - exclude_id:  UUID of a movie to omit from results (e.g. the current movie).
     """
+    from sqlalchemy import String
+
     query = db.query(movie_model.Movie)
 
     if search:
@@ -45,18 +62,73 @@ def get_movies(
         # genres is a JSON list stored as ["Action", "Drama", ...].
         # Cast to text and do a case-insensitive contains check so it works
         # on both PostgreSQL (native JSON) and SQLite (text column in tests).
-        from sqlalchemy import String
         query = query.filter(
             func.lower(
                 func.cast(movie_model.Movie.genres, String)
             ).like(f'%"{genre.lower()}"%')
         )
 
+    if director:
+        # Exact, case-insensitive, whitespace-normalized director match.
+        # director is a plain String column, so lower() works on all backends.
+        norm_dir = _normalize_ws(director).lower()
+        query = query.filter(
+            func.lower(func.trim(movie_model.Movie.director)) == norm_dir
+        )
+
+    if cast_member:
+        # Pre-filter at DB level using JSON-as-text LIKE (same as genre).
+        # Post-filter below ensures exact array-item match.
+        norm_cast = _normalize_ws(cast_member).lower()
+        query = query.filter(
+            func.lower(
+                func.cast(movie_model.Movie.cast, String)
+            ).like(f'%"{norm_cast}"%')
+        )
+
+    if keyword:
+        # Strip optional leading '#' and normalize.
+        norm_kw = _normalize_ws(keyword.lstrip("#")).lower()
+        if norm_kw:
+            query = query.filter(
+                func.lower(
+                    func.cast(movie_model.Movie.keywords, String)
+                ).like(f'%"{norm_kw}"%')
+            )
+
+    if exclude_id is not None:
+        query = query.filter(movie_model.Movie.id != exclude_id)
+
     skip = (page - 1) * limit
-    total = query.count()
+    total_before_post = query.count()
     items = query.offset(skip).limit(limit).all()
 
-    return {"items": items, "total": total}
+    # ── Post-query exact-item filtering for JSON arrays ──────────────
+    # The DB LIKE filter may produce false positives (e.g. "Camera" matching
+    # "Drone Camera" via substring). Post-filter ensures each match is an
+    # exact array item after normalization.
+    if cast_member:
+        norm_cast = _normalize_ws(cast_member).lower()
+        filtered = []
+        for m in items:
+            arr = m.cast if isinstance(m.cast, list) else []
+            if any(_normalize_ws(c).lower() == norm_cast for c in arr):
+                filtered.append(m)
+        items = filtered
+        total_before_post = len(items)  # recalculate for post-filtered set
+
+    if keyword:
+        norm_kw = _normalize_ws(keyword.lstrip("#")).lower()
+        if norm_kw:
+            filtered = []
+            for m in items:
+                arr = m.keywords if isinstance(m.keywords, list) else []
+                if any(_normalize_ws(k).lower() == norm_kw for k in arr):
+                    filtered.append(m)
+            items = filtered
+            total_before_post = len(items)
+
+    return {"items": items, "total": total_before_post}
 
 def create_movie(db: Session, movie_data: MovieCreateSchema):
     """

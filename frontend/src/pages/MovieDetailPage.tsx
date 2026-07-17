@@ -1,7 +1,8 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
-import type { Movie, MovieAsset } from '../models';
-import { getMovieById } from '../services/movieService';
+import type { Movie, MovieAsset, MovieListItem } from '../models';
+import { getMovieById, getMoviesByMetadata } from '../services/movieService';
+import type { MetadataFilterType } from '../services/movieService';
 import { API_BASE_URL, resolveMediaUrl } from '../config';
 import {
   saveWatchProgress,
@@ -18,11 +19,17 @@ import type { RecommendedMovie } from '../services/recommendationService';
 import { useFavorites } from '../hooks/useFavorites';
 import { useAuth } from '../hooks/useAuthHook';
 import RecommendationCard from '../components/RecommendationCard';
+import MovieCard from '../components/MovieCard';
 import StarRating from '../components/StarRating';
 import LoadingSpinner from '../components/LoadingSpinner';
 import ErrorMessage from '../components/ErrorMessage';
 import HlsPlayer from '../components/HlsPlayer';
 import SourceAttribution from '../components/SourceAttribution';
+
+interface ActiveMetadataFilter {
+  type: MetadataFilterType;
+  value: string;
+}
 
 const PLACEHOLDER_IMAGE = '/placeholder-poster.svg';
 // Save position every N seconds of playback change
@@ -39,8 +46,15 @@ const MovieDetailPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [imageSrc, setImageSrc] = useState<string>(PLACEHOLDER_IMAGE);
   const [myRating, setMyRating] = useState<number | null>(null);
-  const [recommendations, setRecommendations] = useState<RecommendedMovie[]>([]);
+  const [personalizedRecs, setPersonalizedRecs] = useState<RecommendedMovie[]>([]);
   const [assets, setAssets] = useState<MovieAsset[]>([]);
+
+  // ── Metadata discovery mode ──────────────────────────────────────
+  const [activeMetadataFilter, setActiveMetadataFilter] = useState<ActiveMetadataFilter | null>(null);
+  const [metadataMovies, setMetadataMovies] = useState<MovieListItem[]>([]);
+  const [metadataLoading, setMetadataLoading] = useState(false);
+  const [metadataError, setMetadataError] = useState<string | null>(null);
+  const metadataAbortRef = useRef<AbortController | null>(null);
 
   // Resume state
   const [initialTime, setInitialTime] = useState<number>(0);
@@ -167,11 +181,68 @@ const MovieDetailPage: React.FC = () => {
     };
   }, []);
 
-  // Fetch recommendations
+  // Fetch personalized recommendations (only for authenticated users)
   useEffect(() => {
-    if (!user) { setRecommendations([]); return; }
-    getRecommendations(4).then(setRecommendations).catch(() => {});
+    if (!user) { setPersonalizedRecs([]); return; }
+    getRecommendations(4).then(setPersonalizedRecs).catch(() => {});
   }, [user]);
+
+  // Reset metadata mode when navigating to a different movie
+  useEffect(() => {
+    setActiveMetadataFilter(null);
+    setMetadataMovies([]);
+    setMetadataError(null);
+    setMetadataLoading(false);
+    metadataAbortRef.current?.abort();
+  }, [id]);
+
+  // Fetch metadata movies when filter changes
+  useEffect(() => {
+    if (!activeMetadataFilter || !movie) return;
+
+    // Cancel previous metadata request
+    metadataAbortRef.current?.abort();
+    const controller = new AbortController();
+    metadataAbortRef.current = controller;
+
+    setMetadataLoading(true);
+    setMetadataError(null);
+
+    getMoviesByMetadata(
+      { type: activeMetadataFilter.type, value: activeMetadataFilter.value },
+      { excludeMovieId: movie.id, limit: 10, signal: controller.signal },
+    )
+      .then((items) => {
+        if (!controller.signal.aborted) {
+          setMetadataMovies(items);
+          setMetadataLoading(false);
+        }
+      })
+      .catch((err) => {
+        if (controller.signal.aborted) return; // don't treat abort as error
+        setMetadataError(err?.message || 'Failed to load metadata movies');
+        setMetadataLoading(false);
+      });
+
+    return () => controller.abort();
+  }, [activeMetadataFilter, movie]);
+
+  // ── Metadata filter handler ──────────────────────────────────────
+  const handleMetadataFilter = useCallback((type: MetadataFilterType, value: string) => {
+    const trimmed = value.trim();
+    if (!trimmed) return;
+    setActiveMetadataFilter({ type, value: trimmed });
+  }, []);
+
+  const clearMetadataFilter = useCallback(() => {
+    metadataAbortRef.current?.abort();
+    setActiveMetadataFilter(null);
+    setMetadataMovies([]);
+    setMetadataError(null);
+    setMetadataLoading(false);
+  }, []);
+
+  const isMetadataMode = activeMetadataFilter !== null;
 
   // Fetch movie + resume position
   useEffect(() => {
@@ -360,39 +431,64 @@ const MovieDetailPage: React.FC = () => {
       {/* ── Metadata block ────────────────────────────────────────────── */}
       <div className="movie-meta-block">
 
-        {/* Release year + Director — plain text rows */}
+        {/* Release year — plain text */}
         <p className="movie-meta-row">
           <span className="movie-meta-label">Release Year</span>
           <span>{movie.release_date ? movie.release_date.split('-')[0] : 'N/A'}</span>
         </p>
+
+        {/* Director — clickable button */}
         <p className="movie-meta-row">
           <span className="movie-meta-label">Director</span>
-          <span>{movie.director || 'N/A'}</span>
+          {movie.director ? (
+            <button
+              type="button"
+              className="movie-metadata-button"
+              onClick={() => handleMetadataFilter('director', movie.director!)}
+              aria-label={`Show movies directed by ${movie.director}`}
+            >
+              {movie.director}
+            </button>
+          ) : (
+            <span>N/A</span>
+          )}
         </p>
 
-        {/* Cast — one scrollable row of actor badges (hidden when empty) */}
+        {/* Cast — clickable chips */}
         {movie.cast && movie.cast.length > 0 && (
           <div className="movie-meta-row movie-meta-scroll-row">
             <span className="movie-meta-label">Cast</span>
             <div className="movie-meta-scroll-track">
               {movie.cast.map((actor) => (
-                <span key={actor} className="detail-cast-badge">
+                <button
+                  key={actor}
+                  type="button"
+                  className="movie-metadata-chip detail-cast-badge"
+                  onClick={() => handleMetadataFilter('cast', actor)}
+                  aria-label={`Show movies featuring ${actor}`}
+                >
                   {actor}
-                </span>
+                </button>
               ))}
             </div>
           </div>
         )}
 
-        {/* Keywords — one scrollable row of hashtag badges (hidden when empty) */}
+        {/* Keywords — clickable chips */}
         {movie.keywords && movie.keywords.length > 0 && (
           <div className="movie-meta-row movie-meta-scroll-row">
             <span className="movie-meta-label">Keywords</span>
             <div className="movie-meta-scroll-track">
               {movie.keywords.map((kw) => (
-                <span key={kw} className="detail-keyword-badge">
+                <button
+                  key={kw}
+                  type="button"
+                  className="movie-metadata-chip detail-keyword-badge"
+                  onClick={() => handleMetadataFilter('keyword', kw)}
+                  aria-label={`Show movies tagged ${kw}`}
+                >
                   #{kw}
-                </span>
+                </button>
               ))}
             </div>
           </div>
@@ -420,19 +516,101 @@ const MovieDetailPage: React.FC = () => {
         )}
       </div>
 
-      {recommendations.length > 0 && (
+      {/* ── Recommendation / Metadata Discovery Section ────────────── */}
+      {(personalizedRecs.length > 0 || isMetadataMode) && (
         <section className="recommendations-section">
-          <h2>Recommended for You</h2>
-          <div className="movie-list">
-            {recommendations.map((rec) => (
-              <RecommendationCard
-                key={rec.id}
-                movie={rec}
-                isFavorite={isFavorite(rec.id)}
-                onToggleFavorite={toggleFavorite}
-              />
-            ))}
-          </div>
+
+          {/* Section header with filter controls */}
+          {isMetadataMode ? (
+            <div className="recommendation-mode-header">
+              <h2>
+                {activeMetadataFilter.type === 'director' && `More movies by ${activeMetadataFilter.value}`}
+                {activeMetadataFilter.type === 'cast' && `Movies featuring ${activeMetadataFilter.value}`}
+                {activeMetadataFilter.type === 'keyword' && `Movies tagged #${activeMetadataFilter.value}`}
+              </h2>
+              <div className="recommendation-filter-controls">
+                <span className="recommendation-filter-chip">
+                  {activeMetadataFilter.type === 'keyword' ? `#${activeMetadataFilter.value}` : activeMetadataFilter.value}
+                  <button
+                    type="button"
+                    className="recommendation-filter-chip__dismiss"
+                    onClick={clearMetadataFilter}
+                    aria-label="Remove filter"
+                  >
+                    ×
+                  </button>
+                </span>
+                <button
+                  type="button"
+                  className="recommendation-filter-clear"
+                  onClick={clearMetadataFilter}
+                >
+                  Back to personalized recommendations
+                </button>
+              </div>
+            </div>
+          ) : (
+            <h2>Recommended for You</h2>
+          )}
+
+          {/* Metadata mode content */}
+          {isMetadataMode && (
+            <>
+              {metadataLoading && <LoadingSpinner />}
+              {metadataError && (
+                <div className="metadata-error-state">
+                  <p>Unable to load movies for {activeMetadataFilter.type === 'keyword' ? `#${activeMetadataFilter.value}` : activeMetadataFilter.value}.</p>
+                  <button type="button" className="btn btn--secondary" onClick={clearMetadataFilter}>
+                    Back to personalized recommendations
+                  </button>
+                </div>
+              )}
+              {!metadataLoading && !metadataError && metadataMovies.length === 0 && (
+                <div className="metadata-empty-state">
+                  <p>
+                    {activeMetadataFilter.type === 'director' && `No other movies found by ${activeMetadataFilter.value}.`}
+                    {activeMetadataFilter.type === 'cast' && `No other movies found featuring ${activeMetadataFilter.value}.`}
+                    {activeMetadataFilter.type === 'keyword' && `No other movies found with keyword #${activeMetadataFilter.value}.`}
+                  </p>
+                  <button type="button" className="btn btn--secondary" onClick={clearMetadataFilter}>
+                    Back to personalized recommendations
+                  </button>
+                </div>
+              )}
+              {!metadataLoading && !metadataError && metadataMovies.length > 0 && (
+                <div className="movie-list">
+                  {metadataMovies.map((m) => (
+                    <div key={m.id} className="metadata-result-card">
+                      <MovieCard
+                        movie={m}
+                        isFavorite={isFavorite(m.id)}
+                        onToggleFavorite={toggleFavorite}
+                      />
+                      <span className="metadata-match-label">
+                        {activeMetadataFilter.type === 'director' && `Director: ${activeMetadataFilter.value}`}
+                        {activeMetadataFilter.type === 'cast' && `Cast match: ${activeMetadataFilter.value}`}
+                        {activeMetadataFilter.type === 'keyword' && `Keyword match: #${activeMetadataFilter.value}`}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </>
+          )}
+
+          {/* Personalized mode content */}
+          {!isMetadataMode && (
+            <div className="movie-list">
+              {personalizedRecs.map((rec) => (
+                <RecommendationCard
+                  key={rec.id}
+                  movie={rec}
+                  isFavorite={isFavorite(rec.id)}
+                  onToggleFavorite={toggleFavorite}
+                />
+              ))}
+            </div>
+          )}
         </section>
       )}
     </div>

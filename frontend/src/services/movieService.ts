@@ -226,3 +226,64 @@ export const cancelEncodeMovie = async (id: string): Promise<{ cancelled: boolea
   }
   return body;
 };
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Metadata discovery — fetch movies by director, cast, or keyword
+// ─────────────────────────────────────────────────────────────────────────────
+
+export type MetadataFilterType = 'director' | 'cast' | 'keyword';
+
+export interface MetadataMovieFilter {
+  type: MetadataFilterType;
+  value: string;
+}
+
+/**
+ * Fetch movies matching a specific metadata criterion.
+ *
+ * Uses the public `GET /api/v1/movies` endpoint with optional director, cast,
+ * or keyword filters. Normalises keyword `#` prefix before sending.
+ *
+ * @param filter    The metadata filter to apply.
+ * @param options   Optional excludeMovieId, limit, and AbortSignal.
+ * @returns         Array of matching movies (from the paginated response).
+ */
+export async function getMoviesByMetadata(
+  filter: MetadataMovieFilter,
+  options: {
+    excludeMovieId?: string;
+    limit?: number;
+    signal?: AbortSignal;
+  } = {},
+): Promise<import('../models').MovieListItem[]> {
+  const params = new URLSearchParams();
+  params.set('limit', String(options.limit ?? 20));
+
+  switch (filter.type) {
+    case 'director':
+      params.set('director', filter.value);
+      break;
+    case 'cast':
+      params.set('cast', filter.value);
+      break;
+    case 'keyword':
+      // Strip leading # — the backend also strips it, but normalize on both sides.
+      params.set('keyword', filter.value.replace(/^#/, ''));
+      break;
+  }
+
+  if (options.excludeMovieId) {
+    params.set('exclude', options.excludeMovieId);
+  }
+
+  const response = await fetch(`${API_BASE_URL}/movies?${params.toString()}`, {
+    signal: options.signal,
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to fetch movies by metadata');
+  }
+
+  const data: import('../models').PaginatedMovies = await response.json();
+  return data.items;
+}

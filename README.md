@@ -39,6 +39,7 @@ Hệ thống hiện đã có đầy đủ các nhóm chức năng quan trọng n
 - Đánh giá phim theo sao
 - Thêm / xóa phim yêu thích
 - Nhận gợi ý cá nhân hóa dựa trên hành vi
+- **Metadata Discovery**: bấm vào đạo diễn, diễn viên hoặc keyword trên trang chi tiết phim để khám phá các phim liên quan ngay trong mục "Recommended for You" mà không rời trang
 
 ### 🤖 Recommendation Engine
 
@@ -47,6 +48,7 @@ Hệ thống hiện đã có đầy đủ các nhóm chức năng quan trọng n
 - Tạo **user profile** từ rating, favorites, watch history
 - Cold-start fallback cho người dùng mới
 - Giải thích lý do gợi ý để dễ demo trong báo cáo đồ án
+- **Metadata Discovery Mode**: in-place khám phá phim theo đạo diễn, diễn viên, keyword ngay trên trang chi tiết phim — sử dụng `GET /api/v1/movies` với filter `director`, `cast`, `keyword`, `exclude` (tất cả là public, không yêu cầu auth)
 
 ### 🎥 Streaming Engine
 

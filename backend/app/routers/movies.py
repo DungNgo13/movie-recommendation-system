@@ -22,13 +22,26 @@ def read_movies(
     search: Optional[str] = Query(None, description="Case-insensitive title search"),
     genre: Optional[str] = Query(None, description="Exact genre name filter"),
     year: Optional[int] = Query(None, ge=1800, le=2100, description="Release year filter"),
+    director: Optional[str] = Query(None, description="Exact director match (case-insensitive, whitespace-normalized)"),
+    cast: Optional[str] = Query(None, description="Exact cast member match (case-insensitive)"),
+    keyword: Optional[str] = Query(None, description="Exact keyword match (case-insensitive, leading # optional)"),
+    exclude: Optional[str] = Query(None, description="Movie UUID to exclude from results"),
     db: Session = Depends(database.get_db),
 ):
     """
     Retrieve a paginated list of movies with optional filters.
     """
+    from uuid import UUID as _UUID
+    exclude_id = None
+    if exclude:
+        try:
+            exclude_id = _UUID(exclude)
+        except ValueError:
+            pass  # ignore invalid UUID — don't exclude anything
+
     movie_data = movie_service.get_movies(
-        db, page=page, limit=limit, search=search, genre=genre, year=year
+        db, page=page, limit=limit, search=search, genre=genre, year=year,
+        director=director, cast_member=cast, keyword=keyword, exclude_id=exclude_id,
     )
     return {
         "items": movie_data["items"],

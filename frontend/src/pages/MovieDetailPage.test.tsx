@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 
 /**
@@ -22,9 +23,10 @@ vi.mock('react-router-dom', async () => {
   };
 });
 
-// Mock useAuth
+// Mock useAuth — mutable so metadata tests can set an authenticated user
+let mockUser: { email: string } | null = null;
 vi.mock('../hooks/useAuthHook', () => ({
-  useAuth: () => ({ user: null, refreshUser: vi.fn() }),
+  useAuth: () => ({ user: mockUser, refreshUser: vi.fn() }),
 }));
 
 // Mock useFavorites
@@ -40,6 +42,7 @@ vi.mock('../hooks/useFavorites', () => ({
 // Mock services
 vi.mock('../services/movieService', () => ({
   getMovieById: vi.fn(),
+  getMoviesByMetadata: vi.fn(),
 }));
 
 vi.mock('../services/ratingService', () => ({
@@ -91,7 +94,16 @@ vi.mock('../components/ErrorMessage', () => ({
 
 // Mock RecommendationCard
 vi.mock('../components/RecommendationCard', () => ({
-  default: () => <div data-testid="mock-recommendation-card" />,
+  default: ({ movie }: { movie: { title: string } }) => (
+    <div data-testid="mock-recommendation-card">{movie.title}</div>
+  ),
+}));
+
+// Mock MovieCard
+vi.mock('../components/MovieCard', () => ({
+  default: ({ movie }: { movie: { title: string } }) => (
+    <div data-testid="mock-movie-card">{movie.title}</div>
+  ),
 }));
 
 // Mock StarRating
@@ -100,9 +112,10 @@ vi.mock('../components/StarRating', () => ({
 }));
 
 import MovieDetailPage from '../pages/MovieDetailPage';
-import { getMovieById } from '../services/movieService';
+import { getMovieById, getMoviesByMetadata } from '../services/movieService';
 
 const mockGetMovieById = getMovieById as ReturnType<typeof vi.fn>;
+const mockGetMoviesByMetadata = getMoviesByMetadata as ReturnType<typeof vi.fn>;
 
 // ── Test data ─────────────────────────────────────────────────────────
 
@@ -154,6 +167,7 @@ function renderPage() {
 describe('MovieDetailPage — DOM structure', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockUser = null;  // default to anonymous for DOM structure tests
     // Mock global fetch for the assets endpoint and any other direct fetch calls
     globalThis.fetch = mockFetch;
     mockFetch.mockResolvedValue({
@@ -284,5 +298,258 @@ describe('MovieDetailPage — DOM structure', () => {
     expect(hlsPlayer.dataset.src).toBe('/media/videos/hls/movie-1/master.m3u8');
     // poster should be the resolved backdrop URL
     expect(hlsPlayer.dataset.poster).toBeTruthy();
+  });
+});
+
+// ── Metadata Discovery tests ────────────────────────────────────────
+
+import { getRecommendations } from '../services/recommendationService';
+const mockGetRecommendations = getRecommendations as ReturnType<typeof vi.fn>;
+
+const movieWithMetadata = {
+  ...movieWithoutVideo,
+  director: 'Pexels Creator',
+  cast: ['Drone Camera', 'Forest Landscape'],
+  keywords: ['drone', 'forest', 'green forest'],
+};
+
+const metadataResults = [
+  { id: 'meta-1', title: 'Nature Walks', poster_url: null, release_year: 2023, genres: [] },
+  { id: 'meta-2', title: 'City Lights', poster_url: null, release_year: 2022, genres: [] },
+];
+
+const personalizedResults = [
+  { id: 'rec-1', title: 'Rec Movie 1', poster_url: null, release_year: 2020, score: 0.85, reason: 'Based on your ratings' },
+  { id: 'rec-2', title: 'Rec Movie 2', poster_url: null, release_year: 2021, score: 0.72, reason: 'Similar genres' },
+];
+
+describe('MovieDetailPage — Metadata Discovery', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mockUser = { email: 'test@example.com' }; // authenticated by default
+    globalThis.fetch = mockFetch;
+    mockFetch.mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve({ items: [] }),
+    });
+    mockGetMoviesByMetadata.mockResolvedValue(metadataResults);
+    mockGetRecommendations.mockResolvedValue(personalizedResults);
+  });
+
+  // ── Interactive controls ──
+
+  it('Director renders as an interactive button', async () => {
+    mockGetMovieById.mockResolvedValue(movieWithMetadata);
+    renderPage();
+    await screen.findByText('Test Movie');
+
+    const directorBtn = screen.getByRole('button', { name: /show movies directed by pexels creator/i });
+    expect(directorBtn).toBeTruthy();
+    expect(directorBtn.textContent).toBe('Pexels Creator');
+  });
+
+  it('Cast entries render as interactive chips', async () => {
+    mockGetMovieById.mockResolvedValue(movieWithMetadata);
+    renderPage();
+    await screen.findByText('Test Movie');
+
+    const droneCameraBtn = screen.getByRole('button', { name: /show movies featuring drone camera/i });
+    expect(droneCameraBtn).toBeTruthy();
+
+    const forestBtn = screen.getByRole('button', { name: /show movies featuring forest landscape/i });
+    expect(forestBtn).toBeTruthy();
+  });
+
+  it('Keywords render as interactive chips', async () => {
+    mockGetMovieById.mockResolvedValue(movieWithMetadata);
+    renderPage();
+    await screen.findByText('Test Movie');
+
+    const droneBtn = screen.getByRole('button', { name: /show movies tagged drone/i });
+    expect(droneBtn).toBeTruthy();
+    expect(droneBtn.textContent).toBe('#drone');
+
+    const forestBtn = screen.getByRole('button', { name: /show movies tagged forest/i });
+    expect(forestBtn).toBeTruthy();
+  });
+
+  // ── Clicking metadata triggers fetch ──
+
+  it('clicking Director calls getMoviesByMetadata with director filter', async () => {
+    mockGetMovieById.mockResolvedValue(movieWithMetadata);
+    renderPage();
+    await screen.findByText('Test Movie');
+
+    const dirBtn = screen.getByRole('button', { name: /show movies directed by pexels creator/i });
+    await userEvent.click(dirBtn);
+
+    // Wait for metadata effect to fire (filter change triggers fetch)
+    await vi.waitFor(() => {
+      expect(mockGetMoviesByMetadata).toHaveBeenCalledWith(
+        { type: 'director', value: 'Pexels Creator' },
+        expect.objectContaining({ excludeMovieId: 'movie-1' }),
+      );
+    });
+  });
+
+  it('clicking keyword calls getMoviesByMetadata with keyword filter', async () => {
+    mockGetMovieById.mockResolvedValue(movieWithMetadata);
+    renderPage();
+    await screen.findByText('Test Movie');
+
+    const kwBtn = screen.getByRole('button', { name: /show movies tagged forest$/i });
+    await userEvent.click(kwBtn);
+
+    // Wait for metadata effect to fire (filter change triggers fetch)
+    await vi.waitFor(() => {
+      expect(mockGetMoviesByMetadata).toHaveBeenCalledWith(
+        { type: 'keyword', value: 'forest' },
+        expect.objectContaining({ excludeMovieId: 'movie-1' }),
+      );
+    });
+  });
+
+  // ── Section title changes ──
+
+  it('metadata mode changes section title for director', async () => {
+    mockGetMovieById.mockResolvedValue(movieWithMetadata);
+    mockGetRecommendations.mockResolvedValue(personalizedResults);
+    renderPage();
+    await screen.findByText('Recommended for You');
+
+    const dirBtn = screen.getByRole('button', { name: /show movies directed by pexels creator/i });
+    await userEvent.click(dirBtn);
+
+    await screen.findByText('More movies by Pexels Creator');
+  });
+
+  it('metadata mode changes section title for keyword', async () => {
+    mockGetMovieById.mockResolvedValue(movieWithMetadata);
+    mockGetRecommendations.mockResolvedValue(personalizedResults);
+    renderPage();
+    await screen.findByText('Recommended for You');
+
+    const kwBtn = screen.getByRole('button', { name: /show movies tagged drone/i });
+    await userEvent.click(kwBtn);
+
+    await screen.findByText('Movies tagged #drone');
+  });
+
+  it('metadata mode changes section title for cast', async () => {
+    mockGetMovieById.mockResolvedValue(movieWithMetadata);
+    mockGetRecommendations.mockResolvedValue(personalizedResults);
+    renderPage();
+    await screen.findByText('Recommended for You');
+
+    const castBtn = screen.getByRole('button', { name: /show movies featuring drone camera/i });
+    await userEvent.click(castBtn);
+
+    await screen.findByText('Movies featuring Drone Camera');
+  });
+
+  // ── Metadata results replace personalized cards ──
+
+  it('metadata results display MovieCards, not RecommendationCards', async () => {
+    mockGetMovieById.mockResolvedValue(movieWithMetadata);
+    mockGetRecommendations.mockResolvedValue(personalizedResults);
+    renderPage();
+    await screen.findByText('Recommended for You');
+
+    // Before click: recommendation cards visible
+    expect(screen.getAllByTestId('mock-recommendation-card').length).toBe(2);
+
+    const dirBtn = screen.getByRole('button', { name: /show movies directed by pexels creator/i });
+    await userEvent.click(dirBtn);
+
+    // After click: movie cards visible, no recommendation cards
+    await screen.findByText('Nature Walks');
+    expect(screen.getAllByTestId('mock-movie-card').length).toBe(2);
+    expect(screen.queryAllByTestId('mock-recommendation-card').length).toBe(0);
+  });
+
+  // ── Clear filter restores personalized ──
+
+  it('clear filter restores cached personalized cards', async () => {
+    mockGetMovieById.mockResolvedValue(movieWithMetadata);
+    mockGetRecommendations.mockResolvedValue(personalizedResults);
+    renderPage();
+    await screen.findByText('Recommended for You');
+
+    // Activate metadata
+    const dirBtn = screen.getByRole('button', { name: /show movies directed by pexels creator/i });
+    await userEvent.click(dirBtn);
+    await screen.findByText('More movies by Pexels Creator');
+
+    // Clear
+    const clearBtn = screen.getByRole('button', { name: /back to personalized/i });
+    await userEvent.click(clearBtn);
+
+    // Personalized cards restored
+    await screen.findByText('Recommended for You');
+    expect(screen.getAllByTestId('mock-recommendation-card').length).toBe(2);
+  });
+
+  // ── Empty state ──
+
+  it('empty metadata result shows correct empty state', async () => {
+    mockGetMovieById.mockResolvedValue(movieWithMetadata);
+    mockGetRecommendations.mockResolvedValue(personalizedResults);
+    mockGetMoviesByMetadata.mockResolvedValue([]);
+    renderPage();
+    await screen.findByText('Recommended for You');
+
+    const kwBtn = screen.getByRole('button', { name: /show movies tagged forest$/i });
+    await userEvent.click(kwBtn);
+
+    await screen.findByText(/no other movies found with keyword #forest/i);
+  });
+
+  // ── Error state ──
+
+  it('metadata API failure does not erase personalized results', async () => {
+    mockGetMovieById.mockResolvedValue(movieWithMetadata);
+    mockGetRecommendations.mockResolvedValue(personalizedResults);
+    mockGetMoviesByMetadata.mockRejectedValue(new Error('Network error'));
+    renderPage();
+    await screen.findByText('Recommended for You');
+
+    const dirBtn = screen.getByRole('button', { name: /show movies directed by pexels creator/i });
+    await userEvent.click(dirBtn);
+
+    // Error shown
+    await screen.findByText(/unable to load movies for pexels creator/i);
+
+    // Clear restores personalized — use first match (header has one, error body has another)
+    const clearBtns = screen.getAllByRole('button', { name: /back to personalized/i });
+    await userEvent.click(clearBtns[0]);
+
+    await screen.findByText('Recommended for You');
+    expect(screen.getAllByTestId('mock-recommendation-card').length).toBe(2);
+  });
+
+  // ── Anonymous user ──
+
+  it('anonymous users can use metadata discovery', async () => {
+    mockUser = null; // anonymous
+    mockGetMovieById.mockResolvedValue(movieWithMetadata);
+    renderPage();
+    await screen.findByText('Test Movie');
+
+    const kwBtn = screen.getByRole('button', { name: /show movies tagged drone/i });
+    await userEvent.click(kwBtn);
+
+    await screen.findByText('Movies tagged #drone');
+    expect(mockGetMoviesByMetadata).toHaveBeenCalled();
+  });
+
+  it('anonymous users do not call /recommendations/me', async () => {
+    mockUser = null; // anonymous
+    mockGetMovieById.mockResolvedValue(movieWithMetadata);
+    renderPage();
+    await screen.findByText('Test Movie');
+
+    // When user is null, getRecommendations is NOT called at all
+    // The component short-circuits: if (!user) { setPersonalizedRecs([]); return; }
+    expect(mockGetRecommendations).not.toHaveBeenCalled();
   });
 });

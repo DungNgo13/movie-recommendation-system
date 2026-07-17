@@ -381,3 +381,207 @@ class TestSelectHlsQualities:
         labels = self._labels(480)
         assert labels == ["360p", "480p"]
         assert "720p" not in labels
+
+
+# ──────────────────────────────────────────────────────────────────────
+# Metadata discovery filter tests (director / cast / keyword / exclude)
+# ──────────────────────────────────────────────────────────────────────
+
+MOVIE_A_ID = uuid.UUID("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa")
+MOVIE_B_ID = uuid.UUID("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb")
+MOVIE_C_ID = uuid.UUID("cccccccc-cccc-cccc-cccc-cccccccccccc")
+
+
+@pytest.fixture(scope="function")
+def metadata_movies(db_session: Session):
+    """Seed with movies that have director, cast, and keywords."""
+    movies = [
+        movie_model.Movie(
+            id=MOVIE_A_ID, title="FPV Forest Flight",
+            release_date=date(2024, 1, 1),
+            genres=["Documentary"], director="Pexels Creator",
+            cast=["Drone Camera", "Forest Landscape"],
+            keywords=["drone", "fpv", "forest", "aerial", "green forest"],
+        ),
+        movie_model.Movie(
+            id=MOVIE_B_ID, title="Nature Walks",
+            release_date=date(2023, 6, 15),
+            genres=["Documentary"], director="Pexels Creator",
+            cast=["Camera Operator", "Forest Landscape"],
+            keywords=["nature", "forest", "walking"],
+        ),
+        movie_model.Movie(
+            id=MOVIE_C_ID, title="City Lights",
+            release_date=date(2022, 3, 10),
+            genres=["Drama"], director="Urban Studios",
+            cast=["Drone Camera"],
+            keywords=["city", "night"],
+        ),
+    ]
+    db_session.add_all(movies)
+    db_session.commit()
+    return movies
+
+
+# ── Director filter ──────────────────────────────────────────────────
+
+def test_director_exact_match(metadata_movies):
+    """director=Pexels Creator → 2 movies."""
+    r = client.get("/api/v1/movies?director=Pexels Creator")
+    assert r.status_code == 200
+    titles = {m["title"] for m in r.json()["items"]}
+    assert titles == {"FPV Forest Flight", "Nature Walks"}
+
+
+def test_director_case_insensitive(metadata_movies):
+    """director=pexels creator (lowercase) should still match."""
+    r = client.get("/api/v1/movies?director=pexels creator")
+    assert r.status_code == 200
+    assert r.json()["total"] == 2
+
+
+def test_director_whitespace_normalized(metadata_movies):
+    """director= Pexels   Creator  (extra spaces) should still match."""
+    r = client.get("/api/v1/movies?director= Pexels   Creator ")
+    assert r.status_code == 200
+    assert r.json()["total"] == 2
+
+
+def test_director_no_match(metadata_movies):
+    """director=Unknown Director → 0 results."""
+    r = client.get("/api/v1/movies?director=Unknown Director")
+    assert r.status_code == 200
+    assert r.json()["total"] == 0
+
+
+# ── Cast filter ──────────────────────────────────────────────────────
+
+def test_cast_exact_match(metadata_movies):
+    """cast=Drone Camera → FPV Forest Flight + City Lights."""
+    r = client.get("/api/v1/movies?cast=Drone Camera")
+    assert r.status_code == 200
+    titles = {m["title"] for m in r.json()["items"]}
+    assert titles == {"FPV Forest Flight", "City Lights"}
+
+
+def test_cast_case_insensitive(metadata_movies):
+    """cast=drone camera (lowercase) → same 2 movies."""
+    r = client.get("/api/v1/movies?cast=drone camera")
+    assert r.status_code == 200
+    assert r.json()["total"] == 2
+
+
+def test_cast_no_partial_match(metadata_movies):
+    """cast=Camera must NOT match 'Drone Camera' or 'Camera Operator' — exact item only."""
+    r = client.get("/api/v1/movies?cast=Camera")
+    assert r.status_code == 200
+    assert r.json()["total"] == 0
+
+
+def test_cast_exact_item_camera_operator(metadata_movies):
+    """cast=Camera Operator → only Nature Walks."""
+    r = client.get("/api/v1/movies?cast=Camera Operator")
+    assert r.status_code == 200
+    titles = {m["title"] for m in r.json()["items"]}
+    assert titles == {"Nature Walks"}
+
+
+# ── Keyword filter ───────────────────────────────────────────────────
+
+def test_keyword_exact_match(metadata_movies):
+    """keyword=forest → FPV Forest Flight + Nature Walks."""
+    r = client.get("/api/v1/movies?keyword=forest")
+    assert r.status_code == 200
+    titles = {m["title"] for m in r.json()["items"]}
+    assert titles == {"FPV Forest Flight", "Nature Walks"}
+
+
+def test_keyword_with_hash_prefix(metadata_movies):
+    """keyword=#forest should behave the same as keyword=forest."""
+    r = client.get("/api/v1/movies?keyword=%23forest")
+    assert r.status_code == 200
+    assert r.json()["total"] == 2
+
+
+def test_keyword_case_insensitive(metadata_movies):
+    """keyword=FOREST → same results."""
+    r = client.get("/api/v1/movies?keyword=FOREST")
+    assert r.status_code == 200
+    assert r.json()["total"] == 2
+
+
+def test_keyword_no_cross_match(metadata_movies):
+    """keyword=forest must NOT match 'green forest' unless exact 'forest' also exists."""
+    # Both FPV and Nature have "forest" as an exact keyword → match.
+    # City Lights does NOT have "forest" → no match.
+    r = client.get("/api/v1/movies?keyword=forest")
+    assert r.status_code == 200
+    titles = {m["title"] for m in r.json()["items"]}
+    assert "City Lights" not in titles
+
+
+def test_keyword_green_forest_exact(metadata_movies):
+    """keyword=green forest → only FPV Forest Flight (has 'green forest' as an exact keyword)."""
+    r = client.get("/api/v1/movies?keyword=green forest")
+    assert r.status_code == 200
+    assert r.json()["total"] == 1
+    assert r.json()["items"][0]["title"] == "FPV Forest Flight"
+
+
+# ── Exclude filter ───────────────────────────────────────────────────
+
+def test_exclude_current_movie(metadata_movies):
+    """exclude=<MOVIE_A_ID> with keyword=forest → only Nature Walks."""
+    r = client.get(f"/api/v1/movies?keyword=forest&exclude={MOVIE_A_ID}")
+    assert r.status_code == 200
+    titles = {m["title"] for m in r.json()["items"]}
+    assert "FPV Forest Flight" not in titles
+    assert "Nature Walks" in titles
+
+
+def test_exclude_invalid_uuid_ignored(metadata_movies):
+    """exclude=not-a-uuid should be ignored, not cause an error."""
+    r = client.get("/api/v1/movies?keyword=forest&exclude=not-a-uuid")
+    assert r.status_code == 200
+    assert r.json()["total"] == 2  # no exclusion applied
+
+
+# ── Metadata endpoint remains public ─────────────────────────────────
+
+def test_metadata_endpoint_public(metadata_movies):
+    """Metadata filters work without authentication."""
+    r = client.get("/api/v1/movies?director=Pexels Creator")
+    assert r.status_code == 200
+    assert r.json()["total"] == 2
+
+
+# ── Existing filters still work ──────────────────────────────────────
+
+def test_existing_search_with_metadata_movies(metadata_movies):
+    """search=city → City Lights."""
+    r = client.get("/api/v1/movies?search=city")
+    assert r.status_code == 200
+    assert r.json()["total"] == 1
+    assert r.json()["items"][0]["title"] == "City Lights"
+
+
+def test_existing_genre_with_metadata_movies(metadata_movies):
+    """genre=Documentary → FPV + Nature."""
+    r = client.get("/api/v1/movies?genre=Documentary")
+    assert r.status_code == 200
+    assert r.json()["total"] == 2
+
+
+def test_existing_year_with_metadata_movies(metadata_movies):
+    """year=2022 → City Lights."""
+    r = client.get("/api/v1/movies?year=2022")
+    assert r.status_code == 200
+    assert r.json()["total"] == 1
+    assert r.json()["items"][0]["title"] == "City Lights"
+
+
+def test_pagination_with_metadata_filter(metadata_movies):
+    """Pagination works with metadata filters."""
+    r = client.get("/api/v1/movies?director=Pexels Creator&limit=1&page=1")
+    assert r.status_code == 200
+    assert len(r.json()["items"]) == 1

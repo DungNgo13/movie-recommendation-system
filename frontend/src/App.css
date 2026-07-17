@@ -2612,3 +2612,183 @@
     width: 160px;
   }
 }
+
+/* ===== Metadata Discovery — Interactive Buttons & Chips ================= */
+
+/* Director link-style button */
+.movie-metadata-button {
+  all: unset;
+  cursor: pointer;
+  color: var(--primary);
+  font: inherit;
+  font-weight: 500;
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-underline-offset: 3px;
+  transition:
+    color var(--transition-fast),
+    text-decoration-color var(--transition-fast);
+}
+
+.movie-metadata-button:hover {
+  text-decoration-color: var(--primary);
+}
+
+.movie-metadata-button:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* Cast & keyword clickable chips */
+.movie-metadata-chip {
+  all: unset;
+  cursor: pointer;
+  transition:
+    background var(--transition-fast),
+    color var(--transition-fast),
+    box-shadow var(--transition-fast);
+}
+
+.movie-metadata-chip:hover {
+  background: var(--primary) !important;
+  color: var(--primary-foreground) !important;
+}
+
+.movie-metadata-chip:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+/* ===== Metadata Discovery — Recommendation Section Header =============== */
+
+.recommendation-mode-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.recommendation-mode-header h2 {
+  margin: 0;
+  font-size: var(--text-lg);
+  font-weight: 600;
+  color: var(--foreground);
+}
+
+.recommendation-filter-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* Active filter chip */
+.recommendation-filter-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: var(--radius-full);
+  background: var(--primary);
+  color: var(--primary-foreground);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.recommendation-filter-chip__dismiss {
+  all: unset;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  font-size: 14px;
+  line-height: 1;
+  transition: background var(--transition-fast);
+}
+
+.recommendation-filter-chip__dismiss:hover {
+  background: oklch(0 0 0 / 0.2);
+}
+
+.recommendation-filter-chip__dismiss:focus-visible {
+  outline: 2px solid var(--primary-foreground);
+  outline-offset: 1px;
+}
+
+/* Back to personalized link */
+.recommendation-filter-clear {
+  all: unset;
+  cursor: pointer;
+  font-size: var(--text-sm);
+  color: var(--muted-foreground);
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-underline-offset: 3px;
+  transition:
+    color var(--transition-fast),
+    text-decoration-color var(--transition-fast);
+}
+
+.recommendation-filter-clear:hover {
+  color: var(--foreground);
+  text-decoration-color: currentColor;
+}
+
+.recommendation-filter-clear:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* ===== Metadata Discovery — Result Card Label =========================== */
+
+.metadata-result-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.metadata-match-label {
+  margin-top: 4px;
+  padding: 0 4px;
+  font-size: var(--text-xs);
+  color: var(--muted-foreground);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ===== Metadata Discovery — Empty & Error States ======================== */
+
+.metadata-empty-state,
+.metadata-error-state {
+  text-align: center;
+  padding: var(--space-xl) var(--space-lg);
+  color: var(--muted-foreground);
+  font-size: var(--text-md);
+}
+
+.metadata-empty-state p,
+.metadata-error-state p {
+  margin: 0 0 var(--space-md);
+}
+
+/* ===== Responsive — Metadata header on mobile =========================== */
+
+@media (max-width: 640px) {
+  .recommendation-mode-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .recommendation-filter-controls {
+    gap: 8px;
+  }
+}
