@@ -141,4 +141,36 @@ describe('ThemeSelector', () => {
     const darkBtn = screen.getByRole('button', { name: /dark/i });
     expect(darkBtn.getAttribute('aria-pressed')).toBe('true');
   });
+
+  // ── Shared segmented-control classes ──
+
+  it('theme options use shared segmented-control classes', () => {
+    const { container } = renderSelector();
+    const wrapper = container.querySelector('.segmented-control');
+    expect(wrapper).toBeTruthy();
+
+    const options = container.querySelectorAll('.segmented-control__option');
+    expect(options.length).toBe(3);
+  });
+
+  it('active theme option has segmented-control__option--active class', () => {
+    const { container } = renderSelector();
+    const activeOptions = container.querySelectorAll('.segmented-control__option--active');
+    expect(activeOptions.length).toBe(1);
+  });
+
+  it('each button has an icon wrapped in segmented-control__icon', () => {
+    const { container } = renderSelector();
+    const icons = container.querySelectorAll('.segmented-control__icon');
+    expect(icons.length).toBe(3);
+    icons.forEach((icon) => {
+      expect(icon.querySelector('svg')).toBeTruthy();
+    });
+  });
+
+  it('each button has a label wrapped in segmented-control__label', () => {
+    const { container } = renderSelector();
+    const labels = container.querySelectorAll('.segmented-control__label');
+    expect(labels.length).toBe(3);
+  });
 });

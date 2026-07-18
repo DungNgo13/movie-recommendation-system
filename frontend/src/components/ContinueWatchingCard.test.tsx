@@ -184,7 +184,6 @@ describe('ContinueWatchingCard', () => {
   // ── Both guest and auth use same component ──
 
   it('renders identically for guest and auth (same component)', () => {
-    // Both paths in HomePage use ContinueWatchingCard — this test confirms it renders
     const { container } = renderCard();
     expect(container.querySelector('.cw-card')).toBeTruthy();
     expect(container.querySelector('.cw-card__progress')).toBeTruthy();
@@ -206,5 +205,42 @@ describe('ContinueWatchingCard', () => {
   it('renders 94% correctly', () => {
     renderCard({ progressPercent: 94 });
     expect(screen.getByText(/94%/)).toBeTruthy();
+  });
+
+  // ── Play overlay inside media container ──
+
+  it('play indicator renders inside the media container', () => {
+    const { container } = renderCard();
+    const media = container.querySelector('.cw-card__media');
+    expect(media).toBeTruthy();
+    const play = media!.querySelector('.continue-watching-card__play');
+    expect(play).toBeTruthy();
+  });
+
+  it('play indicator is not rendered after the content/progress section', () => {
+    const { container } = renderCard();
+    const content = container.querySelector('.cw-card__content');
+    expect(content).toBeTruthy();
+    const playInContent = content!.querySelector('.continue-watching-card__play');
+    expect(playInContent).toBeNull();
+  });
+
+  it('play indicator uses the scoped class', () => {
+    const { container } = renderCard();
+    const play = container.querySelector('.continue-watching-card__play');
+    expect(play).toBeTruthy();
+  });
+
+  it('play indicator contains an SVG', () => {
+    const { container } = renderCard();
+    const play = container.querySelector('.continue-watching-card__play');
+    expect(play).toBeTruthy();
+    expect(play!.querySelector('svg')).toBeTruthy();
+  });
+
+  it('play indicator is aria-hidden', () => {
+    const { container } = renderCard();
+    const play = container.querySelector('.continue-watching-card__play');
+    expect(play!.getAttribute('aria-hidden')).toBe('true');
   });
 });

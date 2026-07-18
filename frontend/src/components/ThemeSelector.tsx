@@ -56,18 +56,18 @@ const ThemeSelector: React.FC = () => {
   const { t } = useTranslation();
 
   return (
-    <div className="theme-selector" role="group" aria-label={t('common:theme.title', 'Theme settings')}>
+    <div className="segmented-control" role="group" aria-label={t('common:theme.title', 'Theme settings')}>
       {OPTIONS.map(({ mode: optionMode, labelKey, defaultLabel, Icon }) => (
         <button
           key={optionMode}
           type="button"
-          className={`theme-btn ${mode === optionMode ? 'active' : ''}`}
+          className={`segmented-control__option${mode === optionMode ? ' segmented-control__option--active' : ''}`}
           onClick={() => setMode(optionMode)}
           aria-pressed={mode === optionMode}
           title={t(labelKey, defaultLabel)}
         >
-          <Icon />
-          <span className="theme-selector__label">{t(labelKey, defaultLabel)}</span>
+          <span className="segmented-control__icon"><Icon /></span>
+          <span className="segmented-control__label">{t(labelKey, defaultLabel)}</span>
         </button>
       ))}
     </div>

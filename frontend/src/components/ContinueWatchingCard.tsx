@@ -73,6 +73,10 @@ const ContinueWatchingCard: React.FC<ContinueWatchingCardProps> = ({
               e.currentTarget.src = '/placeholder-poster.svg';
             }}
           />
+          {/* Play overlay — decorative, centered on poster */}
+          <span className="continue-watching-card__play" aria-hidden="true">
+            <PlayIcon className="continue-watching-card__play-icon" />
+          </span>
           {/* Favorite heart */}
           <button
             type="button"
@@ -111,10 +115,10 @@ const ContinueWatchingCard: React.FC<ContinueWatchingCardProps> = ({
             />
           </div>
 
-          {/* Resume time + percentage */}
+          {/* Resume label */}
           <div className="cw-resume-indicator">
-            <span className="cw-resume-text">{t("movies:continueWatching.resume", "Resume")}</span>
             <PlayIcon className="cw-resume-icon" />
+            <span className="cw-resume-text">{t("movies:continueWatching.resume", "Resume")}</span>
           </div>
         </div>
       </Link>

@@ -16,23 +16,22 @@ export const LanguageSelector: React.FC = () => {
 
   return (
     <div
-      className="language-selector"
+      className="segmented-control"
       role="group"
       aria-label={t("common:language.title")}
     >
       <button
         type="button"
-        className={`lang-btn ${isVi ? "active" : ""}`}
+        className={`segmented-control__option${isVi ? " segmented-control__option--active" : ""}`}
         onClick={() => handleLanguageChange("vi")}
         aria-pressed={isVi}
         title={t("common:language.vi")}
       >
         VI
       </button>
-      <span className="lang-divider">|</span>
       <button
         type="button"
-        className={`lang-btn ${isEn ? "active" : ""}`}
+        className={`segmented-control__option${isEn ? " segmented-control__option--active" : ""}`}
         onClick={() => handleLanguageChange("en")}
         aria-pressed={isEn}
         title={t("common:language.en")}

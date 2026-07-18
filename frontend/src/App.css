@@ -58,65 +58,8 @@
   color: var(--primary-foreground);
 }
 
-/* ===== Theme Selector (Navbar) ===== */
-.theme-selector {
-  display: inline-flex;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  overflow: hidden;
-  background: var(--muted);
-}
 
-.theme-selector__btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  padding: 5px 10px;
-  border: none;
-  background: transparent;
-  color: var(--muted-foreground);
-  font-size: var(--text-xs);
-  font-family: var(--font-sans);
-  cursor: pointer;
-  transition: background var(--transition-fast), color var(--transition-fast);
-  line-height: 1;
-}
 
-.theme-selector__btn:hover {
-  background: var(--accent);
-  color: var(--accent-foreground);
-}
-
-.theme-selector__btn--active {
-  background: var(--primary);
-  color: var(--primary-foreground);
-}
-
-.theme-selector__btn--active:hover {
-  background: var(--primary);
-  color: var(--primary-foreground);
-  opacity: 0.92;
-}
-
-.theme-selector__btn:focus-visible {
-  outline: 2px solid var(--ring);
-  outline-offset: -2px;
-  border-radius: 2px;
-}
-
-.theme-selector__label {
-  display: inline;
-}
-
-/* Mobile: hide labels, keep icons compact */
-@media (max-width: 768px) {
-  .theme-selector__label {
-    display: none;
-  }
-  .theme-selector__btn {
-    padding: 6px 8px;
-  }
-}
 
 /* ===== Page Headings ===== */
 .home-page h1,
@@ -2579,16 +2522,8 @@
   padding: 14px 16px 15px;
 }
 
-.cw-card__title {
-  margin: 0;
-  font-size: var(--text-base);
-  font-weight: 650;
-  line-height: 1.35;
-  color: var(--card-foreground);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
+
+
 
 /* ── Progress bar ── */
 
@@ -2613,36 +2548,83 @@
   transition: width 240ms ease;
 }
 
-/* ── Playback metadata row ── */
+/* ── Play overlay (centered on poster) ── */
 
-.cw-card__meta {
+.continue-watching-card__play {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: oklch(0.98 0 0);
+  background: var(--overlay);
+  box-shadow: var(--shadow-md);
+  pointer-events: none;
+  z-index: 2;
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+}
+
+.cw-card:hover .continue-watching-card__play {
+  opacity: 1;
+}
+
+.continue-watching-card__play-icon {
+  display: block;
+  width: 18px;
+  height: 18px;
+  transform: translateX(1px);
+}
+
+/* ── Card title ── */
+
+.cw-card-title {
+  margin: 0;
+  font-size: var(--text-base);
+  font-weight: 650;
+  line-height: 1.35;
+  color: var(--card-foreground);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── Inline progress text (▶ 02:00 · 42%) ── */
+
+.cw-card-progress {
+  margin: 4px 0 0;
+  font-size: var(--text-xs);
+  color: var(--muted-foreground);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── Resume indicator row ── */
+
+.cw-resume-indicator {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  margin-top: 9px;
-  color: var(--muted-foreground);
-  font-size: var(--text-sm);
-  font-variant-numeric: tabular-nums;
-}
-
-.cw-card__resume {
-  display: inline-flex;
-  align-items: center;
   gap: 5px;
-  min-width: 0;
-}
-
-.cw-card__play-icon {
-  width: 14px;
-  height: 14px;
-  flex: 0 0 auto;
-}
-
-.cw-card__percentage {
-  flex: 0 0 auto;
+  margin-top: 9px;
+  color: var(--primary);
+  font-size: var(--text-xs);
   font-weight: 600;
-  color: var(--card-foreground);
+}
+
+.cw-resume-text {
+  line-height: 1;
+}
+
+.cw-resume-icon {
+  width: 12px;
+  height: 12px;
+  flex: 0 0 auto;
 }
 
 /* ── Grid integration ── */
@@ -2659,12 +2641,18 @@
     padding: 12px 13px 14px;
   }
 
-  .cw-card__meta {
-    font-size: 0.8125rem;
-  }
-
   .cw-card__progress {
     height: 5px;
+  }
+
+  .continue-watching-card__play {
+    width: 40px;
+    height: 40px;
+  }
+
+  .continue-watching-card__play-icon {
+    width: 16px;
+    height: 16px;
   }
 
   .movie-list.movie-row .cw-card {

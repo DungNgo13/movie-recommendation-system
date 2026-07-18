@@ -268,39 +268,76 @@ button {
   }
 }
 
-/* ===== Language Selector ===== */
-.language-selector {
-  display: flex;
+/* ===== Shared Segmented Control ===== */
+.segmented-control {
+  display: inline-flex;
   align-items: center;
-  gap: 4px;
-  background: var(--muted);
+  gap: 0;
+  padding: 2px;
+  min-height: 32px;
   border: 1px solid var(--border);
-  border-radius: var(--radius-full);
-  padding: 4px 8px;
+  border-radius: 999px;
+  background: var(--muted);
 }
 
-.lang-btn {
-  background: none;
-  border: none;
-  padding: 2px 4px;
-  font-size: 0.8rem;
-  font-weight: 600;
+.segmented-control__option {
+  appearance: none;
+  -webkit-appearance: none;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
   color: var(--muted-foreground);
+  font: inherit;
+  font-size: var(--text-xs);
+  font-weight: 600;
+  line-height: 1;
+  min-height: 26px;
+  padding: 0 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  white-space: nowrap;
   cursor: pointer;
-  border-radius: var(--radius-sm);
-  transition: var(--transition-fast);
+  box-shadow: none;
+  transition:
+    background var(--transition-fast),
+    color var(--transition-fast),
+    box-shadow var(--transition-fast);
 }
 
-.lang-btn:hover {
+.segmented-control__option:hover {
   color: var(--foreground);
 }
 
-.lang-btn.active {
+.segmented-control__option[aria-pressed="true"],
+.segmented-control__option--active {
   color: var(--foreground);
+  background: var(--card);
+  box-shadow: var(--shadow-sm);
 }
 
-.lang-divider {
-  font-size: 0.8rem;
-  color: var(--border-hover);
-  user-select: none;
+.segmented-control__option:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: -2px;
+}
+
+.segmented-control__icon {
+  display: inline-flex;
+  align-items: center;
+  flex: 0 0 auto;
+}
+
+.segmented-control__label {
+  display: inline;
+}
+
+/* Mobile: hide theme labels, keep icons compact */
+@media (max-width: 768px) {
+  .segmented-control__label {
+    display: none;
+  }
+  .segmented-control__option {
+    padding: 0 8px;
+  }
 }
