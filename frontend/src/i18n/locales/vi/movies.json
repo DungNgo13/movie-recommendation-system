@@ -50,6 +50,13 @@
       "yearAsc": "Cũ nhất"
     }
   },
+  "hero": {
+    "watchNow": "Xem ngay",
+    "moreInfo": "Xem thông tin",
+    "watchMovie": "Xem {{title}}",
+    "moreInfoMovie": "Xem thông tin về {{title}}",
+    "backdropAlt": "Ảnh nền phim {{title}}"
+  },
   "favorites": {
     "title": "Phim yêu thích của tôi",
     "guestSync": "Bạn có {{count}} phim yêu thích đã lưu",

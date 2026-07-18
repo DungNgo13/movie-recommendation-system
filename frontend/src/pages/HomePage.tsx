@@ -236,34 +236,41 @@ const HomePage: React.FC = () => {
   return (
     <div className="home-page">
       {/* ===== Hero Section ===== */}
-      {heroMovie && (
+      {heroMovie && (() => {
+        const heroTitle = getLocalizedTitle(heroMovie, i18n.language as AppLanguage);
+        return (
         <section className="hero-section">
           <div
             className="hero-backdrop"
+            role="img"
+            aria-label={t("movies:hero.backdropAlt", { title: heroTitle })}
             style={{
               backgroundImage: `url(${heroMovie.backdrop_url || heroMovie.poster_url || ''})`,
             }}
           />
           <div className="hero-gradient" />
           <div className="hero-content">
-            <h1 className="hero-title">{getLocalizedTitle(heroMovie, i18n.language as AppLanguage)}</h1>
+            <h1 className="hero-title">{heroTitle}</h1>
             <div className="hero-actions">
               <Link
                 to={`/movie/${heroMovie.id}`}
                 className="hero-btn hero-btn--primary"
+                aria-label={t("movies:hero.watchMovie", { title: heroTitle })}
               >
-                Watch Now
+                {t("movies:hero.watchNow")}
               </Link>
               <Link
                 to={`/movie/${heroMovie.id}`}
                 className="hero-btn hero-btn--secondary"
+                aria-label={t("movies:hero.moreInfoMovie", { title: heroTitle })}
               >
-                More Info
+                {t("movies:hero.moreInfo")}
               </Link>
             </div>
           </div>
         </section>
-      )}
+        );
+      })()}
 
       {/* ===== Sticky Filter Controls ===== */}
       <div className="sticky-controls">

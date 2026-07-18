@@ -50,6 +50,13 @@
       "yearAsc": "Oldest First"
     }
   },
+  "hero": {
+    "watchNow": "Watch Now",
+    "moreInfo": "More Info",
+    "watchMovie": "Watch {{title}}",
+    "moreInfoMovie": "More info about {{title}}",
+    "backdropAlt": "{{title}} featured backdrop"
+  },
   "favorites": {
     "title": "My Favorites",
     "guestSync": "You have {{count}} favorite saved locally",
