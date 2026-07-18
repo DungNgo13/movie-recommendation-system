@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { render, screen, act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { ThemeProvider } from './ThemeContext';
+import { ThemeProvider } from './ThemeProvider';
 import { useTheme } from '../hooks/useTheme';
 import { THEME_STORAGE_KEY } from './themeStorage';
 

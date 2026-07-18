@@ -1,7 +1,8 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { getLocalizedTitle } from '../utils/localizedMovie';
+import type { AppLanguage } from '../i18n/languageStorage';
 import MovieCard from '../components/MovieCard';
 import ContinueWatchingCard from '../components/ContinueWatchingCard';
 import RecommendationCard from '../components/RecommendationCard';
@@ -49,7 +50,7 @@ const HomePage: React.FC = () => {
   const location = useLocation();
   const [historyItems, setHistoryItems] = useState<HistoryItem[]>([]);
   const [recommendations, setRecommendations] = useState<RecommendedMovie[]>([]);
-  const [guestContinueItems, setGuestContinueItems] = useState<GuestContinueItem[]>([]);
+  const [guestEventVersion, setGuestEventVersion] = useState(0);
 
   // Search / Filter / Sort state
   const [searchInput, setSearchInput] = useState('');
@@ -150,15 +151,19 @@ const HomePage: React.FC = () => {
     // detail page triggers a fresh fetch of watch history.
   }, [user, location.key]);
 
-  // ── Guest: build Continue Watching from localStorage + movie catalog ────
-  const refreshGuestContinue = useCallback(() => {
-    if (user || movies.length === 0) {
-      setGuestContinueItems([]);
-      return;
-    }
+  // ── Guest: derive Continue Watching from localStorage + movie catalog ───
+  // Recomputes when movies load, user changes, external events fire
+  // (guestEventVersion), or navigation occurs (location.key changes trigger
+  // a re-render from useLocation, and location.key is listed as a dependency).
+  const guestContinueItems = useMemo<GuestContinueItem[]>(() => {
+    // Invalidation signals — referencing them ensures useMemo recomputes when
+    // navigation occurs (location.key) or external events fire (guestEventVersion).
+    void guestEventVersion;
+    void location.key;
+
+    if (user || movies.length === 0) return [];
 
     const guestEntries = getGuestWatchHistory();
-    // Build a movie lookup map from the already-loaded catalog
     const movieMap = new Map<string, MovieListItem>();
     for (const m of movies) {
       movieMap.set(m.id, m);
@@ -166,14 +171,13 @@ const HomePage: React.FC = () => {
 
     const items: GuestContinueItem[] = [];
     for (const entry of guestEntries) {
-      // Filter: unfinished, has meaningful progress, has meaningful position
       if (isWatchCompleted(entry.progress_percent)) continue;
       if (entry.is_completed) continue;
       if (entry.progress_percent <= 0) continue;
       if (entry.playback_position_seconds <= 0) continue;
 
       const movieData = movieMap.get(entry.movie_id);
-      if (!movieData) continue; // Movie no longer in catalog — skip stale entry
+      if (!movieData) continue;
 
       items.push({
         ...movieData,
@@ -184,24 +188,19 @@ const HomePage: React.FC = () => {
       });
     }
 
-    // Sort by most recently updated first
     items.sort((a, b) => b.updated_at.localeCompare(a.updated_at));
-
-    setGuestContinueItems(items);
-  }, [user, movies]);
-
-  // Refresh guest CW on mount, navigation, and whenever movies load
-  useEffect(() => {
-    refreshGuestContinue();
-  }, [refreshGuestContinue, location.key]);
+    return items;
+    // location.key: forces re-read from localStorage on navigation back to Home
+    // guestEventVersion: forces re-read on custom events and cross-tab storage
+  }, [user, movies, guestEventVersion, location.key]);
 
   // Listen for guest-watch-history-updated custom event + cross-tab storage event
   useEffect(() => {
     if (user) return; // Only for guests
 
-    const handleGuestUpdate = () => refreshGuestContinue();
+    const handleGuestUpdate = () => setGuestEventVersion((v) => v + 1);
     const handleStorage = (e: StorageEvent) => {
-      if (e.key === 'guest_watch_history') refreshGuestContinue();
+      if (e.key === 'guest_watch_history') setGuestEventVersion((v) => v + 1);
     };
 
     window.addEventListener(GUEST_HISTORY_EVENT, handleGuestUpdate);
@@ -211,7 +210,7 @@ const HomePage: React.FC = () => {
       window.removeEventListener(GUEST_HISTORY_EVENT, handleGuestUpdate);
       window.removeEventListener('storage', handleStorage);
     };
-  }, [user, refreshGuestContinue]);
+  }, [user]);
 
   const moviesByGenre = useMemo(() => {
     const grouped: Record<string, typeof sortedMovies> = {};
@@ -247,7 +246,7 @@ const HomePage: React.FC = () => {
           />
           <div className="hero-gradient" />
           <div className="hero-content">
-            <h1 className="hero-title">{getLocalizedTitle(heroMovie, i18n.language as any)}</h1>
+            <h1 className="hero-title">{getLocalizedTitle(heroMovie, i18n.language as AppLanguage)}</h1>
             <div className="hero-actions">
               <Link
                 to={`/movie/${heroMovie.id}`}

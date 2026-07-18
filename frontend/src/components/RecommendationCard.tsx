@@ -5,6 +5,7 @@ import type { RecommendedMovie } from '../services/recommendationService';
 import { useTranslation } from 'react-i18next';
 import { getLocalizedTitle } from '../utils/localizedMovie';
 import { getLocalizedRecommendationReason } from '../utils/recommendationReason';
+import type { AppLanguage } from '../i18n/languageStorage';
 
 interface RecommendationCardProps {
   movie: RecommendedMovie;
@@ -24,7 +25,7 @@ const RecommendationCard: React.FC<RecommendationCardProps> = ({
   favoriteLoading = false,
 }) => {
   const { t, i18n } = useTranslation(['recommendation']);
-  const localizedTitle = getLocalizedTitle(movie as any, i18n.language as any);
+  const localizedTitle = getLocalizedTitle(movie, i18n.language as AppLanguage);
   const localizedReason = getLocalizedRecommendationReason(movie.reason, t);
   const handleFavoriteClick = (e: React.MouseEvent) => {
     e.preventDefault();

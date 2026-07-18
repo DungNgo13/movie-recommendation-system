@@ -33,6 +33,7 @@ const HlsPlayer: React.FC<HlsPlayerProps> = ({
   const onPauseRef = useRef(onPause);
   const onEndedRef = useRef(onEnded);
   const initialTimeRef = useRef(initialTime);
+  const tRef = useRef(t);
 
   // Sync refs in a layout-safe effect (runs after every render).
   useEffect(() => {
@@ -40,6 +41,7 @@ const HlsPlayer: React.FC<HlsPlayerProps> = ({
     onPauseRef.current = onPause;
     onEndedRef.current = onEnded;
     initialTimeRef.current = initialTime;
+    tRef.current = t;
   });
 
   // ─────────────────────────────────────────────────────────────────────────
@@ -166,10 +168,10 @@ const HlsPlayer: React.FC<HlsPlayerProps> = ({
             iosNative: true,   // use iOS native FS instead of pseudo-FS
           },
           i18n: { 
-            qualityLabel: { 0: t('movies:plyr.auto', 'Auto') },
-            quality: t('movies:plyr.quality', 'Quality'),
-            speed: t('movies:plyr.speed', 'Speed'),
-            normal: t('movies:plyr.normal', 'Normal'),
+            qualityLabel: { 0: tRef.current('movies:plyr.auto', 'Auto') },
+            quality: tRef.current('movies:plyr.quality', 'Quality'),
+            speed: tRef.current('movies:plyr.speed', 'Speed'),
+            normal: tRef.current('movies:plyr.normal', 'Normal'),
           },
         });
 

@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { getLocalizedTitle, getLocalizedOverview, getLocalizedKeywordLabel } from '../utils/localizedMovie';
+import type { AppLanguage } from '../i18n/languageStorage';
 import type { Movie, MovieAsset, MovieListItem } from '../models';
 import { getMovieById, getMoviesByMetadata } from '../services/movieService';
 import type { MetadataFilterType } from '../services/movieService';
@@ -428,8 +429,8 @@ const MovieDetailPage: React.FC = () => {
         </>
       )}
 
-      <h1>{getLocalizedTitle(movie as any, i18n.language as any)}</h1>
-      <p>{getLocalizedOverview(movie as any, i18n.language as any)}</p>
+      <h1>{getLocalizedTitle(movie, i18n.language as AppLanguage)}</h1>
+      <p>{getLocalizedOverview(movie, i18n.language as AppLanguage)}</p>
 
       {/* ── Metadata block ────────────────────────────────────────────── */}
       <div className="movie-meta-block">
@@ -483,7 +484,7 @@ const MovieDetailPage: React.FC = () => {
             <span className="movie-meta-label">{t("movies:detail.keywords", "Keywords")}</span>
             <div className="movie-meta-scroll-track">
               {movie.keywords.map((kw) => {
-                const localizedKw = getLocalizedKeywordLabel(kw, movie.keyword_labels_vi, i18n.language as any);
+                const localizedKw = getLocalizedKeywordLabel(kw, movie.keyword_labels_vi, i18n.language as AppLanguage);
                 return (
                   <button
                     key={kw}
@@ -532,11 +533,11 @@ const MovieDetailPage: React.FC = () => {
               <h2>
                 {activeMetadataFilter.type === 'director' && t("movies:metadata.moreByDirector", "More by {{director}}", { director: activeMetadataFilter.value })}
                 {activeMetadataFilter.type === 'cast' && t("movies:metadata.featuringCast", "Movies featuring {{cast}}", { cast: activeMetadataFilter.value })}
-                {activeMetadataFilter.type === 'keyword' && t("movies:metadata.taggedKeyword", "Movies tagged #{{keyword}}", { keyword: getLocalizedKeywordLabel(activeMetadataFilter.value, movie.keyword_labels_vi, i18n.language as any) })}
+                {activeMetadataFilter.type === 'keyword' && t("movies:metadata.taggedKeyword", "Movies tagged #{{keyword}}", { keyword: getLocalizedKeywordLabel(activeMetadataFilter.value, movie.keyword_labels_vi, i18n.language as AppLanguage) })}
               </h2>
               <div className="recommendation-filter-controls">
                 <span className="recommendation-filter-chip">
-                  {activeMetadataFilter.type === 'keyword' ? `#${getLocalizedKeywordLabel(activeMetadataFilter.value, movie.keyword_labels_vi, i18n.language as any)}` : activeMetadataFilter.value}
+                  {activeMetadataFilter.type === 'keyword' ? `#${getLocalizedKeywordLabel(activeMetadataFilter.value, movie.keyword_labels_vi, i18n.language as AppLanguage)}` : activeMetadataFilter.value}
                   <button
                     type="button"
                     className="recommendation-filter-chip__dismiss"

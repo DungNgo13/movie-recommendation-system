@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { confirmPasswordChange } from '../services/authService';
 import { useTranslation } from 'react-i18next';
@@ -17,6 +17,10 @@ const ConfirmPasswordChangePage: React.FC = () => {
     token ? '' : t("auth:confirmPasswordChange.missingToken", "Missing confirmation token. Please use the link from your email."),
   );
 
+  // Stable ref for t — avoids re-running the confirmation API on language change
+  const tRef = useRef(t);
+  useEffect(() => { tRef.current = t; });
+
   useEffect(() => {
     // If there's no token, the initial state already shows the error.
     if (!token) return;
@@ -34,7 +38,7 @@ const ConfirmPasswordChangePage: React.FC = () => {
         if (!cancelled) {
           setStatus('error');
           setMessage(
-            err instanceof Error ? err.message : t("auth:confirmPasswordChange.error", "Failed to confirm password change"),
+            err instanceof Error ? err.message : tRef.current("auth:confirmPasswordChange.error", "Failed to confirm password change"),
           );
         }
       }

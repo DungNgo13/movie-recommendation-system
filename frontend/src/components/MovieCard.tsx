@@ -4,6 +4,7 @@ import HeartIcon from './HeartIcon';
 import type { MovieListItem } from '../models';
 import { useTranslation } from 'react-i18next';
 import { getLocalizedTitle } from '../utils/localizedMovie';
+import type { AppLanguage } from '../i18n/languageStorage';
 
 interface MovieCardProps {
   movie: Pick<MovieListItem, 'id' | 'title' | 'title_vi' | 'poster_url' | 'backdrop_url'>;
@@ -16,7 +17,7 @@ interface MovieCardProps {
 const MovieCard: React.FC<MovieCardProps> = ({ movie, isFavorite, onToggleFavorite, favoriteLoading = false, enableImageSwap = false }) => {
   const [showBackdrop, setShowBackdrop] = useState(false);
   const { i18n } = useTranslation();
-  const localizedTitle = getLocalizedTitle(movie, i18n.language as any);
+  const localizedTitle = getLocalizedTitle(movie, i18n.language as AppLanguage);
 
   useEffect(() => {
     let interval: number;

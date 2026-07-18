@@ -1,6 +1,6 @@
 import { useContext } from 'react';
-import { ThemeContext } from '../theme/ThemeContext';
-import type { ThemeContextValue } from '../theme/ThemeContext';
+import { ThemeContext } from '../theme/themeContext';
+import type { ThemeContextValue } from '../theme/themeContext';
 
 /**
  * Access the current theme mode, resolved theme, and setter.

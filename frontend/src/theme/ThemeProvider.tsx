@@ -1,4 +1,4 @@
-import React, { createContext, useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import type { ThemeMode, ResolvedTheme } from './themeStorage';
 import {
   loadThemeMode,
@@ -6,19 +6,8 @@ import {
   resolveTheme,
   applyThemeToDOM,
 } from './themeStorage';
-
-// ── Context value ──────────────────────────────────────────────────────
-
-export interface ThemeContextValue {
-  /** The user-selected mode (light | dark | system). */
-  mode: ThemeMode;
-  /** The concrete theme currently applied to the UI. */
-  resolvedTheme: ResolvedTheme;
-  /** Update the theme mode — persists to localStorage. */
-  setMode: (mode: ThemeMode) => void;
-}
-
-export const ThemeContext = createContext<ThemeContextValue | null>(null);
+import { ThemeContext } from './themeContext';
+import type { ThemeContextValue } from './themeContext';
 
 // ── Provider ───────────────────────────────────────────────────────────
 

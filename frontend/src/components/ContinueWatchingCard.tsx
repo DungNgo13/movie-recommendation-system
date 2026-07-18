@@ -4,6 +4,7 @@ import HeartIcon from './HeartIcon';
 import { formatPlaybackTime } from '../services/continueWatchingService';
 import { useTranslation } from 'react-i18next';
 import { getLocalizedTitle } from '../utils/localizedMovie';
+import type { AppLanguage } from '../i18n/languageStorage';
 
 interface ContinueWatchingCardProps {
   movie: {
@@ -40,7 +41,7 @@ const ContinueWatchingCard: React.FC<ContinueWatchingCardProps> = ({
   favoriteLoading = false,
 }) => {
   const { t, i18n } = useTranslation(['movies']);
-  const localizedTitle = getLocalizedTitle(movie as any, i18n.language as any);
+  const localizedTitle = getLocalizedTitle(movie, i18n.language as AppLanguage);
   // ── Progress data safety ──────────────────────────────────────────
   const clampedProgress = Math.min(
     100,
