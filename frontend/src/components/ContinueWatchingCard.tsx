@@ -47,7 +47,6 @@ const ContinueWatchingCard: React.FC<ContinueWatchingCardProps> = ({
     Math.max(0, Number.isFinite(progressPercent) ? progressPercent : 0),
   );
   const roundedProgress = Math.round(clampedProgress);
-  const formattedPosition = formatPlaybackTime(playbackPositionSeconds);
 
   const handleFavoriteClick = (e: React.MouseEvent) => {
     e.preventDefault();

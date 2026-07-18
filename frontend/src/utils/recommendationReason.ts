@@ -1,4 +1,4 @@
-import { TFunction } from "i18next";
+import type { TFunction } from "i18next";
 
 const knownReasons: Record<string, string> = {
   // Combinations for "Based on your ratings"

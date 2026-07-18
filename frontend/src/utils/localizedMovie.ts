@@ -1,4 +1,4 @@
-import { AppLanguage } from "../i18n/languageStorage";
+import type { AppLanguage } from "../i18n/languageStorage";
 
 interface LocalizedMovieFields {
   title: string;

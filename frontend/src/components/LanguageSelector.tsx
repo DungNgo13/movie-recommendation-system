@@ -1,6 +1,7 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { saveLanguage, AppLanguage } from "../i18n/languageStorage";
+import { saveLanguage } from "../i18n/languageStorage";
+import type { AppLanguage } from "../i18n/languageStorage";
 
 export const LanguageSelector: React.FC = () => {
   const { t, i18n } = useTranslation();
