@@ -275,6 +275,9 @@ button {
   gap: 0;
   padding: 2px;
   min-height: 32px;
+  max-width: 100%;
+  min-width: 0;
+  flex: 0 1 auto;
   border: 1px solid var(--border);
   border-radius: 999px;
   background: var(--muted);
@@ -292,6 +295,7 @@ button {
   font-weight: 600;
   line-height: 1;
   min-height: 26px;
+  min-width: 0;
   padding: 0 10px;
   display: inline-flex;
   align-items: center;
