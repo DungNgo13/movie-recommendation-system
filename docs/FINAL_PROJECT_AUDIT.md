@@ -862,3 +862,100 @@ npm audit: 0 vulnerabilities
 .env files: gitignored (both root and backend)
 frontend/.env.production: tracked but contains only public API URL
 ```
+
+---
+
+## Post-Audit Remediation
+
+### Remediation Date
+2026-07-19 (same day as audit)
+
+### Remediation Scope
+All HIGH and MEDIUM severity findings from the audit were addressed. No features were added. No breaking changes were introduced.
+
+### Resolved Findings
+
+#### 1. Global SiteFooter with Academic Disclaimer (HIGH → RESOLVED)
+**Audit Finding:** No global footer with non-commercial/academic disclaimer.
+
+**Resolution:**
+- Created `frontend/src/components/SiteFooter.tsx` — bilingual `<footer>` with academic disclaimer
+- Added CSS styles (`.site-footer`, `.site-footer__inner`, `.site-footer__copyright`, `.site-footer__disclaimer`)
+- Added i18n keys to `en/common.json` and `vi/common.json` (`footer.ariaLabel`, `footer.disclaimer`)
+- Updated `App.tsx` with `app-shell` flex layout: `<Navbar/>` → `<main><Routes/></main>` → `<SiteFooter/>`
+- Created `SiteFooter.test.tsx` with 10 tests (semantic structure, year, disclaimer, layout integration)
+
+**Verification:** 15 test files, 281 tests, all passed. Build succeeds.
+
+#### 2. Navbar i18n — Hard-coded English Strings (MEDIUM → RESOLVED)
+**Audit Finding:** Admin links (Movies, Users, Logs, RecSys, Security), Logout, and "My Profile" title were hard-coded English.
+
+**Resolution:**
+- All 7 hard-coded strings replaced with `t()` calls using `navbar.*` keys
+- Added corresponding keys to both `en/common.json` and `vi/common.json`
+- Also fixed existing `t()` calls from `navbar:key` (namespace separator) to `navbar.key` (nested key) for consistency with the flat common namespace
+
+**Verification:** Lint passes. All existing Navbar-dependent tests pass.
+
+#### 3. Favorite Accessibility — Hard-coded English Aria Labels (MEDIUM → RESOLVED)
+**Audit Finding:** `MovieCard.tsx`, `RecommendationCard.tsx`, and `ContinueWatchingCard.tsx` had hard-coded English `"Add/Remove <title> to/from favorites"` aria-labels.
+
+**Resolution:**
+- All 3 components updated to use `t('movies:favorites.add/remove', defaultValue, { title })` pattern
+- Added `favorites.add` and `favorites.remove` keys to both `en/movies.json` and `vi/movies.json`
+- Default values ensure backward compatibility with the test mock
+
+**Verification:** All 18 FavoriteHeart tests pass. All 28 ContinueWatchingCard tests pass.
+
+#### 4. HLS Cache Invalidation (MEDIUM → VERIFIED/RESOLVED)
+**Audit Finding:** `_invalidate_rec_cache()` was imported but never called after HLS processing completes.
+
+**Status at Remediation Start:** Already fixed in current code at lines 483 and 521 of `hls_service.py`. The call was added between the audited commit (`2661486`) and the current HEAD, or was present but the audit inspector missed it.
+
+**Resolution:**
+- Verified correct placement: called after `db.commit()` that sets `processing_status = "ready"`, for both multi-quality (line 483) and fallback (line 521) paths
+- NOT called after failed or cancelled conversion (verified by code inspection and tests)
+- Created `backend/tests/test_hls_cache_invalidation.py` with 5 new tests:
+  - `test_multi_quality_success_invalidates_cache` ✅
+  - `test_fallback_success_invalidates_cache` ✅
+  - `test_failed_conversion_does_not_invalidate_cache` ✅
+  - `test_cancelled_conversion_does_not_invalidate_cache` ✅
+  - `test_progress_updates_do_not_repeatedly_invalidate_cache` ✅
+
+**Verification:** 5 backend tests pass. Backend full suite passes.
+
+#### 5. Missing `docs/LEGAL_SOURCES.md` (MEDIUM → RESOLVED)
+**Audit Finding:** Referenced in `PROJECT_FILE_MAP.md` but file did not exist.
+
+**Resolution:** Created `docs/LEGAL_SOURCES.md` — content source and license guidelines describing per-movie and per-asset metadata fields, rights status values, and review checklist.
+
+#### 6. Documentation Updates (LOW → RESOLVED)
+- **`docs/streaming_architecture.md`**: Complete rewrite to match current implementation including quality selection table, cache invalidation, cancellation, watch progress integration
+- **`docs/deployment.md`**: Added note about `api.laetus.io.vn` subdomain configuration
+- **`docs/PROJECT_FILE_MAP.md`**: Added SiteFooter, ContinueWatchingCard, HeartIcon, ThemeSelector, LanguageSelector, HLS cache test, FINAL_PROJECT_AUDIT.md, REPORT_FACTS_SNAPSHOT.md
+- **`PROJECT_RULES.md`**: Updated database description from "PostgreSQL" to "SQLite (development/tests) / PostgreSQL (production)"
+
+### Remaining Known Limitations (Documented, Not Fixed)
+These items were identified in the audit and are documented as known limitations for the thesis:
+
+1. **Cache invalidation only checks movie count** — Does not detect metadata-only changes. Documented as acceptable for academic scope.
+2. **No WCAG formal audit** — Accessibility improvements were made (i18n aria labels, semantic footer) but no formal WCAG audit was performed.
+3. **Production deployment NOT TESTED** — No server access from the audit environment.
+4. **Large JS bundle** — 1,038 kB (313 kB gzip). Code splitting not implemented. Documented as a notice.
+5. **Legacy scripts** — `backend/scripts/importers/` are one-time data import scripts, not active application code. Retained for reproducibility.
+
+### Post-Remediation Validation Results
+
+#### Frontend
+```
+npm run lint: 0 errors, 0 warnings
+npm run test:run: 15 files, 281 tests, all passed
+npm run build: TypeScript 0 errors, Vite build succeeds (125 modules, 338ms)
+```
+
+#### Backend
+```
+pytest tests/ -v: 181 passed (176 original + 5 new HLS cache tests)
+python -m compileall app: all modules compiled
+```
+

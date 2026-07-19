@@ -35,23 +35,23 @@ const Navbar: React.FC = () => {
     <nav className="navbar">
       <Link to="/" className="navbar-brand">Laetus</Link>
       <div className="navbar-links">
-        <Link to="/" className={navClass('/')}>{t("navbar:home", "Home")}</Link>
-        <Link to="/favorites" className={navClass('/favorites')}>{t("navbar:favorites", "Favorites")}</Link>
+        <Link to="/" className={navClass('/')}>{t("navbar.home", "Home")}</Link>
+        <Link to="/favorites" className={navClass('/favorites')}>{t("navbar.favorites", "Favorites")}</Link>
         {user?.role === 'admin' && (
           <>
-            <Link to="/admin" className={navClass('/admin')}>{t("navbar:admin", "Dashboard")}</Link>
-            <Link to="/admin/movies" className={navClass('/admin/movies')}>Movies</Link>
-            <Link to="/admin/users" className={navClass('/admin/users')}>Users</Link>
-            <Link to="/admin/logs" className={navClass('/admin/logs')}>Logs</Link>
-            <Link to="/admin/recsys" className={navClass('/admin/recsys')}>RecSys</Link>
-            <Link to="/admin/security" className={navClass('/admin/security')}>Security</Link>
+            <Link to="/admin" className={navClass('/admin')}>{t("navbar.admin", "Dashboard")}</Link>
+            <Link to="/admin/movies" className={navClass('/admin/movies')}>{t("navbar.movies", "Movies")}</Link>
+            <Link to="/admin/users" className={navClass('/admin/users')}>{t("navbar.users", "Users")}</Link>
+            <Link to="/admin/logs" className={navClass('/admin/logs')}>{t("navbar.logs", "Logs")}</Link>
+            <Link to="/admin/recsys" className={navClass('/admin/recsys')}>{t("navbar.recsys", "RecSys")}</Link>
+            <Link to="/admin/security" className={navClass('/admin/security')}>{t("navbar.security", "Security")}</Link>
           </>
         )}
         <LanguageSelector />
         <ThemeSelector />
         {user ? (
           <>
-            <Link to="/profile" className="navbar-profile-block" title="My Profile">
+            <Link to="/profile" className="navbar-profile-block" title={t("navbar.myProfile", "My Profile")}>
               {avatarSrc ? (
                 <img
                   src={avatarSrc}
@@ -74,11 +74,11 @@ const Navbar: React.FC = () => {
               <span className="navbar-profile-email">{user.email}</span>
             </Link>
             <button className="navbar-link navbar-logout" onClick={handleLogout}>
-              Logout
+              {t("navbar.logout", "Logout")}
             </button>
           </>
         ) : (
-          <Link to="/login" className="navbar-link navbar-login">{t("navbar:login", "Login")}</Link>
+          <Link to="/login" className="navbar-link navbar-login">{t("navbar.login", "Login")}</Link>
         )}
       </div>
     </nav>
@@ -86,3 +86,4 @@ const Navbar: React.FC = () => {
 };
 
 export default Navbar;
+

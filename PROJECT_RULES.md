@@ -3,7 +3,7 @@
 ## Stack
 - Frontend: React + TypeScript + Vite
 - Backend: FastAPI + SQLAlchemy
-- Database: PostgreSQL
+- Database: SQLite (development/tests) / PostgreSQL (production)
 - Testing:
   - Frontend: Vitest
   - Backend: pytest

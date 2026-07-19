@@ -5,11 +5,49 @@
    No hard-coded hex values.  Edit :root in index.css to re-theme.
    =================================================================== */
 
-/* ===== App Layout ===== */
-.App {
+/* ===== App Shell Layout ===== */
+.app-shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-main {
+  flex: 1 0 auto;
   padding: var(--space-lg) var(--space-lg);
   max-width: 1600px;
   margin: 0 auto;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* ===== Site Footer ===== */
+.site-footer {
+  flex-shrink: 0;
+  margin-top: 48px;
+  border-top: 1px solid var(--border);
+  background: var(--muted);
+  color: var(--muted-foreground);
+}
+
+.site-footer__inner {
+  width: min(100% - 32px, 1440px);
+  margin-inline: auto;
+  padding: 20px 0;
+  text-align: center;
+}
+
+.site-footer__copyright {
+  margin: 0 0 6px;
+  color: var(--foreground);
+  font-weight: 600;
+}
+
+.site-footer__disclaimer {
+  max-width: 960px;
+  margin: 0 auto;
+  font-size: 0.875rem;
+  line-height: 1.6;
 }
 
 /* ===== Navbar ===== */

@@ -57,8 +57,8 @@ const ContinueWatchingCard: React.FC<ContinueWatchingCardProps> = ({
   };
 
   const favoriteLabel = isFavorite
-    ? `Remove ${localizedTitle} from favorites`
-    : `Add ${localizedTitle} to favorites`;
+    ? t('movies:favorites.remove', 'Remove {{title}} from favorites', { title: localizedTitle })
+    : t('movies:favorites.add', 'Add {{title}} to favorites', { title: localizedTitle });
 
   return (
     <article className="cw-card">

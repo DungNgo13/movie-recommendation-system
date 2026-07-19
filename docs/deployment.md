@@ -89,6 +89,14 @@ sudo nginx -t                  # Validate config syntax
 sudo systemctl reload nginx    # Apply changes
 ```
 
+> **Note**: The configuration above covers the main `laetus.io.vn` domain.
+> If the production setup uses a separate `api.laetus.io.vn` subdomain for
+> the backend (as configured in `frontend/.env.production`), a separate
+> Nginx server block is required for that subdomain with its own SSL
+> certificate and proxy rules. The `BACKEND_URL` environment variable
+> must match whichever domain serves the API.
+
+
 ---
 
 ## 2. Backend Service (systemd)

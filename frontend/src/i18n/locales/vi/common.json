@@ -14,11 +14,22 @@
     "home": "Trang chủ",
     "search": "Tìm kiếm phim...",
     "favorites": "Yêu thích",
-    "admin": "Quản trị",
+    "admin": "Bảng điều khiển",
+    "movies": "Phim",
+    "users": "Người dùng",
+    "logs": "Nhật ký",
+    "recsys": "Hệ gợi ý",
+    "security": "Bảo mật",
     "profile": "Hồ sơ",
+    "myProfile": "Hồ sơ của tôi",
     "login": "Đăng nhập",
+    "logout": "Đăng xuất",
     "searchPlaceholder": "Tìm kiếm phim, thể loại, diễn viên...",
     "theme": "Giao diện"
+  },
+  "footer": {
+    "ariaLabel": "Chân trang",
+    "disclaimer": "Laetus là dự án được xây dựng phục vụ mục đích nghiên cứu, học tập và trình diễn học thuật, không nhằm mục đích kinh doanh hoặc thương mại. Quyền đối với nội dung, hình ảnh và video của bên thứ ba thuộc về các chủ sở hữu tương ứng."
   },
   "loading": "Đang tải...",
   "errorPrefix": "Lỗi:",

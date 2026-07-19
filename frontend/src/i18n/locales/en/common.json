@@ -14,11 +14,22 @@
     "home": "Home",
     "search": "Search for movies...",
     "favorites": "Favorites",
-    "admin": "Admin",
+    "admin": "Dashboard",
+    "movies": "Movies",
+    "users": "Users",
+    "logs": "Logs",
+    "recsys": "RecSys",
+    "security": "Security",
     "profile": "Profile",
+    "myProfile": "My Profile",
     "login": "Login",
+    "logout": "Logout",
     "searchPlaceholder": "Search movies, genres, actors...",
     "theme": "Theme"
+  },
+  "footer": {
+    "ariaLabel": "Site footer",
+    "disclaimer": "Laetus is an academic project created for research, learning, and educational demonstration purposes. This website is not operated for business or commercial purposes. Rights to third-party content, images, and videos remain with their respective owners."
   },
   "loading": "Loading...",
   "errorPrefix": "Error:",

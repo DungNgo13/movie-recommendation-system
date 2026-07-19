@@ -16,7 +16,7 @@ interface MovieCardProps {
 
 const MovieCard: React.FC<MovieCardProps> = ({ movie, isFavorite, onToggleFavorite, favoriteLoading = false, enableImageSwap = false }) => {
   const [showBackdrop, setShowBackdrop] = useState(false);
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation(['movies']);
   const localizedTitle = getLocalizedTitle(movie, i18n.language as AppLanguage);
 
   useEffect(() => {
@@ -42,8 +42,8 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie, isFavorite, onToggleFavori
   };
 
   const favoriteLabel = isFavorite
-    ? `Remove ${localizedTitle} from favorites`
-    : `Add ${localizedTitle} to favorites`;
+    ? t('movies:favorites.remove', 'Remove {{title}} from favorites', { title: localizedTitle })
+    : t('movies:favorites.add', 'Add {{title}} to favorites', { title: localizedTitle });
 
   return (
     <div className="movie-card">

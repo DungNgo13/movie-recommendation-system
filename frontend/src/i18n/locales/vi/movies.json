@@ -83,5 +83,9 @@
     "speed": "Tốc độ",
     "normal": "Bình thường",
     "auto": "Tự động"
+  },
+  "favorites": {
+    "add": "Thêm {{title}} vào danh sách yêu thích",
+    "remove": "Xóa {{title}} khỏi danh sách yêu thích"
   }
 }

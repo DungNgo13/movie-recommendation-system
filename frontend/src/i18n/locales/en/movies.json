@@ -83,5 +83,9 @@
     "speed": "Speed",
     "normal": "Normal",
     "auto": "Auto"
+  },
+  "favorites": {
+    "add": "Add {{title}} to favorites",
+    "remove": "Remove {{title}} from favorites"
   }
 }

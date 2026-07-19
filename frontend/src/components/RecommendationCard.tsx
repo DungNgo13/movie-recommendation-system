@@ -37,8 +37,8 @@ const RecommendationCard: React.FC<RecommendationCardProps> = ({
   const coldStart = isColdStart(movie);
 
   const favoriteLabel = isFavorite
-    ? `Remove ${localizedTitle} from favorites`
-    : `Add ${localizedTitle} to favorites`;
+    ? t('movies:favorites.remove', 'Remove {{title}} from favorites', { title: localizedTitle })
+    : t('movies:favorites.add', 'Add {{title}} to favorites', { title: localizedTitle });
 
   return (
     <div className="movie-card rec-card">

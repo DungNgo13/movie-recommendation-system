@@ -115,6 +115,7 @@
 | File | Mô tả |
 |------|-------|
 | `backend/tests/test_auth.py` | 20 tests: login, JWT, IP tracking, password reset, welcome email |
+| `backend/tests/test_hls_cache_invalidation.py` | 5 tests: cache invalidation on HLS success, failure, cancel, progress |
 | `backend/tests/test_movie_assets.py` | 9 tests: asset CRUD, license checker, media rights |
 | `backend/tests/test_movies.py` | ~15 tests: movie CRUD, upload, validation |
 | `backend/tests/test_password_validator.py` | ~8 tests: password strength rules |
@@ -126,7 +127,7 @@
 | File | Mô tả |
 |------|-------|
 | `frontend/src/main.tsx` | React DOM root entry point |
-| `frontend/src/App.tsx` | Router setup, Navbar, route definitions |
+| `frontend/src/App.tsx` | App shell layout (Navbar + main + SiteFooter), route definitions |
 | `frontend/src/App.css` | Global styles (OKLCH design system, ~2250 lines) |
 | `frontend/src/index.css` | CSS reset and base variables |
 | `frontend/src/config.ts` | API_BASE_URL configuration |
@@ -155,12 +156,17 @@
 
 | File | Mô tả |
 |------|-------|
-| `frontend/src/components/Navbar.tsx` | Top navigation bar with auth state |
+| `frontend/src/components/Navbar.tsx` | Top navigation bar with i18n, auth state |
+| `frontend/src/components/SiteFooter.tsx` | Bilingual academic disclaimer footer |
 | `frontend/src/components/MovieCard.tsx` | Movie card (poster, title, year) |
 | `frontend/src/components/RecommendationCard.tsx` | Recommendation card (score + reason) |
+| `frontend/src/components/ContinueWatchingCard.tsx` | Continue watching card (progress bar, resume) |
+| `frontend/src/components/HeartIcon.tsx` | SVG heart icon (outlined/filled) |
 | `frontend/src/components/StarRating.tsx` | Star rating UI (1–5) |
 | `frontend/src/components/HlsPlayer.tsx` | HLS.js video player with quality switching |
 | `frontend/src/components/SourceAttribution.tsx` | Source/license display component |
+| `frontend/src/components/ThemeSelector.tsx` | Theme switch (light/dark/system) |
+| `frontend/src/components/LanguageSelector.tsx` | Language switch (EN/VI) |
 | `frontend/src/components/ProtectedAdminRoute.tsx` | Admin route guard |
 | `frontend/src/components/AvatarUpload.tsx` | Avatar upload widget |
 | `frontend/src/components/ChangePasswordForm.tsx` | Password change form |
@@ -197,10 +203,12 @@
 | File | Mô tả |
 |------|-------|
 | `docs/CURRENT_PROJECT_STATE.md` | Full Vietnamese project report |
+| `docs/FINAL_PROJECT_AUDIT.md` | Final project audit report |
+| `docs/REPORT_FACTS_SNAPSHOT.md` | Factual repository reference for thesis |
 | `docs/PROJECT_EXPORT_FOR_CHATGPT.md` | Compact context for AI assistants |
 | `docs/PROJECT_FILE_MAP.md` | This file |
 | `docs/RECOMMENDATION_ENGINE_EXPLAINED.md` | Detailed AI algorithm explanation |
-| `docs/LEGAL_SOURCES.md` | Legal source guidelines |
+| `docs/LEGAL_SOURCES.md` | Content source and license guidelines |
 | `docs/deployment.md` | Deployment guide |
 | `docs/streaming_architecture.md` | HLS streaming architecture |
 | `docs/workflow.md` | Development workflow |

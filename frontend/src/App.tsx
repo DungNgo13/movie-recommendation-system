@@ -1,6 +1,7 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
+import SiteFooter from './components/SiteFooter';
 import HomePage from './pages/HomePage';
 import MovieDetailPage from './pages/MovieDetailPage';
 import FavoritesPage from './pages/FavoritesPage';
@@ -26,30 +27,36 @@ const App: React.FC = () => {
   // with zero re-renders; does not interrupt the HLS player.
   useAutoRefreshSession();
   return (
-    <div className="App">
+    <div className="app-shell">
       <Navbar />
-      <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/movie/:id" element={<MovieDetailPage />} />
-        <Route path="/favorites" element={<FavoritesPage />} />
-        
-        <Route element={<ProtectedAdminRoute />}>
-          <Route path="/admin" element={<AdminDashboardPage />} />
-          <Route path="/admin/movies" element={<AdminMoviesPage />} />
-          <Route path="/admin/users" element={<AdminUsersPage />} />
-          <Route path="/admin/logs" element={<AdminAuditLogsPage />} />
-          <Route path="/admin/recsys" element={<RecsysMonitorPage />} />
-          <Route path="/admin/security" element={<AdminSecurityAuditPage />} />
-        </Route>
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/register" element={<RegisterPage />} />
-        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-        <Route path="/reset-password" element={<ResetPasswordPage />} />
-        <Route path="/profile" element={<ProfilePage />} />
-        <Route path="/confirm-password-change" element={<ConfirmPasswordChangePage />} />
-      </Routes>
+
+      <main className="app-main">
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/movie/:id" element={<MovieDetailPage />} />
+          <Route path="/favorites" element={<FavoritesPage />} />
+          
+          <Route element={<ProtectedAdminRoute />}>
+            <Route path="/admin" element={<AdminDashboardPage />} />
+            <Route path="/admin/movies" element={<AdminMoviesPage />} />
+            <Route path="/admin/users" element={<AdminUsersPage />} />
+            <Route path="/admin/logs" element={<AdminAuditLogsPage />} />
+            <Route path="/admin/recsys" element={<RecsysMonitorPage />} />
+            <Route path="/admin/security" element={<AdminSecurityAuditPage />} />
+          </Route>
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
+          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+          <Route path="/reset-password" element={<ResetPasswordPage />} />
+          <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/confirm-password-change" element={<ConfirmPasswordChangePage />} />
+        </Routes>
+      </main>
+
+      <SiteFooter />
     </div>
   );
 };
 
 export default App;
+
