@@ -11,9 +11,11 @@ import logging
 import os
 import smtplib
 import threading
+from datetime import datetime, timezone
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from pathlib import Path
+from urllib.parse import urlencode
 
 from dotenv import load_dotenv
 from jinja2 import Environment, FileSystemLoader
@@ -66,7 +68,49 @@ else:
     )
 
 
-def _send_in_background(to: str, subject: str, html_body: str) -> None:
+# ─── URL helpers ──────────────────────────────────────────────────────────────
+
+
+def build_frontend_url(path: str, **query_params: str) -> str:
+    """
+    Build a full frontend URL from the configured FRONTEND_URL base.
+
+    - Strips whitespace and trailing slashes from the base.
+    - URL-encodes all query parameters.
+    - Prevents double slashes between base and path.
+    """
+    base = FRONTEND_URL.strip().rstrip("/")
+    # Ensure path starts with exactly one /
+    clean_path = "/" + path.lstrip("/")
+    if query_params:
+        return f"{base}{clean_path}?{urlencode(query_params)}"
+    return f"{base}{clean_path}"
+
+
+def format_expiry_text(minutes: int) -> str:
+    """
+    Convert a minute-based expiry into a readable string.
+
+    Examples:
+        15  → "15 minutes"
+        60  → "1 hour"
+        120 → "2 hours"
+        90  → "90 minutes"
+    """
+    if minutes <= 0:
+        return "a few moments"
+    if minutes % 60 == 0:
+        hours = minutes // 60
+        return f"{hours} hour" if hours == 1 else f"{hours} hours"
+    return f"{minutes} minutes" if minutes != 1 else "1 minute"
+
+
+# ─── Email sending ────────────────────────────────────────────────────────────
+
+
+def _send_in_background(
+    to: str, subject: str, html_body: str, text_body: str | None = None,
+) -> None:
     """
     Send an email in a background thread so the API response is not blocked.
     Errors are logged but never bubble up to the caller.
@@ -77,7 +121,10 @@ def _send_in_background(to: str, subject: str, html_body: str) -> None:
             msg["From"] = f"{SMTP_FROM_NAME} <{SMTP_FROM_EMAIL}>"
             msg["To"] = to
             msg["Subject"] = subject
-            msg.attach(MIMEText(html_body, "html"))
+            # Attach text/plain first, then text/html (RFC 2046: last = preferred)
+            if text_body:
+                msg.attach(MIMEText(text_body, "plain", "utf-8"))
+            msg.attach(MIMEText(html_body, "html", "utf-8"))
 
             with smtplib.SMTP_SSL(SMTP_HOST, SMTP_PORT) as server:
                 server.login(SMTP_USER, SMTP_PASSWORD)
@@ -91,7 +138,9 @@ def _send_in_background(to: str, subject: str, html_body: str) -> None:
     thread.start()
 
 
-def send_email(to: str, subject: str, html_body: str) -> None:
+def send_email(
+    to: str, subject: str, html_body: str, text_body: str | None = None,
+) -> None:
     """
     Public entry point for sending an email.
 
@@ -107,7 +156,7 @@ def send_email(to: str, subject: str, html_body: str) -> None:
         )
         return
 
-    _send_in_background(to, subject, html_body)
+    _send_in_background(to, subject, html_body, text_body)
 
 
 # ─── Template-based convenience methods ───────────────────────────────────────
@@ -122,15 +171,33 @@ def send_welcome_email(email: str) -> None:
 
 def send_password_reset_email(email: str, token: str) -> None:
     """Send a password-reset email with a tokenized link."""
-    reset_url = f"{FRONTEND_URL}/reset-password?token={token}"
-    template = _jinja_env.get_template("password_reset_email.html")
-    html = template.render(email=email, reset_url=reset_url)
-    send_email(to=email, subject="Reset your Laetus password 🔒", html_body=html)
+    from ..services.auth_service import PASSWORD_RESET_TOKEN_EXPIRE_MINUTES
+
+    reset_url = build_frontend_url("reset-password", token=token)
+    expiry_text = format_expiry_text(PASSWORD_RESET_TOKEN_EXPIRE_MINUTES)
+    year = datetime.now(timezone.utc).year
+
+    html_template = _jinja_env.get_template("password_reset_email.html")
+    html = html_template.render(
+        reset_url=reset_url, expiry_text=expiry_text, year=year,
+    )
+
+    text_template = _jinja_env.get_template("password_reset_email.txt")
+    text = text_template.render(
+        reset_url=reset_url, expiry_text=expiry_text, year=year,
+    )
+
+    send_email(
+        to=email,
+        subject="Reset your Laetus password",
+        html_body=html,
+        text_body=text,
+    )
 
 
 def send_password_change_email(email: str, token: str) -> None:
     """Send a confirmation email for an authenticated password change."""
-    confirm_url = f"{FRONTEND_URL}/confirm-password-change?token={token}"
+    confirm_url = build_frontend_url("confirm-password-change", token=token)
     template = _jinja_env.get_template("password_change_confirm_email.html")
     html = template.render(email=email, confirm_url=confirm_url)
     send_email(to=email, subject="Confirm your Laetus password change 🔐", html_body=html)

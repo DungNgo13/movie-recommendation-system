@@ -149,7 +149,7 @@ nano .env
 |----------|---------------|-------|
 | `DATABASE_URL` | `postgresql://laetus_user:pass@localhost:5432/laetus_db` | Must be PostgreSQL |
 | `SECRET_KEY` | `<random-64-char-string>` | Generate with `python -c "import secrets; print(secrets.token_hex(32))"` |
-| `FRONTEND_URL` | `https://laetus.io.vn` | Used in email links — must match real domain |
+| `FRONTEND_URL` | `https://tltn.laetus.io.vn` | Used in email links — must match real domain |
 | `BACKEND_URL` | `https://api.laetus.io.vn` | Used for media file URLs |
 | `CORS_ORIGINS` | `https://laetus.io.vn` | Must include frontend domain |
 | `SMTP_PASSWORD` | `<gmail-app-password>` | Required for emails to actually send |
@@ -175,23 +175,23 @@ Look for:
 
 ### 4.2 — Create a test account
 
-1. Open `https://laetus.io.vn/register` in browser
+1. Open `https://tltn.laetus.io.vn/register` in browser
 2. Register with a real email you can check
 3. Verify:
    - ✅ Registration succeeds (201 response)
    - ✅ Welcome email arrives in inbox
    - ✅ Email says "Laetus" (not "Mov-Sug")
-   - ✅ "Start Watching" button links to `https://laetus.io.vn` (not localhost)
+   - ✅ "Start Watching" button links to `https://tltn.laetus.io.vn` (not localhost)
 
 ### 4.3 — Request password reset
 
-1. Open `https://laetus.io.vn/forgot-password`
+1. Open `https://tltn.laetus.io.vn/forgot-password`
 2. Enter the test email
 3. Verify:
    - ✅ Response says "If that email is registered, a reset link has been sent."
    - ✅ Reset email arrives
    - ✅ Email says "Laetus Account Security" (not "Mov-Sug")
-   - ✅ Reset link points to `https://laetus.io.vn/reset-password?token=...`
+   - ✅ Reset link points to `https://tltn.laetus.io.vn/reset-password?token=...`
 
 ### 4.4 — Reset password and login
 
@@ -223,7 +223,7 @@ Verify:
 ### 4.6 — Check IP from admin Security Audit page
 
 1. Login as admin
-2. Navigate to `https://laetus.io.vn/admin/security`
+2. Navigate to `https://tltn.laetus.io.vn/admin/security`
 3. Verify:
    - ✅ IP column shows real client IPs
    - ✅ Location column resolves (via client-side geolocation)
@@ -284,6 +284,6 @@ proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
 
 Set `FRONTEND_URL` in `.env`:
 ```
-FRONTEND_URL=https://laetus.io.vn
+FRONTEND_URL=https://tltn.laetus.io.vn
 ```
 Restart backend after changing.
