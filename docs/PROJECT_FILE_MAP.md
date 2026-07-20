@@ -115,12 +115,39 @@
 | File | Mô tả |
 |------|-------|
 | `backend/tests/test_auth.py` | 20 tests: login, JWT, IP tracking, password reset, welcome email |
+| `backend/tests/test_candidate_filter.py` | Candidate filtering tests |
+| `backend/tests/test_favorites.py` | Favorites toggle tests |
 | `backend/tests/test_hls_cache_invalidation.py` | 5 tests: cache invalidation on HLS success, failure, cancel, progress |
 | `backend/tests/test_movie_assets.py` | 9 tests: asset CRUD, license checker, media rights |
 | `backend/tests/test_movies.py` | ~15 tests: movie CRUD, upload, validation |
+| `backend/tests/test_normalize_url.py` | ~15 tests: URL normalization/sanitization |
 | `backend/tests/test_password_validator.py` | ~8 tests: password strength rules |
-| `backend/tests/test_user_profile.py` | ~10 tests: user profile builder, signal weights |
-| `backend/tests/test_watch_progress.py` | ~12 tests: watch progress save/load |
+| `backend/tests/test_recommendation_engine.py` | ~18 tests: end-to-end recommendations, cold start, cache |
+| `backend/tests/test_recommendation_invariance.py` | Vietnamese metadata invariance test |
+| `backend/tests/test_upload_limits.py` | ~8 tests: file size limits |
+| `backend/tests/test_user_profile.py` | ~10 tests: user profile, avatar, password change |
+| `backend/tests/test_watch_progress.py` | ~15 tests: watch progress save/load, completion |
+
+## Frontend — Tests
+
+| File | Mô tả |
+|------|-------|
+| `frontend/src/components/ContinueWatchingCard.test.tsx` | 28 tests: card rendering, progress, favorites |
+| `frontend/src/components/FavoriteHeart.test.tsx` | 18 tests: heart toggle, loading states |
+| `frontend/src/components/Navbar.test.tsx` | 24 tests: structure, auth states, i18n, overflow |
+| `frontend/src/components/SiteFooter.test.tsx` | 10 tests: footer structure, disclaimer, layout |
+| `frontend/src/components/StarRating.test.tsx` | 18 tests: star rating display, interaction |
+| `frontend/src/components/ThemeSelector.test.tsx` | 15 tests: theme toggle, persistence |
+| `frontend/src/pages/HomePage.test.tsx` | 20 tests: movie listing, search, filtering |
+| `frontend/src/pages/MovieDetailPage.test.tsx` | 26 tests: detail page, metadata discovery |
+| `frontend/src/services/continueWatchingService.test.ts` | 48 tests: progress service API calls |
+| `frontend/src/services/guestFavorites.test.ts` | 12 tests: guest favorites localStorage |
+| `frontend/src/services/mediaUrl.test.ts` | 14 tests: media URL normalization |
+| `frontend/src/i18n/languageStorage.test.ts` | Language storage persistence tests |
+| `frontend/src/theme/ThemeContext.test.tsx` | 16 tests: theme context provider |
+| `frontend/src/theme/themeStorage.test.ts` | 18 tests: theme storage persistence |
+| `frontend/src/utils/movieFilters.test.ts` | Movie filter utility tests |
+| `frontend/src/utils/passwordValidator.test.ts` | Password validator tests |
 
 ## Frontend — Entry
 
@@ -202,15 +229,14 @@
 
 | File | Mô tả |
 |------|-------|
-| `docs/CURRENT_PROJECT_STATE.md` | Full Vietnamese project report |
-| `docs/FINAL_PROJECT_AUDIT.md` | Final project audit report |
+| `docs/FINAL_PROJECT_AUDIT.md` | Final project audit report with post-remediation results |
 | `docs/REPORT_FACTS_SNAPSHOT.md` | Factual repository reference for thesis |
-| `docs/PROJECT_EXPORT_FOR_CHATGPT.md` | Compact context for AI assistants |
+| `docs/PROJECT_EXPORT_FOR_CHATGPT.md` | Compact project context export |
 | `docs/PROJECT_FILE_MAP.md` | This file |
 | `docs/RECOMMENDATION_ENGINE_EXPLAINED.md` | Detailed AI algorithm explanation |
 | `docs/LEGAL_SOURCES.md` | Content source and license guidelines |
 | `docs/deployment.md` | Deployment guide |
 | `docs/streaming_architecture.md` | HLS streaming architecture |
-| `docs/workflow.md` | Development workflow |
+| `docs/features/` | Feature specifications (continue-watching, favorites, search, recommendation) |
 | `PROJECT_RULES.md` | Project development rules |
 | `README.md` | Project README |

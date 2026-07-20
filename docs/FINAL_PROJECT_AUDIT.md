@@ -319,19 +319,14 @@ All automated validations pass. The application can be built, tested, and demons
 ### AUD-BE-001
 - **Area:** Backend
 - **Severity:** MEDIUM
-- **Status:** PARTIAL
+- **Status:** RESOLVED (removed in repository cleanup)
 - **Title:** Legacy migration scripts in backend root not managed by Alembic
 
 **Evidence:**
-- 11 Python files in `backend/` root with `migrate_*.py` and `fix_db.py` naming pattern:
-  - `fix_db.py`, `migrate_add_cast_keywords.py`, `migrate_add_hls.py`, `migrate_add_playback.py`, `migrate_add_progress.py`, `migrate_add_role.py`, `migrate_add_step.py`, `migrate_add_user_security.py`, `migrate_add_video.py`, `migrate_available_qualities.py`, `migrate_media_paths.py`, `migrate_watch_progress.py`
-- These predate the Alembic migration system and are now obsolete
+- 12 Python files in `backend/` root with `migrate_*.py` and `fix_db.py` naming pattern existed before cleanup
+- These predated the Alembic migration system and were obsolete
 
-**Expected behavior:** Migration should be managed solely by Alembic.
-
-**Actual behavior:** Legacy scripts remain; Alembic correctly manages the current schema.
-
-**Impact:** Confusion for new developers; no functional impact.
+**Resolution:** All 12 legacy scripts removed from tracking during pre-submission cleanup. Current Alembic head (`e5f3a1b2c7d8`) covers all schema. Git history preserves the files.
 
 ---
 

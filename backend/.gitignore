@@ -1,18 +1,36 @@
 # Python
 __pycache__/
-*.pyc
+*.py[cod]
 *.pyo
 *.pyd
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Environment
 .env
+.env.*
+!.env.example
 venv/
 .venv/
 env/
-.env.*
 
 # Database
-*.sqlite3
 *.db
+*.sqlite
+*.sqlite3
+*.db-journal
+*.db-shm
+*.db-wal
 
 # IDE
 .idea/
 .vscode/
+
+# Test output
+pytest_results.txt
+test_output.txt
+test_out.txt
+-t
