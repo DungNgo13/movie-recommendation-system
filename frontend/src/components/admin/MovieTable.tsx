@@ -366,18 +366,22 @@ const MovieTable: React.FC<MovieTableProps> = ({ movies, onEdit, onDelete, onCan
               </td>
               <td><VideoStatusCell movie={movie} onCancelEncode={onCancelEncode} onStartEncode={onStartEncode} /></td>
               <td className="admin-table-actions">
-                <button
-                  className="btn btn--edit"
-                  onClick={() => onEdit(movie)}
-                >
-                  {t("admin:tables.edit", "Edit")}
-                </button>
-                <button
-                  className="btn btn--delete"
-                  onClick={() => onDelete(movie)}
-                >
-                  {t("admin:tables.delete", "Delete")}
-                </button>
+                <div className="admin-table-actions__inner">
+                  <button
+                    type="button"
+                    className="btn btn--edit"
+                    onClick={() => onEdit(movie)}
+                  >
+                    {t("admin:tables.edit", "Edit")}
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn--delete"
+                    onClick={() => onDelete(movie)}
+                  >
+                    {t("admin:tables.delete", "Delete")}
+                  </button>
+                </div>
               </td>
             </tr>
           ))}
