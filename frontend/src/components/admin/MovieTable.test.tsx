@@ -4,12 +4,48 @@ import MovieTable from './MovieTable';
 import type { Movie } from '../../models';
 
 // ─── i18n mock ───────────────────────────────────────────────────────────────
+// Simulate i18next key resolution for the admin namespace.
+// Keys used by MovieTable that lack an inline fallback string are listed here.
+const i18nMap: Record<string, string> = {
+  'admin:movieTable.quality': 'Quality',
+  'admin:movieTable.dataQuality': 'Data Quality',
+  'admin:movieTable.dataQualityTooltip': 'Data completeness score for the AI recommendation engine (0–100). Hover each row for missing fields.',
+  'admin:movieTable.videoStatus': 'Video Status',
+  'admin:movieTable.optimised': 'Optimised',
+  'admin:movieTable.average': 'Average',
+  'admin:movieTable.critical': 'Critical',
+  'admin:movieTable.allFieldsComplete': 'All AI fields complete — engine fully optimised',
+  'admin:movieTable.missing': 'Missing:',
+  'admin:movieTable.missingGenres': 'Genres (+30)',
+  'admin:movieTable.missingCast': 'Cast (+20)',
+  'admin:movieTable.missingOverview': 'Overview >50 chars (+20)',
+  'admin:movieTable.missingDirector': 'Director (+15)',
+  'admin:movieTable.missingPosterBackdrop': 'Poster & Backdrop (+10)',
+  'admin:movieTable.play': 'Play',
+  'admin:movieTable.stop': 'Stop',
+  'admin:movieTable.cancelling': 'Cancelling…',
+  'admin:movieTable.processing': 'Processing',
+  'admin:movieTable.reEncode': 'Re-encode',
+  'admin:movieTable.encode': 'Encode',
+  'admin:movieTable.encoding': 'Encoding…',
+  'admin:movieTable.pending': 'Pending',
+  'admin:movieTable.stopTooltip': 'Stop encoding',
+  'admin:movieTable.reEncodeTooltip': 'Re-encode (replace existing HLS)',
+  'admin:movieTable.startEncodeTooltip': 'Start multi-quality HLS encoding',
+  'admin:movieTable.videoStatusReady': 'Ready',
+  'admin:movieTable.videoStatusProcessing': 'Processing',
+  'admin:movieTable.videoStatusFailed': 'Failed',
+  'admin:movieTable.videoStatusUploaded': 'Uploaded',
+  'admin:movieTable.videoStatusNoVideo': 'No video',
+};
+
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({
-    t: (_key: string, fallback?: string) => fallback ?? _key,
+    t: (key: string, fallback?: string) => i18nMap[key] ?? fallback ?? key,
     i18n: { language: 'en', changeLanguage: vi.fn() },
   }),
 }));
+
 
 // ─── Factory ─────────────────────────────────────────────────────────────────
 function makeMovie(overrides: Partial<Movie> = {}): Movie {
