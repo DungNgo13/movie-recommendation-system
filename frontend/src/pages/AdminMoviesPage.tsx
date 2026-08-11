@@ -238,7 +238,7 @@ const AdminMoviesPage: React.FC = () => {
 
   return (
     <div className="admin-page">
-      <span className="admin-badge">Admin Mode</span>
+      <span className="admin-badge">{t("admin:movies.adminMode", "Admin Mode")}</span>
 
       {/* ── Session-expired toast (401) ───────────────────────────────── */}
       {sessionToast && (
@@ -259,7 +259,7 @@ const AdminMoviesPage: React.FC = () => {
       )}
 
       <div className="admin-header">
-        <h1>{t("admin:navigation.movies", "Movie Management")}</h1>
+        <h1>{t("admin:movies.title", "Movie Management")}</h1>
         {!showForm && (
           <button className="btn btn--primary" onClick={handleAdd}>
             + {t("admin:movieForm.addMovie", "Add Movie")}

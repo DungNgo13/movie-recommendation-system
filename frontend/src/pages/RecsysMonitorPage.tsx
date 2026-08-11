@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   explainRecommendations,
   type ExplainPayload,
@@ -7,17 +8,19 @@ import {
 } from '../services/recsysService';
 import { getAdminUsers } from '../services/adminService';
 import type { AuthUser } from '../services/authService';
+import type { TFunction } from 'i18next';
 
 // ─── Small presentational helpers ────────────────────────────────────────────
 
 /** Colored badge for signal type */
-function SignalBadge({ type }: { type: SignalEntry['signal_type'] }) {
-  const map: Record<string, { label: string; bg: string; color: string }> = {
-    rating: { label: 'Rating', bg: '#fff3cd', color: '#856404' },
-    favorite: { label: 'Favorite', bg: '#fce8f3', color: '#842029' },
-    watch: { label: 'Watch', bg: '#d1ecf1', color: '#0c5460' },
+function SignalBadge({ type, t }: { type: SignalEntry['signal_type']; t: TFunction }) {
+  const map: Record<string, { labelKey: string; bg: string; color: string }> = {
+    rating: { labelKey: 'admin:recsys.signalRating', bg: '#fff3cd', color: '#856404' },
+    favorite: { labelKey: 'admin:recsys.signalFavorite', bg: '#fce8f3', color: '#842029' },
+    watch: { labelKey: 'admin:recsys.signalWatch', bg: '#d1ecf1', color: '#0c5460' },
   };
-  const s = map[type] ?? { label: type, bg: '#eee', color: '#333' };
+  const s = map[type] ?? { labelKey: type, bg: '#eee', color: '#333' };
+  const label = map[type] ? t(s.labelKey) : type;
   return (
     <span style={{
       display: 'inline-block',
@@ -29,7 +32,7 @@ function SignalBadge({ type }: { type: SignalEntry['signal_type'] }) {
       color: s.color,
       whiteSpace: 'nowrap',
     }}>
-      {s.label}
+      {label}
     </span>
   );
 }
@@ -113,11 +116,11 @@ function PillList({ items, color = '#3498db' }: { items: string[]; color?: strin
 
 // ─── Section 1: User Profile Signals table ───────────────────────────────────
 
-function SignalsTable({ signals }: { signals: SignalEntry[] }) {
+function SignalsTable({ signals, t }: { signals: SignalEntry[]; t: TFunction }) {
   if (!signals.length) {
     return (
       <div className="recsys-empty">
-        No interactions recorded — this user is in cold-start mode.
+        {t("admin:recsys.noColdStart")}
       </div>
     );
   }
@@ -126,24 +129,24 @@ function SignalsTable({ signals }: { signals: SignalEntry[] }) {
       <table className="admin-table">
         <thead>
           <tr>
-            <th>Movie</th>
-            <th>Signal</th>
-            <th>Raw Value</th>
-            <th>Computed Weight  (0 – 5)</th>
-            <th>Breakdown Formula</th>
+            <th>{t("admin:recsys.movie")}</th>
+            <th>{t("admin:recsys.signal")}</th>
+            <th>{t("admin:recsys.rawValue")}</th>
+            <th>{t("admin:recsys.computedWeight")}</th>
+            <th>{t("admin:recsys.breakdownFormula")}</th>
           </tr>
         </thead>
         <tbody>
           {signals.map((s, i) => (
             <tr key={i}>
               <td style={{ fontWeight: 500 }}>{s.movie_title}</td>
-              <td><SignalBadge type={s.signal_type} /></td>
+              <td><SignalBadge type={s.signal_type} t={t} /></td>
               <td style={{ fontFamily: 'monospace', fontSize: '0.85rem' }}>
                 {s.signal_type === 'watch'
-                  ? `${s.raw_value}% watched`
+                  ? t("admin:recsys.watched", { value: s.raw_value })
                   : s.signal_type === 'rating'
-                    ? `${s.raw_value} / 5 stars`
-                    : 'Saved'}
+                    ? t("admin:recsys.ratingStars", { value: s.raw_value })
+                    : t("admin:recsys.saved")}
               </td>
               <td style={{ minWidth: 160 }}>
                 <WeightBar value={s.calculated_weight} />
@@ -161,22 +164,22 @@ function SignalsTable({ signals }: { signals: SignalEntry[] }) {
 
 // ─── Section 2: Scoring Breakdown table ──────────────────────────────────────
 
-function ScoringTable({ recs }: { recs: RecommendationEntry[] }) {
+function ScoringTable({ recs, t }: { recs: RecommendationEntry[]; t: TFunction }) {
   if (!recs.length) {
-    return <div className="recsys-empty">No recommendations generated.</div>;
+    return <div className="recsys-empty">{t("admin:recsys.noRecommendations")}</div>;
   }
   return (
     <div className="admin-table-wrapper">
       <table className="admin-table">
         <thead>
           <tr>
-            <th style={{ width: 48 }}>Rank</th>
-            <th>Movie</th>
-            <th>Genres</th>
-            <th>Director</th>
-            <th>Total Score</th>
-            <th>Interpretation</th>
-            <th>Match Reasons</th>
+            <th style={{ width: 48 }}>{t("admin:recsys.rank")}</th>
+            <th>{t("admin:recsys.movie")}</th>
+            <th>{t("admin:recsys.genres")}</th>
+            <th>{t("admin:recsys.director")}</th>
+            <th>{t("admin:recsys.totalScore")}</th>
+            <th>{t("admin:recsys.interpretation")}</th>
+            <th>{t("admin:recsys.matchReasons")}</th>
           </tr>
         </thead>
         <tbody>
@@ -276,6 +279,8 @@ function ScoringTable({ recs }: { recs: RecommendationEntry[] }) {
 // ─── Main Page ────────────────────────────────────────────────────────────────
 
 const RecsysMonitorPage: React.FC = () => {
+  const { t } = useTranslation(['admin', 'common']);
+
   // User list for the dropdown selector
   const [users, setUsers] = useState<AuthUser[]>([]);
   const [usersLoaded, setUsersLoaded] = useState(false);
@@ -326,23 +331,23 @@ const RecsysMonitorPage: React.FC = () => {
       {/* ── Page Header ─────────────────────────────────────────────────── */}
       <div className="admin-header">
         <div>
-          <span className="admin-badge">Thesis Tool</span>
-          <h1 style={{ margin: 0 }}>Recommendation System Monitor</h1>
+          <span className="admin-badge">{t("admin:recsys.thesisTool")}</span>
+          <h1 style={{ margin: 0 }}>{t("admin:recsys.title")}</h1>
           <p style={{ margin: '6px 0 0', color: '#888', fontSize: '0.9rem' }}>
-            Diagnostic explainer — shows exactly how recommendation scores are computed for any user.
+            {t("admin:recsys.description")}
           </p>
         </div>
       </div>
 
       {/* ── User Selector Card ───────────────────────────────────────────── */}
       <div className="recsys-selector-card">
-        <h2 className="recsys-section-title">Select User</h2>
+        <h2 className="recsys-section-title">{t("admin:recsys.selectUser")}</h2>
 
         <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'flex-end' }}>
 
           {/* Dropdown selector loaded from /admin/users */}
           <div style={{ flex: 2, minWidth: 260 }}>
-            <label className="recsys-label">Choose from registered users</label>
+            <label className="recsys-label">{t("admin:recsys.chooseUser")}</label>
             <select
               className="filter-select"
               style={{ width: '100%' }}
@@ -350,8 +355,8 @@ const RecsysMonitorPage: React.FC = () => {
               onChange={(e) => setSelectedUserId(e.target.value)}
               onFocus={loadUsers}
             >
-              <option value="">— select a user —</option>
-              {usersLoading && <option disabled>Loading…</option>}
+              <option value="">{t("admin:recsys.selectPlaceholder")}</option>
+              {usersLoading && <option disabled>{t("admin:recsys.loading")}</option>}
               {users.map((u) => (
                 <option key={u.id} value={u.id}>
                   {u.email}  ({u.role}) — {u.id.substring(0, 8)}…
@@ -362,7 +367,7 @@ const RecsysMonitorPage: React.FC = () => {
 
           {/* Or paste UUID directly */}
           <div style={{ flex: 2, minWidth: 240 }}>
-            <label className="recsys-label">Or paste a User ID (UUID) directly</label>
+            <label className="recsys-label">{t("admin:recsys.pasteUserId")}</label>
             <input
               type="text"
               className="search-input"
@@ -376,7 +381,7 @@ const RecsysMonitorPage: React.FC = () => {
           {/* Top-N slider */}
           <div style={{ minWidth: 160 }}>
             <label className="recsys-label">
-              Top N recommendations: <strong>{topN}</strong>
+              {t("admin:recsys.topN")} <strong>{topN}</strong>
             </label>
             <input
               type="range"
@@ -396,7 +401,7 @@ const RecsysMonitorPage: React.FC = () => {
             onClick={handleExplain}
             id="recsys-explain-btn"
           >
-            {loading ? 'Running...' : 'Explain'}
+            {loading ? t("admin:recsys.running") : t("admin:recsys.explain")}
           </button>
         </div>
 
@@ -414,24 +419,24 @@ const RecsysMonitorPage: React.FC = () => {
           <div className="recsys-algo-banner">
             <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap', marginBottom: 8 }}>
               <span>
-                <strong>User:</strong> {payload.user_email}
+                <strong>{t("admin:recsys.userLabel")}</strong> {payload.user_email}
               </span>
               <span>
-                <strong>Engine:</strong> {payload.algorithm_version}
+                <strong>{t("admin:recsys.engineLabel")}</strong> {payload.algorithm_version}
               </span>
               <span>
-                <strong>Cold start:</strong>{' '}
+                <strong>{t("admin:recsys.coldStart")}</strong>{' '}
                 <span style={{ color: payload.is_cold_start ? '#e74c3c' : '#27ae60', fontWeight: 600 }}>
-                  {payload.is_cold_start ? 'Yes' : 'No'}
+                  {payload.is_cold_start ? t("admin:recsys.yes") : t("admin:recsys.no")}
                 </span>
               </span>
               {payload.weight_summary && (
                 <>
                   <span>
-                    <strong>Total signals:</strong> {payload.weight_summary.total_signals}
+                    <strong>{t("admin:recsys.totalSignals")}</strong> {payload.weight_summary.total_signals}
                   </span>
                   <span>
-                    <strong>Movies in profile:</strong>{' '}
+                    <strong>{t("admin:recsys.moviesInProfile")}</strong>{' '}
                     {payload.weight_summary.unique_movies_in_profile}
                   </span>
                 </>
@@ -439,7 +444,7 @@ const RecsysMonitorPage: React.FC = () => {
             </div>
             {payload.algorithm_summary && (
               <p style={{ margin: 0, fontSize: '0.82rem', color: '#cde', lineHeight: 1.6 }}>
-                <strong>Pipeline:</strong> {payload.algorithm_summary}
+                <strong>{t("admin:recsys.pipeline")}</strong> {payload.algorithm_summary}
               </p>
             )}
             {payload.is_cold_start && payload.cold_start_reason && (
@@ -452,20 +457,19 @@ const RecsysMonitorPage: React.FC = () => {
           {/* ── Section 1: User Profile Signals ───────────────────────── */}
           <div className="recsys-section">
             <h2 className="recsys-section-title">
-              Section 1 — User Profile Signals
+              {t("admin:recsys.section1Title")}
               <span className="recsys-section-subtitle">
-                Every interaction that shaped this user's preference vector,
-                with computed weights. Higher weight = stronger influence.
+                {t("admin:recsys.section1Desc")}
               </span>
             </h2>
 
             {/* Legend */}
             <div className="recsys-legend">
-              <span>Weight scale:</span>
+              <span>{t("admin:recsys.weightScale")}</span>
               {[
-                { label: '5.0 — Loved (5/5)', color: '#27ae60' },
-                { label: '3.0 — Liked / Favorite', color: '#f39c12' },
-                { label: '1.0+  — Watched (scaled by progress + time decay)', color: '#95a5a6' },
+                { label: t("admin:recsys.legendLoved"), color: '#27ae60' },
+                { label: t("admin:recsys.legendLiked"), color: '#f39c12' },
+                { label: t("admin:recsys.legendWatched"), color: '#95a5a6' },
               ].map(({ label, color }) => (
                 <span key={label} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                   <span style={{
@@ -477,25 +481,24 @@ const RecsysMonitorPage: React.FC = () => {
               ))}
             </div>
 
-            <SignalsTable signals={payload.user_context} />
+            <SignalsTable signals={payload.user_context} t={t} />
           </div>
 
           {/* ── Section 2: Scoring Breakdown ──────────────────────────── */}
           <div className="recsys-section">
             <h2 className="recsys-section-title">
-              Section 2 — Scoring Breakdown
+              {t("admin:recsys.section2Title")}
               <span className="recsys-section-subtitle">
-                Top {payload.top_recommendations.length} movies ranked by cosine similarity
-                between the user's weighted preference vector and each movie's TF-IDF vector.
+                {t("admin:recsys.section2Desc", { count: payload.top_recommendations.length })}
               </span>
             </h2>
 
             {/* Score legend */}
             <div className="recsys-legend">
               {[
-                { label: '≥ 50% — Very strong match', color: '#27ae60' },
-                { label: '15–49% — Good / Strong match', color: '#f39c12' },
-                { label: '< 15% — Weak match', color: '#95a5a6' },
+                { label: t("admin:recsys.legendVeryStrong"), color: '#27ae60' },
+                { label: t("admin:recsys.legendGoodStrong"), color: '#f39c12' },
+                { label: t("admin:recsys.legendWeak"), color: '#95a5a6' },
               ].map(({ label, color }) => (
                 <span key={label} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                   <span style={{
@@ -507,7 +510,7 @@ const RecsysMonitorPage: React.FC = () => {
               ))}
             </div>
 
-            <ScoringTable recs={payload.top_recommendations} />
+            <ScoringTable recs={payload.top_recommendations} t={t} />
           </div>
         </>
       )}

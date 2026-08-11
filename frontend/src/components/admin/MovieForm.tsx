@@ -219,7 +219,7 @@ const MovieForm: React.FC<MovieFormProps> = ({ movie, onSubmit, onCancel }) => {
       if (type === 'poster')   setPosterUrl(updatedMovie.poster_url || '');
       if (type === 'backdrop') setBackdropUrl(updatedMovie.backdrop_url || '');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Upload failed');
+      setError(err instanceof Error ? err.message : t("admin:movieForm.errorUploadFailed"));
     } finally {
       setUploading(false);
       e.target.value = '';
@@ -258,7 +258,7 @@ const MovieForm: React.FC<MovieFormProps> = ({ movie, onSubmit, onCancel }) => {
     } catch (err) {
       const status = (err as Error & { status?: number }).status;
       if (status === 401) { window.location.href = '/login'; return; }
-      setError(err instanceof Error ? err.message : 'Processing failed');
+      setError(err instanceof Error ? err.message : t("admin:movieForm.errorProcessingFailed"));
     } finally {
       setUploading(false);
     }
@@ -277,7 +277,7 @@ const MovieForm: React.FC<MovieFormProps> = ({ movie, onSubmit, onCancel }) => {
       setVideoUrl(updatedMovie.video_url || '');
       setVideoStatus(updatedMovie.video_status || 'uploaded');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Video upload failed');
+      setError(err instanceof Error ? err.message : t("admin:movieForm.errorVideoUploadFailed"));
     } finally {
       setUploading(false);
       setUploadPercent(null);
@@ -291,7 +291,7 @@ const MovieForm: React.FC<MovieFormProps> = ({ movie, onSubmit, onCancel }) => {
     setError(null);
 
     if (!title.trim()) {
-      setError('Title is required.');
+      setError(t("admin:movieForm.errorTitleRequired"));
       return;
     }
 
@@ -335,7 +335,7 @@ const MovieForm: React.FC<MovieFormProps> = ({ movie, onSubmit, onCancel }) => {
           type="text"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          placeholder="Movie title"
+          placeholder={t("admin:movieForm.titlePlaceholder")}
         />
       </div>
 
@@ -345,7 +345,7 @@ const MovieForm: React.FC<MovieFormProps> = ({ movie, onSubmit, onCancel }) => {
           id="overview"
           value={overview}
           onChange={(e) => setOverview(e.target.value)}
-          placeholder="Movie description"
+          placeholder={t("admin:movieForm.overviewPlaceholder")}
           rows={3}
         />
       </div>
@@ -371,7 +371,7 @@ const MovieForm: React.FC<MovieFormProps> = ({ movie, onSubmit, onCancel }) => {
             type="text"
             value={director}
             onChange={(e) => setDirector(e.target.value)}
-            placeholder="Director name"
+            placeholder={t("admin:movieForm.directorPlaceholder")}
           />
         </div>
       </div>
@@ -393,9 +393,7 @@ const MovieForm: React.FC<MovieFormProps> = ({ movie, onSubmit, onCancel }) => {
         {/* Warning — only visible when ALL three fields are empty */}
         {missingAiFields && (
           <div className="ai-fields-warning">
-            <strong>Genres, Cast, and Keywords are all empty.</strong> Missing data
-            reduces recommendation accuracy — the engine will rely on title and
-            overview text alone.
+            <strong>{t("admin:movieForm.aiWarningTitle")}</strong> {t("admin:movieForm.aiWarningDesc")}
           </div>
         )}
 
@@ -403,7 +401,7 @@ const MovieForm: React.FC<MovieFormProps> = ({ movie, onSubmit, onCancel }) => {
         <div className="admin-form-group">
           <label>
             {t("admin:movieForm.fields.genres", "Genres")}
-            <span className="field-hint">Select all applicable genres from the list below</span>
+            <span className="field-hint">{t("admin:movieForm.genresHint")}</span>
           </label>
           <GenreCheckboxGrid
             selected={genres}
@@ -411,7 +409,7 @@ const MovieForm: React.FC<MovieFormProps> = ({ movie, onSubmit, onCancel }) => {
           />
           {genres.length > 0 && (
             <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary, #555)', margin: '6px 0 0' }}>
-              Selected: <strong>{genres.join(', ')}</strong>
+              {t("admin:movieForm.selected")} <strong>{genres.join(', ')}</strong>
             </p>
           )}
         </div>
@@ -420,7 +418,7 @@ const MovieForm: React.FC<MovieFormProps> = ({ movie, onSubmit, onCancel }) => {
         <div className="admin-form-group">
           <label htmlFor="cast">
             {t("admin:movieForm.fields.cast", "Cast")}
-            <span className="field-hint">Press Enter or comma to add each actor</span>
+            <span className="field-hint">{t("admin:movieForm.castHint")}</span>
           </label>
           <TagInput
             id="cast"
@@ -434,7 +432,7 @@ const MovieForm: React.FC<MovieFormProps> = ({ movie, onSubmit, onCancel }) => {
         <div className="admin-form-group">
           <label htmlFor="keywords">
             {t("admin:movieForm.fields.keywords", "Keywords (English)")}
-            <span className="field-hint">Thematic tags — press Enter or comma to add each</span>
+            <span className="field-hint">{t("admin:movieForm.keywordsHint")}</span>
           </label>
           <TagInput
             id="keywords"
@@ -464,7 +462,7 @@ const MovieForm: React.FC<MovieFormProps> = ({ movie, onSubmit, onCancel }) => {
             type="text"
             value={titleVi}
             onChange={(e) => setTitleVi(e.target.value)}
-            placeholder="Vietnamese title (optional)"
+            placeholder={t("admin:movieForm.titleViPlaceholder")}
           />
         </div>
 
@@ -474,7 +472,7 @@ const MovieForm: React.FC<MovieFormProps> = ({ movie, onSubmit, onCancel }) => {
             id="overview_vi"
             value={overviewVi}
             onChange={(e) => setOverviewVi(e.target.value)}
-            placeholder="Vietnamese overview (optional)"
+            placeholder={t("admin:movieForm.overviewViPlaceholder")}
             rows={3}
           />
         </div>
@@ -503,7 +501,7 @@ const MovieForm: React.FC<MovieFormProps> = ({ movie, onSubmit, onCancel }) => {
 
       {/* ── Image fields ─────────────────────────────────────────────── */}
       <div className="admin-form-group">
-        <label htmlFor="poster_url">Poster URL</label>
+        <label htmlFor="poster_url">{t("admin:movieForm.posterUrl")}</label>
         <input
           id="poster_url"
           type="text"
@@ -513,7 +511,7 @@ const MovieForm: React.FC<MovieFormProps> = ({ movie, onSubmit, onCancel }) => {
         />
         {movie && (
           <div style={{ marginTop: '8px' }}>
-            <label style={{ fontSize: '0.85rem' }}>Or Upload File: </label>
+            <label style={{ fontSize: '0.85rem' }}>{t("admin:movieForm.orUploadFile")} </label>
             <input
               type="file"
               accept="image/jpeg, image/png, image/webp"
@@ -525,7 +523,7 @@ const MovieForm: React.FC<MovieFormProps> = ({ movie, onSubmit, onCancel }) => {
       </div>
 
       <div className="admin-form-group">
-        <label htmlFor="backdrop_url">Backdrop URL</label>
+        <label htmlFor="backdrop_url">{t("admin:movieForm.backdropUrl")}</label>
         <input
           id="backdrop_url"
           type="text"
@@ -535,7 +533,7 @@ const MovieForm: React.FC<MovieFormProps> = ({ movie, onSubmit, onCancel }) => {
         />
         {movie && (
           <div style={{ marginTop: '8px' }}>
-            <label style={{ fontSize: '0.85rem' }}>Or Upload File: </label>
+            <label style={{ fontSize: '0.85rem' }}>{t("admin:movieForm.orUploadFile")} </label>
             <input
               type="file"
               accept="image/jpeg, image/png, image/webp"
@@ -548,14 +546,14 @@ const MovieForm: React.FC<MovieFormProps> = ({ movie, onSubmit, onCancel }) => {
 
       {/* ── Video pipeline ────────────────────────────────────────────── */}
       <div className="admin-form-group" style={{ backgroundColor: 'var(--surface-raised, #f8f9fa)', padding: '1rem', borderRadius: '8px', border: '1px solid var(--border, #dee2e6)' }}>
-        <h3 style={{ marginTop: 0, marginBottom: '0.5rem', fontSize: '1.1rem' }}>Source Video</h3>
+        <h3 style={{ marginTop: 0, marginBottom: '0.5rem', fontSize: '1.1rem' }}>{t("admin:movieForm.sourceVideo")}</h3>
         {movie ? (
           <>
             <div style={{ marginBottom: '1rem', fontSize: '0.9rem' }}>
 
               {/* Status badge */}
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
-                <strong>Status:</strong>
+                <strong>{t("admin:movieForm.statusLabel")}</strong>
                 <span style={{
                   display: 'inline-block', padding: '2px 10px', borderRadius: '12px',
                   fontSize: '0.8rem', fontWeight: 600,
@@ -582,7 +580,7 @@ const MovieForm: React.FC<MovieFormProps> = ({ movie, onSubmit, onCancel }) => {
               {/* Upload progress */}
               {uploadPercent !== null && (
                 <div style={{ marginBottom: '8px' }}>
-                  <div style={{ fontSize: '0.8rem', marginBottom: '4px', color: '#495057' }}>Uploading… {uploadPercent}%</div>
+                  <div style={{ fontSize: '0.8rem', marginBottom: '4px', color: '#495057' }}>{t("admin:movieForm.uploading", { percent: uploadPercent })}</div>
                   <div style={{ height: '6px', background: '#dee2e6', borderRadius: '3px', overflow: 'hidden' }}>
                     <div style={{ height: '100%', width: `${uploadPercent}%`, background: '#0d6efd', transition: 'width 0.2s ease', borderRadius: '3px' }} />
                   </div>
@@ -602,7 +600,7 @@ const MovieForm: React.FC<MovieFormProps> = ({ movie, onSubmit, onCancel }) => {
               {/* Quality badges */}
               {availableQualities && (
                 <div style={{ marginTop: '6px', display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
-                  <strong style={{ fontSize: '0.85rem' }}>Qualities:</strong>
+                  <strong style={{ fontSize: '0.85rem' }}>{t("admin:movieForm.qualities")}</strong>
                   {availableQualities.split(',').map((q) => (
                     <span key={q} style={{
                       display: 'inline-block', padding: '2px 8px', borderRadius: '10px',
@@ -618,7 +616,7 @@ const MovieForm: React.FC<MovieFormProps> = ({ movie, onSubmit, onCancel }) => {
               {hlsUrl   && <div style={{ wordBreak: 'break-all', marginTop: '4px', color: '#155724', fontSize: '0.85rem' }}><em>HLS: <a href={hlsUrl} target="_blank" rel="noopener noreferrer">{hlsUrl}</a></em></div>}
               {processingError && (
                 <div style={{ color: '#721c24', marginTop: '6px', fontSize: '0.85rem', background: '#f8d7da', padding: '8px', borderRadius: '4px' }}>
-                  <strong>Error:</strong> {processingError}
+                  <strong>{t("admin:movieForm.errorLabel")}</strong> {processingError}
                 </div>
               )}
             </div>
@@ -636,16 +634,16 @@ const MovieForm: React.FC<MovieFormProps> = ({ movie, onSubmit, onCancel }) => {
                   className="btn btn--primary"
                   onClick={handleProcessHls}
                   disabled={uploading}
-                  title={videoStatus === 'ready' ? 'Re-encode with current settings' : 'Start multi-quality HLS encoding'}
+                  title={videoStatus === 'ready' ? t("admin:movieForm.reEncode") : t("admin:movieForm.startEncoding")}
                 >
-                  {videoStatus === 'ready' ? 'Re-encode' : 'Start Multi-Quality Encoding'}
+                  {videoStatus === 'ready' ? t("admin:movieForm.reEncode") : t("admin:movieForm.startEncoding")}
                 </button>
               )}
             </div>
           </>
         ) : (
           <p style={{ fontSize: '0.9rem', color: '#6c757d', margin: 0 }}>
-            <em>Please create the movie first before uploading the primary video payload.</em>
+            <em>{t("admin:movieForm.createFirst")}</em>
           </p>
         )}
       </div>
@@ -659,17 +657,16 @@ const MovieForm: React.FC<MovieFormProps> = ({ movie, onSubmit, onCancel }) => {
           aria-expanded={showAdvanced}
         >
           <span className="advanced-source-arrow">{showAdvanced ? '▾' : '▸'}</span>
-          Advanced Source Information (Optional)
+          {t("admin:movieForm.advancedSource")}
         </button>
 
         {showAdvanced && (
           <div className="advanced-source-body">
             <p className="advanced-source-hint">
-              Optional metadata about where this movie's data was sourced from.
-              These fields are not required for the recommendation engine.
+              {t("admin:movieForm.advancedSourceHint")}
             </p>
             <div className="admin-form-group">
-              <label htmlFor="source_name">Source Name</label>
+              <label htmlFor="source_name">{t("admin:movieForm.sourceName")}</label>
               <input
                 id="source_name"
                 type="text"
@@ -679,7 +676,7 @@ const MovieForm: React.FC<MovieFormProps> = ({ movie, onSubmit, onCancel }) => {
               />
             </div>
             <div className="admin-form-group">
-              <label htmlFor="source_url">Source URL</label>
+              <label htmlFor="source_url">{t("admin:movieForm.sourceUrl")}</label>
               <input
                 id="source_url"
                 type="text"
@@ -689,7 +686,7 @@ const MovieForm: React.FC<MovieFormProps> = ({ movie, onSubmit, onCancel }) => {
               />
             </div>
             <div className="admin-form-group">
-              <label htmlFor="license_type">License Type</label>
+              <label htmlFor="license_type">{t("admin:movieForm.licenseType")}</label>
               <input
                 id="license_type"
                 type="text"

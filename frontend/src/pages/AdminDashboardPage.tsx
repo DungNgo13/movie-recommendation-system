@@ -47,27 +47,27 @@ const AdminDashboardPage: React.FC = () => {
       
       <div className="dashboard-grid">
         <div className="dashboard-metric-card">
-          <span className="dashboard-metric-title">Total Movies</span>
+          <span className="dashboard-metric-title">{t("admin:dashboard.totalMovies")}</span>
           <span className="dashboard-metric-value">{metrics.total_movies}</span>
         </div>
         <div className="dashboard-metric-card">
-          <span className="dashboard-metric-title">Total Users</span>
+          <span className="dashboard-metric-title">{t("admin:dashboard.totalUsers")}</span>
           <span className="dashboard-metric-value">{metrics.total_users}</span>
         </div>
         <div className="dashboard-metric-card">
-          <span className="dashboard-metric-title">Admins</span>
+          <span className="dashboard-metric-title">{t("admin:dashboard.admins")}</span>
           <span className="dashboard-metric-value">{metrics.total_admins}</span>
         </div>
         <div className="dashboard-metric-card">
-          <span className="dashboard-metric-title">User Favorites</span>
+          <span className="dashboard-metric-title">{t("admin:dashboard.userFavorites")}</span>
           <span className="dashboard-metric-value">{metrics.total_favorites}</span>
         </div>
         <div className="dashboard-metric-card">
-          <span className="dashboard-metric-title">User Ratings</span>
+          <span className="dashboard-metric-title">{t("admin:dashboard.userRatings")}</span>
           <span className="dashboard-metric-value">{metrics.total_ratings}</span>
         </div>
         <div className="dashboard-metric-card">
-          <span className="dashboard-metric-title">Watch History</span>
+          <span className="dashboard-metric-title">{t("admin:dashboard.watchHistory")}</span>
           <span className="dashboard-metric-value">{metrics.total_watch_history}</span>
         </div>
       </div>

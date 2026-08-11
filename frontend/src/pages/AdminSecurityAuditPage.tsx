@@ -1,9 +1,11 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { getSecurityAudit } from '../services/adminService';
 import type { SecurityAuditUser } from '../services/adminService';
 import LoadingSpinner from '../components/LoadingSpinner';
 import ErrorMessage from '../components/ErrorMessage';
+import type { TFunction } from 'i18next';
 
 // ── IP Geolocation cache (avoids duplicate API calls) ─────────────────────
 const geoCache = new Map<string, string>();
@@ -38,17 +40,17 @@ interface SecurityBadge {
   reasons: string[];
 }
 
-function computeSecurityBadge(user: SecurityAuditUser): SecurityBadge {
+function computeSecurityBadge(user: SecurityAuditUser, t: TFunction): SecurityBadge {
   const reasons: string[] = [];
   let level: BadgeLevel = 'green';
 
   // RED: failed_login_attempts > 5 OR status is suspect/locked
   if (user.failed_login_attempts > 5) {
-    reasons.push(`${user.failed_login_attempts} failed login attempts`);
+    reasons.push(t("admin:security.failedLoginAttempts", { count: user.failed_login_attempts }));
     level = 'red';
   }
   if (user.status === 'suspect' || user.status === 'locked') {
-    reasons.push(`Account status: ${user.status}`);
+    reasons.push(t("admin:security.accountStatus", { status: user.status }));
     level = 'red';
   }
 
@@ -58,46 +60,47 @@ function computeSecurityBadge(user: SecurityAuditUser): SecurityBadge {
     const sixMonthsAgo = new Date();
     sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
     if (lastChange < sixMonthsAgo) {
-      reasons.push('Password not changed in 6+ months');
+      reasons.push(t("admin:security.pwNotChanged6Months"));
       if (level !== 'red') level = 'yellow';
     }
   } else {
-    reasons.push('Password never changed since registration');
+    reasons.push(t("admin:security.pwNeverChanged"));
     if (level !== 'red') level = 'yellow';
   }
 
   const labels: Record<BadgeLevel, string> = {
-    red: 'High Risk',
-    yellow: 'Warning',
-    green: 'Secure',
+    red: t("admin:security.highRisk"),
+    yellow: t("admin:security.warning"),
+    green: t("admin:security.secure"),
   };
 
   if (level === 'green') {
-    reasons.push('No issues detected');
+    reasons.push(t("admin:security.noIssues"));
   }
 
   return { level, label: labels[level], reasons };
 }
 
 // ── Helper: time-ago formatter ────────────────────────────────────────────
-function timeAgo(dateStr: string | null): string {
-  if (!dateStr) return 'Never';
+function timeAgo(dateStr: string | null, t: TFunction): string {
+  if (!dateStr) return t("admin:security.never");
   const d = new Date(dateStr);
   const now = new Date();
   const diffMs = now.getTime() - d.getTime();
   const diffMins = Math.floor(diffMs / 60000);
-  if (diffMins < 1) return 'Just now';
-  if (diffMins < 60) return `${diffMins}m ago`;
+  if (diffMins < 1) return t("admin:security.justNow");
+  if (diffMins < 60) return t("admin:security.minutesAgo", { count: diffMins });
   const diffHours = Math.floor(diffMins / 60);
-  if (diffHours < 24) return `${diffHours}h ago`;
+  if (diffHours < 24) return t("admin:security.hoursAgo", { count: diffHours });
   const diffDays = Math.floor(diffHours / 24);
-  if (diffDays < 30) return `${diffDays}d ago`;
+  if (diffDays < 30) return t("admin:security.daysAgo", { count: diffDays });
   const diffMonths = Math.floor(diffDays / 30);
-  return `${diffMonths}mo ago`;
+  return t("admin:security.monthsAgo", { count: diffMonths });
 }
 
 // ── Main Component ────────────────────────────────────────────────────────
 const AdminSecurityAuditPage: React.FC = () => {
+  const { t } = useTranslation(['admin', 'common']);
   const [users, setUsers] = useState<SecurityAuditUser[]>([]);
   const [locations, setLocations] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
@@ -133,14 +136,14 @@ const AdminSecurityAuditPage: React.FC = () => {
 
   const filteredUsers = filterLevel === 'all'
     ? users
-    : users.filter(u => computeSecurityBadge(u).level === filterLevel);
+    : users.filter(u => computeSecurityBadge(u, t).level === filterLevel);
 
   // Stats
   const stats = {
     total: users.length,
-    red: users.filter(u => computeSecurityBadge(u).level === 'red').length,
-    yellow: users.filter(u => computeSecurityBadge(u).level === 'yellow').length,
-    green: users.filter(u => computeSecurityBadge(u).level === 'green').length,
+    red: users.filter(u => computeSecurityBadge(u, t).level === 'red').length,
+    yellow: users.filter(u => computeSecurityBadge(u, t).level === 'yellow').length,
+    green: users.filter(u => computeSecurityBadge(u, t).level === 'green').length,
   };
 
   if (loading) return <LoadingSpinner />;
@@ -149,10 +152,10 @@ const AdminSecurityAuditPage: React.FC = () => {
   return (
     <div className="admin-page">
       <div className="admin-header">
-        <h1>User Security Audit</h1>
+        <h1>{t("admin:security.title")}</h1>
         <div className="admin-actions">
-          <Link to="/admin/users" className="btn btn-secondary">User Management</Link>
-          <Link to="/admin/logs" className="btn btn-secondary">Audit Logs</Link>
+          <Link to="/admin/users" className="btn btn-secondary">{t("admin:security.userManagement")}</Link>
+          <Link to="/admin/logs" className="btn btn-secondary">{t("admin:security.auditLogs")}</Link>
         </div>
       </div>
 
@@ -163,7 +166,7 @@ const AdminSecurityAuditPage: React.FC = () => {
           style={{ cursor: 'pointer', border: filterLevel === 'all' ? '2px solid #3498db' : undefined }}
           onClick={() => setFilterLevel('all')}
         >
-          <div className="dashboard-metric-title">Total Users</div>
+          <div className="dashboard-metric-title">{t("admin:security.totalUsers")}</div>
           <div className="dashboard-metric-value">{stats.total}</div>
         </div>
         <div
@@ -171,7 +174,7 @@ const AdminSecurityAuditPage: React.FC = () => {
           style={{ cursor: 'pointer', borderLeft: '4px solid #e74c3c', border: filterLevel === 'red' ? '2px solid #e74c3c' : undefined }}
           onClick={() => setFilterLevel('red')}
         >
-          <div className="dashboard-metric-title">🔴 High Risk</div>
+          <div className="dashboard-metric-title">🔴 {t("admin:security.highRisk")}</div>
           <div className="dashboard-metric-value" style={{ color: '#e74c3c' }}>{stats.red}</div>
         </div>
         <div
@@ -179,7 +182,7 @@ const AdminSecurityAuditPage: React.FC = () => {
           style={{ cursor: 'pointer', borderLeft: '4px solid #f39c12', border: filterLevel === 'yellow' ? '2px solid #f39c12' : undefined }}
           onClick={() => setFilterLevel('yellow')}
         >
-          <div className="dashboard-metric-title">🟡 Warning</div>
+          <div className="dashboard-metric-title">🟡 {t("admin:security.warning")}</div>
           <div className="dashboard-metric-value" style={{ color: '#f39c12' }}>{stats.yellow}</div>
         </div>
         <div
@@ -187,7 +190,7 @@ const AdminSecurityAuditPage: React.FC = () => {
           style={{ cursor: 'pointer', borderLeft: '4px solid #27ae60', border: filterLevel === 'green' ? '2px solid #27ae60' : undefined }}
           onClick={() => setFilterLevel('green')}
         >
-          <div className="dashboard-metric-title">🟢 Secure</div>
+          <div className="dashboard-metric-title">🟢 {t("admin:security.secure")}</div>
           <div className="dashboard-metric-value" style={{ color: '#27ae60' }}>{stats.green}</div>
         </div>
       </div>
@@ -197,20 +200,20 @@ const AdminSecurityAuditPage: React.FC = () => {
         <table className="admin-table">
           <thead>
             <tr>
-              <th>User</th>
-              <th>Last Login IP</th>
-              <th>Location</th>
-              <th>Last Activity</th>
-              <th>Failed Attempts</th>
-              <th>PW Changed</th>
-              <th>Security Status</th>
+              <th>{t("admin:security.user")}</th>
+              <th>{t("admin:security.lastLoginIp")}</th>
+              <th>{t("admin:security.location")}</th>
+              <th>{t("admin:security.lastActivity")}</th>
+              <th>{t("admin:security.failedAttempts")}</th>
+              <th>{t("admin:security.pwChanged")}</th>
+              <th>{t("admin:security.securityStatus")}</th>
             </tr>
           </thead>
           <tbody>
             {filteredUsers.map(user => {
-              const badge = computeSecurityBadge(user);
+              const badge = computeSecurityBadge(user, t);
               const ip = user.last_login_ip || '—';
-              const location = user.last_login_ip ? (locations[user.last_login_ip] || 'Resolving…') : '—';
+              const location = user.last_login_ip ? (locations[user.last_login_ip] || t("admin:security.resolving")) : '—';
 
               return (
                 <tr key={user.id}>
@@ -228,15 +231,15 @@ const AdminSecurityAuditPage: React.FC = () => {
                     </code>
                   </td>
                   <td style={{ fontSize: '0.88rem' }}>
-                    {location === 'Resolving…' ? (
-                      <span style={{ color: '#bbb', fontStyle: 'italic' }}>Resolving…</span>
+                    {location === t("admin:security.resolving") ? (
+                      <span style={{ color: '#bbb', fontStyle: 'italic' }}>{t("admin:security.resolving")}</span>
                     ) : (
                       <span>{location}</span>
                     )}
                   </td>
                   <td>
-                    <span title={user.last_login_at || 'Never'}>
-                      {timeAgo(user.last_login_at)}
+                    <span title={user.last_login_at || t("admin:security.never")}>
+                      {timeAgo(user.last_login_at, t)}
                     </span>
                   </td>
                   <td style={{ textAlign: 'center' }}>
@@ -257,8 +260,8 @@ const AdminSecurityAuditPage: React.FC = () => {
                     )}
                   </td>
                   <td>
-                    <span title={user.last_password_change || 'Never'}>
-                      {timeAgo(user.last_password_change)}
+                    <span title={user.last_password_change || t("admin:security.never")}>
+                      {timeAgo(user.last_password_change, t)}
                     </span>
                   </td>
                   <td>
@@ -283,7 +286,7 @@ const AdminSecurityAuditPage: React.FC = () => {
             {filteredUsers.length === 0 && (
               <tr>
                 <td colSpan={7} style={{ textAlign: 'center', padding: '40px', color: '#999' }}>
-                  No users match this filter.
+                  {t("admin:security.noUsersMatch")}
                 </td>
               </tr>
             )}

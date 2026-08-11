@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { getAuditLogs } from '../services/adminService';
 import type { AdminAuditLog } from '../services/adminService';
 import LoadingSpinner from '../components/LoadingSpinner';
 import ErrorMessage from '../components/ErrorMessage';
 
 const AdminAuditLogsPage: React.FC = () => {
+  const { t } = useTranslation(['admin', 'common']);
   const [logs, setLogs] = useState<AdminAuditLog[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -34,9 +36,9 @@ const AdminAuditLogsPage: React.FC = () => {
   return (
     <div className="admin-page">
       <div className="admin-header">
-        <h1>Admin Audit Logs</h1>
+        <h1>{t("admin:auditLogs.title")}</h1>
         <div className="admin-actions">
-          <Link to="/admin" className="btn btn-secondary">Dashboard</Link>
+          <Link to="/admin" className="btn btn-secondary">{t("admin:auditLogs.dashboard")}</Link>
         </div>
       </div>
       
@@ -44,17 +46,17 @@ const AdminAuditLogsPage: React.FC = () => {
         <table className="admin-table">
           <thead>
             <tr>
-              <th>Date</th>
-              <th>Admin Email</th>
-              <th>Action</th>
-              <th>Target</th>
-              <th>Description</th>
+              <th>{t("admin:auditLogs.date")}</th>
+              <th>{t("admin:auditLogs.adminEmail")}</th>
+              <th>{t("admin:auditLogs.action")}</th>
+              <th>{t("admin:auditLogs.target")}</th>
+              <th>{t("admin:auditLogs.description")}</th>
             </tr>
           </thead>
           <tbody>
             {logs.length === 0 ? (
               <tr>
-                <td colSpan={5} className="no-results" style={{ textAlign: "center" }}>No logs found.</td>
+                <td colSpan={5} className="no-results" style={{ textAlign: "center" }}>{t("admin:auditLogs.noLogs")}</td>
               </tr>
             ) : logs.map(log => (
               <tr key={log.id}>

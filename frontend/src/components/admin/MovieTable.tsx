@@ -32,7 +32,7 @@ const QualityBadge: React.FC<{ label: string }> = ({ label }) => (
  *  2. "360p,720p,…"   → green resolution pills  (set by service on encode finish)
  *  3. null / missing  → grey "Pending" badge
  */
-const QualityCell: React.FC<{ movie: Movie }> = ({ movie }) => {
+const QualityCell: React.FC<{ movie: Movie; encodingLabel: string; pendingLabel: string }> = ({ movie, encodingLabel, pendingLabel }) => {
   const q = movie.available_qualities;
 
   // ── State 1: actively encoding ────────────────────────────────────────────
@@ -54,7 +54,7 @@ const QualityCell: React.FC<{ movie: Movie }> = ({ movie }) => {
           animation: 'spin 0.7s linear infinite',
           flexShrink: 0,
         }} />
-        Encoding…
+        {encodingLabel}
       </span>
     );
   }
@@ -77,7 +77,7 @@ const QualityCell: React.FC<{ movie: Movie }> = ({ movie }) => {
       fontSize: '0.7rem', fontWeight: 600,
       background: '#e9ecef', color: '#6c757d',
     }}>
-      Pending
+      {pendingLabel}
     </span>
   );
 };
@@ -87,13 +87,13 @@ const QualityCell: React.FC<{ movie: Movie }> = ({ movie }) => {
 // always consistent with the number coming from the API.
 
 /** Returns a human-readable list of which AI fields are still empty. */
-function getMissingFields(movie: Movie): string[] {
+function getMissingFields(movie: Movie, labels: { genres: string; cast: string; overview: string; director: string; posterBackdrop: string }): string[] {
   const missing: string[] = [];
-  if (!movie.genres?.length)                           missing.push('Genres (+30)');
-  if (!movie.cast?.length)                             missing.push('Cast (+20)');
-  if (!movie.overview || movie.overview.length <= 50)  missing.push('Overview >50 chars (+20)');
-  if (!movie.director)                                 missing.push('Director (+15)');
-  if (!movie.poster_url || !movie.backdrop_url)        missing.push('Poster & Backdrop (+10)');
+  if (!movie.genres?.length)                           missing.push(labels.genres);
+  if (!movie.cast?.length)                             missing.push(labels.cast);
+  if (!movie.overview || movie.overview.length <= 50)  missing.push(labels.overview);
+  if (!movie.director)                                 missing.push(labels.director);
+  if (!movie.poster_url || !movie.backdrop_url)        missing.push(labels.posterBackdrop);
   return missing;
 }
 
@@ -108,10 +108,10 @@ function scoreColor(score: number): string {
  * SVG ring gauge (donut chart) showing quality_score 0–100.
  * The ring fill is the only moving part; no external library needed.
  */
-const DataQualityCell: React.FC<{ movie: Movie }> = ({ movie }) => {
+const DataQualityCell: React.FC<{ movie: Movie; allCompleteLabel: string; missingLabel: string; severityLabels: { optimised: string; average: string; critical: string }; missingFieldLabels: { genres: string; cast: string; overview: string; director: string; posterBackdrop: string } }> = ({ movie, allCompleteLabel, missingLabel, severityLabels, missingFieldLabels }) => {
   const score  = movie.quality_score ?? 0;
   const color  = scoreColor(score);
-  const missing = getMissingFields(movie);
+  const missing = getMissingFields(movie, missingFieldLabels);
 
   // SVG ring maths
   const R   = 16;                           // radius of the ring
@@ -120,13 +120,13 @@ const DataQualityCell: React.FC<{ movie: Movie }> = ({ movie }) => {
 
   // Tooltip — shows missing fields or a success message
   const tooltip = missing.length === 0
-    ? 'All AI fields complete — engine fully optimised'
-    : `Missing:\n${missing.map(f => `  - ${f}`).join('\n')}`;
+    ? allCompleteLabel
+    : `${missingLabel}\n${missing.map(f => `  - ${f}`).join('\n')}`;
 
   // Label under the ring — severity text
   const label =
-    score >= 80 ? 'Optimised' :
-    score >= 50 ? 'Average'   : 'Critical';
+    score >= 80 ? severityLabels.optimised :
+    score >= 50 ? severityLabels.average   : severityLabels.critical;
 
   return (
     <div
@@ -191,7 +191,23 @@ const VideoStatusCell: React.FC<{
   movie: Movie;
   onCancelEncode: (movie: Movie) => Promise<void>;
   onStartEncode:  (movie: Movie) => Promise<void>;
-}> = ({ movie, onCancelEncode, onStartEncode }) => {
+  labels: {
+    play: string;
+    stop: string;
+    cancelling: string;
+    processing: string;
+    reEncode: string;
+    encode: string;
+    stopTooltip: string;
+    reEncodeTooltip: string;
+    startEncodeTooltip: string;
+    videoStatusReady: string;
+    videoStatusProcessing: string;
+    videoStatusFailed: string;
+    videoStatusUploaded: string;
+    videoStatusNoVideo: string;
+  };
+}> = ({ movie, onCancelEncode, onStartEncode, labels }) => {
   const status = movie.video_status ?? 'no_video';
   const [isCancelling, setIsCancelling] = useState(false);
 
@@ -202,6 +218,18 @@ const VideoStatusCell: React.FC<{
     } finally {
       setIsCancelling(false);
     }
+  };
+
+  /** Localized display label for internal video status */
+  const displayStatus = (s: string) => {
+    const map: Record<string, string> = {
+      ready: labels.videoStatusReady,
+      processing: labels.videoStatusProcessing,
+      failed: labels.videoStatusFailed,
+      uploaded: labels.videoStatusUploaded,
+      no_video: labels.videoStatusNoVideo,
+    };
+    return map[s] ?? s;
   };
 
   const badgeStyle: React.CSSProperties = {
@@ -228,7 +256,7 @@ const VideoStatusCell: React.FC<{
   return (
     <div style={{ minWidth: '130px' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: status === 'processing' ? '5px' : 0 }}>
-        <span style={badgeStyle}>{status}</span>
+        <span style={badgeStyle}>{displayStatus(status)}</span>
         {status === 'ready' && movie.hls_playlist_url && (
           <a
             href={movie.hls_playlist_url}
@@ -237,7 +265,7 @@ const VideoStatusCell: React.FC<{
             title="HLS playlist"
             style={{ fontSize: '0.85rem', color: '#155724', lineHeight: 1 }}
           >
-            Play
+            {labels.play}
           </a>
         )}
         {/* ── Cancel encode button — visible only while encoding ── */}
@@ -245,7 +273,7 @@ const VideoStatusCell: React.FC<{
           <button
             onClick={handleCancel}
             disabled={isCancelling}
-            title="Stop encoding"
+            title={labels.stopTooltip}
             style={{
               display: 'inline-flex',
               alignItems: 'center',
@@ -262,7 +290,7 @@ const VideoStatusCell: React.FC<{
               flexShrink: 0,
             }}
           >
-            ⬛ {isCancelling ? 'Cancelling…' : 'Stop'}
+            ⬛ {isCancelling ? labels.cancelling : labels.stop}
           </button>
         )}
       </div>
@@ -271,7 +299,7 @@ const VideoStatusCell: React.FC<{
       {status === 'processing' && (
         <div style={{ marginTop: '4px' }}>
           <div style={{ fontSize: '0.75rem', color: '#856404', marginBottom: '4px' }}>
-            {movie.video_step || 'Processing'} — {movie.video_progress ?? 0}%
+            {movie.video_step || labels.processing} — {movie.video_progress ?? 0}%
           </div>
           <div className="vst-track">
              <div 
@@ -291,7 +319,7 @@ const VideoStatusCell: React.FC<{
       {(status === 'uploaded' || status === 'failed' || status === 'ready') && (
         <button
           onClick={() => onStartEncode(movie)}
-          title={status === 'ready' ? 'Re-encode (replace existing HLS)' : 'Start multi-quality HLS encoding'}
+          title={status === 'ready' ? labels.reEncodeTooltip : labels.startEncodeTooltip}
           style={{
             marginTop: '6px',
             display: 'inline-flex', alignItems: 'center', gap: '4px',
@@ -302,7 +330,7 @@ const VideoStatusCell: React.FC<{
             transition: 'background 0.2s',
           }}
         >
-          {status === 'ready' ? 'Re-encode' : 'Encode'}
+          {status === 'ready' ? labels.reEncode : labels.encode}
         </button>
       )}
 
@@ -330,6 +358,37 @@ const VideoStatusCell: React.FC<{
 const MovieTable: React.FC<MovieTableProps> = ({ movies, onEdit, onDelete, onCancelEncode, onStartEncode }) => {
   const { t } = useTranslation(['admin', 'common']);
 
+  const videoLabels = {
+    play: t("admin:movieTable.play"),
+    stop: t("admin:movieTable.stop"),
+    cancelling: t("admin:movieTable.cancelling"),
+    processing: t("admin:movieTable.processing"),
+    reEncode: t("admin:movieTable.reEncode"),
+    encode: t("admin:movieTable.encode"),
+    stopTooltip: t("admin:movieTable.stopTooltip"),
+    reEncodeTooltip: t("admin:movieTable.reEncodeTooltip"),
+    startEncodeTooltip: t("admin:movieTable.startEncodeTooltip"),
+    videoStatusReady: t("admin:movieTable.videoStatusReady"),
+    videoStatusProcessing: t("admin:movieTable.videoStatusProcessing"),
+    videoStatusFailed: t("admin:movieTable.videoStatusFailed"),
+    videoStatusUploaded: t("admin:movieTable.videoStatusUploaded"),
+    videoStatusNoVideo: t("admin:movieTable.videoStatusNoVideo"),
+  };
+
+  const severityLabels = {
+    optimised: t("admin:movieTable.optimised"),
+    average: t("admin:movieTable.average"),
+    critical: t("admin:movieTable.critical"),
+  };
+
+  const missingFieldLabels = {
+    genres: t("admin:movieTable.missingGenres"),
+    cast: t("admin:movieTable.missingCast"),
+    overview: t("admin:movieTable.missingOverview"),
+    director: t("admin:movieTable.missingDirector"),
+    posterBackdrop: t("admin:movieTable.missingPosterBackdrop"),
+  };
+
   return (
     <div className="admin-table-wrapper">
       <table className="admin-table">
@@ -338,14 +397,14 @@ const MovieTable: React.FC<MovieTableProps> = ({ movies, onEdit, onDelete, onCan
             <th>{t("admin:movieForm.fields.title", "Title (English)")}</th>
             <th>{t("admin:movieForm.fields.director", "Director")}</th>
             <th>{t("admin:movieForm.fields.releaseDate", "Release Year")}</th>
-            <th>Quality</th>
+            <th>{t("admin:movieTable.quality")}</th>
             <th
-              title="Data completeness score for the AI recommendation engine (0–100). Hover each row for missing fields."
+              title={t("admin:movieTable.dataQualityTooltip")}
               style={{ cursor: 'help', whiteSpace: 'nowrap' }}
             >
-              Data Quality
+              {t("admin:movieTable.dataQuality")}
             </th>
-            <th>Video Status</th>
+            <th>{t("admin:movieTable.videoStatus")}</th>
             <th>{t("admin:tables.actions", "Actions")}</th>
           </tr>
         </thead>
@@ -360,11 +419,23 @@ const MovieTable: React.FC<MovieTableProps> = ({ movies, onEdit, onDelete, onCan
               </td>
               <td>{movie.director || '—'}</td>
               <td>{movie.release_date ? movie.release_date.split('-')[0] : '—'}</td>
-              <td><QualityCell movie={movie} /></td>
-              <td style={{ textAlign: 'center' }}>
-                <DataQualityCell movie={movie} />
+              <td>
+                <QualityCell
+                  movie={movie}
+                  encodingLabel={t("admin:movieTable.encoding")}
+                  pendingLabel={t("admin:movieTable.pending")}
+                />
               </td>
-              <td><VideoStatusCell movie={movie} onCancelEncode={onCancelEncode} onStartEncode={onStartEncode} /></td>
+              <td style={{ textAlign: 'center' }}>
+                <DataQualityCell
+                  movie={movie}
+                  allCompleteLabel={t("admin:movieTable.allFieldsComplete")}
+                  missingLabel={t("admin:movieTable.missing")}
+                  severityLabels={severityLabels}
+                  missingFieldLabels={missingFieldLabels}
+                />
+              </td>
+              <td><VideoStatusCell movie={movie} onCancelEncode={onCancelEncode} onStartEncode={onStartEncode} labels={videoLabels} /></td>
               <td className="admin-table-actions">
                 <div className="admin-table-actions__inner">
                   <button

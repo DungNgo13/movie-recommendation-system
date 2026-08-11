@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import type { AuthUser } from '../services/authService';
 import { getAdminUsers, updateAdminUserRole, forceResetUserPassword } from '../services/adminService';
 import LoadingSpinner from '../components/LoadingSpinner';
 import ErrorMessage from '../components/ErrorMessage';
 
 const AdminUsersPage: React.FC = () => {
+  const { t } = useTranslation(['admin', 'common']);
   const [users, setUsers] = useState<AuthUser[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -38,7 +40,8 @@ const AdminUsersPage: React.FC = () => {
 
   const handleRoleChange = async (userId: string, currentRole: 'admin' | 'user') => {
     const newRole = currentRole === 'admin' ? 'user' : 'admin';
-    if (!window.confirm(`Are you sure you want to change this user's role to ${newRole}?`)) {
+    const newRoleLabel = newRole === 'admin' ? t("admin:users.roleAdmin") : t("admin:users.roleUser");
+    if (!window.confirm(t("admin:users.confirmRoleChange", { role: newRoleLabel }))) {
       return;
     }
 
@@ -73,11 +76,11 @@ const AdminUsersPage: React.FC = () => {
     setResetSuccess(null);
 
     if (!resetPassword || resetPassword.length < 6) {
-      setResetError('Password must be at least 6 characters.');
+      setResetError(t("admin:users.errorPwLength"));
       return;
     }
     if (resetPassword !== resetConfirm) {
-      setResetError('Passwords do not match.');
+      setResetError(t("admin:users.errorPwMismatch"));
       return;
     }
     if (!resetTarget) return;
@@ -95,16 +98,29 @@ const AdminUsersPage: React.FC = () => {
     }
   };
 
+  /** Localize role display value */
+  const displayRole = (role: string) => {
+    if (role === 'admin') return t("admin:users.roleAdmin");
+    if (role === 'user') return t("admin:users.roleUser");
+    return role;
+  };
+
+  /** Localize status display value */
+  const displayStatus = (status: string) => {
+    if (status === 'active') return t("admin:users.statusActive");
+    return status;
+  };
+
   if (loading) return <LoadingSpinner />;
   if (error) return <ErrorMessage message={error} />;
 
   return (
     <div className="admin-page">
       <div className="admin-header">
-        <h1>User Management</h1>
+        <h1>{t("admin:users.title")}</h1>
         <div className="admin-actions">
           <Link to="/admin/movies" className="btn btn-secondary">
-            Manage Movies
+            {t("admin:users.manageMovies")}
           </Link>
         </div>
       </div>
@@ -113,12 +129,12 @@ const AdminUsersPage: React.FC = () => {
         <table className="admin-table">
           <thead>
             <tr>
-              <th>ID</th>
-              <th>Email</th>
-              <th>Role</th>
-              <th>Status</th>
-              <th>Created At</th>
-              <th>Actions</th>
+              <th>{t("admin:users.id")}</th>
+              <th>{t("admin:users.email")}</th>
+              <th>{t("admin:users.role")}</th>
+              <th>{t("admin:users.status")}</th>
+              <th>{t("admin:users.createdAt")}</th>
+              <th>{t("admin:users.actions")}</th>
             </tr>
           </thead>
           <tbody>
@@ -128,12 +144,12 @@ const AdminUsersPage: React.FC = () => {
                 <td>{user.email}</td>
                 <td>
                   <span className={`role-badge role-${user.role}`}>
-                    {user.role}
+                    {displayRole(user.role)}
                   </span>
                 </td>
                 <td>
                   <span className={`role-badge status-${(user as unknown as Record<string, unknown>).status || 'active'}`}>
-                    {((user as unknown as Record<string, unknown>).status as string) || 'active'}
+                    {displayStatus(((user as unknown as Record<string, unknown>).status as string) || 'active')}
                   </span>
                 </td>
                 <td>{new Date(user.created_at).toLocaleDateString()}</td>
@@ -142,14 +158,14 @@ const AdminUsersPage: React.FC = () => {
                     className={`btn ${user.role === 'admin' ? 'btn-danger' : 'btn-primary'}`}
                     onClick={() => handleRoleChange(user.id, user.role)}
                   >
-                    Make {user.role === 'admin' ? 'User' : 'Admin'}
+                    {user.role === 'admin' ? t("admin:users.makeUser") : t("admin:users.makeAdmin")}
                   </button>
                   <button
                     className="btn btn--edit"
                     onClick={() => openResetModal(user)}
-                    title="Reset this user's password"
+                    title={t("admin:users.resetPwTooltip")}
                   >
-                    🔑 Reset PW
+                    🔑 {t("admin:users.resetPw")}
                   </button>
                 </td>
               </tr>
@@ -162,9 +178,9 @@ const AdminUsersPage: React.FC = () => {
       {resetTarget && (
         <div className="confirm-overlay" onClick={(e) => { if (e.target === e.currentTarget) closeResetModal(); }}>
           <div className="confirm-dialog">
-            <h3>🔑 Reset Password</h3>
+            <h3>🔑 {t("admin:users.resetPassword")}</h3>
             <p style={{ color: '#555', marginBottom: '16px' }}>
-              Set a new temporary password for <strong>{resetTarget.email}</strong>.
+              {t("admin:users.resetPrompt")} <strong>{resetTarget.email}</strong>.
             </p>
 
             {resetSuccess && <div className="auth-success-message">{resetSuccess}</div>}
@@ -173,38 +189,38 @@ const AdminUsersPage: React.FC = () => {
             {!resetSuccess ? (
               <form onSubmit={handleForceReset}>
                 <div className="admin-form-group">
-                  <label htmlFor="admin-reset-pw">New Password</label>
+                  <label htmlFor="admin-reset-pw">{t("admin:users.newPassword")}</label>
                   <input
                     id="admin-reset-pw"
                     type="password"
                     value={resetPassword}
                     onChange={(e) => setResetPassword(e.target.value)}
-                    placeholder="At least 6 characters"
+                    placeholder={t("admin:users.pwMinLength")}
                   />
                 </div>
                 <div className="admin-form-group">
-                  <label htmlFor="admin-reset-confirm">Confirm Password</label>
+                  <label htmlFor="admin-reset-confirm">{t("admin:users.confirmPassword")}</label>
                   <input
                     id="admin-reset-confirm"
                     type="password"
                     value={resetConfirm}
                     onChange={(e) => setResetConfirm(e.target.value)}
-                    placeholder="Repeat password"
+                    placeholder={t("admin:users.pwRepeat")}
                   />
                 </div>
                 <div className="confirm-actions">
                   <button type="button" className="btn btn--secondary" onClick={closeResetModal}>
-                    Cancel
+                    {t("admin:users.cancel")}
                   </button>
                   <button type="submit" className="btn btn--primary" disabled={resetSubmitting}>
-                    {resetSubmitting ? 'Resetting...' : 'Reset Password'}
+                    {resetSubmitting ? t("admin:users.resetting") : t("admin:users.resetPassword")}
                   </button>
                 </div>
               </form>
             ) : (
               <div className="confirm-actions">
                 <button className="btn btn--primary" onClick={closeResetModal}>
-                  Done
+                  {t("admin:users.done")}
                 </button>
               </div>
             )}
