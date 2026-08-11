@@ -184,7 +184,7 @@ describe('MovieTable — content rendering', () => {
 
   it('renders video status', () => {
     renderTable([makeMovie({ video_status: 'ready' })]);
-    expect(screen.getByText('ready')).toBeTruthy();
+    expect(screen.getByText('Ready')).toBeTruthy();
   });
 
   it('renders Encode button for uploaded status', () => {
