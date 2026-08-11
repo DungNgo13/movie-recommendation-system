@@ -6,7 +6,9 @@
  */
 
 export interface PasswordRequirement {
-  /** Human-readable description of the requirement. */
+  /** Semantic identifier for i18n translation. */
+  key: string;
+  /** Human-readable description of the requirement (English fallback). */
   label: string;
   /** Whether the current password satisfies this requirement. */
   met: boolean;
@@ -41,22 +43,27 @@ export function validatePassword(
 ): PasswordRequirement[] {
   const requirements: PasswordRequirement[] = [
     {
+      key: 'minLength',
       label: 'At least 8 characters',
       met: password.length >= 8,
     },
     {
+      key: 'uppercase',
       label: 'At least one uppercase letter',
       met: /[A-Z]/.test(password),
     },
     {
+      key: 'digit',
       label: 'At least one digit',
       met: /\d/.test(password),
     },
     {
+      key: 'specialChar',
       label: 'At least one special character',
       met: SPECIAL_CHAR_REGEX.test(password),
     },
     {
+      key: 'notCommon',
       label: 'Not a commonly used password',
       met: !COMMON_BLOCKLIST.has(password),
     },
@@ -67,6 +74,7 @@ export function validatePassword(
     const localPart = email.split('@')[0]?.toLowerCase() ?? '';
     if (localPart.length >= 3) {
       requirements.push({
+        key: 'noEmail',
         label: 'Must not contain your email username',
         met: !password.toLowerCase().includes(localPart),
       });
