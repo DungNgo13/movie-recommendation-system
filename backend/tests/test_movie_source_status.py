@@ -186,7 +186,8 @@ def test_source_status_r2_after_verified_completion(db, admin, movie, r2):
     body = resp.json()
     assert body["source_storage"] == "r2"
     assert body["source_available"] is True
-    assert body["hls_processing_supported"] is False
+    # In Phase 3, HLS processing is supported for verified R2 sources when configured
+    assert body["hls_processing_supported"] is True
     # No private storage details leak.
     assert key not in resp.text
     assert BUCKET not in resp.text
@@ -200,6 +201,7 @@ def test_source_status_r2_without_completed_session_is_unavailable(db, admin, mo
     body = _source(movie.id).json()
     assert body["source_storage"] == "r2"
     assert body["source_available"] is False
+    assert body["hls_processing_supported"] is False
 
 
 def test_public_movie_endpoint_does_not_expose_storage_fields(db, admin, movie, r2):
@@ -212,9 +214,9 @@ def test_public_movie_endpoint_does_not_expose_storage_fields(db, admin, movie, 
     assert "source_storage" not in resp.text
 
 
-# ── HLS guard ─────────────────────────────────────────────────────────────────
+# ── HLS processing ────────────────────────────────────────────────────────────
 
-def test_process_hls_refused_for_r2_source(db, admin, movie, r2, monkeypatch):
+def test_process_hls_accepts_verified_r2_source(db, admin, movie, r2, monkeypatch):
     _, stubber = r2
     movie.video_source_path = "media/videos/source/stale_local.mp4"  # stale local file
     movie.processing_status = "uploaded"
@@ -225,11 +227,10 @@ def test_process_hls_refused_for_r2_source(db, admin, movie, r2, monkeypatch):
     monkeypatch.setattr(movies_router, "queue_encode_task", lambda mid: queued.append(mid) or 1)
 
     resp = client.post(f"/api/v1/movies/{movie.id}/process-hls")
-    assert resp.status_code == 409
-    assert resp.json()["code"] == "hls_r2_source_unsupported"
-    assert queued == []
+    assert resp.status_code == 202
+    assert queued == [movie.id]
     db.expire_all()
-    assert db.query(Movie).filter(Movie.id == movie.id).one().processing_status == "uploaded"
+    assert db.query(Movie).filter(Movie.id == movie.id).one().processing_status == "processing"
 
 
 def test_process_hls_still_queues_local_source(db, admin, movie, monkeypatch):

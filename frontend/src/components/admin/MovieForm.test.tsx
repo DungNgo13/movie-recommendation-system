@@ -180,6 +180,17 @@ describe('MovieForm source storage persistence', () => {
     expect(startEncodingButton()).not.toBeInTheDocument();
   });
 
+  it('allows encoding for R2 source when hls_processing_supported is true (Phase 3)', async () => {
+    serverSource = sourceStatus({ source_storage: 'r2', source_available: true, hls_processing_supported: true, processing_status: 'uploaded' });
+    renderForm(makeMovie({ video_status: 'uploaded' }));
+
+    await waitFor(() => expect(storage()).toBe('r2'));
+    expect(screen.getByText('admin:sourceStatus.r2')).toBeInTheDocument();
+    expect(screen.getByText('admin:sourceStatus.available')).toBeInTheDocument();
+    expect(screen.queryByRole('note')).not.toBeInTheDocument();
+    expect(startEncodingButton()).toBeInTheDocument();
+  });
+
   it('keeps encode available for local sources', async () => {
     renderForm();
     await waitFor(() => expect(storage()).toBe('local'));

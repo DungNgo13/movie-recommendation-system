@@ -185,16 +185,32 @@ header `Content-Type`, expose `ETag`.
   structured code `upload_object_missing` / 409, 502, 503, network drop); non-retryable codes
   (`upload_session_expired`, `upload_session_not_pending`, 422) require a new upload.
   The file is never re-uploaded automatically when only verification fails.
-* Safe HLS blocking: `POST /api/v1/movies/{id}/process-hls` returns HTTP 409
-  (`code: "hls_r2_source_unsupported"`) if called on an R2 source. The admin UI disables the
-  HLS trigger button and displays a badge indicating R2 storage until Phase 3 is implemented.
+* Safe HLS execution: `POST /api/v1/movies/{id}/process-hls` accepts both local and verified R2
+  sources. The admin UI enables the HLS trigger button for verified R2 sources when storage is configured.
 * The presigned URL is held only inside the XHR call; it is never rendered, stored or logged.
   The PUT does not carry the app's `Authorization` header.
 
-## 9. Not yet implemented (Phase 3 & Future)
+## 9. R2 Source FFmpeg / HLS Pipeline (Phase 3)
 
-* FFmpeg R2 source resolver (`download_to_path` exists in `R2StorageService` but is not yet wired
-  into `hls_service` to download the R2 object to a local temporary working directory for encoding).
-* Background worker / queue for async HLS transcoding of R2-sourced videos.
-* Multipart upload for files > 5 GB.
-* Cleanup lifecycle of superseded completed sources.
+* **Source Resolver**: `backend/app/services/video_source_resolver.py` (`resolve_video_source`)
+  safely downloads private R2 objects to an isolated temporary directory using
+  `R2StorageService.download_to_path()`, validates file size and existence, and guarantees
+  complete cleanup in a `finally` block.
+* **Transcoding Lifecycle**: FFprobe reads video dimensions and duration from the temporary file;
+  FFmpeg encodes multi-quality HLS into `media/videos/hls/movie_{id}`; output is verified before
+  transitioning status to `ready`.
+* **Defect Fixes**:
+  - **H1 (Restart Recovery)**: `recover_stuck_encodes()` automatically runs on application startup,
+    recovering movies with verified HLS outputs to `ready` and resetting interrupted ones to `failed`
+    so administrators can re-trigger without being permanently blocked.
+  - **H2 (Safe Cancellation)**: `cancel_encode_task()` never sets `processing_status='ready'` unless
+    valid, verified HLS outputs exist on disk; partial outputs are cleanly deleted.
+* **Concurrency & Stale Source Protection**: `_active_job_movies` locks prevent duplicate parallel jobs
+  for the same movie. If the movie's active source is changed mid-encode, completed HLS is safely
+  discarded to prevent publishing obsolete manifests.
+
+## 10. Future Work
+
+* Direct HLS segment upload to R2 (currently HLS manifests and segments are stored in local media).
+* Multipart upload for raw sources > 5 GB.
+* Cleanup lifecycle of superseded completed raw sources in R2 bucket.
