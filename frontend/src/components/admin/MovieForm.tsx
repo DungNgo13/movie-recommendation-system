@@ -1,9 +1,10 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import type { KeyboardEvent } from 'react';
 import type { Movie } from '../../models';
 import type { MovieFormData } from '../../services/movieService';
 import { uploadMovieImage, uploadMovieVideo, processMovieVideo, getMovieProcessingStatus } from '../../services/movieService';
 import { useTranslation } from 'react-i18next';
+import R2DirectUpload from './R2DirectUpload';
 
 // ─── TagInput ─────────────────────────────────────────────────────────────────
 // Self-contained chip/tag input — no external library needed.
@@ -178,6 +179,10 @@ const MovieForm: React.FC<MovieFormProps> = ({ movie, onSubmit, onCancel }) => {
   const [uploadPercent, setUploadPercent] = useState<number | null>(null);
   const [pollProgress, setPollProgress]   = useState<number>(0);
   const [pollStep, setPollStep]           = useState<string>('Processing');
+  // Direct-to-R2 upload (Phase 2). `r2SourceActive` is session-local: the public
+  // movie schema does not expose source_storage.
+  const [r2Busy, setR2Busy]               = useState(false);
+  const [r2SourceActive, setR2SourceActive] = useState(false);
 
   // ── Populate from existing movie when editing ────────────────────────────
   useEffect(() => {
@@ -276,6 +281,8 @@ const MovieForm: React.FC<MovieFormProps> = ({ movie, onSubmit, onCancel }) => {
       });
       setVideoUrl(updatedMovie.video_url || '');
       setVideoStatus(updatedMovie.video_status || 'uploaded');
+      // Backend switches source_storage back to "local" on a local upload.
+      setR2SourceActive(false);
     } catch (err) {
       setError(err instanceof Error ? err.message : t("admin:movieForm.errorVideoUploadFailed"));
     } finally {
@@ -284,6 +291,25 @@ const MovieForm: React.FC<MovieFormProps> = ({ movie, onSubmit, onCancel }) => {
       e.target.value = '';
     }
   };
+
+  // ── Direct R2 upload callbacks ───────────────────────────────────────────
+  // HLS processing is deliberately NOT triggered for R2 sources: the FFmpeg
+  // pipeline cannot resolve R2 objects yet.
+  const handleR2Completed = useCallback((refreshed: Movie | null) => {
+    setR2SourceActive(true);
+    setError(null);
+    if (refreshed) {
+      setVideoUrl(refreshed.video_url || '');
+      setVideoStatus(refreshed.video_status || 'pending');
+      setHlsUrl(refreshed.hls_playlist_url || '');
+      setAvailableQualities(refreshed.available_qualities || null);
+      setProcessingError(refreshed.processing_error || null);
+    }
+  }, []);
+
+  const handleR2Unauthorized = useCallback(() => {
+    window.location.href = '/login';
+  }, []);
 
   // ── Form submit ──────────────────────────────────────────────────────────
   const handleSubmit = (e: React.FormEvent) => {
@@ -622,24 +648,36 @@ const MovieForm: React.FC<MovieFormProps> = ({ movie, onSubmit, onCancel }) => {
             </div>
 
             <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', flexWrap: 'wrap' }}>
+              <label htmlFor="local-video-input" style={{ fontSize: '0.85rem', fontWeight: 600 }}>
+                {t("admin:r2Upload.localFallbackLabel")}
+              </label>
               <input
+                id="local-video-input"
                 type="file"
                 accept="video/mp4,video/x-matroska,video/webm,video/avi,video/quicktime,.mp4,.mkv,.webm,.avi,.mov"
                 onChange={handleVideoUpload}
-                disabled={uploading}
+                disabled={uploading || r2Busy}
               />
-              {(videoStatus === 'uploaded' || videoStatus === 'failed' || videoStatus === 'ready') && (
+              {!r2SourceActive && (videoStatus === 'uploaded' || videoStatus === 'failed' || videoStatus === 'ready') && (
                 <button
                   type="button"
                   className="btn btn--primary"
                   onClick={handleProcessHls}
-                  disabled={uploading}
+                  disabled={uploading || r2Busy}
                   title={videoStatus === 'ready' ? t("admin:movieForm.reEncode") : t("admin:movieForm.startEncoding")}
                 >
                   {videoStatus === 'ready' ? t("admin:movieForm.reEncode") : t("admin:movieForm.startEncoding")}
                 </button>
               )}
             </div>
+
+            <R2DirectUpload
+              movieId={movie.id}
+              disabled={uploading}
+              onBusyChange={setR2Busy}
+              onCompleted={handleR2Completed}
+              onUnauthorized={handleR2Unauthorized}
+            />
           </>
         ) : (
           <p style={{ fontSize: '0.9rem', color: '#6c757d', margin: 0 }}>

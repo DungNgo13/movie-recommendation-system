@@ -146,6 +146,46 @@
     "aiWarningDesc": "Missing data reduces recommendation accuracy — the engine will rely on title and overview text alone.",
     "selected": "Selected:"
   },
+  "r2Upload": {
+    "title": "Direct upload to cloud storage (R2)",
+    "hint": "Recommended for large files. The video is sent straight to private cloud storage (MP4, MKV, WebM, MOV, AVI; up to {{max}}).",
+    "selectFile": "Select a video for direct cloud upload",
+    "localFallbackLabel": "Upload via server (fallback):",
+    "cancel": "Cancel upload",
+    "retryVerify": "Retry verification",
+    "progressLabel": "Cloud upload progress",
+    "newUploadRequired": "Please select the file again to start a new upload.",
+    "hlsNotAvailable": "Source stored privately in cloud storage. Encoding from cloud sources is not available yet.",
+    "status": {
+      "idle": "No cloud upload in progress.",
+      "requestingUrl": "Preparing secure upload…",
+      "uploading": "Uploading… {{percent}}% ({{loaded}} / {{total}})",
+      "verifying": "Upload finished. Verifying with server…",
+      "completed": "Upload verified — 100%",
+      "uploadFailed": "Upload failed.",
+      "verifyFailed": "File uploaded, but verification failed.",
+      "cancelled": "Upload cancelled."
+    },
+    "errors": {
+      "invalid_type": "Unsupported file type. Allowed: MP4, MKV, WebM, MOV, AVI.",
+      "empty": "The selected file is empty.",
+      "too_large": "The file is too large (limit {{max}}).",
+      "validation": "The upload request was rejected.",
+      "unauthorized": "Your session has expired. Please sign in again.",
+      "forbidden": "You do not have permission to upload for this movie.",
+      "not_found": "Movie or upload session not found.",
+      "expired": "The upload link expired.",
+      "object_missing": "The server could not find the uploaded file yet. Retry verification.",
+      "conflict": "This upload session can no longer be completed.",
+      "mismatch": "The uploaded file did not match the declared size or type.",
+      "storage_error": "Cloud storage could not be reached. Please retry.",
+      "unavailable": "Cloud storage is not configured or temporarily unavailable.",
+      "put_failed": "Cloud storage rejected the file transfer.",
+      "network": "Network connection lost during the upload.",
+      "aborted": "Upload cancelled.",
+      "unknown": "Unexpected upload error."
+    }
+  },
   "movieTable": {
     "quality": "Quality",
     "dataQuality": "Data Quality",

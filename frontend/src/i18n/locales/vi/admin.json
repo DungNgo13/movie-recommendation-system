@@ -146,6 +146,46 @@
     "aiWarningDesc": "Thiếu dữ liệu sẽ giảm độ chính xác gợi ý — hệ thống sẽ chỉ dựa vào tiêu đề và mô tả.",
     "selected": "Đã chọn:"
   },
+  "r2Upload": {
+    "title": "Tải trực tiếp lên lưu trữ đám mây (R2)",
+    "hint": "Khuyến nghị cho tệp lớn. Video được gửi thẳng tới kho lưu trữ đám mây riêng tư (MP4, MKV, WebM, MOV, AVI; tối đa {{max}}).",
+    "selectFile": "Chọn video để tải trực tiếp lên đám mây",
+    "localFallbackLabel": "Tải qua máy chủ (dự phòng):",
+    "cancel": "Hủy tải lên",
+    "retryVerify": "Thử xác minh lại",
+    "progressLabel": "Tiến độ tải lên đám mây",
+    "newUploadRequired": "Vui lòng chọn lại tệp để bắt đầu lượt tải mới.",
+    "hlsNotAvailable": "Tệp nguồn đã được lưu riêng tư trên đám mây. Chưa hỗ trợ mã hóa từ nguồn đám mây.",
+    "status": {
+      "idle": "Không có lượt tải lên đám mây nào.",
+      "requestingUrl": "Đang chuẩn bị phiên tải lên an toàn…",
+      "uploading": "Đang tải lên… {{percent}}% ({{loaded}} / {{total}})",
+      "verifying": "Đã tải xong. Đang xác minh với máy chủ…",
+      "completed": "Đã xác minh tải lên — 100%",
+      "uploadFailed": "Tải lên thất bại.",
+      "verifyFailed": "Tệp đã được tải lên nhưng xác minh thất bại.",
+      "cancelled": "Đã hủy tải lên."
+    },
+    "errors": {
+      "invalid_type": "Định dạng tệp không được hỗ trợ. Cho phép: MP4, MKV, WebM, MOV, AVI.",
+      "empty": "Tệp đã chọn bị trống.",
+      "too_large": "Tệp quá lớn (giới hạn {{max}}).",
+      "validation": "Yêu cầu tải lên bị từ chối.",
+      "unauthorized": "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.",
+      "forbidden": "Bạn không có quyền tải lên cho phim này.",
+      "not_found": "Không tìm thấy phim hoặc phiên tải lên.",
+      "expired": "Liên kết tải lên đã hết hạn.",
+      "object_missing": "Máy chủ chưa tìm thấy tệp đã tải lên. Hãy thử xác minh lại.",
+      "conflict": "Phiên tải lên này không thể hoàn tất nữa.",
+      "mismatch": "Tệp đã tải lên không khớp kích thước hoặc định dạng đã khai báo.",
+      "storage_error": "Không thể kết nối tới lưu trữ đám mây. Vui lòng thử lại.",
+      "unavailable": "Lưu trữ đám mây chưa được cấu hình hoặc tạm thời không khả dụng.",
+      "put_failed": "Lưu trữ đám mây đã từ chối việc truyền tệp.",
+      "network": "Mất kết nối mạng trong khi tải lên.",
+      "aborted": "Đã hủy tải lên.",
+      "unknown": "Lỗi tải lên không xác định."
+    }
+  },
   "movieTable": {
     "quality": "Chất lượng",
     "dataQuality": "Chất lượng dữ liệu",

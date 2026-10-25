@@ -166,9 +166,28 @@ See `backend/.env.example` (`R2_ENDPOINT`, `R2_BUCKET_NAME`, `R2_ACCESS_KEY_ID`,
 Bucket CORS (owner action, Cloudflare dashboard): allow frontend origins, method `PUT`,
 header `Content-Type`, expose `ETag`.
 
-## 8. Not yet implemented
+## 8. Frontend client (Phase 2)
 
-* React direct-upload UI (progress, cancel, completion call).
+* API client: `frontend/src/services/r2UploadService.ts` (initiate, XHR `PUT` with
+  progress/abort, completion; errors classified by `stage` = `presign | put | complete`).
+* State machine: `frontend/src/hooks/useR2DirectUpload.ts`
+  (`idle → requesting_url → uploading → verifying → completed`, plus `failed`, `cancelled`).
+* UI: `frontend/src/components/admin/R2DirectUpload.tsx`, embedded in the existing
+  `MovieForm` "Source Video" section; the multipart server upload stays as the fallback.
+* Progress shows real transferred bytes but is capped at 99% until `/complete` returns 200.
+* Retry policy: a failed **PUT** requires selecting the file again. A failed **completion**
+  keeps the session ID and offers "Retry verification" only for retryable cases
+  (409 "Uploaded object not found…", 502, 503, network drop); 422 and 409 expired/failed
+  require a new upload. The file is never re-uploaded automatically.
+* No automatic `process-hls` after R2 completion; the local "Start encoding" button is hidden
+  for the rest of the form session once an R2 source becomes active.
+* The presigned URL is held only inside the XHR call; it is never rendered, stored or logged.
+  The PUT does not carry the app's `Authorization` header.
+
+## 9. Not yet implemented
+
 * FFmpeg R2 source resolver (`download_to_path` exists but is not wired into `hls_service`).
+* Exposing `source_storage` in an admin movie schema (the UI only knows R2 is active for
+  uploads completed in the current form session).
 * Multipart upload for files > 5 GB.
 * Cleanup of superseded completed sources.
