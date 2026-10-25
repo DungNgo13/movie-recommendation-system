@@ -137,20 +137,55 @@ export class R2UploadError extends Error {
   readonly stage: R2UploadStage;
   readonly kind: R2UploadErrorKind;
   readonly status: number | null;
+  /** Stable backend error code (e.g. "upload_object_missing"), when provided. */
+  readonly code: string | null;
   /** True when retrying the SAME step (not re-uploading) may succeed. */
   readonly retryable: boolean;
 
   constructor(
     message: string,
-    opts: { stage: R2UploadStage; kind: R2UploadErrorKind; status?: number | null; retryable?: boolean },
+    opts: {
+      stage: R2UploadStage;
+      kind: R2UploadErrorKind;
+      status?: number | null;
+      code?: string | null;
+      retryable?: boolean;
+    },
   ) {
     super(message);
     this.name = 'R2UploadError';
     this.stage = opts.stage;
     this.kind = opts.kind;
     this.status = opts.status ?? null;
+    this.code = opts.code ?? null;
     this.retryable = opts.retryable ?? false;
   }
+}
+
+/**
+ * Backend machine-readable codes (backend/app/core/api_errors.py).
+ * `retryable` = the same request may succeed later without re-uploading.
+ */
+export const API_ERROR_CODES: Readonly<Record<string, { kind: R2UploadErrorKind; retryable: boolean }>> = {
+  movie_not_found: { kind: 'not_found', retryable: false },
+  upload_too_large: { kind: 'too_large', retryable: false },
+  presign_failed: { kind: 'storage_error', retryable: true },
+  upload_session_not_found: { kind: 'not_found', retryable: false },
+  upload_session_forbidden: { kind: 'forbidden', retryable: false },
+  upload_session_not_pending: { kind: 'conflict', retryable: false },
+  upload_session_expired: { kind: 'expired', retryable: false },
+  upload_object_missing: { kind: 'object_missing', retryable: true },
+  upload_verification_failed: { kind: 'mismatch', retryable: false },
+  storage_not_configured: { kind: 'unavailable', retryable: true },
+  storage_unavailable: { kind: 'storage_error', retryable: true },
+};
+
+function extractCode(body: unknown): string | null {
+  if (body && typeof body === 'object' && 'code' in body) {
+    const code = (body as { code: unknown }).code;
+    if (typeof code === 'string' && code) return code;
+  }
+  return null;
 }
 
 /** FastAPI returns `detail` as a string or (for 422 validation) an array. */
@@ -202,6 +237,12 @@ export async function createR2UploadSession(
   const body: unknown = await response.json().catch(() => null);
   const status = response.status;
   const message = extractDetail(body, `Could not start upload (HTTP ${status})`);
+  const code = extractCode(body);
+  const known = code ? API_ERROR_CODES[code] : undefined;
+  if (known && status !== 401) {
+    throw new R2UploadError(message, { stage: 'presign', status, code, ...known });
+  }
+  // Fallback for responses without a code (auth, request validation, older backends).
   const kind: R2UploadErrorKind =
     status === 401 ? 'unauthorized'
     : status === 403 ? 'forbidden'
@@ -212,7 +253,7 @@ export async function createR2UploadSession(
     : status === 503 ? 'unavailable'
     : 'unknown';
   throw new R2UploadError(message, {
-    stage: 'presign', kind, status, retryable: status === 502 || status === 503,
+    stage: 'presign', kind, status, code, retryable: status === 502 || status === 503,
   });
 }
 
@@ -314,7 +355,13 @@ export async function completeR2UploadSession(
   const body: unknown = await response.json().catch(() => null);
   const status = response.status;
   const message = extractDetail(body, `Upload verification failed (HTTP ${status})`);
+  const code = extractCode(body);
+  const known = code ? API_ERROR_CODES[code] : undefined;
+  if (known && status !== 401) {
+    throw new R2UploadError(message, { stage: 'complete', status, code, ...known });
+  }
 
+  // Legacy fallback for responses without a code (auth errors, older backends).
   let kind: R2UploadErrorKind = 'unknown';
   let retryable = false;
   switch (status) {
@@ -334,5 +381,5 @@ export async function completeR2UploadSession(
     case 502: kind = 'storage_error'; retryable = true; break;
     case 503: kind = 'unavailable'; retryable = true; break;
   }
-  throw new R2UploadError(message, { stage: 'complete', kind, status, retryable });
+  throw new R2UploadError(message, { stage: 'complete', kind, status, code, retryable });
 }

@@ -5,6 +5,7 @@ import type { MovieFormData } from '../../services/movieService';
 import { uploadMovieImage, uploadMovieVideo, processMovieVideo, getMovieProcessingStatus } from '../../services/movieService';
 import { useTranslation } from 'react-i18next';
 import R2DirectUpload from './R2DirectUpload';
+import { useMovieSourceStatus } from '../../hooks/useMovieSourceStatus';
 
 // ─── TagInput ─────────────────────────────────────────────────────────────────
 // Self-contained chip/tag input — no external library needed.
@@ -179,10 +180,24 @@ const MovieForm: React.FC<MovieFormProps> = ({ movie, onSubmit, onCancel }) => {
   const [uploadPercent, setUploadPercent] = useState<number | null>(null);
   const [pollProgress, setPollProgress]   = useState<number>(0);
   const [pollStep, setPollStep]           = useState<string>('Processing');
-  // Direct-to-R2 upload (Phase 2). `r2SourceActive` is session-local: the public
-  // movie schema does not expose source_storage.
+  // Direct-to-R2 upload (Phase 2).
   const [r2Busy, setR2Busy]               = useState(false);
-  const [r2SourceActive, setR2SourceActive] = useState(false);
+
+  const redirectToLogin = useCallback(() => {
+    window.location.href = '/login';
+  }, []);
+
+  // Admin-only storage state (local | r2). Loaded from the server so it
+  // survives page refreshes; never contains keys, paths or URLs.
+  const {
+    status: sourceStatus,
+    error: sourceStatusError,
+    markActive: markSourceActive,
+    refresh: refreshSourceStatus,
+  } = useMovieSourceStatus(movie?.id ?? null, redirectToLogin);
+  const isR2Source = sourceStatus?.source_storage === 'r2';
+  // Local FFmpeg cannot read R2 sources until Phase 3 (backend also refuses).
+  const hlsBlockedForSource = sourceStatus ? !sourceStatus.hls_processing_supported : false;
 
   // ── Populate from existing movie when editing ────────────────────────────
   useEffect(() => {
@@ -261,8 +276,13 @@ const MovieForm: React.FC<MovieFormProps> = ({ movie, onSubmit, onCancel }) => {
       await processMovieVideo(movie.id);
       setVideoStatus('processing');
     } catch (err) {
-      const status = (err as Error & { status?: number }).status;
+      const { status, code } = err as Error & { status?: number; code?: string };
       if (status === 401) { window.location.href = '/login'; return; }
+      if (code === 'hls_r2_source_unsupported') {
+        setError(t('admin:sourceStatus.hlsUnsupported'));
+        void refreshSourceStatus();
+        return;
+      }
       setError(err instanceof Error ? err.message : t("admin:movieForm.errorProcessingFailed"));
     } finally {
       setUploading(false);
@@ -282,7 +302,7 @@ const MovieForm: React.FC<MovieFormProps> = ({ movie, onSubmit, onCancel }) => {
       setVideoUrl(updatedMovie.video_url || '');
       setVideoStatus(updatedMovie.video_status || 'uploaded');
       // Backend switches source_storage back to "local" on a local upload.
-      setR2SourceActive(false);
+      markSourceActive('local');
     } catch (err) {
       setError(err instanceof Error ? err.message : t("admin:movieForm.errorVideoUploadFailed"));
     } finally {
@@ -296,7 +316,7 @@ const MovieForm: React.FC<MovieFormProps> = ({ movie, onSubmit, onCancel }) => {
   // HLS processing is deliberately NOT triggered for R2 sources: the FFmpeg
   // pipeline cannot resolve R2 objects yet.
   const handleR2Completed = useCallback((refreshed: Movie | null) => {
-    setR2SourceActive(true);
+    markSourceActive('r2');
     setError(null);
     if (refreshed) {
       setVideoUrl(refreshed.video_url || '');
@@ -305,11 +325,7 @@ const MovieForm: React.FC<MovieFormProps> = ({ movie, onSubmit, onCancel }) => {
       setAvailableQualities(refreshed.available_qualities || null);
       setProcessingError(refreshed.processing_error || null);
     }
-  }, []);
-
-  const handleR2Unauthorized = useCallback(() => {
-    window.location.href = '/login';
-  }, []);
+  }, [markSourceActive]);
 
   // ── Form submit ──────────────────────────────────────────────────────────
   const handleSubmit = (e: React.FormEvent) => {
@@ -603,6 +619,41 @@ const MovieForm: React.FC<MovieFormProps> = ({ movie, onSubmit, onCancel }) => {
                 )}
               </div>
 
+              {/* Source storage (admin-only endpoint; persists across refresh) */}
+              <div
+                data-testid="source-storage"
+                data-storage={sourceStatus?.source_storage ?? 'unknown'}
+                style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px', flexWrap: 'wrap' }}
+              >
+                <strong>{t('admin:sourceStatus.label')}</strong>
+                {sourceStatus ? (
+                  <>
+                    <span style={{
+                      display: 'inline-block', padding: '2px 10px', borderRadius: '12px',
+                      fontSize: '0.8rem', fontWeight: 600,
+                      backgroundColor: isR2Source ? '#e0d7fb' : '#e2e3e5',
+                      color: isR2Source ? '#3d2a85' : '#383d41',
+                    }}>
+                      {isR2Source ? t('admin:sourceStatus.r2') : t('admin:sourceStatus.local')}
+                    </span>
+                    <span style={{ fontSize: '0.8rem', color: sourceStatus.source_available ? '#155724' : '#856404' }}>
+                      {sourceStatus.source_available
+                        ? t('admin:sourceStatus.available')
+                        : t('admin:sourceStatus.unavailable')}
+                    </span>
+                  </>
+                ) : (
+                  <span style={{ fontSize: '0.8rem', color: '#6c757d' }}>
+                    {sourceStatusError ? t('admin:sourceStatus.loadFailed') : t('admin:sourceStatus.loading')}
+                  </span>
+                )}
+              </div>
+              {hlsBlockedForSource && (
+                <div role="note" style={{ fontSize: '0.8rem', color: '#3d2a85', marginBottom: '6px' }}>
+                  {t('admin:sourceStatus.hlsUnsupported')}
+                </div>
+              )}
+
               {/* Upload progress */}
               {uploadPercent !== null && (
                 <div style={{ marginBottom: '8px' }}>
@@ -658,7 +709,7 @@ const MovieForm: React.FC<MovieFormProps> = ({ movie, onSubmit, onCancel }) => {
                 onChange={handleVideoUpload}
                 disabled={uploading || r2Busy}
               />
-              {!r2SourceActive && (videoStatus === 'uploaded' || videoStatus === 'failed' || videoStatus === 'ready') && (
+              {!hlsBlockedForSource && (videoStatus === 'uploaded' || videoStatus === 'failed' || videoStatus === 'ready') && (
                 <button
                   type="button"
                   className="btn btn--primary"
@@ -676,7 +727,7 @@ const MovieForm: React.FC<MovieFormProps> = ({ movie, onSubmit, onCancel }) => {
               disabled={uploading}
               onBusyChange={setR2Busy}
               onCompleted={handleR2Completed}
-              onUnauthorized={handleR2Unauthorized}
+              onUnauthorized={redirectToLogin}
             />
           </>
         ) : (

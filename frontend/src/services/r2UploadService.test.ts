@@ -256,3 +256,52 @@ describe('completeR2UploadSession', () => {
       .toMatchObject({ stage: 'complete', kind: 'network', retryable: true });
   });
 });
+
+describe('machine-readable error codes', () => {
+  let fetchMock: ReturnType<typeof vi.fn>;
+
+  beforeEach(() => {
+    fetchMock = vi.fn();
+    vi.stubGlobal('fetch', fetchMock);
+  });
+  afterEach(() => vi.unstubAllGlobals());
+
+  // The detail text is deliberately unrelated so only the code can drive the result.
+  it.each([
+    [409, 'upload_object_missing', 'object_missing', true],
+    [409, 'upload_session_expired', 'expired', false],
+    [409, 'upload_session_not_pending', 'conflict', false],
+    [422, 'upload_verification_failed', 'mismatch', false],
+    [502, 'storage_unavailable', 'storage_error', true],
+    [503, 'storage_not_configured', 'unavailable', true],
+    [403, 'upload_session_forbidden', 'forbidden', false],
+    [404, 'upload_session_not_found', 'not_found', false],
+  ])('completion HTTP %i code=%s → %s (retryable=%s)', async (status, code, kind, retryable) => {
+    fetchMock.mockResolvedValue(jsonResponse(status, { detail: 'Localised or reworded text', code }));
+    const err = await captureError(completeR2UploadSession(MOVIE_ID, SESSION_ID));
+    expect(err).toMatchObject({ stage: 'complete', kind, status, retryable, code });
+  });
+
+  it('reworded detail no longer breaks the retry decision', async () => {
+    fetchMock.mockResolvedValue(jsonResponse(409, { detail: 'Object pas encore trouvé', code: 'upload_object_missing' }));
+    const err = await captureError(completeR2UploadSession(MOVIE_ID, SESSION_ID));
+    expect(err.retryable).toBe(true);
+  });
+
+  it('falls back to status/text classification for unknown codes', async () => {
+    fetchMock.mockResolvedValue(jsonResponse(502, { detail: 'x', code: 'some_future_code' }));
+    const err = await captureError(completeR2UploadSession(MOVIE_ID, SESSION_ID));
+    expect(err).toMatchObject({ kind: 'storage_error', retryable: true, code: 'some_future_code' });
+  });
+
+  it.each([
+    [400, 'upload_too_large', 'too_large', false],
+    [404, 'movie_not_found', 'not_found', false],
+    [502, 'presign_failed', 'storage_error', true],
+    [503, 'storage_not_configured', 'unavailable', true],
+  ])('initiation HTTP %i code=%s → %s', async (status, code, kind, retryable) => {
+    fetchMock.mockResolvedValue(jsonResponse(status, { detail: 'text', code }));
+    const err = await captureError(createR2UploadSession(MOVIE_ID, { filename: 'a.mp4', content_type: 'video/mp4', size: 1 }));
+    expect(err).toMatchObject({ stage: 'presign', kind, status, retryable, code });
+  });
+});

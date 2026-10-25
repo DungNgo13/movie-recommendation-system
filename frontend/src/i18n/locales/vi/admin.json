@@ -146,6 +146,16 @@
     "aiWarningDesc": "Thiếu dữ liệu sẽ giảm độ chính xác gợi ý — hệ thống sẽ chỉ dựa vào tiêu đề và mô tả.",
     "selected": "Đã chọn:"
   },
+  "sourceStatus": {
+    "label": "Nơi lưu nguồn:",
+    "local": "Máy chủ cục bộ",
+    "r2": "Lưu trữ đám mây (R2)",
+    "available": "nguồn sẵn sàng",
+    "unavailable": "không có nguồn dùng được",
+    "loading": "Đang tải…",
+    "loadFailed": "Không thể tải trạng thái nguồn",
+    "hlsUnsupported": "Nguồn hiện tại được lưu trên R2. Chưa hỗ trợ mã hóa đa chất lượng từ nguồn R2 — hãy tải qua máy chủ nếu cần mã hóa ngay."
+  },
   "r2Upload": {
     "title": "Tải trực tiếp lên lưu trữ đám mây (R2)",
     "hint": "Khuyến nghị cho tệp lớn. Video được gửi thẳng tới kho lưu trữ đám mây riêng tư (MP4, MKV, WebM, MOV, AVI; tối đa {{max}}).",

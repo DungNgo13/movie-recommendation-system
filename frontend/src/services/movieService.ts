@@ -174,8 +174,9 @@ export const processMovieVideo = async (id: string): Promise<{ message: string }
     // Parse the backend JSON error body so callers get the exact detail string.
     const errorData = await response.json().catch(() => null);
     const message   = errorData?.detail || `Request failed (HTTP ${response.status})`;
-    const err       = new Error(message) as Error & { status?: number };
+    const err       = new Error(message) as Error & { status?: number; code?: string };
     err.status      = response.status;   // callers check .status === 401 / 409 etc.
+    if (typeof errorData?.code === 'string') err.code = errorData.code;   // e.g. hls_r2_source_unsupported
     throw err;
   }
 

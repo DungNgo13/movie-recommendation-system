@@ -6,7 +6,7 @@ from uuid import UUID
 
 from ..schemas import movie as movie_schema
 from .. import database
-from ..services import movie_service, movie_asset_service
+from ..services import movie_service, movie_asset_service, movie_source_service
 from .auth import get_current_admin_user
 from ..services.admin_service import create_audit_log
 
@@ -214,6 +214,10 @@ def process_video_hls(
     db_movie = movie_service.get_movie(db, movie_id)
     if not db_movie:
         raise HTTPException(status_code=404, detail="Movie not found")
+
+    # The FFmpeg pipeline reads local files only; refuse R2-backed movies
+    # (409, code=hls_r2_source_unsupported) until the R2 resolver exists.
+    movie_source_service.ensure_hls_processing_supported(db_movie)
 
     # Block only if FFmpeg is already running — everything else is fair game.
     if db_movie.processing_status == "processing":

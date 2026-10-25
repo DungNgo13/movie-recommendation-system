@@ -22,8 +22,10 @@ from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from typing import Optional, Tuple
 
-from fastapi import HTTPException
 from sqlalchemy.orm import Session
+
+from ..core import api_errors as codes
+from ..core.api_errors import CodedHTTPException
 
 from ..models.movie import Movie
 from ..models.upload_session import (
@@ -68,13 +70,14 @@ def create_upload_session(
     """Create a pending session and return ``(session, presigned_put_url)``."""
     movie = db.query(Movie).filter(Movie.id == movie_id).first()
     if movie is None:
-        raise HTTPException(status_code=404, detail="Movie not found")
+        raise CodedHTTPException(404, "Movie not found", codes.MOVIE_NOT_FOUND)
 
     max_bytes = storage.settings.max_upload_bytes
     if data.size > max_bytes:
-        raise HTTPException(
-            status_code=400,
-            detail=f"Video file too large. Maximum size is {max_bytes} bytes.",
+        raise CodedHTTPException(
+            400,
+            f"Video file too large. Maximum size is {max_bytes} bytes.",
+            codes.UPLOAD_TOO_LARGE,
         )
 
     session_id = uuid.uuid4()
@@ -85,7 +88,7 @@ def create_upload_session(
         upload_url = storage.presign_put(object_key, data.content_type, expires_in)
     except Exception:  # signing is local; any failure is a server/config problem
         logger.error("Failed to presign R2 upload for movie %s", movie_id)
-        raise HTTPException(status_code=502, detail="Could not create upload URL.")
+        raise CodedHTTPException(502, "Could not create upload URL.", codes.PRESIGN_FAILED)
 
     now = _utcnow()
     session = UploadSession(
@@ -122,10 +125,10 @@ def get_owned_session(
         .first()
     )
     if session is None:
-        raise HTTPException(status_code=404, detail="Upload session not found")
+        raise CodedHTTPException(404, "Upload session not found", codes.UPLOAD_SESSION_NOT_FOUND)
     if session.created_by_user_id is None or session.created_by_user_id != user.id:
-        raise HTTPException(
-            status_code=403, detail="Upload session belongs to another user"
+        raise CodedHTTPException(
+            403, "Upload session belongs to another user", codes.UPLOAD_SESSION_FORBIDDEN
         )
     return session
 
@@ -176,31 +179,41 @@ def complete_upload_session(
     if session.status == UPLOAD_STATUS_COMPLETED:
         return CompletionResult(session, newly_completed=False)
     if session.status != UPLOAD_STATUS_PENDING:
-        raise HTTPException(status_code=409, detail=f"Upload session is {session.status}")
+        raise _not_pending(session)
     if storage is None:
-        raise HTTPException(status_code=503, detail="R2 storage is not configured.")
+        raise CodedHTTPException(503, "R2 storage is not configured.", codes.STORAGE_NOT_CONFIGURED)
 
     try:
         info = storage.head_object(session.object_key)
     except R2StorageError:
-        raise HTTPException(status_code=502, detail="Could not verify upload with storage.")
+        raise CodedHTTPException(
+            502, "Could not verify upload with storage.", codes.STORAGE_UNAVAILABLE
+        )
 
     if info is None:
         if _utcnow() > session.expires_at:
             _fail_session(db, session, UPLOAD_STATUS_EXPIRED,
                           "Object was not uploaded before the upload URL expired.")
-            raise HTTPException(status_code=409, detail="Upload session expired")
-        raise HTTPException(
-            status_code=409,
-            detail="Uploaded object not found. Finish the upload, then retry completion.",
+            raise CodedHTTPException(409, "Upload session expired", codes.UPLOAD_SESSION_EXPIRED)
+        raise CodedHTTPException(
+            409,
+            "Uploaded object not found. Finish the upload, then retry completion.",
+            codes.UPLOAD_OBJECT_MISSING,
         )
 
     mismatch = _verification_error(session, info.size, info.content_type)
     if mismatch:
         _fail_session(db, session, UPLOAD_STATUS_FAILED, mismatch)
-        raise HTTPException(status_code=422, detail=mismatch)
+        raise CodedHTTPException(422, mismatch, codes.UPLOAD_VERIFICATION_FAILED)
 
     return _finalize(db, session, info.size, info.etag)
+
+
+def _not_pending(session: UploadSession) -> CodedHTTPException:
+    # An expired session gets the specific code so clients need no text parsing.
+    code = (codes.UPLOAD_SESSION_EXPIRED if session.status == UPLOAD_STATUS_EXPIRED
+            else codes.UPLOAD_SESSION_NOT_PENDING)
+    return CodedHTTPException(409, f"Upload session is {session.status}", code)
 
 
 def _verification_error(
@@ -229,12 +242,12 @@ def _finalize(
         db.refresh(session)
         if session.status == UPLOAD_STATUS_COMPLETED:
             return CompletionResult(session, newly_completed=False)
-        raise HTTPException(status_code=409, detail=f"Upload session is {session.status}")
+        raise _not_pending(session)
 
     movie = db.query(Movie).filter(Movie.id == session.movie_id).first()
     if movie is None:  # deleted between steps; FK cascade will remove session
         db.rollback()
-        raise HTTPException(status_code=404, detail="Movie not found")
+        raise CodedHTTPException(404, "Movie not found", codes.MOVIE_NOT_FOUND)
 
     # R2 becomes the active source.  The local path and HLS fields are left
     # untouched until the FFmpeg R2 source resolver exists.

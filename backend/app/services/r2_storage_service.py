@@ -338,13 +338,15 @@ def get_r2_storage() -> R2StorageService:
     API keeps working when R2 variables are absent.  Tests override this
     dependency with a Stubber-backed instance.
     """
-    from fastapi import HTTPException
+    from ..core import api_errors
 
     try:
         return load_r2_storage_from_env()
     except R2NotConfiguredError as exc:
         logger.warning("%s", exc)
-        raise HTTPException(status_code=503, detail="R2 storage is not configured.")
+        raise api_errors.CodedHTTPException(
+            503, "R2 storage is not configured.", api_errors.STORAGE_NOT_CONFIGURED
+        )
 
 
 def get_optional_r2_storage() -> Optional[R2StorageService]:

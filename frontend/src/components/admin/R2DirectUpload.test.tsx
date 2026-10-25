@@ -326,3 +326,27 @@ describe('R2DirectUpload', () => {
     expect(xhr.aborted).toBe(true);
   });
 });
+
+describe('R2DirectUpload — machine-readable completion codes', () => {
+  it('offers verification retry from code=upload_object_missing even with reworded text, without re-uploading', async () => {
+    completeHandlers = [() => jsonResponse(409, { detail: 'Reworded message', code: 'upload_object_missing' }), completeOk];
+    render(<R2DirectUpload movieId={MOVIE_ID} />);
+    const xhr = await startAndReachUploading();
+    act(() => xhr.respond(200));
+    await waitFor(() => expect(phase()).toBe('failed'));
+    fireEvent.click(screen.getByRole('button', { name: 'admin:r2Upload.retryVerify' }));
+    await waitFor(() => expect(phase()).toBe('completed'));
+    expect(FakeXHR.instances).toHaveLength(1);
+    expect(calls('/complete')).toBe(2);
+  });
+
+  it('code=upload_session_expired requires a new upload regardless of text', async () => {
+    completeHandlers = [() => jsonResponse(409, { detail: 'Something else', code: 'upload_session_expired' })];
+    render(<R2DirectUpload movieId={MOVIE_ID} />);
+    const xhr = await startAndReachUploading();
+    act(() => xhr.respond(200));
+    await waitFor(() => expect(phase()).toBe('failed'));
+    expect(screen.getByRole('alert')).toHaveTextContent('admin:r2Upload.errors.expired');
+    expect(screen.queryByRole('button', { name: 'admin:r2Upload.retryVerify' })).not.toBeInTheDocument();
+  });
+});

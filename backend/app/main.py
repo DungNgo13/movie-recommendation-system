@@ -32,6 +32,8 @@ from .routers import watch_progress
 from .routers import users
 from .routers import movie_assets
 from .routers import admin_uploads
+from .routers import admin_movie_source
+from .core.api_errors import CodedHTTPException, coded_http_exception_handler
 
 # NOTE: Database schema is now managed by Alembic migrations.
 # Run "python -m alembic upgrade head" to apply pending migrations.
@@ -63,6 +65,8 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(title="Mov-Sug API", version="0.1.0", lifespan=lifespan)
+# Adds a stable machine-readable "code" next to "detail" (backward compatible).
+app.add_exception_handler(CodedHTTPException, coded_http_exception_handler)
 
 
 # Legacy mount mapping for historical files strictly ensuring backwards-parsing safely
@@ -106,6 +110,7 @@ app.include_router(admin_recommendations.router)
 app.include_router(users.router)
 app.include_router(movie_assets.router)
 app.include_router(admin_uploads.router)
+app.include_router(admin_movie_source.router)
 
 @app.get("/")
 def read_root():

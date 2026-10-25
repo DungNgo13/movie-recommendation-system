@@ -146,6 +146,16 @@
     "aiWarningDesc": "Missing data reduces recommendation accuracy — the engine will rely on title and overview text alone.",
     "selected": "Selected:"
   },
+  "sourceStatus": {
+    "label": "Source storage:",
+    "local": "Local server",
+    "r2": "Cloud storage (R2)",
+    "available": "source available",
+    "unavailable": "no usable source",
+    "loading": "Loading…",
+    "loadFailed": "Could not load source status",
+    "hlsUnsupported": "The active source is stored in R2. Multi-quality encoding from R2 sources is not available yet — upload via server to encode now."
+  },
   "r2Upload": {
     "title": "Direct upload to cloud storage (R2)",
     "hint": "Recommended for large files. The video is sent straight to private cloud storage (MP4, MKV, WebM, MOV, AVI; up to {{max}}).",
