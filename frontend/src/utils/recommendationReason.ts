@@ -18,7 +18,8 @@ const knownReasons: Record<string, string> = {
 
   // Defaults and fallbacks
   "Recommended for you": "recommendation:reasons.default",
-  "Popular movie — rate or favorite some movies for personalized picks!": "recommendation:reasons.fallback"
+  "Popular movie — rate or favorite some movies for personalized picks!": "recommendation:reasons.fallback",
+  "Recently released movie — rate or favorite some movies for personalized picks!": "recommendation:reasons.fallback"
 };
 
 export function getLocalizedRecommendationReason(reason: string, t: TFunction): string {

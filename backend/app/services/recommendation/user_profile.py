@@ -127,9 +127,18 @@ def _get_watch_records(db: Session, user_id: UUID) -> list[WatchHistory]:
 def build_user_profile(
     db: Session,
     user_id: UUID,
+    suppress_negative: bool = True,
 ) -> np.ndarray | None:
     """
     Build a user preference vector from their interaction history.
+
+    Args:
+        db: SQLAlchemy database session.
+        user_id: User UUID.
+        suppress_negative: When True (TF-IDF v1.1 - R2 Fix), explicit negative
+            ratings (1-2 stars) take precedence and suppress positive weight from
+            watch history and favorites for the same movie. When False, legacy
+            max() aggregation is preserved.
 
     Returns:
         L2-normalized 1D numpy array (same dimension as movie vectors),
@@ -151,16 +160,24 @@ def build_user_profile(
 
     # ── Signal 1: Star ratings (strongest explicit signal) ────────────────────
     ratings = get_user_ratings(db, user_id)
+    disliked_movie_ids: set[str] = set()
+
     for r in ratings:
         mid = str(r.movie_id)
-        weight = RATING_WEIGHTS.get(r.rating, 0.0)
-        if weight > 0 and mid in id_to_idx:
-            movie_weights[mid] = max(movie_weights.get(mid, 0.0), weight)
+        if r.rating in (1, 2):
+            disliked_movie_ids.add(mid)
+        else:
+            weight = RATING_WEIGHTS.get(r.rating, 0.0)
+            if weight > 0 and mid in id_to_idx:
+                movie_weights[mid] = max(movie_weights.get(mid, 0.0), weight)
 
     # ── Signal 2: Favorites (explicit binary signal) ───────────────────────────
     fav_ids = get_user_favorite_ids(db, user_id)
     for mid in fav_ids:
         if mid in id_to_idx:
+            # Defect R2 Fix: explicit dislike overrides favorite
+            if suppress_negative and mid in disliked_movie_ids:
+                continue
             movie_weights[mid] = max(movie_weights.get(mid, 0.0), WEIGHT_FAVORITE)
 
     # ── Signal 3: Watch history (implicit — progress + time decay) ────────────
@@ -171,10 +188,13 @@ def build_user_profile(
         mid = str(record.movie_id)
         if mid not in id_to_idx:
             continue
+        # Defect R2 Fix: explicit dislike overrides implicit watch weight
+        if suppress_negative and mid in disliked_movie_ids:
+            continue
         weight = _watch_weight(record.progress_percent, record.watched_at)
         movie_weights[mid] = max(movie_weights.get(mid, 0.0), weight)
 
-    # Cold start: no interactions at all
+    # Cold start: no positive interactions at all
     if not movie_weights:
         return None
 

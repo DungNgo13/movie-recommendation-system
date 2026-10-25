@@ -59,6 +59,7 @@ from .user_profile import (
     WEIGHT_WATCH_MIN,
 )
 from .vectorizer import get_movie_vectors
+from .engine import get_user_excluded_movie_ids
 from ...models.movie import Movie
 from ...models.user import User
 
@@ -177,11 +178,24 @@ def explain_recommendations(
     # but ALSO keep a human-readable log entry for every distinct signal.
     signal_log:   list[dict]      = []  # one entry per interaction (for display)
     movie_weights: dict[str, float] = {}  # mid → final weight for profile
+    disliked_movie_ids: set[str] = set()
+    user_ratings_map: dict[str, int] = {}
 
     # Signal 1: ratings
     for r in ratings:
         mid   = str(r.movie_id)
-        w     = RATING_WEIGHTS.get(r.rating, 0.0)
+        user_ratings_map[mid] = r.rating
+        if r.rating in (1, 2):
+            disliked_movie_ids.add(mid)
+            w = 0.0
+            breakdown_note = f"Rating {r.rating}/5 → weight 0.0 [disliked — suppresses positive signals from watch/favorite]"
+        else:
+            w = RATING_WEIGHTS.get(r.rating, 0.0)
+            breakdown_note = (
+                f"Rating {r.rating}/5 → weight {w:.1f}"
+                + (" [excluded — neutral/unweighted]" if w == 0 else "")
+            )
+
         title = movie_map[mid].title if mid in movie_map else mid
         signal_log.append({
             "movie_id":          mid,
@@ -189,10 +203,7 @@ def explain_recommendations(
             "signal_type":       "rating",
             "raw_value":         r.rating,
             "calculated_weight": round(w, 4),
-            "weight_breakdown":  (
-                f"Rating {r.rating}/5 → weight {w:.1f}"
-                + (" [excluded — negative signal]" if w == 0 else "")
-            ),
+            "weight_breakdown":  breakdown_note,
         })
         if w > 0:
             movie_weights[mid] = max(movie_weights.get(mid, 0.0), w)
@@ -200,31 +211,45 @@ def explain_recommendations(
     # Signal 2: favorites
     for mid in fav_ids:
         title = movie_map[mid].title if mid in movie_map else mid
-        w     = WEIGHT_FAVORITE
+        if mid in disliked_movie_ids:
+            w = 0.0
+            breakdown_note = f"Favorite → weight 0.0 [suppressed by explicit {user_ratings_map[mid]}★ rating]"
+        else:
+            w = WEIGHT_FAVORITE
+            breakdown_note = f"Favorite → fixed weight {w:.1f}"
+
         signal_log.append({
             "movie_id":          mid,
             "movie_title":       title,
             "signal_type":       "favorite",
             "raw_value":         "favorited",
             "calculated_weight": round(w, 4),
-            "weight_breakdown":  f"Favorite → fixed weight {w:.1f}",
+            "weight_breakdown":  breakdown_note,
         })
-        movie_weights[mid] = max(movie_weights.get(mid, 0.0), w)
+        if w > 0:
+            movie_weights[mid] = max(movie_weights.get(mid, 0.0), w)
 
     # Signal 3: watch history (progress + time decay)
     for rec in watch_records:
         mid   = str(rec.movie_id)
         title = movie_map[mid].title if mid in movie_map else mid
-        w     = _watch_weight(rec.progress_percent, rec.watched_at)
+        if mid in disliked_movie_ids:
+            w = 0.0
+            breakdown_note = f"Watch progress {rec.progress_percent or 0}% → weight 0.0 [suppressed by explicit {user_ratings_map[mid]}★ rating]"
+        else:
+            w = _watch_weight(rec.progress_percent, rec.watched_at)
+            breakdown_note = _format_watch_breakdown(rec.progress_percent, rec.watched_at)
+
         signal_log.append({
             "movie_id":          mid,
             "movie_title":       title,
             "signal_type":       "watch",
             "raw_value":         rec.progress_percent or 0,
             "calculated_weight": round(w, 4),
-            "weight_breakdown":  _format_watch_breakdown(rec.progress_percent, rec.watched_at),
+            "weight_breakdown":  breakdown_note,
         })
-        movie_weights[mid] = max(movie_weights.get(mid, 0.0), w)
+        if w > 0:
+            movie_weights[mid] = max(movie_weights.get(mid, 0.0), w)
 
     # Sort context by weight descending so the most influential signals appear first
     signal_log.sort(key=lambda x: x["calculated_weight"], reverse=True)
@@ -271,12 +296,14 @@ def explain_recommendations(
     if norm > 0:
         user_vector /= norm
 
-    # ── 5. Score every movie ──────────────────────────────────────────────────
+    # ── 5. Score every movie (excluding seen items to match user recommendations) ──
     scores = cosine_similarity(user_vector.reshape(1, -1), matrix).flatten()
+    exclude_ids = get_user_excluded_movie_ids(db, user_id)
 
     scored: list[tuple[str, float]] = [
         (mid, float(scores[i]))
         for i, mid in enumerate(movie_ids)
+        if mid not in exclude_ids
     ]
     scored.sort(key=lambda x: x[1], reverse=True)
     top_scored = scored[:top_n]

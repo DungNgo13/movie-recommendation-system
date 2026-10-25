@@ -425,8 +425,8 @@ def test_exact_numerical_equivalence_with_production_engine(monkeypatch):
         session.add_all([r1, r2])
         session.commit()
 
-        # 1. Run production engine
-        prod_recs = get_recommendations(session, user_id, top_n=3, exclude_interacted=True)
+        # 1. Run production engine (with exclude_interacted=False to verify raw cosine scoring)
+        prod_recs = get_recommendations(session, user_id, top_n=3, exclude_interacted=False)
         prod_scores = {r["id"]: r["score"] for r in prod_recs}
 
         # 2. Run BaselineTFIDFRecommender using identical text profiles
