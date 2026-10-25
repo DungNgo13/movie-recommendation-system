@@ -52,7 +52,10 @@ async def lifespan(app: FastAPI):
     Using lifespan instead of the deprecated @app.on_event("startup") is the
     recommended pattern since FastAPI 0.93.
     """
-    from .services.hls_service import encoding_worker   # local import avoids circular deps
+    from .services.hls_service import encoding_worker, recover_stuck_encodes   # local import avoids circular deps
+
+    # Recover any movie encodes left stuck in 'processing' by a previous restart
+    recover_stuck_encodes()
 
     worker_task = asyncio.create_task(encoding_worker(), name="hls_encoding_worker")
 

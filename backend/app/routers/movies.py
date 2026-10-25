@@ -215,9 +215,8 @@ def process_video_hls(
     if not db_movie:
         raise HTTPException(status_code=404, detail="Movie not found")
 
-    # The FFmpeg pipeline reads local files only; refuse R2-backed movies
-    # (409, code=hls_r2_source_unsupported) until the R2 resolver exists.
-    movie_source_service.ensure_hls_processing_supported(db_movie)
+    # Validate that active source is supported and available (local or R2)
+    movie_source_service.ensure_hls_processing_supported(db_movie, db)
 
     # Block only if FFmpeg is already running — everything else is fair game.
     if db_movie.processing_status == "processing":
@@ -225,13 +224,6 @@ def process_video_hls(
             status_code=409,
             detail="An encode is already in progress for this movie. "
                    "Cancel it first via POST /{movie_id}/cancel-encode."
-        )
-
-    # A source video must exist on disk before we can encode.
-    if not db_movie.video_source_path:
-        raise HTTPException(
-            status_code=422,
-            detail="No source video found. Upload a video file first."
         )
 
     # Mark status immediately so the UI shows live feedback.
