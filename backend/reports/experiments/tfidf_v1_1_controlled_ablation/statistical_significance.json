@@ -1,0 +1,114 @@
+{
+  "variant_A": {
+    "variant_name": "TFIDF-v1.0-as-is",
+    "ndcg_at_10_mean": 0.003738,
+    "ndcg_at_10_bootstrap_95ci": [
+      0.002216,
+      0.005552
+    ],
+    "paired_difference_vs_baseline": {
+      "mean_difference": 0.0,
+      "std_difference": 0.0,
+      "t_statistic": 0.0,
+      "p_value_ttest": 1.0,
+      "wilcoxon_stat": 0.0,
+      "p_value_wilcoxon": 1.0,
+      "bootstrap_ci_95": [
+        0.0,
+        0.0
+      ],
+      "statistically_significant_001": false,
+      "statistically_significant_05": false,
+      "note": "Identical predictions on this dataset"
+    }
+  },
+  "variant_B": {
+    "variant_name": "TFIDF-v1.0+R1",
+    "ndcg_at_10_mean": 0.007153,
+    "ndcg_at_10_bootstrap_95ci": [
+      0.004271,
+      0.010505
+    ],
+    "paired_difference_vs_baseline": {
+      "mean_difference": 0.003414,
+      "std_difference": 0.023043,
+      "t_statistic": 3.5898,
+      "p_value_ttest": 0.0003586547073834128,
+      "wilcoxon_stat": 0.0,
+      "p_value_wilcoxon": 2.695812077387092e-05,
+      "bootstrap_ci_95": [
+        0.001736,
+        0.005354
+      ],
+      "statistically_significant_001": true,
+      "statistically_significant_05": true
+    }
+  },
+  "variant_C": {
+    "variant_name": "TFIDF-v1.0+R2",
+    "ndcg_at_10_mean": 0.003738,
+    "ndcg_at_10_bootstrap_95ci": [
+      0.002216,
+      0.005552
+    ],
+    "paired_difference_vs_baseline": {
+      "mean_difference": 0.0,
+      "std_difference": 0.0,
+      "t_statistic": 0.0,
+      "p_value_ttest": 1.0,
+      "wilcoxon_stat": 0.0,
+      "p_value_wilcoxon": 1.0,
+      "bootstrap_ci_95": [
+        0.0,
+        0.0
+      ],
+      "statistically_significant_001": false,
+      "statistically_significant_05": false,
+      "note": "Identical predictions on this dataset"
+    }
+  },
+  "variant_D": {
+    "variant_name": "TFIDF-v1.0+R1+R2",
+    "ndcg_at_10_mean": 0.007153,
+    "ndcg_at_10_bootstrap_95ci": [
+      0.004271,
+      0.010505
+    ],
+    "paired_difference_vs_baseline": {
+      "mean_difference": 0.003414,
+      "std_difference": 0.023043,
+      "t_statistic": 3.5898,
+      "p_value_ttest": 0.0003586547073834128,
+      "wilcoxon_stat": 0.0,
+      "p_value_wilcoxon": 2.695812077387092e-05,
+      "bootstrap_ci_95": [
+        0.001736,
+        0.005354
+      ],
+      "statistically_significant_001": true,
+      "statistically_significant_05": true
+    }
+  },
+  "variant_E": {
+    "variant_name": "TFIDF-v1.1",
+    "ndcg_at_10_mean": 0.007153,
+    "ndcg_at_10_bootstrap_95ci": [
+      0.004271,
+      0.010505
+    ],
+    "paired_difference_vs_baseline": {
+      "mean_difference": 0.003414,
+      "std_difference": 0.023043,
+      "t_statistic": 3.5898,
+      "p_value_ttest": 0.0003586547073834128,
+      "wilcoxon_stat": 0.0,
+      "p_value_wilcoxon": 2.695812077387092e-05,
+      "bootstrap_ci_95": [
+        0.001736,
+        0.005354
+      ],
+      "statistically_significant_001": true,
+      "statistically_significant_05": true
+    }
+  }
+}

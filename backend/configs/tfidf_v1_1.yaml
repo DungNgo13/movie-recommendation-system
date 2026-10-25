@@ -1,0 +1,46 @@
+# MovSug TF-IDF Recommendation v1.1 Configuration
+# Correctness Fixes:
+#   R1: Seen-item exclusion (train interactions excluded from recommendations)
+#   R2: Explicit negative feedback precedence (disliked ratings suppress positive signals)
+#   R3: Deterministic cold-start fallback policy (NULL dates last, deterministic tie-breaking)
+
+algorithm_name: "TFIDF-v1.1"
+algorithm_version: "1.1.0"
+
+# Scikit-learn TF-IDF Vectorizer parameters
+max_features: 5000
+stop_words: "english"
+ngram_min: 1
+ngram_max: 2
+min_df: 1
+max_df: 0.95
+norm: "l2"
+use_idf: true
+smooth_idf: true
+sublinear_tf: false
+
+# Metadata repetition weights
+title_weight: 2
+keywords_weight: 2
+genres_weight: 1
+
+# Interaction signal weights
+weight_rating_5: 5.0
+weight_rating_4: 3.0
+weight_rating_3: 1.0
+weight_rating_2: 0.0
+weight_rating_1: 0.0
+weight_favorite: 3.0
+
+# Correctness policies
+exclude_seen_policy: "train"
+negative_feedback_policy: "suppress"
+cold_start_policy: "deterministic_v1_1"
+
+# Evaluation protocol
+relevance_threshold: 4.0
+train_ratio: 0.70
+val_ratio: 0.15
+test_ratio: 0.15
+min_user_interactions: 5
+random_seed: 42

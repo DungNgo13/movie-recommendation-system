@@ -5,7 +5,7 @@ Provides reproducible dataset pipelines, standard IR/RecSys ranking and diversit
 and experimental harness for MovSug recommendation baselines.
 """
 
-from .config import TFIDFBaselineConfig
+from .config import TFIDFBaselineConfig, TFIDFV11Config
 from .dataset import (
     MovieMetadata,
     RatingEvent,
@@ -27,9 +27,12 @@ from .metrics import (
     compute_latency_percentiles,
 )
 from .report_exporter import export_experiment_reports
+from .ablation import run_controlled_ablation
 
 __all__ = [
     "TFIDFBaselineConfig",
+    "TFIDFV11Config",
+    "run_controlled_ablation",
     "MovieMetadata",
     "RatingEvent",
     "EvaluationDataset",

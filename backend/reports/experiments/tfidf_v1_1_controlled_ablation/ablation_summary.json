@@ -1,0 +1,472 @@
+{
+  "timestamp_utc": "2026-10-25T13:53:51.570271+00:00",
+  "git_commit": "5814b2bbc8cf41be470e5321675ac818d4db3b26",
+  "dataset_checksum": "d830d1e560efffd547d0360da5042a5d97884e5cd99dfd145ec9ecc0efbbaa86",
+  "split_checksum": "48cc8f10cce949d0add60ad6320bf75668370d1753e5456d6fbd69479f931d67",
+  "cohort": {
+    "catalog_size": 9742,
+    "total_users": 610,
+    "evaluated_test_users": 587
+  },
+  "variants": {
+    "variant_A": {
+      "name": "TFIDF-v1.0-as-is",
+      "description": "Unmodified frozen baseline. Defect R1 active: rated items NOT excluded.",
+      "metrics": {
+        "evaluation_cohort": {
+          "total_test_users": 610,
+          "users_with_relevant_items": 587,
+          "users_without_relevant_items": 23,
+          "catalog_size": 9742,
+          "relevance_threshold": 4.0,
+          "exclude_seen_policy": "none",
+          "fit_duration_seconds": 0.4794,
+          "eval_duration_seconds": 3.6683
+        },
+        "latency": {
+          "p50_ms": 5.658900015987456,
+          "p90_ms": 7.095580012537539,
+          "p95_ms": 7.767945024534127,
+          "mean_ms": 5.972717212299343
+        },
+        "by_k": {
+          "k_5": {
+            "precision": 0.001704,
+            "recall": 0.001044,
+            "ndcg": 0.001535,
+            "hit_rate": 0.008518,
+            "map": 0.000625,
+            "all_users_precision": 0.001639,
+            "all_users_recall": 0.001005,
+            "all_users_ndcg": 0.001478,
+            "all_users_hit_rate": 0.008197,
+            "all_users_map": 0.000601,
+            "catalog_coverage": 0.094642,
+            "intra_list_diversity": 0.583319,
+            "novelty": 12.337015
+          },
+          "k_10": {
+            "precision": 0.003578,
+            "recall": 0.005216,
+            "ndcg": 0.003738,
+            "hit_rate": 0.034072,
+            "map": 0.000997,
+            "all_users_precision": 0.003443,
+            "all_users_recall": 0.005019,
+            "all_users_ndcg": 0.003597,
+            "all_users_hit_rate": 0.032787,
+            "all_users_map": 0.00096,
+            "catalog_coverage": 0.150688,
+            "intra_list_diversity": 0.630877,
+            "novelty": 12.696144
+          },
+          "k_20": {
+            "precision": 0.003237,
+            "recall": 0.010686,
+            "ndcg": 0.005508,
+            "hit_rate": 0.059625,
+            "map": 0.001227,
+            "all_users_precision": 0.003115,
+            "all_users_recall": 0.010283,
+            "all_users_ndcg": 0.0053,
+            "all_users_hit_rate": 0.057377,
+            "all_users_map": 0.001181,
+            "catalog_coverage": 0.22326,
+            "intra_list_diversity": 0.66863,
+            "novelty": 13.079486
+          }
+        }
+      }
+    },
+    "variant_B": {
+      "name": "TFIDF-v1.0+R1",
+      "description": "Baseline + R1 Seen-Item Exclusion fix (training items excluded).",
+      "metrics": {
+        "evaluation_cohort": {
+          "total_test_users": 610,
+          "users_with_relevant_items": 587,
+          "users_without_relevant_items": 23,
+          "catalog_size": 9742,
+          "relevance_threshold": 4.0,
+          "exclude_seen_policy": "train",
+          "fit_duration_seconds": 0.4817,
+          "eval_duration_seconds": 3.6929
+        },
+        "latency": {
+          "p50_ms": 5.711250007152557,
+          "p90_ms": 7.124239997938275,
+          "p95_ms": 7.9212100012227875,
+          "mean_ms": 6.014559017666081
+        },
+        "by_k": {
+          "k_5": {
+            "precision": 0.005111,
+            "recall": 0.003798,
+            "ndcg": 0.005987,
+            "hit_rate": 0.025554,
+            "map": 0.00304,
+            "all_users_precision": 0.004918,
+            "all_users_recall": 0.003655,
+            "all_users_ndcg": 0.005761,
+            "all_users_hit_rate": 0.02459,
+            "all_users_map": 0.002925,
+            "catalog_coverage": 0.087456,
+            "intra_list_diversity": 0.524714,
+            "novelty": 13.961894
+          },
+          "k_10": {
+            "precision": 0.0046,
+            "recall": 0.006896,
+            "ndcg": 0.007153,
+            "hit_rate": 0.040886,
+            "map": 0.003061,
+            "all_users_precision": 0.004426,
+            "all_users_recall": 0.006636,
+            "all_users_ndcg": 0.006883,
+            "all_users_hit_rate": 0.039344,
+            "all_users_map": 0.002945,
+            "catalog_coverage": 0.130979,
+            "intra_list_diversity": 0.571865,
+            "novelty": 14.052426
+          },
+          "k_20": {
+            "precision": 0.005451,
+            "recall": 0.015573,
+            "ndcg": 0.010476,
+            "hit_rate": 0.0954,
+            "map": 0.003352,
+            "all_users_precision": 0.005246,
+            "all_users_recall": 0.014986,
+            "all_users_ndcg": 0.010081,
+            "all_users_hit_rate": 0.091803,
+            "all_users_map": 0.003226,
+            "catalog_coverage": 0.191029,
+            "intra_list_diversity": 0.625022,
+            "novelty": 14.164957
+          }
+        }
+      }
+    },
+    "variant_C": {
+      "name": "TFIDF-v1.0+R2",
+      "description": "Baseline + R2 Negative Feedback fix. (Note: on MovieLens ratings-only data, behaviorally identical to A).",
+      "metrics": {
+        "evaluation_cohort": {
+          "total_test_users": 610,
+          "users_with_relevant_items": 587,
+          "users_without_relevant_items": 23,
+          "catalog_size": 9742,
+          "relevance_threshold": 4.0,
+          "exclude_seen_policy": "none",
+          "fit_duration_seconds": 0.4847,
+          "eval_duration_seconds": 3.8254
+        },
+        "latency": {
+          "p50_ms": 5.87975000962615,
+          "p90_ms": 7.433189998846502,
+          "p95_ms": 8.550350033328865,
+          "mean_ms": 6.228609181764979
+        },
+        "by_k": {
+          "k_5": {
+            "precision": 0.001704,
+            "recall": 0.001044,
+            "ndcg": 0.001535,
+            "hit_rate": 0.008518,
+            "map": 0.000625,
+            "all_users_precision": 0.001639,
+            "all_users_recall": 0.001005,
+            "all_users_ndcg": 0.001478,
+            "all_users_hit_rate": 0.008197,
+            "all_users_map": 0.000601,
+            "catalog_coverage": 0.094642,
+            "intra_list_diversity": 0.583319,
+            "novelty": 12.337015
+          },
+          "k_10": {
+            "precision": 0.003578,
+            "recall": 0.005216,
+            "ndcg": 0.003738,
+            "hit_rate": 0.034072,
+            "map": 0.000997,
+            "all_users_precision": 0.003443,
+            "all_users_recall": 0.005019,
+            "all_users_ndcg": 0.003597,
+            "all_users_hit_rate": 0.032787,
+            "all_users_map": 0.00096,
+            "catalog_coverage": 0.150688,
+            "intra_list_diversity": 0.630877,
+            "novelty": 12.696144
+          },
+          "k_20": {
+            "precision": 0.003237,
+            "recall": 0.010686,
+            "ndcg": 0.005508,
+            "hit_rate": 0.059625,
+            "map": 0.001227,
+            "all_users_precision": 0.003115,
+            "all_users_recall": 0.010283,
+            "all_users_ndcg": 0.0053,
+            "all_users_hit_rate": 0.057377,
+            "all_users_map": 0.001181,
+            "catalog_coverage": 0.22326,
+            "intra_list_diversity": 0.66863,
+            "novelty": 13.079486
+          }
+        }
+      }
+    },
+    "variant_D": {
+      "name": "TFIDF-v1.0+R1+R2",
+      "description": "Baseline + R1 Exclusion + R2 Negative Feedback fix.",
+      "metrics": {
+        "evaluation_cohort": {
+          "total_test_users": 610,
+          "users_with_relevant_items": 587,
+          "users_without_relevant_items": 23,
+          "catalog_size": 9742,
+          "relevance_threshold": 4.0,
+          "exclude_seen_policy": "train",
+          "fit_duration_seconds": 0.5007,
+          "eval_duration_seconds": 3.8022
+        },
+        "latency": {
+          "p50_ms": 5.885449994821101,
+          "p90_ms": 7.3216699820477515,
+          "p95_ms": 8.17229500389658,
+          "mean_ms": 6.191966063953692
+        },
+        "by_k": {
+          "k_5": {
+            "precision": 0.005111,
+            "recall": 0.003798,
+            "ndcg": 0.005987,
+            "hit_rate": 0.025554,
+            "map": 0.00304,
+            "all_users_precision": 0.004918,
+            "all_users_recall": 0.003655,
+            "all_users_ndcg": 0.005761,
+            "all_users_hit_rate": 0.02459,
+            "all_users_map": 0.002925,
+            "catalog_coverage": 0.087456,
+            "intra_list_diversity": 0.524714,
+            "novelty": 13.961894
+          },
+          "k_10": {
+            "precision": 0.0046,
+            "recall": 0.006896,
+            "ndcg": 0.007153,
+            "hit_rate": 0.040886,
+            "map": 0.003061,
+            "all_users_precision": 0.004426,
+            "all_users_recall": 0.006636,
+            "all_users_ndcg": 0.006883,
+            "all_users_hit_rate": 0.039344,
+            "all_users_map": 0.002945,
+            "catalog_coverage": 0.130979,
+            "intra_list_diversity": 0.571865,
+            "novelty": 14.052426
+          },
+          "k_20": {
+            "precision": 0.005451,
+            "recall": 0.015573,
+            "ndcg": 0.010476,
+            "hit_rate": 0.0954,
+            "map": 0.003352,
+            "all_users_precision": 0.005246,
+            "all_users_recall": 0.014986,
+            "all_users_ndcg": 0.010081,
+            "all_users_hit_rate": 0.091803,
+            "all_users_map": 0.003226,
+            "catalog_coverage": 0.191029,
+            "intra_list_diversity": 0.625022,
+            "novelty": 14.164957
+          }
+        }
+      }
+    },
+    "variant_E": {
+      "name": "TFIDF-v1.1",
+      "description": "Full TF-IDF v1.1: R1 seen-item exclusion + R2 negative feedback + R3 deterministic cold-start.",
+      "metrics": {
+        "evaluation_cohort": {
+          "total_test_users": 610,
+          "users_with_relevant_items": 587,
+          "users_without_relevant_items": 23,
+          "catalog_size": 9742,
+          "relevance_threshold": 4.0,
+          "exclude_seen_policy": "train",
+          "fit_duration_seconds": 0.5365,
+          "eval_duration_seconds": 3.7852
+        },
+        "latency": {
+          "p50_ms": 5.795550037873909,
+          "p90_ms": 7.390250026946887,
+          "p95_ms": 8.35054999333806,
+          "mean_ms": 6.163582786894785
+        },
+        "by_k": {
+          "k_5": {
+            "precision": 0.005111,
+            "recall": 0.003798,
+            "ndcg": 0.005987,
+            "hit_rate": 0.025554,
+            "map": 0.00304,
+            "all_users_precision": 0.004918,
+            "all_users_recall": 0.003655,
+            "all_users_ndcg": 0.005761,
+            "all_users_hit_rate": 0.02459,
+            "all_users_map": 0.002925,
+            "catalog_coverage": 0.087456,
+            "intra_list_diversity": 0.524714,
+            "novelty": 13.961894
+          },
+          "k_10": {
+            "precision": 0.0046,
+            "recall": 0.006896,
+            "ndcg": 0.007153,
+            "hit_rate": 0.040886,
+            "map": 0.003061,
+            "all_users_precision": 0.004426,
+            "all_users_recall": 0.006636,
+            "all_users_ndcg": 0.006883,
+            "all_users_hit_rate": 0.039344,
+            "all_users_map": 0.002945,
+            "catalog_coverage": 0.130979,
+            "intra_list_diversity": 0.571865,
+            "novelty": 14.052426
+          },
+          "k_20": {
+            "precision": 0.005451,
+            "recall": 0.015573,
+            "ndcg": 0.010476,
+            "hit_rate": 0.0954,
+            "map": 0.003352,
+            "all_users_precision": 0.005246,
+            "all_users_recall": 0.014986,
+            "all_users_ndcg": 0.010081,
+            "all_users_hit_rate": 0.091803,
+            "all_users_map": 0.003226,
+            "catalog_coverage": 0.191029,
+            "intra_list_diversity": 0.625022,
+            "novelty": 14.164957
+          }
+        }
+      }
+    }
+  },
+  "statistical_tests": {
+    "variant_A": {
+      "variant_name": "TFIDF-v1.0-as-is",
+      "ndcg_at_10_mean": 0.003738,
+      "ndcg_at_10_bootstrap_95ci": [
+        0.002216,
+        0.005552
+      ],
+      "paired_difference_vs_baseline": {
+        "mean_difference": 0.0,
+        "std_difference": 0.0,
+        "t_statistic": 0.0,
+        "p_value_ttest": 1.0,
+        "wilcoxon_stat": 0.0,
+        "p_value_wilcoxon": 1.0,
+        "bootstrap_ci_95": [
+          0.0,
+          0.0
+        ],
+        "statistically_significant_001": false,
+        "statistically_significant_05": false,
+        "note": "Identical predictions on this dataset"
+      }
+    },
+    "variant_B": {
+      "variant_name": "TFIDF-v1.0+R1",
+      "ndcg_at_10_mean": 0.007153,
+      "ndcg_at_10_bootstrap_95ci": [
+        0.004271,
+        0.010505
+      ],
+      "paired_difference_vs_baseline": {
+        "mean_difference": 0.003414,
+        "std_difference": 0.023043,
+        "t_statistic": 3.5898,
+        "p_value_ttest": 0.0003586547073834128,
+        "wilcoxon_stat": 0.0,
+        "p_value_wilcoxon": 2.695812077387092e-05,
+        "bootstrap_ci_95": [
+          0.001736,
+          0.005354
+        ],
+        "statistically_significant_001": true,
+        "statistically_significant_05": true
+      }
+    },
+    "variant_C": {
+      "variant_name": "TFIDF-v1.0+R2",
+      "ndcg_at_10_mean": 0.003738,
+      "ndcg_at_10_bootstrap_95ci": [
+        0.002216,
+        0.005552
+      ],
+      "paired_difference_vs_baseline": {
+        "mean_difference": 0.0,
+        "std_difference": 0.0,
+        "t_statistic": 0.0,
+        "p_value_ttest": 1.0,
+        "wilcoxon_stat": 0.0,
+        "p_value_wilcoxon": 1.0,
+        "bootstrap_ci_95": [
+          0.0,
+          0.0
+        ],
+        "statistically_significant_001": false,
+        "statistically_significant_05": false,
+        "note": "Identical predictions on this dataset"
+      }
+    },
+    "variant_D": {
+      "variant_name": "TFIDF-v1.0+R1+R2",
+      "ndcg_at_10_mean": 0.007153,
+      "ndcg_at_10_bootstrap_95ci": [
+        0.004271,
+        0.010505
+      ],
+      "paired_difference_vs_baseline": {
+        "mean_difference": 0.003414,
+        "std_difference": 0.023043,
+        "t_statistic": 3.5898,
+        "p_value_ttest": 0.0003586547073834128,
+        "wilcoxon_stat": 0.0,
+        "p_value_wilcoxon": 2.695812077387092e-05,
+        "bootstrap_ci_95": [
+          0.001736,
+          0.005354
+        ],
+        "statistically_significant_001": true,
+        "statistically_significant_05": true
+      }
+    },
+    "variant_E": {
+      "variant_name": "TFIDF-v1.1",
+      "ndcg_at_10_mean": 0.007153,
+      "ndcg_at_10_bootstrap_95ci": [
+        0.004271,
+        0.010505
+      ],
+      "paired_difference_vs_baseline": {
+        "mean_difference": 0.003414,
+        "std_difference": 0.023043,
+        "t_statistic": 3.5898,
+        "p_value_ttest": 0.0003586547073834128,
+        "wilcoxon_stat": 0.0,
+        "p_value_wilcoxon": 2.695812077387092e-05,
+        "bootstrap_ci_95": [
+          0.001736,
+          0.005354
+        ],
+        "statistically_significant_001": true,
+        "statistically_significant_05": true
+      }
+    }
+  }
+}

@@ -75,6 +75,11 @@ def parse_args():
         default=None,
         help="Path to YAML or JSON configuration file",
     )
+    parser.add_argument(
+        "--ablation",
+        action="store_true",
+        help="Run full 5-variant controlled ablation study and statistical analysis (Phase 5)",
+    )
     return parser.parse_args()
 
 
@@ -144,6 +149,14 @@ def main():
         dataset.users_count,
         dataset.split_checksum[:12],
     )
+
+    if args.ablation:
+        out_dir = Path("reports/experiments/tfidf_v1_1_controlled_ablation") if args.output_dir == "reports/experiments/baseline_tfidf_v1_0" else Path(args.output_dir)
+        logger.info("Running Phase 5 controlled ablation study across 5 variants...")
+        from .ablation import run_controlled_ablation
+        run_controlled_ablation(dataset, out_dir)
+        logger.info("Ablation study completed. Reports saved to %s", out_dir.resolve())
+        return
 
     evaluator = OfflineEvaluator(config)
     logger.info("Running offline evaluation...")

@@ -147,27 +147,49 @@ Because `TFIDF-v1.0-as-is` fails to exclude already-rated movies, the user profi
 
 ## 6. Artifact Inventory
 
-Every experiment run produces a standardized bundle in `backend/reports/experiments/<experiment_id>/`:
-1. `metrics.json`: Full hierarchical machine-readable metrics, cohort breakdowns, and cryptographic checksums.
-2. `per_user_metrics.csv`: Per-user evaluation table across all test users and all K values.
-3. `experiment_config.json`: Canonical configuration parameters and config SHA256 checksum.
-4. `environment.json`: Python interpreter version, OS platform, hardware architecture, Git commit hash, and package versions (`scikit-learn`, `scipy`, `numpy`).
-5. `summary.md`: Human-readable graduation thesis report with markdown tables.
+---
+
+## 6. Phase 5: TF-IDF v1.1 Controlled Ablation & Evaluation Results
+
+In Phase 5, the correctness fixes (R1 Seen-Item Exclusion, R2 Explicit Negative Feedback Precedence, and R3 Deterministic Cold-Start) were evaluated against the frozen baseline on the exact same dataset split:
+
+### 6.1 Command to Run Controlled Ablation
+```bash
+python -m app.recommendation_evaluation.run --data-dir data/ml-latest-small --ablation
+```
+
+### 6.2 Controlled Ablation Summary Table (5 Variants)
+
+| Variant | Description | HitRate@5 | Precision@10 | Recall@10 | NDCG@10 | MAP@10 | Coverage@10 | Diversity@10 | Novelty@10 | Latency (p50) |
+|---|---|---|---|---|---|---|---|---|---|---|
+| **A. TFIDF-v1.0-as-is** | Frozen baseline (Defect R1 active) | 0.85% | 0.0036 | 0.0052 | 0.0037 | 0.0010 | 15.07% | 0.6309 | 12.70 b | 5.66 ms |
+| **B. TFIDF-v1.0 + R1** | Seen-item exclusion fix only | 2.56% | 0.0046 | 0.0069 | 0.0072 | 0.0031 | 13.10% | 0.5719 | 14.05 b | 5.71 ms |
+| **C. TFIDF-v1.0 + R2** | Negative suppression (Not Measurable offline) | 0.85% | 0.0036 | 0.0052 | 0.0037 | 0.0010 | 15.07% | 0.6309 | 12.70 b | 5.88 ms |
+| **D. TFIDF-v1.0 + R1 + R2**| Combined R1 + R2 | 2.56% | 0.0046 | 0.0069 | 0.0072 | 0.0031 | 13.10% | 0.5719 | 14.05 b | 5.89 ms |
+| **E. TFIDF-v1.1 (Full)** | R1 + R2 + Deterministic R3 | 2.56% | 0.0046 | 0.0069 | 0.0072 | 0.0031 | 13.10% | 0.5719 | 14.05 b | 5.80 ms |
+
+### 6.3 Statistical Significance
+- **NDCG@10 Paired Difference:** $+0.0034$ (relative $+91.4\%$).
+- **Paired t-test:** $t = 3.5898$, $p = 3.59 \times 10^{-4}$ (statistically significant at $\alpha = 0.001$).
+- **Wilcoxon Signed-Rank Test:** $W = 0.0$, $p = 2.70 \times 10^{-5}$.
+- **Bootstrap 95% Confidence Interval (1,000 resamples):** $[0.0017, 0.0054]$ (strictly excludes 0).
 
 ---
 
-## 7. Roadmap to Phase 5
+## 7. Artifact Inventory
 
-Phase 4 successfully delivers:
-1. Frozen baseline configuration.
-2. Dataset loader, feature constructor, and leak-free chronological splitter.
-3. Tested offline ranking, diversity, coverage, and novelty metrics.
-4. Reusable evaluation harness (`python -m app.recommendation_evaluation.run`).
-5. Real measured baseline numbers.
-6. 100% test coverage with zero regressions across the 322 existing backend tests and 415 frontend tests.
+Every experiment run produces a standardized bundle in `backend/reports/experiments/<experiment_id>/`:
+1. `metrics.json` / `ablation_summary.json`: Full hierarchical machine-readable metrics, cohort breakdowns, and cryptographic checksums.
+2. `per_user_metrics.csv` / `ablation_comparison.csv`: Per-user evaluation table across test users.
+3. `statistical_significance.json`: Paired difference tests, p-values, and 95% bootstrap confidence intervals.
+4. `experiment_config.json`: Canonical configuration parameters and config SHA256 checksum.
+5. `environment.json`: Python interpreter version, OS platform, hardware architecture, Git commit hash, and package versions.
+6. `summary.md`: Human-readable graduation thesis report with markdown tables.
 
-**Phase 5 Next Steps:**
-- Implement `TFIDF-v1.1` correctness fixes (Defect R1 seen-item filtering and Defect R2 negative feedback dampening).
-- Implement Maximal Marginal Relevance (MMR) for diversity optimization.
-- Implement popularity-aware cold-start fallback.
-- Run controlled comparison against this frozen `TFIDF-v1.0-as-is` baseline.
+---
+
+## 8. Roadmap Beyond Phase 5
+
+With TF-IDF v1.1 correctness verified and statistically established, subsequent phases can build upon this foundation:
+1. **Phase 6: Diversity & Novelty Optimization (MMR):** Maximal Marginal Relevance reranking to control accuracy-diversity trade-offs.
+2. **Phase 7: Semantic & Hybrid Representations:** Pre-computed dense neural embeddings (e.g. SBERT/MiniLM) and hybrid fusion.
