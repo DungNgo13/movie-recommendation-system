@@ -18,6 +18,7 @@ FFmpeg/HLS pipeline keep working unchanged.
 import logging
 import secrets
 import uuid
+from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from typing import Optional, Tuple
 
@@ -150,20 +151,34 @@ def _fail_session(db: Session, session: UploadSession, status: str, reason: str)
     db.refresh(session)
 
 
+@dataclass(frozen=True)
+class CompletionResult:
+    session: UploadSession
+    newly_completed: bool  # False for idempotent replays / concurrent losers
+
+
 def complete_upload_session(
     db: Session,
-    storage: R2StorageService,
+    storage: Optional[R2StorageService],
     movie_id: uuid.UUID,
     session_id: uuid.UUID,
     user,
-) -> UploadSession:
-    """Verify the uploaded object and mark the session completed (idempotent)."""
+) -> CompletionResult:
+    """
+    Verify the uploaded object and mark the session completed.
+
+    Idempotent: an already-completed session is answered from the database
+    (after the ownership check) without contacting R2, so replays work even
+    when R2 is unavailable or not configured.
+    """
     session = get_owned_session(db, movie_id, session_id, user)
 
     if session.status == UPLOAD_STATUS_COMPLETED:
-        return session  # idempotent: no second HeadObject, no DB change
+        return CompletionResult(session, newly_completed=False)
     if session.status != UPLOAD_STATUS_PENDING:
         raise HTTPException(status_code=409, detail=f"Upload session is {session.status}")
+    if storage is None:
+        raise HTTPException(status_code=503, detail="R2 storage is not configured.")
 
     try:
         info = storage.head_object(session.object_key)
@@ -199,7 +214,9 @@ def _verification_error(
     return None
 
 
-def _finalize(db: Session, session: UploadSession, size: int, etag: Optional[str]) -> UploadSession:
+def _finalize(
+    db: Session, session: UploadSession, size: int, etag: Optional[str],
+) -> CompletionResult:
     now = _utcnow()
     won = _transition_from_pending(
         db, session,
@@ -211,7 +228,7 @@ def _finalize(db: Session, session: UploadSession, size: int, etag: Optional[str
         db.rollback()
         db.refresh(session)
         if session.status == UPLOAD_STATUS_COMPLETED:
-            return session
+            return CompletionResult(session, newly_completed=False)
         raise HTTPException(status_code=409, detail=f"Upload session is {session.status}")
 
     movie = db.query(Movie).filter(Movie.id == session.movie_id).first()
@@ -219,9 +236,11 @@ def _finalize(db: Session, session: UploadSession, size: int, etag: Optional[str
         db.rollback()
         raise HTTPException(status_code=404, detail="Movie not found")
 
+    # R2 becomes the active source.  The local path and HLS fields are left
+    # untouched until the FFmpeg R2 source resolver exists.
     movie.source_storage = "r2"
     movie.source_object_key = session.object_key
     db.commit()
     db.refresh(session)
     logger.info("Completed R2 upload session %s for movie %s", session.id, session.movie_id)
-    return session
+    return CompletionResult(session, newly_completed=True)

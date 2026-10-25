@@ -11,6 +11,7 @@ The existing multipart endpoint POST /api/v1/movies/{movie_id}/video and the
 FFmpeg/HLS endpoints are unchanged.
 """
 
+from typing import Optional
 from uuid import UUID
 
 from fastapi import APIRouter, Depends
@@ -24,7 +25,11 @@ from ..schemas.upload_session import (
 )
 from ..services import upload_session_service
 from ..services.admin_service import create_audit_log
-from ..services.r2_storage_service import R2StorageService, get_r2_storage
+from ..services.r2_storage_service import (
+    R2StorageService,
+    get_optional_r2_storage,
+    get_r2_storage,
+)
 from .auth import get_current_admin_user
 
 router = APIRouter(
@@ -68,25 +73,23 @@ def complete_upload(
     session_id: UUID,
     db: Session = Depends(database.get_db),
     admin_user=Depends(get_current_admin_user),
-    storage: R2StorageService = Depends(get_r2_storage),
+    storage: Optional[R2StorageService] = Depends(get_optional_r2_storage),
 ):
-    """Verify the uploaded object and mark the session completed (admin, owner only)."""
-    was_completed = _is_already_completed(db, movie_id, session_id, admin_user)
-    session = upload_session_service.complete_upload_session(
+    """
+    Verify the uploaded object and mark the session completed (admin, owner
+    only).  Replays of a completed session are answered from the database
+    without contacting R2.
+    """
+    result = upload_session_service.complete_upload_session(
         db, storage, movie_id, session_id, admin_user,
     )
-    if not was_completed:
+    if result.newly_completed:
         create_audit_log(
             db=db,
             admin_email=admin_user.email,
             action_type="movie_update",
             target_type="movie",
             target_id=str(movie_id),
-            description=f"Completed R2 source upload session {session.id}",
+            description=f"Completed R2 source upload session {result.session.id}",
         )
-    return session
-
-
-def _is_already_completed(db: Session, movie_id: UUID, session_id: UUID, user) -> bool:
-    session = upload_session_service.get_owned_session(db, movie_id, session_id, user)
-    return session.status == "completed"
+    return result.session

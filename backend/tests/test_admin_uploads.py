@@ -34,7 +34,12 @@ from app.models.upload_session import UploadSession
 from app.models.user import User
 from app.routers.auth import get_current_admin_user, get_current_user
 from app.services import upload_session_service
-from app.services.r2_storage_service import R2Settings, R2StorageService, get_r2_storage
+from app.services.r2_storage_service import (
+    R2Settings,
+    R2StorageService,
+    get_optional_r2_storage,
+    get_r2_storage,
+)
 
 FAKE_SECRET = "FAKE-SECRET-should-never-appear"
 BUCKET = "movsug-api-test-bucket"
@@ -111,6 +116,7 @@ def r2():
     stubber = Stubber(service.client)
     stubber.activate()
     app.dependency_overrides[get_r2_storage] = lambda: service
+    app.dependency_overrides[get_optional_r2_storage] = lambda: service
     yield service, stubber
     stubber.assert_no_pending_responses()
     stubber.deactivate()
@@ -380,7 +386,8 @@ def test_finalize_handles_concurrent_completion(db, admin, movie, r2):
     db.commit()
 
     result = upload_session_service._finalize(db, session, 10, "etag")
-    assert result.status == "completed"
+    assert result.session.status == "completed"
+    assert result.newly_completed is False
 
 
 def test_new_movies_default_to_local_storage(db):
@@ -390,3 +397,99 @@ def test_new_movies_default_to_local_storage(db):
     db.refresh(m)
     assert m.source_storage == "local"
     assert m.source_object_key is None
+
+
+# ── Phase 1.5: idempotency without R2, authorization on replays ─────────────────
+
+def _complete_once(db, movie, r2):
+    _, stubber = r2
+    session_id = _create(movie.id).json()["session"]["id"]
+    _stub_head(stubber, _session_row(db, session_id).object_key)
+    first = _complete(movie.id, session_id)
+    assert first.status_code == 200
+    return session_id, first.json()
+
+
+def test_completed_session_replay_works_when_r2_not_configured(db, admin, movie, r2, monkeypatch):
+    session_id, first = _complete_once(db, movie, r2)
+
+    # Simulate R2 being unconfigured: real optional dependency returns None.
+    app.dependency_overrides.pop(get_optional_r2_storage)
+    for name in ("R2_ENDPOINT", "R2_BUCKET_NAME", "R2_ACCESS_KEY_ID", "R2_SECRET_ACCESS_KEY"):
+        monkeypatch.delenv(name, raising=False)
+
+    replay = _complete(movie.id, session_id)
+    assert replay.status_code == 200
+    assert replay.json() == first
+
+
+def test_completed_session_replay_works_when_r2_unreachable(db, admin, movie, r2):
+    """A replay must not call R2 at all — an unreachable R2 is irrelevant."""
+    session_id, first = _complete_once(db, movie, r2)
+
+    class ExplodingStorage:
+        def head_object(self, key):  # pragma: no cover - must never run
+            raise AssertionError("HeadObject must not be called on a replay")
+
+        def presign_put(self, *a, **k):  # pragma: no cover - must never run
+            raise AssertionError("presign must not be called on a replay")
+
+    app.dependency_overrides[get_optional_r2_storage] = lambda: ExplodingStorage()
+    for _ in range(3):
+        replay = _complete(movie.id, session_id)
+        assert replay.status_code == 200
+        assert replay.json() == first
+
+
+def test_pending_completion_returns_503_when_r2_not_configured(db, admin, movie, r2, monkeypatch):
+    session_id = _create(movie.id).json()["session"]["id"]
+    app.dependency_overrides.pop(get_optional_r2_storage)
+    for name in ("R2_ENDPOINT", "R2_BUCKET_NAME", "R2_ACCESS_KEY_ID", "R2_SECRET_ACCESS_KEY"):
+        monkeypatch.delenv(name, raising=False)
+
+    resp = _complete(movie.id, session_id)
+    assert resp.status_code == 503
+    assert _session_row(db, session_id).status == "pending"
+
+
+def test_completed_session_replay_by_other_admin_is_forbidden(db, admin, other_admin, movie, r2):
+    session_id, _ = _complete_once(db, movie, r2)
+    app.dependency_overrides[get_current_admin_user] = lambda: other_admin
+    assert _complete(movie.id, session_id).status_code == 403
+
+
+def test_completed_session_replay_by_regular_user_or_anonymous(db, admin, movie, r2):
+    session_id, _ = _complete_once(db, movie, r2)
+
+    app.dependency_overrides.pop(get_current_admin_user)
+    assert _complete(movie.id, session_id).status_code == 401
+
+    regular = _user(db, "plain@test.com", "user")
+    app.dependency_overrides[get_current_user] = lambda: regular
+    assert _complete(movie.id, session_id).status_code == 403
+
+
+def test_session_without_owner_cannot_be_completed(db, admin, movie, r2):
+    """created_by_user_id becomes NULL if the owner is deleted (ON DELETE SET NULL)."""
+    session_id = _create(movie.id).json()["session"]["id"]
+    row = _session_row(db, session_id)
+    row.created_by_user_id = None
+    db.commit()
+    assert _complete(movie.id, session_id).status_code == 403
+
+
+def test_service_reports_newly_completed_only_once(db, admin, movie, r2):
+    service, stubber = r2
+    from app.schemas.upload_session import UploadSessionCreateSchema
+
+    session, _url = upload_session_service.create_upload_session(
+        db, service, movie.id, admin,
+        UploadSessionCreateSchema(filename="a.mp4", content_type="video/mp4", size=10),
+    )
+    _stub_head(stubber, session.object_key, size=10)
+
+    first = upload_session_service.complete_upload_session(db, service, movie.id, session.id, admin)
+    second = upload_session_service.complete_upload_session(db, None, movie.id, session.id, admin)
+    assert first.newly_completed is True
+    assert second.newly_completed is False
+    assert second.session.id == first.session.id

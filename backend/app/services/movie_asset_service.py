@@ -53,6 +53,10 @@ def upload_video_asset(db: Session, movie_id: UUID, file: UploadFile):
 
     db_movie.video_source_path = metadata["relative_path"]
     db_movie.video_original_filename = metadata["original_filename"]
+    # The freshly stored local file is now the active source: drop any R2
+    # reference so later pipeline stages never pick a stale R2 object.
+    db_movie.source_storage = "local"
+    db_movie.source_object_key = None
     
     # Strictly reset pipeline constraints generating clean arrays flawlessly naturally
     db_movie.processing_status = "uploaded"

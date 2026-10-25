@@ -6,7 +6,12 @@ Lifecycle (state machine):
     pending ──(HeadObject OK)──────────────▶ completed   (terminal, idempotent)
        │
        ├──(size / type mismatch)───────────▶ failed      (terminal)
-       └──(object missing after expiry)────▶ expired     (terminal)
+       ├──(object missing after expiry)────▶ expired     (terminal)
+       └──(cleanup job, past expiry+grace)─▶ expired     (terminal)
+
+Only ``failed`` / ``expired`` sessions are eligible for the opt-in cleanup
+job, which deletes that session's own object and records
+``object_deleted_at``.  ``completed`` sessions are never cleaned up.
 
 The presigned PUT URL itself is NEVER stored — it is returned exactly once in
 the initiation response.  Only the server-generated, unpredictable
@@ -74,7 +79,11 @@ class UploadSession(Base):
     created_at = Column(DateTime, nullable=False, default=_utcnow_naive)
     expires_at = Column(DateTime, nullable=False)
     completed_at = Column(DateTime, nullable=True)
+    # Set by the opt-in cleanup job after the session's own object was deleted
+    # (or confirmed absent).  NULL means "not cleaned up".
+    object_deleted_at = Column(DateTime, nullable=True)
 
     __table_args__ = (
         Index("ix_upload_sessions_movie_status", "movie_id", "status"),
+        Index("ix_upload_sessions_status_expires", "status", "expires_at"),
     )

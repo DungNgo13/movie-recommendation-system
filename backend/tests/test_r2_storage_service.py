@@ -192,3 +192,73 @@ def test_download_to_path_failure_leaves_no_files(stubbed, tmp_path):
     with pytest.raises(R2StorageError):
         service.download_to_path(KEY, str(dest))
     assert list(tmp_path.iterdir()) == []
+
+
+# ── Bounded retries (Phase 1.5) ───────────────────────────────────────────────
+
+@pytest.fixture
+def retrying():
+    sleeps = []
+    service = R2StorageService(_settings(), sleep=sleeps.append)
+    stubber = Stubber(service.client)
+    stubber.activate()
+    yield service, stubber, sleeps
+    stubber.assert_no_pending_responses()
+    stubber.deactivate()
+
+
+def test_botocore_internal_retries_disabled():
+    service = R2StorageService(_settings())
+    assert service.client.meta.config.retries["total_max_attempts"] == 1
+
+
+def test_head_object_retries_transient_then_succeeds(retrying):
+    service, stubber, sleeps = retrying
+    stubber.add_client_error("head_object", service_error_code="503", http_status_code=503)
+    stubber.add_response("head_object", {"ContentLength": 5, "ContentType": "video/mp4"},
+                         {"Bucket": BUCKET, "Key": KEY})
+    assert service.head_object(KEY).size == 5
+    assert sleeps == [0.5]
+
+
+def test_head_object_gives_up_after_bounded_attempts(retrying):
+    service, stubber, sleeps = retrying
+    for _ in range(3):
+        stubber.add_client_error("head_object", service_error_code="InternalError",
+                                 http_status_code=500)
+    with pytest.raises(R2StorageError):
+        service.head_object(KEY)
+    assert sleeps == [0.5, 1.0]  # 3 attempts total, 2 back-offs
+
+
+def test_non_transient_errors_are_not_retried(retrying):
+    service, stubber, sleeps = retrying
+    stubber.add_client_error("head_object", service_error_code="AccessDenied",
+                             http_status_code=403)
+    with pytest.raises(R2StorageError):
+        service.head_object(KEY)
+    assert sleeps == []
+
+
+def test_delete_object_success(retrying):
+    service, stubber, _ = retrying
+    stubber.add_response("delete_object", {}, {"Bucket": BUCKET, "Key": KEY})
+    service.delete_object(KEY)
+
+
+def test_delete_object_permission_error_raises_without_secret(retrying):
+    service, stubber, sleeps = retrying
+    stubber.add_client_error("delete_object", service_error_code="AccessDenied",
+                             http_status_code=403)
+    with pytest.raises(R2StorageError) as exc:
+        service.delete_object(KEY)
+    assert FAKE_SECRET not in str(exc.value)
+    assert sleeps == []
+
+
+def test_connection_errors_are_transient(retrying):
+    from botocore.exceptions import EndpointConnectionError
+    from app.services.r2_storage_service import _is_transient
+
+    assert _is_transient(EndpointConnectionError(endpoint_url=ENDPOINT))
+    assert not _is_transient(ValueError("nope"))
