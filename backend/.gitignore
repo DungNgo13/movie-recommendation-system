@@ -34,3 +34,8 @@ pytest_results.txt
 test_output.txt
 test_out.txt
 -t
+
+# Data and offline evaluation cache
+data/
+*.zip
+*.csv

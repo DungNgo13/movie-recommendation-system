@@ -38,6 +38,8 @@ venv/
 uploads/
 storage/
 media/
+data/
+backend/data/
 
 # ===== Video files =====
 *.mp4
