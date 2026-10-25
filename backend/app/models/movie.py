@@ -26,6 +26,12 @@ class Movie(Base):
     # Comma-separated list of successfully encoded quality labels, e.g. "360p,720p,1080p"
     available_qualities = Column(String(100), nullable=True)
 
+    # ── Source-video storage backend ─────────────────────────────────────────
+    # "local" → video_source_path on disk (existing flow, default for all rows)
+    # "r2"    → private Cloudflare R2 object identified by source_object_key
+    source_storage = Column(String(10), default="local", nullable=False, server_default="local")
+    source_object_key = Column(String(512), nullable=True)
+
     # ── Vietnamese display metadata (display-only, not used by AI/recommendation) ─
     title_vi = Column(String(255), nullable=True)
     overview_vi = Column(Text, nullable=True)
