@@ -1,0 +1,13 @@
+{
+  "timestamp_utc": "2026-10-25T13:35:48.791805+00:00",
+  "python_version": "3.14.3 (tags/v3.14.3:323c59a, Feb  3 2026, 16:04:56) [MSC v.1944 64 bit (AMD64)]",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "machine": "AMD64",
+  "processor": "Intel64 Family 6 Model 186 Stepping 2, GenuineIntel",
+  "git_commit": "eb7cbbd3150e12c4ab82012acc2db3dbdd515fd7",
+  "dependencies": {
+    "scikit-learn": "1.9.0",
+    "scipy": "1.18.0",
+    "numpy": "2.5.1"
+  }
+}

@@ -1,0 +1,77 @@
+{
+  "experiment_id": "diagnostic_tfidf_v1_0_train_excluded",
+  "algorithm_name": "TFIDF-v1.0-as-is",
+  "algorithm_version": "1.0.0",
+  "git_commit": "eb7cbbd3150e12c4ab82012acc2db3dbdd515fd7",
+  "timestamp_utc": "2026-10-25T13:35:59.143042+00:00",
+  "checksums": {
+    "config_sha256": "2efe5392d1a850821b52977cecfc977b751038ee3e9006dd3691f87d5b109123",
+    "raw_dataset_sha256": "d830d1e560efffd547d0360da5042a5d97884e5cd99dfd145ec9ecc0efbbaa86",
+    "split_sha256": "48cc8f10cce949d0add60ad6320bf75668370d1753e5456d6fbd69479f931d67"
+  },
+  "metrics": {
+    "evaluation_cohort": {
+      "total_test_users": 610,
+      "users_with_relevant_items": 587,
+      "users_without_relevant_items": 23,
+      "catalog_size": 9742,
+      "relevance_threshold": 4.0,
+      "exclude_seen_policy": "train",
+      "fit_duration_seconds": 0.4906,
+      "eval_duration_seconds": 3.7664
+    },
+    "latency": {
+      "p50_ms": 5.823399988003075,
+      "p90_ms": 7.244040007935838,
+      "p95_ms": 7.894270023098214,
+      "mean_ms": 6.1312740982594125
+    },
+    "by_k": {
+      "k_5": {
+        "precision": 0.005111,
+        "recall": 0.003798,
+        "ndcg": 0.005987,
+        "hit_rate": 0.025554,
+        "map": 0.00304,
+        "all_users_precision": 0.004918,
+        "all_users_recall": 0.003655,
+        "all_users_ndcg": 0.005761,
+        "all_users_hit_rate": 0.02459,
+        "all_users_map": 0.002925,
+        "catalog_coverage": 0.087456,
+        "intra_list_diversity": 0.524714,
+        "novelty": 13.961894
+      },
+      "k_10": {
+        "precision": 0.0046,
+        "recall": 0.006896,
+        "ndcg": 0.007153,
+        "hit_rate": 0.040886,
+        "map": 0.003061,
+        "all_users_precision": 0.004426,
+        "all_users_recall": 0.006636,
+        "all_users_ndcg": 0.006883,
+        "all_users_hit_rate": 0.039344,
+        "all_users_map": 0.002945,
+        "catalog_coverage": 0.130979,
+        "intra_list_diversity": 0.571865,
+        "novelty": 14.052426
+      },
+      "k_20": {
+        "precision": 0.005451,
+        "recall": 0.015573,
+        "ndcg": 0.010476,
+        "hit_rate": 0.0954,
+        "map": 0.003352,
+        "all_users_precision": 0.005246,
+        "all_users_recall": 0.014986,
+        "all_users_ndcg": 0.010081,
+        "all_users_hit_rate": 0.091803,
+        "all_users_map": 0.003226,
+        "catalog_coverage": 0.191029,
+        "intra_list_diversity": 0.625022,
+        "novelty": 14.164957
+      }
+    }
+  }
+}

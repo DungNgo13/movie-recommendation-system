@@ -1,0 +1,66 @@
+{
+  "experiment_id": "diagnostic_tfidf_v1_0_train_excluded",
+  "config_checksum_sha256": "2efe5392d1a850821b52977cecfc977b751038ee3e9006dd3691f87d5b109123",
+  "raw_dataset_checksum_sha256": "d830d1e560efffd547d0360da5042a5d97884e5cd99dfd145ec9ecc0efbbaa86",
+  "split_checksum_sha256": "48cc8f10cce949d0add60ad6320bf75668370d1753e5456d6fbd69479f931d67",
+  "configuration": {
+    "algorithm_name": "TFIDF-v1.0-as-is",
+    "algorithm_version": "1.0.0",
+    "description": "Production baseline: TF-IDF over concatenated movie metadata, interaction-weighted user profile vector, cosine similarity ranking. Preserves known defects R1 (train items not excluded) and R2 (negative ratings ignored).",
+    "tfidf_params": {
+      "max_features": 5000,
+      "stop_words": "english",
+      "ngram_range": [
+        1,
+        2
+      ],
+      "min_df": 1,
+      "max_df": 0.95,
+      "norm": "l2",
+      "use_idf": true,
+      "smooth_idf": true,
+      "sublinear_tf": false
+    },
+    "content_weights": {
+      "title": 2,
+      "keywords": 2,
+      "overview": 1,
+      "genres": 1,
+      "cast": 1,
+      "director": 1
+    },
+    "signal_weights": {
+      "rating_5": 5.0,
+      "rating_4": 3.0,
+      "rating_3": 1.0,
+      "rating_2": 0.0,
+      "rating_1": 0.0,
+      "favorite": 3.0,
+      "watch_min": 1.0,
+      "watch_max": 3.0,
+      "watch_decay_rate": 0.05
+    },
+    "policies": {
+      "exclude_seen_policy": "train",
+      "defect_r1_active": false,
+      "defect_r2_active": true
+    },
+    "evaluation_protocol": {
+      "dataset_name": "MovieLens ml-latest-small",
+      "dataset_url": "https://files.grouplens.org/datasets/movielens/ml-latest-small.zip",
+      "relevance_threshold": 4.0,
+      "k_values": [
+        5,
+        10,
+        20
+      ],
+      "split_ratios": {
+        "train": 0.7,
+        "val": 0.15,
+        "test": 0.15
+      },
+      "min_user_interactions": 5,
+      "random_seed": 42
+    }
+  }
+}
