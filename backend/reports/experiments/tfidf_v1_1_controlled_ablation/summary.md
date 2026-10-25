@@ -1,7 +1,7 @@
 # MovSug — TF-IDF v1.1 Controlled Ablation & Evaluation Report
 
-**Date:** `2026-10-25T13:53:51.570271+00:00`  
-**Git Commit:** `5814b2bbc8cf41be470e5321675ac818d4db3b26`  
+**Date:** `2026-10-25T14:30:42.489032+00:00`  
+**Git Commit:** `2ce97c7435695db3f554eef28c1a72dba37a8544`  
 **Dataset Checksum (SHA256):** `d830d1e560efffd547d0360da5042a5d97884e5cd99dfd145ec9ecc0efbbaa86`  
 **Split Checksum (SHA256):** `48cc8f10cce949d0add60ad6320bf75668370d1753e5456d6fbd69479f931d67`  
 **Evaluated Test Users:** 587 users with $\ge 1$ relevant test item  
@@ -25,11 +25,11 @@ This controlled ablation experiment compares the original **TF-IDF v1.0 baseline
 
 | Variant | Description | HitRate@5 | Precision@10 | Recall@10 | NDCG@10 | MAP@10 | Coverage@10 | Diversity@10 | Novelty@10 | Latency (p50) |
 |---|---|---|---|---|---|---|---|---|---|---|
-| **A. TFIDF-v1.0-as-is** | Frozen baseline (Defect R1 active) | 0.85% | 0.0036 | 0.0052 | 0.0037 | 0.0010 | 15.07% | 0.6309 | 12.70 b | 5.66 ms |
-| **B. TFIDF-v1.0 + R1** | Seen-item exclusion fix only | 2.56% | 0.0046 | 0.0069 | 0.0072 | 0.0031 | 13.10% | 0.5719 | 14.05 b | 5.71 ms |
-| **C. TFIDF-v1.0 + R2** | Negative suppression (Not Measurable offline) | 0.85% | 0.0036 | 0.0052 | 0.0037 | 0.0010 | 15.07% | 0.6309 | 12.70 b | 5.88 ms |
-| **D. TFIDF-v1.0 + R1 + R2**| Combined R1 + R2 | 2.56% | 0.0046 | 0.0069 | 0.0072 | 0.0031 | 13.10% | 0.5719 | 14.05 b | 5.89 ms |
-| **E. TFIDF-v1.1 (Full)** | R1 + R2 + Deterministic R3 | 2.56% | 0.0046 | 0.0069 | 0.0072 | 0.0031 | 13.10% | 0.5719 | 14.05 b | 5.80 ms |
+| **A. TFIDF-v1.0-as-is** | Frozen baseline (Defect R1 active) | 0.85% | 0.0036 | 0.0052 | 0.0037 | 0.0010 | 15.07% | 0.6309 | 12.70 b | 5.94 ms |
+| **B. TFIDF-v1.0 + R1** | Seen-item exclusion fix only | 2.56% | 0.0046 | 0.0069 | 0.0072 | 0.0031 | 13.10% | 0.5719 | 14.05 b | 5.98 ms |
+| **C. TFIDF-v1.0 + R2** | Negative suppression (Not Measurable offline) | 0.85% | 0.0036 | 0.0052 | 0.0037 | 0.0010 | 15.07% | 0.6309 | 12.70 b | 5.66 ms |
+| **D. TFIDF-v1.0 + R1 + R2**| Combined R1 + R2 | 2.56% | 0.0046 | 0.0069 | 0.0072 | 0.0031 | 13.10% | 0.5719 | 14.05 b | 5.57 ms |
+| **E. TFIDF-v1.1 (Full)** | R1 + R2 + Deterministic R3 | 2.56% | 0.0046 | 0.0069 | 0.0072 | 0.0031 | 13.10% | 0.5719 | 14.05 b | 5.63 ms |
 
 ---
 
@@ -62,7 +62,7 @@ This controlled ablation experiment compares the original **TF-IDF v1.0 baseline
 | **Catalog Coverage@10** | 15.07% | 13.10% | Slight drop (-1.97%) as recommendations concentrate on high-quality relevant unseen items |
 | **Intra-List Diversity@10** | 0.6309 | 0.5719 | Slight decrease (-0.059) as recommendations focus more tightly on user preference genre clusters |
 | **Novelty@10 (bits)** | 12.70 bits | 14.05 bits | **+1.35 bits higher novelty**, recommending less trivial, non-training items |
-| **Latency p50 / p95** | 5.66 ms / 7.77 ms | 5.80 ms / 8.35 ms | Negligible overhead (~0.18 ms) for in-memory set filtering |
+| **Latency p50 / p95** | 5.94 ms / 8.46 ms | 5.63 ms / 8.07 ms | Negligible overhead (~0.18 ms) for in-memory set filtering |
 
 ---
 
