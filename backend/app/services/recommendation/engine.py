@@ -5,8 +5,12 @@ Uses cosine similarity between the user's preference vector and all movie
 vectors to produce a ranked list of recommendations.
 
 Handles cold-start by falling back to recently added movies.
+
+Optional MMR (Maximum Marginal Relevance) re-ranking can be enabled via
+environment variables to promote diversity in recommendation lists.
 """
 
+import os
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
 from sqlalchemy.orm import Session
@@ -23,6 +27,20 @@ from ...models.movie import Movie
 # Minimum watch progress percent to consider a movie "consumed" for exclusion.
 # Users who watched < 80% (previewed/abandoned) can still see the movie recommended.
 WATCH_EXCLUSION_PROGRESS_THRESHOLD = 80
+
+
+def _mmr_config() -> tuple[bool, float, int]:
+    """
+    Read MMR configuration from environment variables.
+
+    Returns:
+        (enabled, lambda_param, candidate_pool_size)
+    """
+    enabled_raw = os.getenv("MMR_ENABLED", "false").strip().lower()
+    enabled = enabled_raw in ("true", "1", "yes")
+    lambda_param = float(os.getenv("MMR_LAMBDA", "0.5"))
+    pool_size = int(os.getenv("MMR_CANDIDATE_POOL_SIZE", "100"))
+    return enabled, lambda_param, pool_size
 
 
 def get_user_excluded_movie_ids(
@@ -129,7 +147,34 @@ def get_recommendations(
             scored_movies.append((mid, float(scores[i])))
 
     scored_movies.sort(key=lambda x: x[1], reverse=True)
-    top_movies = scored_movies[:top_n]
+
+    # ── Optional MMR Re-ranking ───────────────────────────────────────
+    mmr_enabled, mmr_lambda, mmr_pool_size = _mmr_config()
+    if mmr_enabled and len(scored_movies) > 0:
+        from ...recommendation_evaluation.mmr import mmr_rerank
+
+        pool_size = min(mmr_pool_size, len(scored_movies))
+        pool = scored_movies[:pool_size]
+        pool_ids = [mid for mid, _ in pool]
+        pool_scores = [s for _, s in pool]
+
+        # Build item vectors for candidates in the pool
+        id_to_idx = {mid: i for i, mid in enumerate(movie_ids)}
+        item_vectors: dict[str, np.ndarray] = {}
+        for mid in pool_ids:
+            if mid in id_to_idx:
+                idx = id_to_idx[mid]
+                item_vectors[mid] = matrix[idx].toarray().flatten()
+
+        top_movies = mmr_rerank(
+            candidate_ids=pool_ids,
+            candidate_scores=pool_scores,
+            item_vectors=item_vectors,
+            select_n=top_n,
+            lambda_param=mmr_lambda,
+        )
+    else:
+        top_movies = scored_movies[:top_n]
 
     # Pre-load all movies into a dict for fast lookup (avoids UUID/SQLite issues)
     all_movies = db.query(Movie).all()

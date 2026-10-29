@@ -17,8 +17,9 @@ from scipy.sparse import spmatrix
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
-from .config import TFIDFBaselineConfig
+from .config import TFIDFBaselineConfig, TFIDFV11MMRConfig
 from .dataset import MovieMetadata, RatingEvent
+from .mmr import mmr_rerank
 
 
 def map_rating_to_weight(rating: float) -> float:
@@ -163,6 +164,8 @@ class BaselineTFIDFRecommender:
 
         Returns:
             List of (movie_id, similarity_score) sorted descending by score.
+            When MMR is enabled, scores are MMR objective values and the list
+            is ordered by MMR greedy selection.
         """
         policy = exclude_seen or self.config.exclude_seen_policy
 
@@ -192,5 +195,25 @@ class BaselineTFIDFRecommender:
         scored_candidates.sort(
             key=lambda x: (-x[1], int(x[0]) if x[0].isdigit() else x[0])
         )
+
+        # ── MMR Re-ranking (optional) ──────────────────────────────────
+        if (isinstance(self.config, TFIDFV11MMRConfig)
+                and self.config.mmr_enabled):
+            pool_size = min(
+                self.config.mmr_candidate_pool_size,
+                len(scored_candidates),
+            )
+            pool = scored_candidates[:pool_size]
+            pool_ids = [mid for mid, _ in pool]
+            pool_scores = [s for _, s in pool]
+
+            reranked = mmr_rerank(
+                candidate_ids=pool_ids,
+                candidate_scores=pool_scores,
+                item_vectors=self.item_vectors,
+                select_n=top_n,
+                lambda_param=self.config.mmr_lambda,
+            )
+            return reranked
 
         return scored_candidates[:top_n]

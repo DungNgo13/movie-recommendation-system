@@ -80,6 +80,11 @@ def parse_args():
         action="store_true",
         help="Run full 5-variant controlled ablation study and statistical analysis (Phase 5)",
     )
+    parser.add_argument(
+        "--mmr-ablation",
+        action="store_true",
+        help="Run MMR diversity-aware re-ranking ablation study (Phase 6)",
+    )
     return parser.parse_args()
 
 
@@ -156,6 +161,14 @@ def main():
         from .ablation import run_controlled_ablation
         run_controlled_ablation(dataset, out_dir)
         logger.info("Ablation study completed. Reports saved to %s", out_dir.resolve())
+        return
+
+    if args.mmr_ablation:
+        out_dir = Path("reports/experiments/mmr_controlled_ablation") if args.output_dir == "reports/experiments/baseline_tfidf_v1_0" else Path(args.output_dir)
+        logger.info("Running Phase 6 MMR controlled ablation study (11 variants)...")
+        from .mmr_ablation import run_mmr_ablation
+        run_mmr_ablation(dataset, out_dir)
+        logger.info("MMR ablation study completed. Reports saved to %s", out_dir.resolve())
         return
 
     evaluator = OfflineEvaluator(config)

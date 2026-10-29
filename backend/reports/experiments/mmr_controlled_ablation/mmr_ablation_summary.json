@@ -1,0 +1,2073 @@
+{
+  "experiment": "MMR Controlled Ablation Study (Phase 6)",
+  "timestamp_utc": "2026-10-29T05:46:14.357390+00:00",
+  "git_commit": "42835efa607fbe6b7798fe60462fd4c357faa505",
+  "dataset_checksum": "d830d1e560efffd547d0360da5042a5d97884e5cd99dfd145ec9ecc0efbbaa86",
+  "split_checksum": "48cc8f10cce949d0add60ad6320bf75668370d1753e5456d6fbd69479f931d67",
+  "cohort": {
+    "catalog_size": 9742,
+    "total_users": 610,
+    "evaluated_test_users": 587
+  },
+  "variants": {
+    "baseline_v11": {
+      "name": "TFIDF-v1.1 (no MMR)",
+      "description": "TF-IDF v1.1 baseline without MMR re-ranking. Reference for all comparisons.",
+      "config_checksum": "c27bd277aa177499",
+      "metrics": {
+        "evaluation_cohort": {
+          "total_test_users": 610,
+          "users_with_relevant_items": 587,
+          "users_without_relevant_items": 23,
+          "catalog_size": 9742,
+          "relevance_threshold": 4.0,
+          "exclude_seen_policy": "train",
+          "fit_duration_seconds": 0.497,
+          "eval_duration_seconds": 3.7307
+        },
+        "latency": {
+          "p50_ms": 5.710049939807504,
+          "p90_ms": 7.234380010049791,
+          "p95_ms": 8.159290003823115,
+          "mean_ms": 6.074854589571229
+        },
+        "by_k": {
+          "k_5": {
+            "precision": 0.005111,
+            "recall": 0.003798,
+            "ndcg": 0.005987,
+            "hit_rate": 0.025554,
+            "map": 0.00304,
+            "all_users_precision": 0.004918,
+            "all_users_recall": 0.003655,
+            "all_users_ndcg": 0.005761,
+            "all_users_hit_rate": 0.02459,
+            "all_users_map": 0.002925,
+            "catalog_coverage": 0.087456,
+            "intra_list_diversity": 0.524714,
+            "novelty": 13.961894
+          },
+          "k_10": {
+            "precision": 0.0046,
+            "recall": 0.006896,
+            "ndcg": 0.007153,
+            "hit_rate": 0.040886,
+            "map": 0.003061,
+            "all_users_precision": 0.004426,
+            "all_users_recall": 0.006636,
+            "all_users_ndcg": 0.006883,
+            "all_users_hit_rate": 0.039344,
+            "all_users_map": 0.002945,
+            "catalog_coverage": 0.130979,
+            "intra_list_diversity": 0.571865,
+            "novelty": 14.052426
+          },
+          "k_20": {
+            "precision": 0.005451,
+            "recall": 0.015573,
+            "ndcg": 0.010476,
+            "hit_rate": 0.0954,
+            "map": 0.003352,
+            "all_users_precision": 0.005246,
+            "all_users_recall": 0.014986,
+            "all_users_ndcg": 0.010081,
+            "all_users_hit_rate": 0.091803,
+            "all_users_map": 0.003226,
+            "catalog_coverage": 0.191029,
+            "intra_list_diversity": 0.625022,
+            "novelty": 14.164957
+          }
+        }
+      }
+    },
+    "mmr_l0.3_p50": {
+      "name": "MMR \u03bb=0.3 pool=50",
+      "description": "TF-IDF v1.1 + MMR re-ranking with \u03bb=0.3, candidate pool size=50.",
+      "config_checksum": "73dab109cfec93c4",
+      "metrics": {
+        "evaluation_cohort": {
+          "total_test_users": 610,
+          "users_with_relevant_items": 587,
+          "users_without_relevant_items": 23,
+          "catalog_size": 9742,
+          "relevance_threshold": 4.0,
+          "exclude_seen_policy": "train",
+          "fit_duration_seconds": 0.4909,
+          "eval_duration_seconds": 11.8826
+        },
+        "latency": {
+          "p50_ms": 19.106749969068915,
+          "p90_ms": 21.026590024121106,
+          "p95_ms": 21.7984449933283,
+          "mean_ms": 19.428920984787286
+        },
+        "by_k": {
+          "k_5": {
+            "precision": 0.005111,
+            "recall": 0.00476,
+            "ndcg": 0.006438,
+            "hit_rate": 0.025554,
+            "map": 0.003421,
+            "all_users_precision": 0.004918,
+            "all_users_recall": 0.00458,
+            "all_users_ndcg": 0.006195,
+            "all_users_hit_rate": 0.02459,
+            "all_users_map": 0.003292,
+            "catalog_coverage": 0.092794,
+            "intra_list_diversity": 0.83482,
+            "novelty": 13.76531
+          },
+          "k_10": {
+            "precision": 0.005111,
+            "recall": 0.008538,
+            "ndcg": 0.008152,
+            "hit_rate": 0.049404,
+            "map": 0.003534,
+            "all_users_precision": 0.004918,
+            "all_users_recall": 0.008216,
+            "all_users_ndcg": 0.007845,
+            "all_users_hit_rate": 0.047541,
+            "all_users_map": 0.0034,
+            "catalog_coverage": 0.143092,
+            "intra_list_diversity": 0.804356,
+            "novelty": 13.842323
+          },
+          "k_20": {
+            "precision": 0.005622,
+            "recall": 0.017042,
+            "ndcg": 0.011663,
+            "hit_rate": 0.103918,
+            "map": 0.003978,
+            "all_users_precision": 0.00541,
+            "all_users_recall": 0.0164,
+            "all_users_ndcg": 0.011223,
+            "all_users_hit_rate": 0.1,
+            "all_users_map": 0.003828,
+            "catalog_coverage": 0.220489,
+            "intra_list_diversity": 0.772989,
+            "novelty": 13.928158
+          }
+        }
+      }
+    },
+    "mmr_l0.5_p50": {
+      "name": "MMR \u03bb=0.5 pool=50",
+      "description": "TF-IDF v1.1 + MMR re-ranking with \u03bb=0.5, candidate pool size=50.",
+      "config_checksum": "401671e7dac41e80",
+      "metrics": {
+        "evaluation_cohort": {
+          "total_test_users": 610,
+          "users_with_relevant_items": 587,
+          "users_without_relevant_items": 23,
+          "catalog_size": 9742,
+          "relevance_threshold": 4.0,
+          "exclude_seen_policy": "train",
+          "fit_duration_seconds": 0.498,
+          "eval_duration_seconds": 11.8417
+        },
+        "latency": {
+          "p50_ms": 19.00835003471002,
+          "p90_ms": 21.1431099800393,
+          "p95_ms": 22.289799991995096,
+          "mean_ms": 19.361598849617188
+        },
+        "by_k": {
+          "k_5": {
+            "precision": 0.006133,
+            "recall": 0.006021,
+            "ndcg": 0.007203,
+            "hit_rate": 0.030664,
+            "map": 0.003683,
+            "all_users_precision": 0.005902,
+            "all_users_recall": 0.005794,
+            "all_users_ndcg": 0.006932,
+            "all_users_hit_rate": 0.029508,
+            "all_users_map": 0.003544,
+            "catalog_coverage": 0.087662,
+            "intra_list_diversity": 0.748199,
+            "novelty": 13.751385
+          },
+          "k_10": {
+            "precision": 0.005451,
+            "recall": 0.009137,
+            "ndcg": 0.008615,
+            "hit_rate": 0.052811,
+            "map": 0.003738,
+            "all_users_precision": 0.005246,
+            "all_users_recall": 0.008793,
+            "all_users_ndcg": 0.00829,
+            "all_users_hit_rate": 0.05082,
+            "all_users_map": 0.003597,
+            "catalog_coverage": 0.139602,
+            "intra_list_diversity": 0.724816,
+            "novelty": 13.860757
+          },
+          "k_20": {
+            "precision": 0.006303,
+            "recall": 0.017298,
+            "ndcg": 0.012276,
+            "hit_rate": 0.110733,
+            "map": 0.004209,
+            "all_users_precision": 0.006066,
+            "all_users_recall": 0.016646,
+            "all_users_ndcg": 0.011813,
+            "all_users_hit_rate": 0.106557,
+            "all_users_map": 0.004051,
+            "catalog_coverage": 0.213611,
+            "intra_list_diversity": 0.717671,
+            "novelty": 13.978097
+          }
+        }
+      }
+    },
+    "mmr_l0.7_p50": {
+      "name": "MMR \u03bb=0.7 pool=50",
+      "description": "TF-IDF v1.1 + MMR re-ranking with \u03bb=0.7, candidate pool size=50.",
+      "config_checksum": "0b15e501d78ff90b",
+      "metrics": {
+        "evaluation_cohort": {
+          "total_test_users": 610,
+          "users_with_relevant_items": 587,
+          "users_without_relevant_items": 23,
+          "catalog_size": 9742,
+          "relevance_threshold": 4.0,
+          "exclude_seen_policy": "train",
+          "fit_duration_seconds": 0.4986,
+          "eval_duration_seconds": 11.4008
+        },
+        "latency": {
+          "p50_ms": 18.428350042086095,
+          "p90_ms": 19.819169922266155,
+          "p95_ms": 20.624879939714447,
+          "mean_ms": 18.639755407615457
+        },
+        "by_k": {
+          "k_5": {
+            "precision": 0.006814,
+            "recall": 0.00538,
+            "ndcg": 0.007259,
+            "hit_rate": 0.034072,
+            "map": 0.003455,
+            "all_users_precision": 0.006557,
+            "all_users_recall": 0.005177,
+            "all_users_ndcg": 0.006985,
+            "all_users_hit_rate": 0.032787,
+            "all_users_map": 0.003325,
+            "catalog_coverage": 0.087148,
+            "intra_list_diversity": 0.630609,
+            "novelty": 13.858457
+          },
+          "k_10": {
+            "precision": 0.005111,
+            "recall": 0.0077,
+            "ndcg": 0.007723,
+            "hit_rate": 0.049404,
+            "map": 0.003194,
+            "all_users_precision": 0.004918,
+            "all_users_recall": 0.00741,
+            "all_users_ndcg": 0.007432,
+            "all_users_hit_rate": 0.047541,
+            "all_users_map": 0.003074,
+            "catalog_coverage": 0.135085,
+            "intra_list_diversity": 0.642748,
+            "novelty": 13.95107
+          },
+          "k_20": {
+            "precision": 0.005366,
+            "recall": 0.015607,
+            "ndcg": 0.010732,
+            "hit_rate": 0.0954,
+            "map": 0.003553,
+            "all_users_precision": 0.005164,
+            "all_users_recall": 0.015018,
+            "all_users_ndcg": 0.010328,
+            "all_users_hit_rate": 0.091803,
+            "all_users_map": 0.003419,
+            "catalog_coverage": 0.202936,
+            "intra_list_diversity": 0.671381,
+            "novelty": 14.059437
+          }
+        }
+      }
+    },
+    "mmr_l0.9_p50": {
+      "name": "MMR \u03bb=0.9 pool=50",
+      "description": "TF-IDF v1.1 + MMR re-ranking with \u03bb=0.9, candidate pool size=50.",
+      "config_checksum": "4c799fd395248b35",
+      "metrics": {
+        "evaluation_cohort": {
+          "total_test_users": 610,
+          "users_with_relevant_items": 587,
+          "users_without_relevant_items": 23,
+          "catalog_size": 9742,
+          "relevance_threshold": 4.0,
+          "exclude_seen_policy": "train",
+          "fit_duration_seconds": 0.4918,
+          "eval_duration_seconds": 11.4088
+        },
+        "latency": {
+          "p50_ms": 18.45574995968491,
+          "p90_ms": 19.909290014766157,
+          "p95_ms": 20.69176998338662,
+          "mean_ms": 18.65537803330016
+        },
+        "by_k": {
+          "k_5": {
+            "precision": 0.005111,
+            "recall": 0.003798,
+            "ndcg": 0.005987,
+            "hit_rate": 0.025554,
+            "map": 0.00304,
+            "all_users_precision": 0.004918,
+            "all_users_recall": 0.003655,
+            "all_users_ndcg": 0.005761,
+            "all_users_hit_rate": 0.02459,
+            "all_users_map": 0.002925,
+            "catalog_coverage": 0.08684,
+            "intra_list_diversity": 0.54875,
+            "novelty": 13.938969
+          },
+          "k_10": {
+            "precision": 0.005281,
+            "recall": 0.008362,
+            "ndcg": 0.007836,
+            "hit_rate": 0.0477,
+            "map": 0.003209,
+            "all_users_precision": 0.005082,
+            "all_users_recall": 0.008046,
+            "all_users_ndcg": 0.00754,
+            "all_users_hit_rate": 0.045902,
+            "all_users_map": 0.003088,
+            "catalog_coverage": 0.132416,
+            "intra_list_diversity": 0.589416,
+            "novelty": 14.026251
+          },
+          "k_20": {
+            "precision": 0.005537,
+            "recall": 0.01576,
+            "ndcg": 0.010645,
+            "hit_rate": 0.098807,
+            "map": 0.003407,
+            "all_users_precision": 0.005328,
+            "all_users_recall": 0.015166,
+            "all_users_ndcg": 0.010244,
+            "all_users_hit_rate": 0.095082,
+            "all_users_map": 0.003279,
+            "catalog_coverage": 0.196058,
+            "intra_list_diversity": 0.636004,
+            "novelty": 14.138797
+          }
+        }
+      }
+    },
+    "mmr_l1.0_p50": {
+      "name": "MMR \u03bb=1.0 pool=50",
+      "description": "TF-IDF v1.1 + MMR re-ranking with \u03bb=1.0, candidate pool size=50. (Equivalence control: pure relevance within pool.)",
+      "config_checksum": "d9f4ac8c5037e39c",
+      "metrics": {
+        "evaluation_cohort": {
+          "total_test_users": 610,
+          "users_with_relevant_items": 587,
+          "users_without_relevant_items": 23,
+          "catalog_size": 9742,
+          "relevance_threshold": 4.0,
+          "exclude_seen_policy": "train",
+          "fit_duration_seconds": 0.4995,
+          "eval_duration_seconds": 11.6242
+        },
+        "latency": {
+          "p50_ms": 18.625899974722415,
+          "p90_ms": 20.505669980775565,
+          "p95_ms": 22.03696495853364,
+          "mean_ms": 19.005764430182698
+        },
+        "by_k": {
+          "k_5": {
+            "precision": 0.005111,
+            "recall": 0.003798,
+            "ndcg": 0.005987,
+            "hit_rate": 0.025554,
+            "map": 0.00304,
+            "all_users_precision": 0.004918,
+            "all_users_recall": 0.003655,
+            "all_users_ndcg": 0.005761,
+            "all_users_hit_rate": 0.02459,
+            "all_users_map": 0.002925,
+            "catalog_coverage": 0.087456,
+            "intra_list_diversity": 0.524714,
+            "novelty": 13.961894
+          },
+          "k_10": {
+            "precision": 0.0046,
+            "recall": 0.006896,
+            "ndcg": 0.007153,
+            "hit_rate": 0.040886,
+            "map": 0.003061,
+            "all_users_precision": 0.004426,
+            "all_users_recall": 0.006636,
+            "all_users_ndcg": 0.006883,
+            "all_users_hit_rate": 0.039344,
+            "all_users_map": 0.002945,
+            "catalog_coverage": 0.130979,
+            "intra_list_diversity": 0.571865,
+            "novelty": 14.052426
+          },
+          "k_20": {
+            "precision": 0.005451,
+            "recall": 0.015573,
+            "ndcg": 0.010476,
+            "hit_rate": 0.0954,
+            "map": 0.003352,
+            "all_users_precision": 0.005246,
+            "all_users_recall": 0.014986,
+            "all_users_ndcg": 0.010081,
+            "all_users_hit_rate": 0.091803,
+            "all_users_map": 0.003226,
+            "catalog_coverage": 0.191029,
+            "intra_list_diversity": 0.625022,
+            "novelty": 14.164957
+          }
+        }
+      }
+    },
+    "mmr_l0.3_p100": {
+      "name": "MMR \u03bb=0.3 pool=100",
+      "description": "TF-IDF v1.1 + MMR re-ranking with \u03bb=0.3, candidate pool size=100.",
+      "config_checksum": "6670a65d5ac87a47",
+      "metrics": {
+        "evaluation_cohort": {
+          "total_test_users": 610,
+          "users_with_relevant_items": 587,
+          "users_without_relevant_items": 23,
+          "catalog_size": 9742,
+          "relevance_threshold": 4.0,
+          "exclude_seen_policy": "train",
+          "fit_duration_seconds": 0.4994,
+          "eval_duration_seconds": 22.1264
+        },
+        "latency": {
+          "p50_ms": 35.56480002589524,
+          "p90_ms": 38.13488999148831,
+          "p95_ms": 40.4462149948813,
+          "mean_ms": 36.21450770821911
+        },
+        "by_k": {
+          "k_5": {
+            "precision": 0.005451,
+            "recall": 0.004812,
+            "ndcg": 0.00663,
+            "hit_rate": 0.027257,
+            "map": 0.003465,
+            "all_users_precision": 0.005246,
+            "all_users_recall": 0.00463,
+            "all_users_ndcg": 0.00638,
+            "all_users_hit_rate": 0.02623,
+            "all_users_map": 0.003335,
+            "catalog_coverage": 0.100287,
+            "intra_list_diversity": 0.893048,
+            "novelty": 13.73707
+          },
+          "k_10": {
+            "precision": 0.006644,
+            "recall": 0.010516,
+            "ndcg": 0.009401,
+            "hit_rate": 0.059625,
+            "map": 0.003815,
+            "all_users_precision": 0.006393,
+            "all_users_recall": 0.01012,
+            "all_users_ndcg": 0.009047,
+            "all_users_hit_rate": 0.057377,
+            "all_users_map": 0.003671,
+            "catalog_coverage": 0.162698,
+            "intra_list_diversity": 0.867696,
+            "novelty": 13.806115
+          },
+          "k_20": {
+            "precision": 0.005281,
+            "recall": 0.015786,
+            "ndcg": 0.011302,
+            "hit_rate": 0.093697,
+            "map": 0.003979,
+            "all_users_precision": 0.005082,
+            "all_users_recall": 0.015191,
+            "all_users_ndcg": 0.010876,
+            "all_users_hit_rate": 0.090164,
+            "all_users_map": 0.003829,
+            "catalog_coverage": 0.248614,
+            "intra_list_diversity": 0.849813,
+            "novelty": 13.863844
+          }
+        }
+      }
+    },
+    "mmr_l0.5_p100": {
+      "name": "MMR \u03bb=0.5 pool=100",
+      "description": "TF-IDF v1.1 + MMR re-ranking with \u03bb=0.5, candidate pool size=100.",
+      "config_checksum": "59bd0f8b968ce596",
+      "metrics": {
+        "evaluation_cohort": {
+          "total_test_users": 610,
+          "users_with_relevant_items": 587,
+          "users_without_relevant_items": 23,
+          "catalog_size": 9742,
+          "relevance_threshold": 4.0,
+          "exclude_seen_policy": "train",
+          "fit_duration_seconds": 0.5226,
+          "eval_duration_seconds": 21.6476
+        },
+        "latency": {
+          "p50_ms": 35.0372499669902,
+          "p90_ms": 36.878000013530254,
+          "p95_ms": 38.03465496166609,
+          "mean_ms": 35.43295508258228
+        },
+        "by_k": {
+          "k_5": {
+            "precision": 0.005451,
+            "recall": 0.005775,
+            "ndcg": 0.007066,
+            "hit_rate": 0.027257,
+            "map": 0.003799,
+            "all_users_precision": 0.005246,
+            "all_users_recall": 0.005557,
+            "all_users_ndcg": 0.0068,
+            "all_users_hit_rate": 0.02623,
+            "all_users_map": 0.003656,
+            "catalog_coverage": 0.087148,
+            "intra_list_diversity": 0.788935,
+            "novelty": 13.737923
+          },
+          "k_10": {
+            "precision": 0.005451,
+            "recall": 0.010158,
+            "ndcg": 0.009091,
+            "hit_rate": 0.052811,
+            "map": 0.004047,
+            "all_users_precision": 0.005246,
+            "all_users_recall": 0.009775,
+            "all_users_ndcg": 0.008748,
+            "all_users_hit_rate": 0.05082,
+            "all_users_map": 0.003895,
+            "catalog_coverage": 0.142168,
+            "intra_list_diversity": 0.768555,
+            "novelty": 13.837244
+          },
+          "k_20": {
+            "precision": 0.006303,
+            "recall": 0.018111,
+            "ndcg": 0.012724,
+            "hit_rate": 0.112436,
+            "map": 0.004517,
+            "all_users_precision": 0.006066,
+            "all_users_recall": 0.017428,
+            "all_users_ndcg": 0.012244,
+            "all_users_hit_rate": 0.108197,
+            "all_users_map": 0.004346,
+            "catalog_coverage": 0.223157,
+            "intra_list_diversity": 0.763774,
+            "novelty": 13.891863
+          }
+        }
+      }
+    },
+    "mmr_l0.7_p100": {
+      "name": "MMR \u03bb=0.7 pool=100",
+      "description": "TF-IDF v1.1 + MMR re-ranking with \u03bb=0.7, candidate pool size=100.",
+      "config_checksum": "521f09e353e5e70b",
+      "metrics": {
+        "evaluation_cohort": {
+          "total_test_users": 610,
+          "users_with_relevant_items": 587,
+          "users_without_relevant_items": 23,
+          "catalog_size": 9742,
+          "relevance_threshold": 4.0,
+          "exclude_seen_policy": "train",
+          "fit_duration_seconds": 0.5102,
+          "eval_duration_seconds": 21.5894
+        },
+        "latency": {
+          "p50_ms": 35.021949966903776,
+          "p90_ms": 36.80076999589801,
+          "p95_ms": 37.817165040178224,
+          "mean_ms": 35.3376337714478
+        },
+        "by_k": {
+          "k_5": {
+            "precision": 0.006814,
+            "recall": 0.005751,
+            "ndcg": 0.007531,
+            "hit_rate": 0.034072,
+            "map": 0.003657,
+            "all_users_precision": 0.006557,
+            "all_users_recall": 0.005534,
+            "all_users_ndcg": 0.007247,
+            "all_users_hit_rate": 0.032787,
+            "all_users_map": 0.003519,
+            "catalog_coverage": 0.087456,
+            "intra_list_diversity": 0.655842,
+            "novelty": 13.820715
+          },
+          "k_10": {
+            "precision": 0.005622,
+            "recall": 0.008606,
+            "ndcg": 0.008508,
+            "hit_rate": 0.054514,
+            "map": 0.003508,
+            "all_users_precision": 0.00541,
+            "all_users_recall": 0.008282,
+            "all_users_ndcg": 0.008187,
+            "all_users_hit_rate": 0.052459,
+            "all_users_map": 0.003376,
+            "catalog_coverage": 0.136933,
+            "intra_list_diversity": 0.662405,
+            "novelty": 13.907444
+          },
+          "k_20": {
+            "precision": 0.005366,
+            "recall": 0.01529,
+            "ndcg": 0.010997,
+            "hit_rate": 0.0954,
+            "map": 0.003775,
+            "all_users_precision": 0.005164,
+            "all_users_recall": 0.014713,
+            "all_users_ndcg": 0.010582,
+            "all_users_hit_rate": 0.091803,
+            "all_users_map": 0.003632,
+            "catalog_coverage": 0.20622,
+            "intra_list_diversity": 0.684583,
+            "novelty": 14.037919
+          }
+        }
+      }
+    },
+    "mmr_l0.9_p100": {
+      "name": "MMR \u03bb=0.9 pool=100",
+      "description": "TF-IDF v1.1 + MMR re-ranking with \u03bb=0.9, candidate pool size=100.",
+      "config_checksum": "901d6587abd7d36d",
+      "metrics": {
+        "evaluation_cohort": {
+          "total_test_users": 610,
+          "users_with_relevant_items": 587,
+          "users_without_relevant_items": 23,
+          "catalog_size": 9742,
+          "relevance_threshold": 4.0,
+          "exclude_seen_policy": "train",
+          "fit_duration_seconds": 0.5253,
+          "eval_duration_seconds": 21.6533
+        },
+        "latency": {
+          "p50_ms": 35.06650001509115,
+          "p90_ms": 36.92976994207129,
+          "p95_ms": 38.030654983595014,
+          "mean_ms": 35.44314950914504
+        },
+        "by_k": {
+          "k_5": {
+            "precision": 0.005111,
+            "recall": 0.003798,
+            "ndcg": 0.005987,
+            "hit_rate": 0.025554,
+            "map": 0.00304,
+            "all_users_precision": 0.004918,
+            "all_users_recall": 0.003655,
+            "all_users_ndcg": 0.005761,
+            "all_users_hit_rate": 0.02459,
+            "all_users_map": 0.002925,
+            "catalog_coverage": 0.086533,
+            "intra_list_diversity": 0.559759,
+            "novelty": 13.933207
+          },
+          "k_10": {
+            "precision": 0.005111,
+            "recall": 0.007936,
+            "ndcg": 0.007707,
+            "hit_rate": 0.0477,
+            "map": 0.003174,
+            "all_users_precision": 0.004918,
+            "all_users_recall": 0.007637,
+            "all_users_ndcg": 0.007416,
+            "all_users_hit_rate": 0.045902,
+            "all_users_map": 0.003054,
+            "catalog_coverage": 0.13293,
+            "intra_list_diversity": 0.595087,
+            "novelty": 14.023201
+          },
+          "k_20": {
+            "precision": 0.005451,
+            "recall": 0.01556,
+            "ndcg": 0.010626,
+            "hit_rate": 0.0954,
+            "map": 0.003457,
+            "all_users_precision": 0.005246,
+            "all_users_recall": 0.014974,
+            "all_users_ndcg": 0.010226,
+            "all_users_hit_rate": 0.091803,
+            "all_users_map": 0.003326,
+            "catalog_coverage": 0.19729,
+            "intra_list_diversity": 0.640263,
+            "novelty": 14.134139
+          }
+        }
+      }
+    },
+    "mmr_l1.0_p100": {
+      "name": "MMR \u03bb=1.0 pool=100",
+      "description": "TF-IDF v1.1 + MMR re-ranking with \u03bb=1.0, candidate pool size=100. (Equivalence control: pure relevance within pool.)",
+      "config_checksum": "f117e0c08ce4068a",
+      "metrics": {
+        "evaluation_cohort": {
+          "total_test_users": 610,
+          "users_with_relevant_items": 587,
+          "users_without_relevant_items": 23,
+          "catalog_size": 9742,
+          "relevance_threshold": 4.0,
+          "exclude_seen_policy": "train",
+          "fit_duration_seconds": 0.5091,
+          "eval_duration_seconds": 21.3891
+        },
+        "latency": {
+          "p50_ms": 34.67860003001988,
+          "p90_ms": 36.63972994545475,
+          "p95_ms": 37.377435027156025,
+          "mean_ms": 35.00909819496704
+        },
+        "by_k": {
+          "k_5": {
+            "precision": 0.005111,
+            "recall": 0.003798,
+            "ndcg": 0.005987,
+            "hit_rate": 0.025554,
+            "map": 0.00304,
+            "all_users_precision": 0.004918,
+            "all_users_recall": 0.003655,
+            "all_users_ndcg": 0.005761,
+            "all_users_hit_rate": 0.02459,
+            "all_users_map": 0.002925,
+            "catalog_coverage": 0.087456,
+            "intra_list_diversity": 0.524714,
+            "novelty": 13.961894
+          },
+          "k_10": {
+            "precision": 0.0046,
+            "recall": 0.006896,
+            "ndcg": 0.007153,
+            "hit_rate": 0.040886,
+            "map": 0.003061,
+            "all_users_precision": 0.004426,
+            "all_users_recall": 0.006636,
+            "all_users_ndcg": 0.006883,
+            "all_users_hit_rate": 0.039344,
+            "all_users_map": 0.002945,
+            "catalog_coverage": 0.130979,
+            "intra_list_diversity": 0.571865,
+            "novelty": 14.052426
+          },
+          "k_20": {
+            "precision": 0.005451,
+            "recall": 0.015573,
+            "ndcg": 0.010476,
+            "hit_rate": 0.0954,
+            "map": 0.003352,
+            "all_users_precision": 0.005246,
+            "all_users_recall": 0.014986,
+            "all_users_ndcg": 0.010081,
+            "all_users_hit_rate": 0.091803,
+            "all_users_map": 0.003226,
+            "catalog_coverage": 0.191029,
+            "intra_list_diversity": 0.625022,
+            "novelty": 14.164957
+          }
+        }
+      }
+    }
+  },
+  "statistical_tests": {
+    "baseline_v11": {
+      "variant_name": "TFIDF-v1.1 (no MMR)",
+      "ndcg_at_5": {
+        "mean_baseline": 0.005987,
+        "mean_variant": 0.005987,
+        "paired_test": {
+          "mean_difference": 0.0,
+          "std_difference": 0.0,
+          "t_statistic": 0.0,
+          "p_value_ttest": 1.0,
+          "wilcoxon_stat": 0.0,
+          "p_value_wilcoxon": 1.0,
+          "bootstrap_ci_95": [
+            0.0,
+            0.0
+          ],
+          "statistically_significant_001": false,
+          "statistically_significant_05": false,
+          "note": "Identical predictions on this dataset"
+        },
+        "win_tie_loss": {
+          "wins": 0,
+          "ties": 587,
+          "losses": 0
+        }
+      },
+      "ndcg_at_10": {
+        "mean_baseline": 0.007153,
+        "mean_variant": 0.007153,
+        "paired_test": {
+          "mean_difference": 0.0,
+          "std_difference": 0.0,
+          "t_statistic": 0.0,
+          "p_value_ttest": 1.0,
+          "wilcoxon_stat": 0.0,
+          "p_value_wilcoxon": 1.0,
+          "bootstrap_ci_95": [
+            0.0,
+            0.0
+          ],
+          "statistically_significant_001": false,
+          "statistically_significant_05": false,
+          "note": "Identical predictions on this dataset"
+        },
+        "win_tie_loss": {
+          "wins": 0,
+          "ties": 587,
+          "losses": 0
+        }
+      },
+      "ndcg_at_20": {
+        "mean_baseline": 0.010476,
+        "mean_variant": 0.010476,
+        "paired_test": {
+          "mean_difference": 0.0,
+          "std_difference": 0.0,
+          "t_statistic": 0.0,
+          "p_value_ttest": 1.0,
+          "wilcoxon_stat": 0.0,
+          "p_value_wilcoxon": 1.0,
+          "bootstrap_ci_95": [
+            0.0,
+            0.0
+          ],
+          "statistically_significant_001": false,
+          "statistically_significant_05": false,
+          "note": "Identical predictions on this dataset"
+        },
+        "win_tie_loss": {
+          "wins": 0,
+          "ties": 587,
+          "losses": 0
+        }
+      },
+      "ild_at_5": {
+        "baseline": 0.524714,
+        "variant": 0.524714,
+        "delta": 0.0,
+        "relative_pct": 0.0
+      },
+      "ild_at_10": {
+        "baseline": 0.571865,
+        "variant": 0.571865,
+        "delta": 0.0,
+        "relative_pct": 0.0
+      },
+      "ild_at_20": {
+        "baseline": 0.625022,
+        "variant": 0.625022,
+        "delta": 0.0,
+        "relative_pct": 0.0
+      },
+      "coverage_at_5": {
+        "baseline": 0.087456,
+        "variant": 0.087456,
+        "delta": 0.0,
+        "relative_pct": 0.0
+      },
+      "coverage_at_10": {
+        "baseline": 0.130979,
+        "variant": 0.130979,
+        "delta": 0.0,
+        "relative_pct": 0.0
+      },
+      "coverage_at_20": {
+        "baseline": 0.191029,
+        "variant": 0.191029,
+        "delta": 0.0,
+        "relative_pct": 0.0
+      },
+      "latency": {
+        "baseline_p50_ms": 5.710049939807504,
+        "baseline_p95_ms": 8.159290003823115,
+        "variant_p50_ms": 5.710049939807504,
+        "variant_p95_ms": 8.159290003823115,
+        "overhead_p50_ms": 0.0,
+        "overhead_p95_ms": 0.0
+      }
+    },
+    "mmr_l0.3_p50": {
+      "variant_name": "MMR \u03bb=0.3 pool=50",
+      "ndcg_at_5": {
+        "mean_baseline": 0.005987,
+        "mean_variant": 0.006438,
+        "paired_test": {
+          "mean_difference": 0.000451,
+          "std_difference": 0.035038,
+          "t_statistic": 0.3115,
+          "p_value_ttest": 0.7555098030762379,
+          "wilcoxon_stat": 77.5,
+          "p_value_wilcoxon": 0.7263515223456101,
+          "bootstrap_ci_95": [
+            -0.002219,
+            0.003375
+          ],
+          "statistically_significant_001": false,
+          "statistically_significant_05": false
+        },
+        "win_tie_loss": {
+          "wins": 8,
+          "ties": 569,
+          "losses": 10
+        }
+      },
+      "ndcg_at_10": {
+        "mean_baseline": 0.007153,
+        "mean_variant": 0.008152,
+        "paired_test": {
+          "mean_difference": 0.001,
+          "std_difference": 0.032292,
+          "t_statistic": 0.75,
+          "p_value_ttest": 0.4535851821417967,
+          "wilcoxon_stat": 329.5,
+          "p_value_wilcoxon": 0.3983880875939947,
+          "bootstrap_ci_95": [
+            -0.001678,
+            0.003679
+          ],
+          "statistically_significant_001": false,
+          "statistically_significant_05": false
+        },
+        "win_tie_loss": {
+          "wins": 23,
+          "ties": 548,
+          "losses": 16
+        }
+      },
+      "ndcg_at_20": {
+        "mean_baseline": 0.010476,
+        "mean_variant": 0.011663,
+        "paired_test": {
+          "mean_difference": 0.001187,
+          "std_difference": 0.030086,
+          "t_statistic": 0.9558,
+          "p_value_ttest": 0.33958186357823844,
+          "wilcoxon_stat": 1390.5,
+          "p_value_wilcoxon": 0.27099949803350487,
+          "bootstrap_ci_95": [
+            -0.001178,
+            0.00384
+          ],
+          "statistically_significant_001": false,
+          "statistically_significant_05": false
+        },
+        "win_tie_loss": {
+          "wins": 46,
+          "ties": 507,
+          "losses": 34
+        }
+      },
+      "ild_at_5": {
+        "baseline": 0.524714,
+        "variant": 0.83482,
+        "delta": 0.310106,
+        "relative_pct": 59.1
+      },
+      "ild_at_10": {
+        "baseline": 0.571865,
+        "variant": 0.804356,
+        "delta": 0.232491,
+        "relative_pct": 40.65
+      },
+      "ild_at_20": {
+        "baseline": 0.625022,
+        "variant": 0.772989,
+        "delta": 0.147967,
+        "relative_pct": 23.67
+      },
+      "coverage_at_5": {
+        "baseline": 0.087456,
+        "variant": 0.092794,
+        "delta": 0.005338,
+        "relative_pct": 6.1
+      },
+      "coverage_at_10": {
+        "baseline": 0.130979,
+        "variant": 0.143092,
+        "delta": 0.012113,
+        "relative_pct": 9.25
+      },
+      "coverage_at_20": {
+        "baseline": 0.191029,
+        "variant": 0.220489,
+        "delta": 0.02946,
+        "relative_pct": 15.42
+      },
+      "latency": {
+        "baseline_p50_ms": 5.710049939807504,
+        "baseline_p95_ms": 8.159290003823115,
+        "variant_p50_ms": 19.106749969068915,
+        "variant_p95_ms": 21.7984449933283,
+        "overhead_p50_ms": 13.3967,
+        "overhead_p95_ms": 13.6392
+      }
+    },
+    "mmr_l0.5_p50": {
+      "variant_name": "MMR \u03bb=0.5 pool=50",
+      "ndcg_at_5": {
+        "mean_baseline": 0.005987,
+        "mean_variant": 0.007203,
+        "paired_test": {
+          "mean_difference": 0.001216,
+          "std_difference": 0.032346,
+          "t_statistic": 0.9111,
+          "p_value_ttest": 0.3626170115666616,
+          "wilcoxon_stat": 50.0,
+          "p_value_wilcoxon": 0.35044459311251563,
+          "bootstrap_ci_95": [
+            -0.001315,
+            0.003974
+          ],
+          "statistically_significant_001": false,
+          "statistically_significant_05": false
+        },
+        "win_tie_loss": {
+          "wins": 8,
+          "ties": 571,
+          "losses": 8
+        }
+      },
+      "ndcg_at_10": {
+        "mean_baseline": 0.007153,
+        "mean_variant": 0.008615,
+        "paired_test": {
+          "mean_difference": 0.001462,
+          "std_difference": 0.026662,
+          "t_statistic": 1.3289,
+          "p_value_ttest": 0.1844070320560831,
+          "wilcoxon_stat": 171.0,
+          "p_value_wilcoxon": 0.20576829668103347,
+          "bootstrap_ci_95": [
+            -0.000521,
+            0.003824
+          ],
+          "statistically_significant_001": false,
+          "statistically_significant_05": false
+        },
+        "win_tie_loss": {
+          "wins": 17,
+          "ties": 557,
+          "losses": 13
+        }
+      },
+      "ndcg_at_20": {
+        "mean_baseline": 0.010476,
+        "mean_variant": 0.012276,
+        "paired_test": {
+          "mean_difference": 0.0018,
+          "std_difference": 0.022962,
+          "t_statistic": 1.899,
+          "p_value_ttest": 0.05805606611817611,
+          "wilcoxon_stat": 927.0,
+          "p_value_wilcoxon": 0.09351888628811407,
+          "bootstrap_ci_95": [
+            0.000127,
+            0.003849
+          ],
+          "statistically_significant_001": false,
+          "statistically_significant_05": false
+        },
+        "win_tie_loss": {
+          "wins": 38,
+          "ties": 518,
+          "losses": 31
+        }
+      },
+      "ild_at_5": {
+        "baseline": 0.524714,
+        "variant": 0.748199,
+        "delta": 0.223485,
+        "relative_pct": 42.59
+      },
+      "ild_at_10": {
+        "baseline": 0.571865,
+        "variant": 0.724816,
+        "delta": 0.152951,
+        "relative_pct": 26.75
+      },
+      "ild_at_20": {
+        "baseline": 0.625022,
+        "variant": 0.717671,
+        "delta": 0.092649,
+        "relative_pct": 14.82
+      },
+      "coverage_at_5": {
+        "baseline": 0.087456,
+        "variant": 0.087662,
+        "delta": 0.000206,
+        "relative_pct": 0.24
+      },
+      "coverage_at_10": {
+        "baseline": 0.130979,
+        "variant": 0.139602,
+        "delta": 0.008623,
+        "relative_pct": 6.58
+      },
+      "coverage_at_20": {
+        "baseline": 0.191029,
+        "variant": 0.213611,
+        "delta": 0.022582,
+        "relative_pct": 11.82
+      },
+      "latency": {
+        "baseline_p50_ms": 5.710049939807504,
+        "baseline_p95_ms": 8.159290003823115,
+        "variant_p50_ms": 19.00835003471002,
+        "variant_p95_ms": 22.289799991995096,
+        "overhead_p50_ms": 13.2983,
+        "overhead_p95_ms": 14.1305
+      }
+    },
+    "mmr_l0.7_p50": {
+      "variant_name": "MMR \u03bb=0.7 pool=50",
+      "ndcg_at_5": {
+        "mean_baseline": 0.005987,
+        "mean_variant": 0.007259,
+        "paired_test": {
+          "mean_difference": 0.001272,
+          "std_difference": 0.016872,
+          "t_statistic": 1.8265,
+          "p_value_ttest": 0.06828016355503654,
+          "wilcoxon_stat": 3.0,
+          "p_value_wilcoxon": 0.06297905121445523,
+          "bootstrap_ci_95": [
+            2.8e-05,
+            0.002806
+          ],
+          "statistically_significant_001": false,
+          "statistically_significant_05": false
+        },
+        "win_tie_loss": {
+          "wins": 5,
+          "ties": 580,
+          "losses": 2
+        }
+      },
+      "ndcg_at_10": {
+        "mean_baseline": 0.007153,
+        "mean_variant": 0.007723,
+        "paired_test": {
+          "mean_difference": 0.000571,
+          "std_difference": 0.013568,
+          "t_statistic": 1.019,
+          "p_value_ttest": 0.308631703701553,
+          "wilcoxon_stat": 79.5,
+          "p_value_wilcoxon": 0.34089518664227525,
+          "bootstrap_ci_95": [
+            -0.00059,
+            0.00183
+          ],
+          "statistically_significant_001": false,
+          "statistically_significant_05": false
+        },
+        "win_tie_loss": {
+          "wins": 12,
+          "ties": 567,
+          "losses": 8
+        }
+      },
+      "ndcg_at_20": {
+        "mean_baseline": 0.010476,
+        "mean_variant": 0.010732,
+        "paired_test": {
+          "mean_difference": 0.000256,
+          "std_difference": 0.013771,
+          "t_statistic": 0.4512,
+          "p_value_ttest": 0.6519854249447065,
+          "wilcoxon_stat": 608.0,
+          "p_value_wilcoxon": 0.34125852434509396,
+          "bootstrap_ci_95": [
+            -0.000776,
+            0.001328
+          ],
+          "statistically_significant_001": false,
+          "statistically_significant_05": false
+        },
+        "win_tie_loss": {
+          "wins": 33,
+          "ties": 534,
+          "losses": 20
+        }
+      },
+      "ild_at_5": {
+        "baseline": 0.524714,
+        "variant": 0.630609,
+        "delta": 0.105895,
+        "relative_pct": 20.18
+      },
+      "ild_at_10": {
+        "baseline": 0.571865,
+        "variant": 0.642748,
+        "delta": 0.070883,
+        "relative_pct": 12.4
+      },
+      "ild_at_20": {
+        "baseline": 0.625022,
+        "variant": 0.671381,
+        "delta": 0.046359,
+        "relative_pct": 7.42
+      },
+      "coverage_at_5": {
+        "baseline": 0.087456,
+        "variant": 0.087148,
+        "delta": -0.000308,
+        "relative_pct": -0.35
+      },
+      "coverage_at_10": {
+        "baseline": 0.130979,
+        "variant": 0.135085,
+        "delta": 0.004106,
+        "relative_pct": 3.13
+      },
+      "coverage_at_20": {
+        "baseline": 0.191029,
+        "variant": 0.202936,
+        "delta": 0.011907,
+        "relative_pct": 6.23
+      },
+      "latency": {
+        "baseline_p50_ms": 5.710049939807504,
+        "baseline_p95_ms": 8.159290003823115,
+        "variant_p50_ms": 18.428350042086095,
+        "variant_p95_ms": 20.624879939714447,
+        "overhead_p50_ms": 12.7183,
+        "overhead_p95_ms": 12.4656
+      }
+    },
+    "mmr_l0.9_p50": {
+      "variant_name": "MMR \u03bb=0.9 pool=50",
+      "ndcg_at_5": {
+        "mean_baseline": 0.005987,
+        "mean_variant": 0.005987,
+        "paired_test": {
+          "mean_difference": 0.0,
+          "std_difference": 0.0,
+          "t_statistic": 0.0,
+          "p_value_ttest": 1.0,
+          "wilcoxon_stat": 0.0,
+          "p_value_wilcoxon": 1.0,
+          "bootstrap_ci_95": [
+            0.0,
+            0.0
+          ],
+          "statistically_significant_001": false,
+          "statistically_significant_05": false,
+          "note": "Identical predictions on this dataset"
+        },
+        "win_tie_loss": {
+          "wins": 0,
+          "ties": 587,
+          "losses": 0
+        }
+      },
+      "ndcg_at_10": {
+        "mean_baseline": 0.007153,
+        "mean_variant": 0.007836,
+        "paired_test": {
+          "mean_difference": 0.000683,
+          "std_difference": 0.009199,
+          "t_statistic": 1.7983,
+          "p_value_ttest": 0.07265063049205696,
+          "wilcoxon_stat": 11.5,
+          "p_value_wilcoxon": 0.10247043485974937,
+          "bootstrap_ci_95": [
+            -3.3e-05,
+            0.001577
+          ],
+          "statistically_significant_001": false,
+          "statistically_significant_05": false
+        },
+        "win_tie_loss": {
+          "wins": 6,
+          "ties": 577,
+          "losses": 4
+        }
+      },
+      "ndcg_at_20": {
+        "mean_baseline": 0.010476,
+        "mean_variant": 0.010645,
+        "paired_test": {
+          "mean_difference": 0.000169,
+          "std_difference": 0.00549,
+          "t_statistic": 0.7473,
+          "p_value_ttest": 0.45517223417949365,
+          "wilcoxon_stat": 240.0,
+          "p_value_wilcoxon": 0.3255830180830511,
+          "bootstrap_ci_95": [
+            -0.000272,
+            0.000643
+          ],
+          "statistically_significant_001": false,
+          "statistically_significant_05": false
+        },
+        "win_tie_loss": {
+          "wins": 19,
+          "ties": 553,
+          "losses": 15
+        }
+      },
+      "ild_at_5": {
+        "baseline": 0.524714,
+        "variant": 0.54875,
+        "delta": 0.024036,
+        "relative_pct": 4.58
+      },
+      "ild_at_10": {
+        "baseline": 0.571865,
+        "variant": 0.589416,
+        "delta": 0.017551,
+        "relative_pct": 3.07
+      },
+      "ild_at_20": {
+        "baseline": 0.625022,
+        "variant": 0.636004,
+        "delta": 0.010982,
+        "relative_pct": 1.76
+      },
+      "coverage_at_5": {
+        "baseline": 0.087456,
+        "variant": 0.08684,
+        "delta": -0.000616,
+        "relative_pct": -0.7
+      },
+      "coverage_at_10": {
+        "baseline": 0.130979,
+        "variant": 0.132416,
+        "delta": 0.001437,
+        "relative_pct": 1.1
+      },
+      "coverage_at_20": {
+        "baseline": 0.191029,
+        "variant": 0.196058,
+        "delta": 0.005029,
+        "relative_pct": 2.63
+      },
+      "latency": {
+        "baseline_p50_ms": 5.710049939807504,
+        "baseline_p95_ms": 8.159290003823115,
+        "variant_p50_ms": 18.45574995968491,
+        "variant_p95_ms": 20.69176998338662,
+        "overhead_p50_ms": 12.7457,
+        "overhead_p95_ms": 12.5325
+      }
+    },
+    "mmr_l1.0_p50": {
+      "variant_name": "MMR \u03bb=1.0 pool=50",
+      "ndcg_at_5": {
+        "mean_baseline": 0.005987,
+        "mean_variant": 0.005987,
+        "paired_test": {
+          "mean_difference": 0.0,
+          "std_difference": 0.0,
+          "t_statistic": 0.0,
+          "p_value_ttest": 1.0,
+          "wilcoxon_stat": 0.0,
+          "p_value_wilcoxon": 1.0,
+          "bootstrap_ci_95": [
+            0.0,
+            0.0
+          ],
+          "statistically_significant_001": false,
+          "statistically_significant_05": false,
+          "note": "Identical predictions on this dataset"
+        },
+        "win_tie_loss": {
+          "wins": 0,
+          "ties": 587,
+          "losses": 0
+        }
+      },
+      "ndcg_at_10": {
+        "mean_baseline": 0.007153,
+        "mean_variant": 0.007153,
+        "paired_test": {
+          "mean_difference": 0.0,
+          "std_difference": 0.0,
+          "t_statistic": 0.0,
+          "p_value_ttest": 1.0,
+          "wilcoxon_stat": 0.0,
+          "p_value_wilcoxon": 1.0,
+          "bootstrap_ci_95": [
+            0.0,
+            0.0
+          ],
+          "statistically_significant_001": false,
+          "statistically_significant_05": false,
+          "note": "Identical predictions on this dataset"
+        },
+        "win_tie_loss": {
+          "wins": 0,
+          "ties": 587,
+          "losses": 0
+        }
+      },
+      "ndcg_at_20": {
+        "mean_baseline": 0.010476,
+        "mean_variant": 0.010476,
+        "paired_test": {
+          "mean_difference": 0.0,
+          "std_difference": 0.0,
+          "t_statistic": 0.0,
+          "p_value_ttest": 1.0,
+          "wilcoxon_stat": 0.0,
+          "p_value_wilcoxon": 1.0,
+          "bootstrap_ci_95": [
+            0.0,
+            0.0
+          ],
+          "statistically_significant_001": false,
+          "statistically_significant_05": false,
+          "note": "Identical predictions on this dataset"
+        },
+        "win_tie_loss": {
+          "wins": 0,
+          "ties": 587,
+          "losses": 0
+        }
+      },
+      "ild_at_5": {
+        "baseline": 0.524714,
+        "variant": 0.524714,
+        "delta": 0.0,
+        "relative_pct": 0.0
+      },
+      "ild_at_10": {
+        "baseline": 0.571865,
+        "variant": 0.571865,
+        "delta": 0.0,
+        "relative_pct": 0.0
+      },
+      "ild_at_20": {
+        "baseline": 0.625022,
+        "variant": 0.625022,
+        "delta": 0.0,
+        "relative_pct": 0.0
+      },
+      "coverage_at_5": {
+        "baseline": 0.087456,
+        "variant": 0.087456,
+        "delta": 0.0,
+        "relative_pct": 0.0
+      },
+      "coverage_at_10": {
+        "baseline": 0.130979,
+        "variant": 0.130979,
+        "delta": 0.0,
+        "relative_pct": 0.0
+      },
+      "coverage_at_20": {
+        "baseline": 0.191029,
+        "variant": 0.191029,
+        "delta": 0.0,
+        "relative_pct": 0.0
+      },
+      "latency": {
+        "baseline_p50_ms": 5.710049939807504,
+        "baseline_p95_ms": 8.159290003823115,
+        "variant_p50_ms": 18.625899974722415,
+        "variant_p95_ms": 22.03696495853364,
+        "overhead_p50_ms": 12.9159,
+        "overhead_p95_ms": 13.8777
+      }
+    },
+    "mmr_l0.3_p100": {
+      "variant_name": "MMR \u03bb=0.3 pool=100",
+      "ndcg_at_5": {
+        "mean_baseline": 0.005987,
+        "mean_variant": 0.00663,
+        "paired_test": {
+          "mean_difference": 0.000643,
+          "std_difference": 0.036472,
+          "t_statistic": 0.4269,
+          "p_value_ttest": 0.6695943422259678,
+          "wilcoxon_stat": 95.5,
+          "p_value_wilcoxon": 0.7217028353252091,
+          "bootstrap_ci_95": [
+            -0.002309,
+            0.003664
+          ],
+          "statistically_significant_001": false,
+          "statistically_significant_05": false
+        },
+        "win_tie_loss": {
+          "wins": 10,
+          "ties": 567,
+          "losses": 10
+        }
+      },
+      "ndcg_at_10": {
+        "mean_baseline": 0.007153,
+        "mean_variant": 0.009401,
+        "paired_test": {
+          "mean_difference": 0.002249,
+          "std_difference": 0.036731,
+          "t_statistic": 1.4832,
+          "p_value_ttest": 0.13855740203031383,
+          "wilcoxon_stat": 414.5,
+          "p_value_wilcoxon": 0.11359154665014906,
+          "bootstrap_ci_95": [
+            -0.000633,
+            0.005166
+          ],
+          "statistically_significant_001": false,
+          "statistically_significant_05": false
+        },
+        "win_tie_loss": {
+          "wins": 30,
+          "ties": 540,
+          "losses": 17
+        }
+      },
+      "ndcg_at_20": {
+        "mean_baseline": 0.010476,
+        "mean_variant": 0.011302,
+        "paired_test": {
+          "mean_difference": 0.000826,
+          "std_difference": 0.036506,
+          "t_statistic": 0.5484,
+          "p_value_ttest": 0.583650838625588,
+          "wilcoxon_stat": 1704.0,
+          "p_value_wilcoxon": 0.4734038290012478,
+          "bootstrap_ci_95": [
+            -0.002023,
+            0.003628
+          ],
+          "statistically_significant_001": false,
+          "statistically_significant_05": false
+        },
+        "win_tie_loss": {
+          "wins": 46,
+          "ties": 501,
+          "losses": 40
+        }
+      },
+      "ild_at_5": {
+        "baseline": 0.524714,
+        "variant": 0.893048,
+        "delta": 0.368334,
+        "relative_pct": 70.2
+      },
+      "ild_at_10": {
+        "baseline": 0.571865,
+        "variant": 0.867696,
+        "delta": 0.295831,
+        "relative_pct": 51.73
+      },
+      "ild_at_20": {
+        "baseline": 0.625022,
+        "variant": 0.849813,
+        "delta": 0.224791,
+        "relative_pct": 35.97
+      },
+      "coverage_at_5": {
+        "baseline": 0.087456,
+        "variant": 0.100287,
+        "delta": 0.012831,
+        "relative_pct": 14.67
+      },
+      "coverage_at_10": {
+        "baseline": 0.130979,
+        "variant": 0.162698,
+        "delta": 0.031719,
+        "relative_pct": 24.22
+      },
+      "coverage_at_20": {
+        "baseline": 0.191029,
+        "variant": 0.248614,
+        "delta": 0.057585,
+        "relative_pct": 30.14
+      },
+      "latency": {
+        "baseline_p50_ms": 5.710049939807504,
+        "baseline_p95_ms": 8.159290003823115,
+        "variant_p50_ms": 35.56480002589524,
+        "variant_p95_ms": 40.4462149948813,
+        "overhead_p50_ms": 29.8548,
+        "overhead_p95_ms": 32.2869
+      }
+    },
+    "mmr_l0.5_p100": {
+      "variant_name": "MMR \u03bb=0.5 pool=100",
+      "ndcg_at_5": {
+        "mean_baseline": 0.005987,
+        "mean_variant": 0.007066,
+        "paired_test": {
+          "mean_difference": 0.001079,
+          "std_difference": 0.037513,
+          "t_statistic": 0.6971,
+          "p_value_ttest": 0.48603981916110756,
+          "wilcoxon_stat": 77.0,
+          "p_value_wilcoxon": 0.4679429598081444,
+          "bootstrap_ci_95": [
+            -0.002049,
+            0.004146
+          ],
+          "statistically_significant_001": false,
+          "statistically_significant_05": false
+        },
+        "win_tie_loss": {
+          "wins": 10,
+          "ties": 568,
+          "losses": 9
+        }
+      },
+      "ndcg_at_10": {
+        "mean_baseline": 0.007153,
+        "mean_variant": 0.009091,
+        "paired_test": {
+          "mean_difference": 0.001938,
+          "std_difference": 0.029185,
+          "t_statistic": 1.6089,
+          "p_value_ttest": 0.10817235420960798,
+          "wilcoxon_stat": 218.5,
+          "p_value_wilcoxon": 0.11391179350243816,
+          "bootstrap_ci_95": [
+            -0.00032,
+            0.004608
+          ],
+          "statistically_significant_001": false,
+          "statistically_significant_05": false
+        },
+        "win_tie_loss": {
+          "wins": 21,
+          "ties": 552,
+          "losses": 14
+        }
+      },
+      "ndcg_at_20": {
+        "mean_baseline": 0.010476,
+        "mean_variant": 0.012724,
+        "paired_test": {
+          "mean_difference": 0.002248,
+          "std_difference": 0.026437,
+          "t_statistic": 2.0601,
+          "p_value_ttest": 0.03983468255342212,
+          "wilcoxon_stat": 1136.0,
+          "p_value_wilcoxon": 0.06347834301724446,
+          "bootstrap_ci_95": [
+            0.00018,
+            0.004443
+          ],
+          "statistically_significant_001": false,
+          "statistically_significant_05": true
+        },
+        "win_tie_loss": {
+          "wins": 46,
+          "ties": 510,
+          "losses": 31
+        }
+      },
+      "ild_at_5": {
+        "baseline": 0.524714,
+        "variant": 0.788935,
+        "delta": 0.264221,
+        "relative_pct": 50.36
+      },
+      "ild_at_10": {
+        "baseline": 0.571865,
+        "variant": 0.768555,
+        "delta": 0.19669,
+        "relative_pct": 34.39
+      },
+      "ild_at_20": {
+        "baseline": 0.625022,
+        "variant": 0.763774,
+        "delta": 0.138752,
+        "relative_pct": 22.2
+      },
+      "coverage_at_5": {
+        "baseline": 0.087456,
+        "variant": 0.087148,
+        "delta": -0.000308,
+        "relative_pct": -0.35
+      },
+      "coverage_at_10": {
+        "baseline": 0.130979,
+        "variant": 0.142168,
+        "delta": 0.011189,
+        "relative_pct": 8.54
+      },
+      "coverage_at_20": {
+        "baseline": 0.191029,
+        "variant": 0.223157,
+        "delta": 0.032128,
+        "relative_pct": 16.82
+      },
+      "latency": {
+        "baseline_p50_ms": 5.710049939807504,
+        "baseline_p95_ms": 8.159290003823115,
+        "variant_p50_ms": 35.0372499669902,
+        "variant_p95_ms": 38.03465496166609,
+        "overhead_p50_ms": 29.3272,
+        "overhead_p95_ms": 29.8754
+      }
+    },
+    "mmr_l0.7_p100": {
+      "variant_name": "MMR \u03bb=0.7 pool=100",
+      "ndcg_at_5": {
+        "mean_baseline": 0.005987,
+        "mean_variant": 0.007531,
+        "paired_test": {
+          "mean_difference": 0.001544,
+          "std_difference": 0.021976,
+          "t_statistic": 1.7019,
+          "p_value_ttest": 0.08930589982351095,
+          "wilcoxon_stat": 6.5,
+          "p_value_wilcoxon": 0.10689685480449329,
+          "bootstrap_ci_95": [
+            -0.000111,
+            0.003474
+          ],
+          "statistically_significant_001": false,
+          "statistically_significant_05": false
+        },
+        "win_tie_loss": {
+          "wins": 6,
+          "ties": 579,
+          "losses": 2
+        }
+      },
+      "ndcg_at_10": {
+        "mean_baseline": 0.007153,
+        "mean_variant": 0.008508,
+        "paired_test": {
+          "mean_difference": 0.001355,
+          "std_difference": 0.018734,
+          "t_statistic": 1.7523,
+          "p_value_ttest": 0.08024558154959369,
+          "wilcoxon_stat": 95.5,
+          "p_value_wilcoxon": 0.11917250482778356,
+          "bootstrap_ci_95": [
+            -0.000119,
+            0.003096
+          ],
+          "statistically_significant_001": false,
+          "statistically_significant_05": false
+        },
+        "win_tie_loss": {
+          "wins": 16,
+          "ties": 563,
+          "losses": 8
+        }
+      },
+      "ndcg_at_20": {
+        "mean_baseline": 0.010476,
+        "mean_variant": 0.010997,
+        "paired_test": {
+          "mean_difference": 0.000521,
+          "std_difference": 0.015498,
+          "t_statistic": 0.8146,
+          "p_value_ttest": 0.4156281138311772,
+          "wilcoxon_stat": 666.0,
+          "p_value_wilcoxon": 0.2815986063756848,
+          "bootstrap_ci_95": [
+            -0.000631,
+            0.001836
+          ],
+          "statistically_significant_001": false,
+          "statistically_significant_05": false
+        },
+        "win_tie_loss": {
+          "wins": 33,
+          "ties": 531,
+          "losses": 23
+        }
+      },
+      "ild_at_5": {
+        "baseline": 0.524714,
+        "variant": 0.655842,
+        "delta": 0.131128,
+        "relative_pct": 24.99
+      },
+      "ild_at_10": {
+        "baseline": 0.571865,
+        "variant": 0.662405,
+        "delta": 0.09054,
+        "relative_pct": 15.83
+      },
+      "ild_at_20": {
+        "baseline": 0.625022,
+        "variant": 0.684583,
+        "delta": 0.059561,
+        "relative_pct": 9.53
+      },
+      "coverage_at_5": {
+        "baseline": 0.087456,
+        "variant": 0.087456,
+        "delta": 0.0,
+        "relative_pct": 0.0
+      },
+      "coverage_at_10": {
+        "baseline": 0.130979,
+        "variant": 0.136933,
+        "delta": 0.005954,
+        "relative_pct": 4.55
+      },
+      "coverage_at_20": {
+        "baseline": 0.191029,
+        "variant": 0.20622,
+        "delta": 0.015191,
+        "relative_pct": 7.95
+      },
+      "latency": {
+        "baseline_p50_ms": 5.710049939807504,
+        "baseline_p95_ms": 8.159290003823115,
+        "variant_p50_ms": 35.021949966903776,
+        "variant_p95_ms": 37.817165040178224,
+        "overhead_p50_ms": 29.3119,
+        "overhead_p95_ms": 29.6579
+      }
+    },
+    "mmr_l0.9_p100": {
+      "variant_name": "MMR \u03bb=0.9 pool=100",
+      "ndcg_at_5": {
+        "mean_baseline": 0.005987,
+        "mean_variant": 0.005987,
+        "paired_test": {
+          "mean_difference": 0.0,
+          "std_difference": 0.0,
+          "t_statistic": 0.0,
+          "p_value_ttest": 1.0,
+          "wilcoxon_stat": 0.0,
+          "p_value_wilcoxon": 1.0,
+          "bootstrap_ci_95": [
+            0.0,
+            0.0
+          ],
+          "statistically_significant_001": false,
+          "statistically_significant_05": false,
+          "note": "Identical predictions on this dataset"
+        },
+        "win_tie_loss": {
+          "wins": 0,
+          "ties": 587,
+          "losses": 0
+        }
+      },
+      "ndcg_at_10": {
+        "mean_baseline": 0.007153,
+        "mean_variant": 0.007707,
+        "paired_test": {
+          "mean_difference": 0.000554,
+          "std_difference": 0.010576,
+          "t_statistic": 1.2695,
+          "p_value_ttest": 0.20477477778814157,
+          "wilcoxon_stat": 22.0,
+          "p_value_wilcoxon": 0.18149641476294975,
+          "bootstrap_ci_95": [
+            -0.000326,
+            0.001524
+          ],
+          "statistically_significant_001": false,
+          "statistically_significant_05": false
+        },
+        "win_tie_loss": {
+          "wins": 8,
+          "ties": 575,
+          "losses": 4
+        }
+      },
+      "ndcg_at_20": {
+        "mean_baseline": 0.010476,
+        "mean_variant": 0.010626,
+        "paired_test": {
+          "mean_difference": 0.00015,
+          "std_difference": 0.00763,
+          "t_statistic": 0.4776,
+          "p_value_ttest": 0.6331036768536399,
+          "wilcoxon_stat": 244.0,
+          "p_value_wilcoxon": 0.24486230644307205,
+          "bootstrap_ci_95": [
+            -0.000506,
+            0.000726
+          ],
+          "statistically_significant_001": false,
+          "statistically_significant_05": false
+        },
+        "win_tie_loss": {
+          "wins": 21,
+          "ties": 552,
+          "losses": 14
+        }
+      },
+      "ild_at_5": {
+        "baseline": 0.524714,
+        "variant": 0.559759,
+        "delta": 0.035045,
+        "relative_pct": 6.68
+      },
+      "ild_at_10": {
+        "baseline": 0.571865,
+        "variant": 0.595087,
+        "delta": 0.023222,
+        "relative_pct": 4.06
+      },
+      "ild_at_20": {
+        "baseline": 0.625022,
+        "variant": 0.640263,
+        "delta": 0.015241,
+        "relative_pct": 2.44
+      },
+      "coverage_at_5": {
+        "baseline": 0.087456,
+        "variant": 0.086533,
+        "delta": -0.000923,
+        "relative_pct": -1.06
+      },
+      "coverage_at_10": {
+        "baseline": 0.130979,
+        "variant": 0.13293,
+        "delta": 0.001951,
+        "relative_pct": 1.49
+      },
+      "coverage_at_20": {
+        "baseline": 0.191029,
+        "variant": 0.19729,
+        "delta": 0.006261,
+        "relative_pct": 3.28
+      },
+      "latency": {
+        "baseline_p50_ms": 5.710049939807504,
+        "baseline_p95_ms": 8.159290003823115,
+        "variant_p50_ms": 35.06650001509115,
+        "variant_p95_ms": 38.030654983595014,
+        "overhead_p50_ms": 29.3565,
+        "overhead_p95_ms": 29.8714
+      }
+    },
+    "mmr_l1.0_p100": {
+      "variant_name": "MMR \u03bb=1.0 pool=100",
+      "ndcg_at_5": {
+        "mean_baseline": 0.005987,
+        "mean_variant": 0.005987,
+        "paired_test": {
+          "mean_difference": 0.0,
+          "std_difference": 0.0,
+          "t_statistic": 0.0,
+          "p_value_ttest": 1.0,
+          "wilcoxon_stat": 0.0,
+          "p_value_wilcoxon": 1.0,
+          "bootstrap_ci_95": [
+            0.0,
+            0.0
+          ],
+          "statistically_significant_001": false,
+          "statistically_significant_05": false,
+          "note": "Identical predictions on this dataset"
+        },
+        "win_tie_loss": {
+          "wins": 0,
+          "ties": 587,
+          "losses": 0
+        }
+      },
+      "ndcg_at_10": {
+        "mean_baseline": 0.007153,
+        "mean_variant": 0.007153,
+        "paired_test": {
+          "mean_difference": 0.0,
+          "std_difference": 0.0,
+          "t_statistic": 0.0,
+          "p_value_ttest": 1.0,
+          "wilcoxon_stat": 0.0,
+          "p_value_wilcoxon": 1.0,
+          "bootstrap_ci_95": [
+            0.0,
+            0.0
+          ],
+          "statistically_significant_001": false,
+          "statistically_significant_05": false,
+          "note": "Identical predictions on this dataset"
+        },
+        "win_tie_loss": {
+          "wins": 0,
+          "ties": 587,
+          "losses": 0
+        }
+      },
+      "ndcg_at_20": {
+        "mean_baseline": 0.010476,
+        "mean_variant": 0.010476,
+        "paired_test": {
+          "mean_difference": 0.0,
+          "std_difference": 0.0,
+          "t_statistic": 0.0,
+          "p_value_ttest": 1.0,
+          "wilcoxon_stat": 0.0,
+          "p_value_wilcoxon": 1.0,
+          "bootstrap_ci_95": [
+            0.0,
+            0.0
+          ],
+          "statistically_significant_001": false,
+          "statistically_significant_05": false,
+          "note": "Identical predictions on this dataset"
+        },
+        "win_tie_loss": {
+          "wins": 0,
+          "ties": 587,
+          "losses": 0
+        }
+      },
+      "ild_at_5": {
+        "baseline": 0.524714,
+        "variant": 0.524714,
+        "delta": 0.0,
+        "relative_pct": 0.0
+      },
+      "ild_at_10": {
+        "baseline": 0.571865,
+        "variant": 0.571865,
+        "delta": 0.0,
+        "relative_pct": 0.0
+      },
+      "ild_at_20": {
+        "baseline": 0.625022,
+        "variant": 0.625022,
+        "delta": 0.0,
+        "relative_pct": 0.0
+      },
+      "coverage_at_5": {
+        "baseline": 0.087456,
+        "variant": 0.087456,
+        "delta": 0.0,
+        "relative_pct": 0.0
+      },
+      "coverage_at_10": {
+        "baseline": 0.130979,
+        "variant": 0.130979,
+        "delta": 0.0,
+        "relative_pct": 0.0
+      },
+      "coverage_at_20": {
+        "baseline": 0.191029,
+        "variant": 0.191029,
+        "delta": 0.0,
+        "relative_pct": 0.0
+      },
+      "latency": {
+        "baseline_p50_ms": 5.710049939807504,
+        "baseline_p95_ms": 8.159290003823115,
+        "variant_p50_ms": 34.67860003001988,
+        "variant_p95_ms": 37.377435027156025,
+        "overhead_p50_ms": 28.9686,
+        "overhead_p95_ms": 29.2181
+      }
+    }
+  }
+}

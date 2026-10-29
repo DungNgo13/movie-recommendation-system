@@ -265,3 +265,41 @@ class TFIDFV11Config:
         """Compute SHA256 checksum of canonical configuration JSON."""
         canonical_json = json.dumps(self.to_dict(), sort_keys=True)
         return hashlib.sha256(canonical_json.encode("utf-8")).hexdigest()
+
+
+
+@dataclass(frozen=True)
+class TFIDFV11MMRConfig(TFIDFV11Config):
+    """
+    Configuration for TF-IDF v1.1 + MMR diversity-aware re-ranking.
+
+    Extends TFIDFV11Config with three additional parameters that control
+    the Maximum Marginal Relevance post-processing stage:
+
+        MMR(i) = λ × Relevance(i) − (1 − λ) × max_j∈S Similarity(i, j)
+
+    When mmr_enabled is False, this config is functionally identical to
+    TFIDFV11Config and produces the same recommendations.
+
+    When mmr_enabled is True and mmr_lambda is 1.0, the output order
+    matches pure relevance ranking within the candidate pool.
+    """
+    # ── MMR Re-ranking Parameters ───────────────────────────────────────
+    mmr_enabled: bool = False
+    mmr_lambda: float = 0.5
+    mmr_candidate_pool_size: int = 100
+
+    def to_dict(self) -> dict:
+        """Convert config to dictionary, including MMR parameters."""
+        d = super().to_dict()
+        d["mmr"] = {
+            "enabled": self.mmr_enabled,
+            "lambda": self.mmr_lambda,
+            "candidate_pool_size": self.mmr_candidate_pool_size,
+        }
+        return d
+
+    def compute_checksum(self) -> str:
+        """Compute SHA256 checksum of canonical configuration JSON."""
+        canonical_json = json.dumps(self.to_dict(), sort_keys=True)
+        return hashlib.sha256(canonical_json.encode("utf-8")).hexdigest()

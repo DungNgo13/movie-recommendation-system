@@ -1,0 +1,1289 @@
+{
+  "baseline_v11": {
+    "variant_name": "TFIDF-v1.1 (no MMR)",
+    "ndcg_at_5": {
+      "mean_baseline": 0.005987,
+      "mean_variant": 0.005987,
+      "paired_test": {
+        "mean_difference": 0.0,
+        "std_difference": 0.0,
+        "t_statistic": 0.0,
+        "p_value_ttest": 1.0,
+        "wilcoxon_stat": 0.0,
+        "p_value_wilcoxon": 1.0,
+        "bootstrap_ci_95": [
+          0.0,
+          0.0
+        ],
+        "statistically_significant_001": false,
+        "statistically_significant_05": false,
+        "note": "Identical predictions on this dataset"
+      },
+      "win_tie_loss": {
+        "wins": 0,
+        "ties": 587,
+        "losses": 0
+      }
+    },
+    "ndcg_at_10": {
+      "mean_baseline": 0.007153,
+      "mean_variant": 0.007153,
+      "paired_test": {
+        "mean_difference": 0.0,
+        "std_difference": 0.0,
+        "t_statistic": 0.0,
+        "p_value_ttest": 1.0,
+        "wilcoxon_stat": 0.0,
+        "p_value_wilcoxon": 1.0,
+        "bootstrap_ci_95": [
+          0.0,
+          0.0
+        ],
+        "statistically_significant_001": false,
+        "statistically_significant_05": false,
+        "note": "Identical predictions on this dataset"
+      },
+      "win_tie_loss": {
+        "wins": 0,
+        "ties": 587,
+        "losses": 0
+      }
+    },
+    "ndcg_at_20": {
+      "mean_baseline": 0.010476,
+      "mean_variant": 0.010476,
+      "paired_test": {
+        "mean_difference": 0.0,
+        "std_difference": 0.0,
+        "t_statistic": 0.0,
+        "p_value_ttest": 1.0,
+        "wilcoxon_stat": 0.0,
+        "p_value_wilcoxon": 1.0,
+        "bootstrap_ci_95": [
+          0.0,
+          0.0
+        ],
+        "statistically_significant_001": false,
+        "statistically_significant_05": false,
+        "note": "Identical predictions on this dataset"
+      },
+      "win_tie_loss": {
+        "wins": 0,
+        "ties": 587,
+        "losses": 0
+      }
+    },
+    "ild_at_5": {
+      "baseline": 0.524714,
+      "variant": 0.524714,
+      "delta": 0.0,
+      "relative_pct": 0.0
+    },
+    "ild_at_10": {
+      "baseline": 0.571865,
+      "variant": 0.571865,
+      "delta": 0.0,
+      "relative_pct": 0.0
+    },
+    "ild_at_20": {
+      "baseline": 0.625022,
+      "variant": 0.625022,
+      "delta": 0.0,
+      "relative_pct": 0.0
+    },
+    "coverage_at_5": {
+      "baseline": 0.087456,
+      "variant": 0.087456,
+      "delta": 0.0,
+      "relative_pct": 0.0
+    },
+    "coverage_at_10": {
+      "baseline": 0.130979,
+      "variant": 0.130979,
+      "delta": 0.0,
+      "relative_pct": 0.0
+    },
+    "coverage_at_20": {
+      "baseline": 0.191029,
+      "variant": 0.191029,
+      "delta": 0.0,
+      "relative_pct": 0.0
+    },
+    "latency": {
+      "baseline_p50_ms": 5.710049939807504,
+      "baseline_p95_ms": 8.159290003823115,
+      "variant_p50_ms": 5.710049939807504,
+      "variant_p95_ms": 8.159290003823115,
+      "overhead_p50_ms": 0.0,
+      "overhead_p95_ms": 0.0
+    }
+  },
+  "mmr_l0.3_p50": {
+    "variant_name": "MMR \u03bb=0.3 pool=50",
+    "ndcg_at_5": {
+      "mean_baseline": 0.005987,
+      "mean_variant": 0.006438,
+      "paired_test": {
+        "mean_difference": 0.000451,
+        "std_difference": 0.035038,
+        "t_statistic": 0.3115,
+        "p_value_ttest": 0.7555098030762379,
+        "wilcoxon_stat": 77.5,
+        "p_value_wilcoxon": 0.7263515223456101,
+        "bootstrap_ci_95": [
+          -0.002219,
+          0.003375
+        ],
+        "statistically_significant_001": false,
+        "statistically_significant_05": false
+      },
+      "win_tie_loss": {
+        "wins": 8,
+        "ties": 569,
+        "losses": 10
+      }
+    },
+    "ndcg_at_10": {
+      "mean_baseline": 0.007153,
+      "mean_variant": 0.008152,
+      "paired_test": {
+        "mean_difference": 0.001,
+        "std_difference": 0.032292,
+        "t_statistic": 0.75,
+        "p_value_ttest": 0.4535851821417967,
+        "wilcoxon_stat": 329.5,
+        "p_value_wilcoxon": 0.3983880875939947,
+        "bootstrap_ci_95": [
+          -0.001678,
+          0.003679
+        ],
+        "statistically_significant_001": false,
+        "statistically_significant_05": false
+      },
+      "win_tie_loss": {
+        "wins": 23,
+        "ties": 548,
+        "losses": 16
+      }
+    },
+    "ndcg_at_20": {
+      "mean_baseline": 0.010476,
+      "mean_variant": 0.011663,
+      "paired_test": {
+        "mean_difference": 0.001187,
+        "std_difference": 0.030086,
+        "t_statistic": 0.9558,
+        "p_value_ttest": 0.33958186357823844,
+        "wilcoxon_stat": 1390.5,
+        "p_value_wilcoxon": 0.27099949803350487,
+        "bootstrap_ci_95": [
+          -0.001178,
+          0.00384
+        ],
+        "statistically_significant_001": false,
+        "statistically_significant_05": false
+      },
+      "win_tie_loss": {
+        "wins": 46,
+        "ties": 507,
+        "losses": 34
+      }
+    },
+    "ild_at_5": {
+      "baseline": 0.524714,
+      "variant": 0.83482,
+      "delta": 0.310106,
+      "relative_pct": 59.1
+    },
+    "ild_at_10": {
+      "baseline": 0.571865,
+      "variant": 0.804356,
+      "delta": 0.232491,
+      "relative_pct": 40.65
+    },
+    "ild_at_20": {
+      "baseline": 0.625022,
+      "variant": 0.772989,
+      "delta": 0.147967,
+      "relative_pct": 23.67
+    },
+    "coverage_at_5": {
+      "baseline": 0.087456,
+      "variant": 0.092794,
+      "delta": 0.005338,
+      "relative_pct": 6.1
+    },
+    "coverage_at_10": {
+      "baseline": 0.130979,
+      "variant": 0.143092,
+      "delta": 0.012113,
+      "relative_pct": 9.25
+    },
+    "coverage_at_20": {
+      "baseline": 0.191029,
+      "variant": 0.220489,
+      "delta": 0.02946,
+      "relative_pct": 15.42
+    },
+    "latency": {
+      "baseline_p50_ms": 5.710049939807504,
+      "baseline_p95_ms": 8.159290003823115,
+      "variant_p50_ms": 19.106749969068915,
+      "variant_p95_ms": 21.7984449933283,
+      "overhead_p50_ms": 13.3967,
+      "overhead_p95_ms": 13.6392
+    }
+  },
+  "mmr_l0.5_p50": {
+    "variant_name": "MMR \u03bb=0.5 pool=50",
+    "ndcg_at_5": {
+      "mean_baseline": 0.005987,
+      "mean_variant": 0.007203,
+      "paired_test": {
+        "mean_difference": 0.001216,
+        "std_difference": 0.032346,
+        "t_statistic": 0.9111,
+        "p_value_ttest": 0.3626170115666616,
+        "wilcoxon_stat": 50.0,
+        "p_value_wilcoxon": 0.35044459311251563,
+        "bootstrap_ci_95": [
+          -0.001315,
+          0.003974
+        ],
+        "statistically_significant_001": false,
+        "statistically_significant_05": false
+      },
+      "win_tie_loss": {
+        "wins": 8,
+        "ties": 571,
+        "losses": 8
+      }
+    },
+    "ndcg_at_10": {
+      "mean_baseline": 0.007153,
+      "mean_variant": 0.008615,
+      "paired_test": {
+        "mean_difference": 0.001462,
+        "std_difference": 0.026662,
+        "t_statistic": 1.3289,
+        "p_value_ttest": 0.1844070320560831,
+        "wilcoxon_stat": 171.0,
+        "p_value_wilcoxon": 0.20576829668103347,
+        "bootstrap_ci_95": [
+          -0.000521,
+          0.003824
+        ],
+        "statistically_significant_001": false,
+        "statistically_significant_05": false
+      },
+      "win_tie_loss": {
+        "wins": 17,
+        "ties": 557,
+        "losses": 13
+      }
+    },
+    "ndcg_at_20": {
+      "mean_baseline": 0.010476,
+      "mean_variant": 0.012276,
+      "paired_test": {
+        "mean_difference": 0.0018,
+        "std_difference": 0.022962,
+        "t_statistic": 1.899,
+        "p_value_ttest": 0.05805606611817611,
+        "wilcoxon_stat": 927.0,
+        "p_value_wilcoxon": 0.09351888628811407,
+        "bootstrap_ci_95": [
+          0.000127,
+          0.003849
+        ],
+        "statistically_significant_001": false,
+        "statistically_significant_05": false
+      },
+      "win_tie_loss": {
+        "wins": 38,
+        "ties": 518,
+        "losses": 31
+      }
+    },
+    "ild_at_5": {
+      "baseline": 0.524714,
+      "variant": 0.748199,
+      "delta": 0.223485,
+      "relative_pct": 42.59
+    },
+    "ild_at_10": {
+      "baseline": 0.571865,
+      "variant": 0.724816,
+      "delta": 0.152951,
+      "relative_pct": 26.75
+    },
+    "ild_at_20": {
+      "baseline": 0.625022,
+      "variant": 0.717671,
+      "delta": 0.092649,
+      "relative_pct": 14.82
+    },
+    "coverage_at_5": {
+      "baseline": 0.087456,
+      "variant": 0.087662,
+      "delta": 0.000206,
+      "relative_pct": 0.24
+    },
+    "coverage_at_10": {
+      "baseline": 0.130979,
+      "variant": 0.139602,
+      "delta": 0.008623,
+      "relative_pct": 6.58
+    },
+    "coverage_at_20": {
+      "baseline": 0.191029,
+      "variant": 0.213611,
+      "delta": 0.022582,
+      "relative_pct": 11.82
+    },
+    "latency": {
+      "baseline_p50_ms": 5.710049939807504,
+      "baseline_p95_ms": 8.159290003823115,
+      "variant_p50_ms": 19.00835003471002,
+      "variant_p95_ms": 22.289799991995096,
+      "overhead_p50_ms": 13.2983,
+      "overhead_p95_ms": 14.1305
+    }
+  },
+  "mmr_l0.7_p50": {
+    "variant_name": "MMR \u03bb=0.7 pool=50",
+    "ndcg_at_5": {
+      "mean_baseline": 0.005987,
+      "mean_variant": 0.007259,
+      "paired_test": {
+        "mean_difference": 0.001272,
+        "std_difference": 0.016872,
+        "t_statistic": 1.8265,
+        "p_value_ttest": 0.06828016355503654,
+        "wilcoxon_stat": 3.0,
+        "p_value_wilcoxon": 0.06297905121445523,
+        "bootstrap_ci_95": [
+          2.8e-05,
+          0.002806
+        ],
+        "statistically_significant_001": false,
+        "statistically_significant_05": false
+      },
+      "win_tie_loss": {
+        "wins": 5,
+        "ties": 580,
+        "losses": 2
+      }
+    },
+    "ndcg_at_10": {
+      "mean_baseline": 0.007153,
+      "mean_variant": 0.007723,
+      "paired_test": {
+        "mean_difference": 0.000571,
+        "std_difference": 0.013568,
+        "t_statistic": 1.019,
+        "p_value_ttest": 0.308631703701553,
+        "wilcoxon_stat": 79.5,
+        "p_value_wilcoxon": 0.34089518664227525,
+        "bootstrap_ci_95": [
+          -0.00059,
+          0.00183
+        ],
+        "statistically_significant_001": false,
+        "statistically_significant_05": false
+      },
+      "win_tie_loss": {
+        "wins": 12,
+        "ties": 567,
+        "losses": 8
+      }
+    },
+    "ndcg_at_20": {
+      "mean_baseline": 0.010476,
+      "mean_variant": 0.010732,
+      "paired_test": {
+        "mean_difference": 0.000256,
+        "std_difference": 0.013771,
+        "t_statistic": 0.4512,
+        "p_value_ttest": 0.6519854249447065,
+        "wilcoxon_stat": 608.0,
+        "p_value_wilcoxon": 0.34125852434509396,
+        "bootstrap_ci_95": [
+          -0.000776,
+          0.001328
+        ],
+        "statistically_significant_001": false,
+        "statistically_significant_05": false
+      },
+      "win_tie_loss": {
+        "wins": 33,
+        "ties": 534,
+        "losses": 20
+      }
+    },
+    "ild_at_5": {
+      "baseline": 0.524714,
+      "variant": 0.630609,
+      "delta": 0.105895,
+      "relative_pct": 20.18
+    },
+    "ild_at_10": {
+      "baseline": 0.571865,
+      "variant": 0.642748,
+      "delta": 0.070883,
+      "relative_pct": 12.4
+    },
+    "ild_at_20": {
+      "baseline": 0.625022,
+      "variant": 0.671381,
+      "delta": 0.046359,
+      "relative_pct": 7.42
+    },
+    "coverage_at_5": {
+      "baseline": 0.087456,
+      "variant": 0.087148,
+      "delta": -0.000308,
+      "relative_pct": -0.35
+    },
+    "coverage_at_10": {
+      "baseline": 0.130979,
+      "variant": 0.135085,
+      "delta": 0.004106,
+      "relative_pct": 3.13
+    },
+    "coverage_at_20": {
+      "baseline": 0.191029,
+      "variant": 0.202936,
+      "delta": 0.011907,
+      "relative_pct": 6.23
+    },
+    "latency": {
+      "baseline_p50_ms": 5.710049939807504,
+      "baseline_p95_ms": 8.159290003823115,
+      "variant_p50_ms": 18.428350042086095,
+      "variant_p95_ms": 20.624879939714447,
+      "overhead_p50_ms": 12.7183,
+      "overhead_p95_ms": 12.4656
+    }
+  },
+  "mmr_l0.9_p50": {
+    "variant_name": "MMR \u03bb=0.9 pool=50",
+    "ndcg_at_5": {
+      "mean_baseline": 0.005987,
+      "mean_variant": 0.005987,
+      "paired_test": {
+        "mean_difference": 0.0,
+        "std_difference": 0.0,
+        "t_statistic": 0.0,
+        "p_value_ttest": 1.0,
+        "wilcoxon_stat": 0.0,
+        "p_value_wilcoxon": 1.0,
+        "bootstrap_ci_95": [
+          0.0,
+          0.0
+        ],
+        "statistically_significant_001": false,
+        "statistically_significant_05": false,
+        "note": "Identical predictions on this dataset"
+      },
+      "win_tie_loss": {
+        "wins": 0,
+        "ties": 587,
+        "losses": 0
+      }
+    },
+    "ndcg_at_10": {
+      "mean_baseline": 0.007153,
+      "mean_variant": 0.007836,
+      "paired_test": {
+        "mean_difference": 0.000683,
+        "std_difference": 0.009199,
+        "t_statistic": 1.7983,
+        "p_value_ttest": 0.07265063049205696,
+        "wilcoxon_stat": 11.5,
+        "p_value_wilcoxon": 0.10247043485974937,
+        "bootstrap_ci_95": [
+          -3.3e-05,
+          0.001577
+        ],
+        "statistically_significant_001": false,
+        "statistically_significant_05": false
+      },
+      "win_tie_loss": {
+        "wins": 6,
+        "ties": 577,
+        "losses": 4
+      }
+    },
+    "ndcg_at_20": {
+      "mean_baseline": 0.010476,
+      "mean_variant": 0.010645,
+      "paired_test": {
+        "mean_difference": 0.000169,
+        "std_difference": 0.00549,
+        "t_statistic": 0.7473,
+        "p_value_ttest": 0.45517223417949365,
+        "wilcoxon_stat": 240.0,
+        "p_value_wilcoxon": 0.3255830180830511,
+        "bootstrap_ci_95": [
+          -0.000272,
+          0.000643
+        ],
+        "statistically_significant_001": false,
+        "statistically_significant_05": false
+      },
+      "win_tie_loss": {
+        "wins": 19,
+        "ties": 553,
+        "losses": 15
+      }
+    },
+    "ild_at_5": {
+      "baseline": 0.524714,
+      "variant": 0.54875,
+      "delta": 0.024036,
+      "relative_pct": 4.58
+    },
+    "ild_at_10": {
+      "baseline": 0.571865,
+      "variant": 0.589416,
+      "delta": 0.017551,
+      "relative_pct": 3.07
+    },
+    "ild_at_20": {
+      "baseline": 0.625022,
+      "variant": 0.636004,
+      "delta": 0.010982,
+      "relative_pct": 1.76
+    },
+    "coverage_at_5": {
+      "baseline": 0.087456,
+      "variant": 0.08684,
+      "delta": -0.000616,
+      "relative_pct": -0.7
+    },
+    "coverage_at_10": {
+      "baseline": 0.130979,
+      "variant": 0.132416,
+      "delta": 0.001437,
+      "relative_pct": 1.1
+    },
+    "coverage_at_20": {
+      "baseline": 0.191029,
+      "variant": 0.196058,
+      "delta": 0.005029,
+      "relative_pct": 2.63
+    },
+    "latency": {
+      "baseline_p50_ms": 5.710049939807504,
+      "baseline_p95_ms": 8.159290003823115,
+      "variant_p50_ms": 18.45574995968491,
+      "variant_p95_ms": 20.69176998338662,
+      "overhead_p50_ms": 12.7457,
+      "overhead_p95_ms": 12.5325
+    }
+  },
+  "mmr_l1.0_p50": {
+    "variant_name": "MMR \u03bb=1.0 pool=50",
+    "ndcg_at_5": {
+      "mean_baseline": 0.005987,
+      "mean_variant": 0.005987,
+      "paired_test": {
+        "mean_difference": 0.0,
+        "std_difference": 0.0,
+        "t_statistic": 0.0,
+        "p_value_ttest": 1.0,
+        "wilcoxon_stat": 0.0,
+        "p_value_wilcoxon": 1.0,
+        "bootstrap_ci_95": [
+          0.0,
+          0.0
+        ],
+        "statistically_significant_001": false,
+        "statistically_significant_05": false,
+        "note": "Identical predictions on this dataset"
+      },
+      "win_tie_loss": {
+        "wins": 0,
+        "ties": 587,
+        "losses": 0
+      }
+    },
+    "ndcg_at_10": {
+      "mean_baseline": 0.007153,
+      "mean_variant": 0.007153,
+      "paired_test": {
+        "mean_difference": 0.0,
+        "std_difference": 0.0,
+        "t_statistic": 0.0,
+        "p_value_ttest": 1.0,
+        "wilcoxon_stat": 0.0,
+        "p_value_wilcoxon": 1.0,
+        "bootstrap_ci_95": [
+          0.0,
+          0.0
+        ],
+        "statistically_significant_001": false,
+        "statistically_significant_05": false,
+        "note": "Identical predictions on this dataset"
+      },
+      "win_tie_loss": {
+        "wins": 0,
+        "ties": 587,
+        "losses": 0
+      }
+    },
+    "ndcg_at_20": {
+      "mean_baseline": 0.010476,
+      "mean_variant": 0.010476,
+      "paired_test": {
+        "mean_difference": 0.0,
+        "std_difference": 0.0,
+        "t_statistic": 0.0,
+        "p_value_ttest": 1.0,
+        "wilcoxon_stat": 0.0,
+        "p_value_wilcoxon": 1.0,
+        "bootstrap_ci_95": [
+          0.0,
+          0.0
+        ],
+        "statistically_significant_001": false,
+        "statistically_significant_05": false,
+        "note": "Identical predictions on this dataset"
+      },
+      "win_tie_loss": {
+        "wins": 0,
+        "ties": 587,
+        "losses": 0
+      }
+    },
+    "ild_at_5": {
+      "baseline": 0.524714,
+      "variant": 0.524714,
+      "delta": 0.0,
+      "relative_pct": 0.0
+    },
+    "ild_at_10": {
+      "baseline": 0.571865,
+      "variant": 0.571865,
+      "delta": 0.0,
+      "relative_pct": 0.0
+    },
+    "ild_at_20": {
+      "baseline": 0.625022,
+      "variant": 0.625022,
+      "delta": 0.0,
+      "relative_pct": 0.0
+    },
+    "coverage_at_5": {
+      "baseline": 0.087456,
+      "variant": 0.087456,
+      "delta": 0.0,
+      "relative_pct": 0.0
+    },
+    "coverage_at_10": {
+      "baseline": 0.130979,
+      "variant": 0.130979,
+      "delta": 0.0,
+      "relative_pct": 0.0
+    },
+    "coverage_at_20": {
+      "baseline": 0.191029,
+      "variant": 0.191029,
+      "delta": 0.0,
+      "relative_pct": 0.0
+    },
+    "latency": {
+      "baseline_p50_ms": 5.710049939807504,
+      "baseline_p95_ms": 8.159290003823115,
+      "variant_p50_ms": 18.625899974722415,
+      "variant_p95_ms": 22.03696495853364,
+      "overhead_p50_ms": 12.9159,
+      "overhead_p95_ms": 13.8777
+    }
+  },
+  "mmr_l0.3_p100": {
+    "variant_name": "MMR \u03bb=0.3 pool=100",
+    "ndcg_at_5": {
+      "mean_baseline": 0.005987,
+      "mean_variant": 0.00663,
+      "paired_test": {
+        "mean_difference": 0.000643,
+        "std_difference": 0.036472,
+        "t_statistic": 0.4269,
+        "p_value_ttest": 0.6695943422259678,
+        "wilcoxon_stat": 95.5,
+        "p_value_wilcoxon": 0.7217028353252091,
+        "bootstrap_ci_95": [
+          -0.002309,
+          0.003664
+        ],
+        "statistically_significant_001": false,
+        "statistically_significant_05": false
+      },
+      "win_tie_loss": {
+        "wins": 10,
+        "ties": 567,
+        "losses": 10
+      }
+    },
+    "ndcg_at_10": {
+      "mean_baseline": 0.007153,
+      "mean_variant": 0.009401,
+      "paired_test": {
+        "mean_difference": 0.002249,
+        "std_difference": 0.036731,
+        "t_statistic": 1.4832,
+        "p_value_ttest": 0.13855740203031383,
+        "wilcoxon_stat": 414.5,
+        "p_value_wilcoxon": 0.11359154665014906,
+        "bootstrap_ci_95": [
+          -0.000633,
+          0.005166
+        ],
+        "statistically_significant_001": false,
+        "statistically_significant_05": false
+      },
+      "win_tie_loss": {
+        "wins": 30,
+        "ties": 540,
+        "losses": 17
+      }
+    },
+    "ndcg_at_20": {
+      "mean_baseline": 0.010476,
+      "mean_variant": 0.011302,
+      "paired_test": {
+        "mean_difference": 0.000826,
+        "std_difference": 0.036506,
+        "t_statistic": 0.5484,
+        "p_value_ttest": 0.583650838625588,
+        "wilcoxon_stat": 1704.0,
+        "p_value_wilcoxon": 0.4734038290012478,
+        "bootstrap_ci_95": [
+          -0.002023,
+          0.003628
+        ],
+        "statistically_significant_001": false,
+        "statistically_significant_05": false
+      },
+      "win_tie_loss": {
+        "wins": 46,
+        "ties": 501,
+        "losses": 40
+      }
+    },
+    "ild_at_5": {
+      "baseline": 0.524714,
+      "variant": 0.893048,
+      "delta": 0.368334,
+      "relative_pct": 70.2
+    },
+    "ild_at_10": {
+      "baseline": 0.571865,
+      "variant": 0.867696,
+      "delta": 0.295831,
+      "relative_pct": 51.73
+    },
+    "ild_at_20": {
+      "baseline": 0.625022,
+      "variant": 0.849813,
+      "delta": 0.224791,
+      "relative_pct": 35.97
+    },
+    "coverage_at_5": {
+      "baseline": 0.087456,
+      "variant": 0.100287,
+      "delta": 0.012831,
+      "relative_pct": 14.67
+    },
+    "coverage_at_10": {
+      "baseline": 0.130979,
+      "variant": 0.162698,
+      "delta": 0.031719,
+      "relative_pct": 24.22
+    },
+    "coverage_at_20": {
+      "baseline": 0.191029,
+      "variant": 0.248614,
+      "delta": 0.057585,
+      "relative_pct": 30.14
+    },
+    "latency": {
+      "baseline_p50_ms": 5.710049939807504,
+      "baseline_p95_ms": 8.159290003823115,
+      "variant_p50_ms": 35.56480002589524,
+      "variant_p95_ms": 40.4462149948813,
+      "overhead_p50_ms": 29.8548,
+      "overhead_p95_ms": 32.2869
+    }
+  },
+  "mmr_l0.5_p100": {
+    "variant_name": "MMR \u03bb=0.5 pool=100",
+    "ndcg_at_5": {
+      "mean_baseline": 0.005987,
+      "mean_variant": 0.007066,
+      "paired_test": {
+        "mean_difference": 0.001079,
+        "std_difference": 0.037513,
+        "t_statistic": 0.6971,
+        "p_value_ttest": 0.48603981916110756,
+        "wilcoxon_stat": 77.0,
+        "p_value_wilcoxon": 0.4679429598081444,
+        "bootstrap_ci_95": [
+          -0.002049,
+          0.004146
+        ],
+        "statistically_significant_001": false,
+        "statistically_significant_05": false
+      },
+      "win_tie_loss": {
+        "wins": 10,
+        "ties": 568,
+        "losses": 9
+      }
+    },
+    "ndcg_at_10": {
+      "mean_baseline": 0.007153,
+      "mean_variant": 0.009091,
+      "paired_test": {
+        "mean_difference": 0.001938,
+        "std_difference": 0.029185,
+        "t_statistic": 1.6089,
+        "p_value_ttest": 0.10817235420960798,
+        "wilcoxon_stat": 218.5,
+        "p_value_wilcoxon": 0.11391179350243816,
+        "bootstrap_ci_95": [
+          -0.00032,
+          0.004608
+        ],
+        "statistically_significant_001": false,
+        "statistically_significant_05": false
+      },
+      "win_tie_loss": {
+        "wins": 21,
+        "ties": 552,
+        "losses": 14
+      }
+    },
+    "ndcg_at_20": {
+      "mean_baseline": 0.010476,
+      "mean_variant": 0.012724,
+      "paired_test": {
+        "mean_difference": 0.002248,
+        "std_difference": 0.026437,
+        "t_statistic": 2.0601,
+        "p_value_ttest": 0.03983468255342212,
+        "wilcoxon_stat": 1136.0,
+        "p_value_wilcoxon": 0.06347834301724446,
+        "bootstrap_ci_95": [
+          0.00018,
+          0.004443
+        ],
+        "statistically_significant_001": false,
+        "statistically_significant_05": true
+      },
+      "win_tie_loss": {
+        "wins": 46,
+        "ties": 510,
+        "losses": 31
+      }
+    },
+    "ild_at_5": {
+      "baseline": 0.524714,
+      "variant": 0.788935,
+      "delta": 0.264221,
+      "relative_pct": 50.36
+    },
+    "ild_at_10": {
+      "baseline": 0.571865,
+      "variant": 0.768555,
+      "delta": 0.19669,
+      "relative_pct": 34.39
+    },
+    "ild_at_20": {
+      "baseline": 0.625022,
+      "variant": 0.763774,
+      "delta": 0.138752,
+      "relative_pct": 22.2
+    },
+    "coverage_at_5": {
+      "baseline": 0.087456,
+      "variant": 0.087148,
+      "delta": -0.000308,
+      "relative_pct": -0.35
+    },
+    "coverage_at_10": {
+      "baseline": 0.130979,
+      "variant": 0.142168,
+      "delta": 0.011189,
+      "relative_pct": 8.54
+    },
+    "coverage_at_20": {
+      "baseline": 0.191029,
+      "variant": 0.223157,
+      "delta": 0.032128,
+      "relative_pct": 16.82
+    },
+    "latency": {
+      "baseline_p50_ms": 5.710049939807504,
+      "baseline_p95_ms": 8.159290003823115,
+      "variant_p50_ms": 35.0372499669902,
+      "variant_p95_ms": 38.03465496166609,
+      "overhead_p50_ms": 29.3272,
+      "overhead_p95_ms": 29.8754
+    }
+  },
+  "mmr_l0.7_p100": {
+    "variant_name": "MMR \u03bb=0.7 pool=100",
+    "ndcg_at_5": {
+      "mean_baseline": 0.005987,
+      "mean_variant": 0.007531,
+      "paired_test": {
+        "mean_difference": 0.001544,
+        "std_difference": 0.021976,
+        "t_statistic": 1.7019,
+        "p_value_ttest": 0.08930589982351095,
+        "wilcoxon_stat": 6.5,
+        "p_value_wilcoxon": 0.10689685480449329,
+        "bootstrap_ci_95": [
+          -0.000111,
+          0.003474
+        ],
+        "statistically_significant_001": false,
+        "statistically_significant_05": false
+      },
+      "win_tie_loss": {
+        "wins": 6,
+        "ties": 579,
+        "losses": 2
+      }
+    },
+    "ndcg_at_10": {
+      "mean_baseline": 0.007153,
+      "mean_variant": 0.008508,
+      "paired_test": {
+        "mean_difference": 0.001355,
+        "std_difference": 0.018734,
+        "t_statistic": 1.7523,
+        "p_value_ttest": 0.08024558154959369,
+        "wilcoxon_stat": 95.5,
+        "p_value_wilcoxon": 0.11917250482778356,
+        "bootstrap_ci_95": [
+          -0.000119,
+          0.003096
+        ],
+        "statistically_significant_001": false,
+        "statistically_significant_05": false
+      },
+      "win_tie_loss": {
+        "wins": 16,
+        "ties": 563,
+        "losses": 8
+      }
+    },
+    "ndcg_at_20": {
+      "mean_baseline": 0.010476,
+      "mean_variant": 0.010997,
+      "paired_test": {
+        "mean_difference": 0.000521,
+        "std_difference": 0.015498,
+        "t_statistic": 0.8146,
+        "p_value_ttest": 0.4156281138311772,
+        "wilcoxon_stat": 666.0,
+        "p_value_wilcoxon": 0.2815986063756848,
+        "bootstrap_ci_95": [
+          -0.000631,
+          0.001836
+        ],
+        "statistically_significant_001": false,
+        "statistically_significant_05": false
+      },
+      "win_tie_loss": {
+        "wins": 33,
+        "ties": 531,
+        "losses": 23
+      }
+    },
+    "ild_at_5": {
+      "baseline": 0.524714,
+      "variant": 0.655842,
+      "delta": 0.131128,
+      "relative_pct": 24.99
+    },
+    "ild_at_10": {
+      "baseline": 0.571865,
+      "variant": 0.662405,
+      "delta": 0.09054,
+      "relative_pct": 15.83
+    },
+    "ild_at_20": {
+      "baseline": 0.625022,
+      "variant": 0.684583,
+      "delta": 0.059561,
+      "relative_pct": 9.53
+    },
+    "coverage_at_5": {
+      "baseline": 0.087456,
+      "variant": 0.087456,
+      "delta": 0.0,
+      "relative_pct": 0.0
+    },
+    "coverage_at_10": {
+      "baseline": 0.130979,
+      "variant": 0.136933,
+      "delta": 0.005954,
+      "relative_pct": 4.55
+    },
+    "coverage_at_20": {
+      "baseline": 0.191029,
+      "variant": 0.20622,
+      "delta": 0.015191,
+      "relative_pct": 7.95
+    },
+    "latency": {
+      "baseline_p50_ms": 5.710049939807504,
+      "baseline_p95_ms": 8.159290003823115,
+      "variant_p50_ms": 35.021949966903776,
+      "variant_p95_ms": 37.817165040178224,
+      "overhead_p50_ms": 29.3119,
+      "overhead_p95_ms": 29.6579
+    }
+  },
+  "mmr_l0.9_p100": {
+    "variant_name": "MMR \u03bb=0.9 pool=100",
+    "ndcg_at_5": {
+      "mean_baseline": 0.005987,
+      "mean_variant": 0.005987,
+      "paired_test": {
+        "mean_difference": 0.0,
+        "std_difference": 0.0,
+        "t_statistic": 0.0,
+        "p_value_ttest": 1.0,
+        "wilcoxon_stat": 0.0,
+        "p_value_wilcoxon": 1.0,
+        "bootstrap_ci_95": [
+          0.0,
+          0.0
+        ],
+        "statistically_significant_001": false,
+        "statistically_significant_05": false,
+        "note": "Identical predictions on this dataset"
+      },
+      "win_tie_loss": {
+        "wins": 0,
+        "ties": 587,
+        "losses": 0
+      }
+    },
+    "ndcg_at_10": {
+      "mean_baseline": 0.007153,
+      "mean_variant": 0.007707,
+      "paired_test": {
+        "mean_difference": 0.000554,
+        "std_difference": 0.010576,
+        "t_statistic": 1.2695,
+        "p_value_ttest": 0.20477477778814157,
+        "wilcoxon_stat": 22.0,
+        "p_value_wilcoxon": 0.18149641476294975,
+        "bootstrap_ci_95": [
+          -0.000326,
+          0.001524
+        ],
+        "statistically_significant_001": false,
+        "statistically_significant_05": false
+      },
+      "win_tie_loss": {
+        "wins": 8,
+        "ties": 575,
+        "losses": 4
+      }
+    },
+    "ndcg_at_20": {
+      "mean_baseline": 0.010476,
+      "mean_variant": 0.010626,
+      "paired_test": {
+        "mean_difference": 0.00015,
+        "std_difference": 0.00763,
+        "t_statistic": 0.4776,
+        "p_value_ttest": 0.6331036768536399,
+        "wilcoxon_stat": 244.0,
+        "p_value_wilcoxon": 0.24486230644307205,
+        "bootstrap_ci_95": [
+          -0.000506,
+          0.000726
+        ],
+        "statistically_significant_001": false,
+        "statistically_significant_05": false
+      },
+      "win_tie_loss": {
+        "wins": 21,
+        "ties": 552,
+        "losses": 14
+      }
+    },
+    "ild_at_5": {
+      "baseline": 0.524714,
+      "variant": 0.559759,
+      "delta": 0.035045,
+      "relative_pct": 6.68
+    },
+    "ild_at_10": {
+      "baseline": 0.571865,
+      "variant": 0.595087,
+      "delta": 0.023222,
+      "relative_pct": 4.06
+    },
+    "ild_at_20": {
+      "baseline": 0.625022,
+      "variant": 0.640263,
+      "delta": 0.015241,
+      "relative_pct": 2.44
+    },
+    "coverage_at_5": {
+      "baseline": 0.087456,
+      "variant": 0.086533,
+      "delta": -0.000923,
+      "relative_pct": -1.06
+    },
+    "coverage_at_10": {
+      "baseline": 0.130979,
+      "variant": 0.13293,
+      "delta": 0.001951,
+      "relative_pct": 1.49
+    },
+    "coverage_at_20": {
+      "baseline": 0.191029,
+      "variant": 0.19729,
+      "delta": 0.006261,
+      "relative_pct": 3.28
+    },
+    "latency": {
+      "baseline_p50_ms": 5.710049939807504,
+      "baseline_p95_ms": 8.159290003823115,
+      "variant_p50_ms": 35.06650001509115,
+      "variant_p95_ms": 38.030654983595014,
+      "overhead_p50_ms": 29.3565,
+      "overhead_p95_ms": 29.8714
+    }
+  },
+  "mmr_l1.0_p100": {
+    "variant_name": "MMR \u03bb=1.0 pool=100",
+    "ndcg_at_5": {
+      "mean_baseline": 0.005987,
+      "mean_variant": 0.005987,
+      "paired_test": {
+        "mean_difference": 0.0,
+        "std_difference": 0.0,
+        "t_statistic": 0.0,
+        "p_value_ttest": 1.0,
+        "wilcoxon_stat": 0.0,
+        "p_value_wilcoxon": 1.0,
+        "bootstrap_ci_95": [
+          0.0,
+          0.0
+        ],
+        "statistically_significant_001": false,
+        "statistically_significant_05": false,
+        "note": "Identical predictions on this dataset"
+      },
+      "win_tie_loss": {
+        "wins": 0,
+        "ties": 587,
+        "losses": 0
+      }
+    },
+    "ndcg_at_10": {
+      "mean_baseline": 0.007153,
+      "mean_variant": 0.007153,
+      "paired_test": {
+        "mean_difference": 0.0,
+        "std_difference": 0.0,
+        "t_statistic": 0.0,
+        "p_value_ttest": 1.0,
+        "wilcoxon_stat": 0.0,
+        "p_value_wilcoxon": 1.0,
+        "bootstrap_ci_95": [
+          0.0,
+          0.0
+        ],
+        "statistically_significant_001": false,
+        "statistically_significant_05": false,
+        "note": "Identical predictions on this dataset"
+      },
+      "win_tie_loss": {
+        "wins": 0,
+        "ties": 587,
+        "losses": 0
+      }
+    },
+    "ndcg_at_20": {
+      "mean_baseline": 0.010476,
+      "mean_variant": 0.010476,
+      "paired_test": {
+        "mean_difference": 0.0,
+        "std_difference": 0.0,
+        "t_statistic": 0.0,
+        "p_value_ttest": 1.0,
+        "wilcoxon_stat": 0.0,
+        "p_value_wilcoxon": 1.0,
+        "bootstrap_ci_95": [
+          0.0,
+          0.0
+        ],
+        "statistically_significant_001": false,
+        "statistically_significant_05": false,
+        "note": "Identical predictions on this dataset"
+      },
+      "win_tie_loss": {
+        "wins": 0,
+        "ties": 587,
+        "losses": 0
+      }
+    },
+    "ild_at_5": {
+      "baseline": 0.524714,
+      "variant": 0.524714,
+      "delta": 0.0,
+      "relative_pct": 0.0
+    },
+    "ild_at_10": {
+      "baseline": 0.571865,
+      "variant": 0.571865,
+      "delta": 0.0,
+      "relative_pct": 0.0
+    },
+    "ild_at_20": {
+      "baseline": 0.625022,
+      "variant": 0.625022,
+      "delta": 0.0,
+      "relative_pct": 0.0
+    },
+    "coverage_at_5": {
+      "baseline": 0.087456,
+      "variant": 0.087456,
+      "delta": 0.0,
+      "relative_pct": 0.0
+    },
+    "coverage_at_10": {
+      "baseline": 0.130979,
+      "variant": 0.130979,
+      "delta": 0.0,
+      "relative_pct": 0.0
+    },
+    "coverage_at_20": {
+      "baseline": 0.191029,
+      "variant": 0.191029,
+      "delta": 0.0,
+      "relative_pct": 0.0
+    },
+    "latency": {
+      "baseline_p50_ms": 5.710049939807504,
+      "baseline_p95_ms": 8.159290003823115,
+      "variant_p50_ms": 34.67860003001988,
+      "variant_p95_ms": 37.377435027156025,
+      "overhead_p50_ms": 28.9686,
+      "overhead_p95_ms": 29.2181
+    }
+  }
+}

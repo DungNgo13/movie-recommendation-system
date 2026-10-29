@@ -59,7 +59,7 @@ from .user_profile import (
     WEIGHT_WATCH_MIN,
 )
 from .vectorizer import get_movie_vectors
-from .engine import get_user_excluded_movie_ids
+from .engine import get_user_excluded_movie_ids, _mmr_config
 from ...models.movie import Movie
 from ...models.user import User
 
@@ -306,7 +306,43 @@ def explain_recommendations(
         if mid not in exclude_ids
     ]
     scored.sort(key=lambda x: x[1], reverse=True)
-    top_scored = scored[:top_n]
+
+    # ── MMR Re-ranking (mirrors engine.py) ────────────────────────────────
+    mmr_enabled, mmr_lambda, mmr_pool_size = _mmr_config()
+    mmr_info: dict | None = None
+    if mmr_enabled and len(scored) > 0:
+        from ...recommendation_evaluation.mmr import mmr_rerank
+
+        pool_size = min(mmr_pool_size, len(scored))
+        pool = scored[:pool_size]
+        pool_ids = [mid for mid, _ in pool]
+        pool_scores = [s for _, s in pool]
+
+        item_vectors: dict[str, np.ndarray] = {}
+        for mid in pool_ids:
+            if mid in id_to_idx:
+                idx = id_to_idx[mid]
+                item_vectors[mid] = matrix[idx].toarray().flatten()
+
+        top_scored = mmr_rerank(
+            candidate_ids=pool_ids,
+            candidate_scores=pool_scores,
+            item_vectors=item_vectors,
+            select_n=top_n,
+            lambda_param=mmr_lambda,
+        )
+        mmr_info = {
+            "enabled": True,
+            "lambda": mmr_lambda,
+            "candidate_pool_size": pool_size,
+            "note": (
+                "Scores below are MMR objective values, not raw cosine similarity. "
+                "MMR balances relevance and diversity via: "
+                "MMR(i) = λ×Relevance(i) − (1−λ)×max_sim(i, selected)."
+            ),
+        }
+    else:
+        top_scored = scored[:top_n]
 
     # ── 6. Build top_recommendations with per-movie breakdown ────────────────
     from ...schemas.movie import normalize_url  # local import to avoid circular
@@ -349,7 +385,7 @@ def explain_recommendations(
         })
 
     # ── 7. Assemble final payload ─────────────────────────────────────────────
-    return {
+    payload = {
         "user_id":           str(user_id),
         "user_email":        user_email,
         "algorithm_version": "TF-IDF + Cosine Similarity + Weighted User Profile v2",
@@ -372,3 +408,6 @@ def explain_recommendations(
         },
         "top_recommendations": recommendations_out,
     }
+    if mmr_info is not None:
+        payload["mmr_reranking"] = mmr_info
+    return payload
