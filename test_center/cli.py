@@ -313,11 +313,35 @@ def _cmd_run(settings: Any, args: argparse.Namespace) -> None:
         }
         print(f"  📊 Collected {len(records)} experiment records")
 
+    # Optional: Coverage reporting
+    coverage_data: dict[str, Any] = {}
+    with_coverage = getattr(args, "with_coverage", False)
+    if with_coverage and suite in ("functional", "all-safe"):
+        coverage_data = _run_coverage(settings, args, run_dir)
+
+    # Optional: ESLint check
+    lint_data: dict[str, Any] = {}
+    with_lint = getattr(args, "with_lint", False)
+    if with_lint:
+        lint_data = _run_eslint(settings)
+
+    # Optional: TypeScript build check
+    build_data: dict[str, Any] = {}
+    with_build = getattr(args, "with_build", False)
+    if with_build:
+        build_data = _run_tsc_build(settings)
+
     total_time = time.monotonic() - start_time
 
     # Build report data
     report_data = _build_report_data(meta, results, all_tests)
     report_data["duration_seconds"] = total_time
+    if coverage_data:
+        report_data["coverage"] = coverage_data
+    if lint_data:
+        report_data["lint"] = lint_data
+    if build_data:
+        report_data["build_check"] = build_data
 
     # Save summary
     summary_path = run_dir / "summary.json"
@@ -379,6 +403,187 @@ def _print_suite_result(label: str, result: Any) -> None:
         f"({result.tests_failed} failed, {result.tests_skipped} skipped) "
         f"[{result.duration_seconds:.1f}s]"
     )
+
+
+def _run_coverage(
+    settings: Any, args: argparse.Namespace, run_dir: Path,
+) -> dict[str, Any]:
+    """Run pytest-cov and vitest coverage, return combined coverage data."""
+    import subprocess
+
+    coverage_result: dict[str, Any] = {}
+
+    # Backend coverage with pytest-cov
+    if not getattr(args, "frontend_only", False):
+        print("▶ Running backend coverage (pytest-cov)...")
+        cov_json = settings.artifacts_dir / "backend-coverage.json"
+        cmd = [
+            str(settings.venv_python), "-m", "pytest",
+            f"--cov=app",
+            f"--cov-report=json:{cov_json}",
+            "--cov-report=term:skip-covered",
+            "--tb=no", "-q", "--no-header",
+        ]
+        try:
+            proc = subprocess.run(
+                cmd, cwd=str(settings.backend_dir),
+                capture_output=True, text=True, timeout=600,
+            )
+            if cov_json.is_file():
+                cov_data = json.loads(cov_json.read_text(encoding="utf-8"))
+                totals = cov_data.get("totals", {})
+                coverage_result["backend"] = {
+                    "line_rate": round(totals.get("percent_covered", 0) / 100, 4),
+                    "covered_lines": totals.get("covered_lines", 0),
+                    "missing_lines": totals.get("missing_lines", 0),
+                    "num_statements": totals.get("num_statements", 0),
+                    "artifact": str(cov_json),
+                }
+                pct = totals.get("percent_covered", 0)
+                print(f"  📊 Backend coverage: {pct:.1f}%")
+            else:
+                coverage_result["backend"] = {
+                    "error": "coverage JSON not produced",
+                    "returncode": proc.returncode,
+                }
+                print("  ⚠ Backend coverage JSON not produced")
+        except Exception as exc:
+            coverage_result["backend"] = {"error": str(exc)}
+            print(f"  ⚠ Backend coverage failed: {exc}")
+
+    # Frontend coverage with vitest
+    if not getattr(args, "backend_only", False):
+        print("▶ Running frontend coverage (vitest)...")
+        npx = settings.npx_cmd
+        cmd = [npx, "vitest", "run", "--coverage"]
+        try:
+            proc = subprocess.run(
+                cmd, cwd=str(settings.frontend_dir),
+                capture_output=True, text=True, timeout=300,
+            )
+            # vitest coverage writes to coverage/ directory
+            fe_cov_json = settings.frontend_dir / "coverage" / "coverage-summary.json"
+            if fe_cov_json.is_file():
+                cov_data = json.loads(fe_cov_json.read_text(encoding="utf-8"))
+                totals = cov_data.get("total", {})
+                lines = totals.get("lines", {})
+                coverage_result["frontend"] = {
+                    "line_rate": round(lines.get("pct", 0) / 100, 4),
+                    "covered_lines": lines.get("covered", 0),
+                    "total_lines": lines.get("total", 0),
+                    "artifact": str(fe_cov_json),
+                }
+                print(f"  📊 Frontend coverage: {lines.get('pct', 0):.1f}%")
+            else:
+                coverage_result["frontend"] = {
+                    "status": "unavailable",
+                    "note": "Coverage provider may not be installed "
+                            "(install @vitest/coverage-v8).",
+                    "returncode": proc.returncode,
+                }
+                print("  ⚠ Frontend coverage unavailable (need @vitest/coverage-v8)")
+        except Exception as exc:
+            coverage_result["frontend"] = {"error": str(exc)}
+            print(f"  ⚠ Frontend coverage failed: {exc}")
+
+    return coverage_result
+
+
+def _run_eslint(settings: Any) -> dict[str, Any]:
+    """Run ESLint on the frontend and return structured results."""
+    import subprocess
+
+    print("▶ Running frontend ESLint...")
+    npx = settings.npx_cmd
+    cmd = [npx, "eslint", ".", "--format", "json"]
+
+    try:
+        proc = subprocess.run(
+            cmd, cwd=str(settings.frontend_dir),
+            capture_output=True, text=True, timeout=120,
+        )
+        # ESLint exits 0 for clean, 1 for lint errors, 2 for fatal
+        result: dict[str, Any] = {"returncode": proc.returncode}
+
+        if proc.stdout.strip():
+            try:
+                lint_output = json.loads(proc.stdout)
+                total_errors = sum(f.get("errorCount", 0) for f in lint_output)
+                total_warnings = sum(f.get("warningCount", 0) for f in lint_output)
+                files_with_issues = sum(
+                    1 for f in lint_output
+                    if f.get("errorCount", 0) + f.get("warningCount", 0) > 0
+                )
+                result.update({
+                    "status": "PASS" if total_errors == 0 else "FAIL",
+                    "errors": total_errors,
+                    "warnings": total_warnings,
+                    "files_checked": len(lint_output),
+                    "files_with_issues": files_with_issues,
+                })
+                icon = "✅" if total_errors == 0 else "❌"
+                print(
+                    f"  {icon} ESLint: {total_errors} errors, "
+                    f"{total_warnings} warnings across {len(lint_output)} files"
+                )
+            except json.JSONDecodeError:
+                result["status"] = "ERROR"
+                result["error"] = "Could not parse ESLint JSON output"
+                print("  ⚠ ESLint: could not parse JSON output")
+        else:
+            result["status"] = "PASS" if proc.returncode == 0 else "ERROR"
+            if proc.returncode != 0:
+                result["stderr"] = proc.stderr[-1000:] if proc.stderr else ""
+            icon = "✅" if proc.returncode == 0 else "❌"
+            print(f"  {icon} ESLint: exit code {proc.returncode}")
+
+        return result
+    except Exception as exc:
+        print(f"  ⚠ ESLint failed: {exc}")
+        return {"status": "ERROR", "error": str(exc)}
+
+
+def _run_tsc_build(settings: Any) -> dict[str, Any]:
+    """Run TypeScript type-check (tsc --noEmit) and return results."""
+    import subprocess
+
+    print("▶ Running TypeScript build check...")
+    npx = settings.npx_cmd
+    cmd = [npx, "tsc", "--noEmit"]
+
+    try:
+        proc = subprocess.run(
+            cmd, cwd=str(settings.frontend_dir),
+            capture_output=True, text=True, timeout=120,
+        )
+        error_count = 0
+        if proc.stdout:
+            # Count TS error lines (format: "file.ts(line,col): error TS...")
+            error_count = sum(
+                1 for line in proc.stdout.splitlines()
+                if ": error TS" in line
+            )
+
+        status = "PASS" if proc.returncode == 0 else "FAIL"
+        icon = "✅" if proc.returncode == 0 else "❌"
+        print(f"  {icon} TypeScript: {error_count} errors (exit {proc.returncode})")
+
+        result: dict[str, Any] = {
+            "status": status,
+            "returncode": proc.returncode,
+            "error_count": error_count,
+        }
+        if error_count > 0 and proc.stdout:
+            # Include first 20 errors for debugging
+            error_lines = [
+                l for l in proc.stdout.splitlines() if ": error TS" in l
+            ][:20]
+            result["errors_sample"] = error_lines
+
+        return result
+    except Exception as exc:
+        print(f"  ⚠ TypeScript build check failed: {exc}")
+        return {"status": "ERROR", "error": str(exc)}
 
 
 def _build_report_data(
