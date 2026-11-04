@@ -35,7 +35,8 @@ if BACKEND_DIR not in sys.path:
 
 PREVIOUS_REVISION = "e5f3a1b2c7d8"      # last revision before R2 work
 R2_REVISION = "f7c3d9a1b2e4"            # movies columns + upload_sessions
-TARGET_REVISION = "a1e5c7b9d3f2"        # cleanup tracking (current head)
+TARGET_REVISION = "a1e5c7b9d3f2"        # cleanup tracking
+HEAD_REVISION = "b8a4e2c1d905"          # Phase 8A metadata enrichment staging (current head)
 NEW_COLUMNS = ("source_storage", "source_object_key")
 
 
@@ -67,11 +68,11 @@ def check_revision_chain(config) -> list:
 
     script = ScriptDirectory.from_config(config)
     heads = script.get_heads()
-    if heads != [TARGET_REVISION]:
-        raise AssertionError(f"expected single head {TARGET_REVISION}, got {heads}")
+    if heads != [HEAD_REVISION]:
+        raise AssertionError(f"expected single head {HEAD_REVISION}, got {heads}")
     chain = [rev.revision for rev in script.walk_revisions("base", "heads")]
-    if chain[:3] != [TARGET_REVISION, R2_REVISION, PREVIOUS_REVISION]:
-        raise AssertionError(f"unexpected revision order near head: {chain[:3]}")
+    if chain[:4] != [HEAD_REVISION, TARGET_REVISION, R2_REVISION, PREVIOUS_REVISION]:
+        raise AssertionError(f"unexpected revision order near head: {chain[:4]}")
     return chain
 
 

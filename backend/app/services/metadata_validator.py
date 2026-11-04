@@ -669,3 +669,4 @@ def compare_existing_and_proposed(
         }
 
     return diffs
+

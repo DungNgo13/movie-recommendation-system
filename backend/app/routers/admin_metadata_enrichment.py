@@ -199,3 +199,4 @@ def reject_enrichment_job_endpoint(
         candidate_id=payload.candidate_id,
     )
     return serialize_enrichment_job(db, job)
+

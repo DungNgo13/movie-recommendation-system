@@ -231,3 +231,4 @@ class MetadataReviewEvent(Base):
         Index("ix_metadata_review_events_job_id", "job_id"),
         Index("ix_metadata_review_events_movie_id", "movie_id"),
     )
+

@@ -678,3 +678,4 @@ def evaluate_and_rank_candidates(
                     c.reason_for_review = "ambiguous_remake_or_multiple_releases"
 
     return scored
+

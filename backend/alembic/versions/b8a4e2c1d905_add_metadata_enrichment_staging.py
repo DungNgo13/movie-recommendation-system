@@ -219,3 +219,4 @@ def downgrade() -> None:
         batch_op.drop_column("original_title")
         batch_op.drop_column("imdb_id")
         batch_op.drop_column("tmdb_id")
+

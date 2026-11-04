@@ -621,6 +621,75 @@ def _render_lint_build(data: dict) -> str:
 </section>"""
 
 
+def _render_metadata_enrichment(data: dict) -> str:
+    """Render Phase 8A Movie Metadata Enrichment section."""
+    enr = data.get("metadata_enrichment", {})
+    if not enr or not enr.get("total_movies_inspected"):
+        return ""
+
+    before_pct = _fmt_pct(enr.get("completeness_before", {}).get("overall_completeness_ratio", 0.0))
+    after_pct = _fmt_pct(enr.get("completeness_after", {}).get("overall_completeness_ratio", 0.0))
+    approval_pct = _fmt_pct(enr.get("admin_approval_rate", 0.0))
+    rejection_pct = _fmt_pct(enr.get("rejection_rate", 0.0))
+    evidence = _esc(enr.get("evidence_type", "mocked_controlled_verification"))
+
+    rows = []
+    before_fields = enr.get("completeness_before", {}).get("fields", {})
+    after_fields = enr.get("completeness_after", {}).get("fields", {})
+    for field, b_info in before_fields.items():
+        a_info = after_fields.get(field, {})
+        b_pop = b_info.get("populated", 0)
+        b_ratio = _fmt_pct(b_info.get("completeness_ratio", 0.0))
+        a_pop = a_info.get("populated", 0)
+        a_ratio = _fmt_pct(a_info.get("completeness_ratio", 0.0))
+        rows.append(
+            f"<tr><td><code>{_esc(field)}</code></td><td>{b_pop} ({b_ratio})</td><td>{a_pop} ({a_ratio})</td></tr>"
+        )
+
+    return f"""<section id="metadata-enrichment">
+  <h2>Phase 8A — Movie Metadata Enrichment</h2>
+  <p class="meta">Evidence: <code>{evidence}</code></p>
+  <div class="cards">
+    <div class="card">
+      <h3>Movies Inspected</h3>
+      <div class="big-num">{enr.get("total_movies_inspected", 0)}</div>
+      <div style="font-size:.8rem;color:var(--text-muted)">
+        {enr.get("movies_with_missing_metadata", 0)} with missing metadata
+      </div>
+    </div>
+    <div class="card">
+      <h3>Completeness</h3>
+      <div class="big-num status-pass">{after_pct}</div>
+      <div style="font-size:.8rem;color:var(--text-muted)">
+        Before: {before_pct} → After: {after_pct}
+      </div>
+    </div>
+    <div class="card">
+      <h3>Matching &amp; Review</h3>
+      <div class="big-num">{approval_pct}</div>
+      <div style="font-size:.8rem;color:var(--text-muted)">
+        {enr.get("verified_id_matches", 0)} verified ID · {enr.get("ambiguous_matches", 0)} ambiguous · {enr.get("no_match_cases", 0)} no-match · {rejection_pct} rejected
+      </div>
+    </div>
+    <div class="card">
+      <h3>Latency &amp; Cache Sync</h3>
+      <div class="big-num">{_fmt_ms(enr.get("processing_time_p50_ms", 0.0))}</div>
+      <div style="font-size:.8rem;color:var(--text-muted)">
+        p95: {_fmt_ms(enr.get("processing_time_p95_ms", 0.0))} · 429s: {enr.get("http_429_responses", 0)} · Cache refreshes: {enr.get("successful_cache_refreshes", 0)}
+      </div>
+    </div>
+  </div>
+  <table>
+    <thead>
+      <tr><th>Field</th><th>Before</th><th>After</th></tr>
+    </thead>
+    <tbody>
+      {"".join(rows)}
+    </tbody>
+  </table>
+</section>"""
+
+
 def _render_limitations(data: dict) -> str:
     """Render known limitations section."""
     limitations = data.get("known_limitations", [])
@@ -667,6 +736,7 @@ def generate_html_report(report_data: dict, output_path: Path) -> Path:
         _render_coverage(report_data),
         _render_lint_build(report_data),
         _render_rec_metrics(report_data),
+        _render_metadata_enrichment(report_data),
         _render_mmr_tradeoff(report_data),
         _render_latency_comparison(report_data),
         _render_security(report_data),

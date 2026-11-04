@@ -128,3 +128,4 @@ Existing MovSug Movie
 6. **Research Isolation & Temporal Leakage**:
    - Frozen offline evaluation datasets and reports from Phases 4, 5, 5.5, and 6 (`backend/reports/experiments/...`) are strictly untouched.
    - Externally retrieved TMDB metadata reflects contemporary provider state and may contain post-release keywords or credits; therefore, any offline evaluation using TMDB-enriched metadata must be isolated as a separate experimental condition (`phase8a_enriched_catalog`) and never conflated with algorithmic changes or historical MovieLens interaction splits.
+

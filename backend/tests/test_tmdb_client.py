@@ -394,3 +394,4 @@ def test_build_tmdb_image_url_validation():
     assert build_tmdb_image_url("https://evil.com/hack.jpg") is None
     assert build_tmdb_image_url("/../../etc/passwd.jpg") is None
     assert build_tmdb_image_url(None) is None
+

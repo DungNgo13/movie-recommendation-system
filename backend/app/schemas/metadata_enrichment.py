@@ -166,3 +166,4 @@ class MetadataEnrichmentJobSchema(BaseModel):
     review_events: List[MetadataReviewEventSchema] = Field(default_factory=list)
     provenances: List[MetadataFieldProvenanceSchema] = Field(default_factory=list)
     movie_metadata_version: Optional[int] = None
+

@@ -58,8 +58,9 @@ def test_revision_chain_single_head_and_continuous(validator):
     config = Config(os.path.join(BACKEND_DIR, "alembic.ini"))
     config.set_main_option("script_location", os.path.join(BACKEND_DIR, "alembic"))
     chain = validator.check_revision_chain(config)
-    assert chain[0] == validator.TARGET_REVISION == "a1e5c7b9d3f2"
-    assert chain[1] == validator.R2_REVISION == "f7c3d9a1b2e4"
-    assert chain[2] == validator.PREVIOUS_REVISION
+    assert chain[0] == validator.HEAD_REVISION == "b8a4e2c1d905"
+    assert chain[1] == validator.TARGET_REVISION == "a1e5c7b9d3f2"
+    assert chain[2] == validator.R2_REVISION == "f7c3d9a1b2e4"
+    assert chain[3] == validator.PREVIOUS_REVISION
     assert chain[-1] == "1780d0eefc59"
     assert len(chain) == len(set(chain))

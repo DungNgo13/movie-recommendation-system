@@ -260,6 +260,7 @@ def _cmd_run(settings: Any, args: argparse.Namespace) -> None:
             PytestCollector,
             VitestCollector,
             RecommendationCollector,
+            MetadataEnrichmentCollector,
             CollectorResult,
         )
     except ImportError:
@@ -268,6 +269,7 @@ def _cmd_run(settings: Any, args: argparse.Namespace) -> None:
             PytestCollector,
             VitestCollector,
             RecommendationCollector,
+            MetadataEnrichmentCollector,
             CollectorResult,
         )
 
@@ -312,6 +314,20 @@ def _cmd_run(settings: Any, args: argparse.Namespace) -> None:
             "records": [r.to_dict() for r in records],
         }
         print(f"  📊 Collected {len(records)} experiment records")
+
+        print("▶ Collecting Phase 8A metadata enrichment metrics...")
+        enr_col = MetadataEnrichmentCollector(settings)
+        enr_res = enr_col.collect_or_run()
+        results["metadata_enrichment"] = enr_res.to_dict()
+        enr_meta = enr_res.metadata or {}
+        if enr_meta:
+            before_pct = enr_meta.get("completeness_before", {}).get("overall_completeness_ratio", 0.0) * 100
+            after_pct = enr_meta.get("completeness_after", {}).get("overall_completeness_ratio", 0.0) * 100
+            print(
+                f"  📊 Metadata Enrichment ({enr_meta.get('evidence_type', 'unknown')}): "
+                f"{enr_meta.get('total_movies_inspected', 0)} movies inspected, "
+                f"completeness {before_pct:.1f}% → {after_pct:.1f}%"
+            )
 
     # Optional: Coverage reporting
     coverage_data: dict[str, Any] = {}
@@ -630,6 +646,10 @@ def _build_report_data(
             "split_checksum": last_rec.get("split_checksum", ""),
         }
 
+    # Extract metadata enrichment metrics (Phase 8A)
+    enr = results.get("metadata_enrichment", {})
+    enr_meta = enr.get("metadata", {}) if isinstance(enr, dict) else {}
+
     return {
         "metadata": meta.to_dict(),
         "overall_status": overall,
@@ -660,6 +680,19 @@ def _build_report_data(
                 "algorithm": "TF-IDF v1.1 + MMR" if rec.get("records") else "—",
                 "record_count": rec.get("record_count", 0),
             },
+            "metadata_enrichment": {
+                "status": enr.get("status", "NOT_RUN"),
+                "evidence_type": enr_meta.get("evidence_type", "—"),
+                "total_movies_inspected": enr_meta.get("total_movies_inspected", 0),
+                "completeness_before": enr_meta.get("completeness_before", {}).get(
+                    "overall_completeness_ratio", 0.0
+                ),
+                "completeness_after": enr_meta.get("completeness_after", {}).get(
+                    "overall_completeness_ratio", 0.0
+                ),
+                "admin_approval_rate": enr_meta.get("admin_approval_rate", 0.0),
+                "successful_cache_refreshes": enr_meta.get("successful_cache_refreshes", 0),
+            },
             "security": {
                 "total_findings": 0,
                 "critical": 0,
@@ -668,6 +701,7 @@ def _build_report_data(
         },
         "functional_tests": all_tests,
         "recommendation_metrics": rec_metrics,
+        "metadata_enrichment": enr_meta,
         "known_limitations": [
             "Security scanning tools not installed (pip-audit, bandit, npm audit).",
             "Load testing requires explicit TEC_ALLOW_LOAD_TEST=1.",

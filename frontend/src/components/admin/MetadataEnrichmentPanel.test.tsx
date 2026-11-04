@@ -289,3 +289,4 @@ describe('MetadataEnrichmentPanel', () => {
     expect(screen.getByTestId('enrichment-history-list')).toHaveTextContent('admin@movsug.test');
   });
 });
+

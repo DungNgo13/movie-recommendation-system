@@ -69,6 +69,9 @@ def generate_markdown_report(report_data: dict[str, Any], output_path: Path) -> 
     # Recommendation metrics
     _render_rec_metrics(lines, report_data.get("recommendation_metrics", {}))
 
+    # Phase 8A Metadata Enrichment
+    _render_metadata_enrichment(lines, report_data.get("metadata_enrichment", {}))
+
     # MMR trade-off
     _render_mmr(lines, report_data.get("mmr_tradeoff", {}))
 
@@ -470,6 +473,55 @@ def _render_build(lines: list[str], build: dict[str, Any]) -> None:
             lines.append(err)
         lines.append("```")
     lines.append("")
+
+
+def _render_metadata_enrichment(lines: list[str], enr: dict[str, Any]) -> None:
+    """Render Phase 8A Movie Metadata Enrichment metrics."""
+    if not enr or not enr.get("total_movies_inspected"):
+        return
+
+    before_overall = enr.get("completeness_before", {}).get("overall_completeness_ratio", 0.0)
+    after_overall = enr.get("completeness_after", {}).get("overall_completeness_ratio", 0.0)
+    lines.append("## Phase 8A — Movie Metadata Enrichment")
+    lines.append("")
+    lines.append(f"- **Evidence Type:** `{enr.get('evidence_type', 'mocked_controlled_verification')}`")
+    lines.append(f"- **Total Movies Inspected:** {enr.get('total_movies_inspected', 0)}")
+    lines.append(f"- **Movies with Missing Metadata:** {enr.get('movies_with_missing_metadata', 0)}")
+    lines.append(f"- **Overall Completeness:** {before_overall * 100:.2f}% → **{after_overall * 100:.2f}%**")
+    lines.append(f"- **Candidates Found:** {enr.get('candidates_found', 0)}")
+    lines.append(f"- **Verified External ID Matches:** {enr.get('verified_id_matches', 0)}")
+    lines.append(f"- **Ambiguous Matches:** {enr.get('ambiguous_matches', 0)}")
+    lines.append(f"- **No-Match Cases:** {enr.get('no_match_cases', 0)}")
+    lines.append(f"- **Admin Approval Rate:** {enr.get('admin_approval_rate', 0.0) * 100:.2f}%")
+    lines.append(f"- **Admin Rejection Rate:** {enr.get('rejection_rate', 0.0) * 100:.2f}%")
+    lines.append(f"- **API Failures / HTTP 429 / Retries:** {enr.get('api_failures', 0)} / {enr.get('http_429_responses', 0)} / {enr.get('retry_counts', 0)}")
+    lines.append(
+        f"- **Processing Time (p50 / p95):** "
+        f"{enr.get('processing_time_p50_ms', 0.0):.2f} ms / {enr.get('processing_time_p95_ms', 0.0):.2f} ms"
+    )
+    lines.append(f"- **Duplicate or Conflicting Records:** {enr.get('duplicate_or_conflicting_records', 0)}")
+    lines.append(f"- **Database Application Failures:** {enr.get('db_application_failures', 0)}")
+    lines.append(f"- **Successful Recommendation Cache Refreshes:** {enr.get('successful_cache_refreshes', 0)}")
+    lines.append("")
+
+    before_fields = enr.get("completeness_before", {}).get("fields", {})
+    after_fields = enr.get("completeness_after", {}).get("fields", {})
+    if before_fields and after_fields:
+        lines.append("### Field-Level Completeness (Before vs. After)")
+        lines.append("")
+        lines.append("| Field | Before (Populated) | Before (%) | After (Populated) | After (%) | Delta |")
+        lines.append("|-------|-------------------:|-----------:|------------------:|----------:|------:|")
+        for field, b_info in before_fields.items():
+            a_info = after_fields.get(field, {})
+            b_pop = b_info.get("populated", 0)
+            b_pct = b_info.get("completeness_ratio", 0.0) * 100
+            a_pop = a_info.get("populated", 0)
+            a_pct = a_info.get("completeness_ratio", 0.0) * 100
+            delta = a_pct - b_pct
+            lines.append(
+                f"| `{field}` | {b_pop} | {b_pct:.1f}% | {a_pop} | {a_pct:.1f}% | {delta:+.1f}% |"
+            )
+        lines.append("")
 
 
 def _render_limitations(lines: list[str], limitations: list[str]) -> None:

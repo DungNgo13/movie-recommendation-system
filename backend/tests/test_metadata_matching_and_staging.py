@@ -495,3 +495,4 @@ def test_no_match_staging_releases_lock(db_session: Session):
     assert job.status == "no_match"
     assert job.candidates_found == 0
     assert job.active_lock is None
+

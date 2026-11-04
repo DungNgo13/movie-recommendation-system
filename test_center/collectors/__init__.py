@@ -10,6 +10,7 @@ Exports:
 """
 from .base import CollectorResult, TestCaseRecord
 from .history_collector import HistoryCollector
+from .metadata_enrichment_collector import MetadataEnrichmentCollector
 from .pytest_collector import PytestCollector
 from .recommendation_collector import RecommendationCollector
 from .vitest_collector import VitestCollector
@@ -21,4 +22,5 @@ __all__ = [
     "VitestCollector",
     "RecommendationCollector",
     "HistoryCollector",
+    "MetadataEnrichmentCollector",
 ]

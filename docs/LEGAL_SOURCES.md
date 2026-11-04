@@ -138,3 +138,18 @@ Before adding content to the system:
 - The `media_rights_status` field reflects the contributor's assessment and
   may not be legally binding
 - When in doubt, consult the original license terms at the provider's URL
+
+## 14. TMDB API Attribution and Terms of Use Compliance (Phase 8A)
+
+When enriching movie metadata or image URLs (`poster_path`, `backdrop_path`) via the official TMDB v3 API (`https://api.themoviedb.org/3`), the following compliance rules are enforced automatically by `metadata_application_service.py` and the frontend `SourceAttribution` component:
+
+1. **Statutory Notice**: Any movie or image asset enriched from TMDB records the notice required by the TMDB API Terms of Use:
+   > *"This product uses the TMDB API but is not endorsed or certified by TMDB."*
+2. **Source URL & Provenance**:
+   - Movie-level `source_name` defaults to `"TMDB"` and `source_url` links to `https://www.themoviedb.org/movie/{tmdb_id}` when not already populated by a primary public-domain archive.
+   - Each applied field is logged in `metadata_field_provenances` with `provider="tmdb"`, `provider_movie_id`, `source_language`, `retrieved_at`, `applied_at`, and `approved_by_email`.
+   - Poster and backdrop URLs applied from TMDB (`https://image.tmdb.org/t/p/...`) automatically create or update `movie_assets` entries with `source_name="TMDB"` and `media_rights_status="attribution_required"`.
+3. **API Rate Limits & Non-Scraping Policy**:
+   - Only the official TMDB v3 REST API (`api.themoviedb.org`) is queried via `TMDBClient`.
+   - Web scraping of `themoviedb.org` HTML pages or bypassing robots/rate limits is strictly prohibited.
+   - Live TMDB network calls are disabled by default (`TMDB_ENABLE_LIVE_REQUESTS=false`) and token-bucket rate-limited (`TMDB_RATE_LIMIT_RPS=4.0`) with Retry-After backoff on HTTP 429.
