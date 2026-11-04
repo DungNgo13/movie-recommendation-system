@@ -64,3 +64,4 @@ Accordingly, candidate sentence-embedding models were evaluated against six engi
 ### 3.3 Offline Unit-Test Encoder: `movsug/deterministic-hash-projection-384`
 - **Purpose:** Used **exclusively** in automated unit and CI tests ([test_semantic_recommendations.py](file:///d:/TLTN/movie-recommendation-system/backend/tests/test_semantic_recommendations.py)) so `pytest` runs 100% offline in `<2 seconds` without network access or neural weight downloads.
 - **Strict Separation:** Flagged with `is_pretrained_neural = False` in [`EmbeddingModelSpec`](file:///d:/TLTN/movie-recommendation-system/backend/app/services/recommendation/embeddings.py#L44-L57); never used for research evaluation claims in Phase 8B reports.
+

@@ -75,3 +75,4 @@
    - Although `Semantic-EN` has low diversity in its own dense cosine space (`native ILD@10 = 0.3117`), when its recommended top-10 lists are measured in lexical `TF-IDF` space (`TFIDF_ILD@10 = 0.8905`), semantic recommendations are **lexically much more diverse** than `TF-IDF v1.1` (`0.5719`) and retrieve more novel long-tail titles (`Novelty@10 = 14.59 bits` vs `14.05 bits`) because semantic similarity does not require lexical token overlap.
 3. **Effect of MMR on Semantic Embeddings (RQ3):**
    - Applying MMR ($\lambda = 0.5$, `pool_size = 100`) on top of `Semantic-EN` slightly improves `NDCG@5` (`0.003339` $\to$ `0.004390`), `NDCG@10` (`0.004930` $\to$ `0.005113`), `Coverage@10` (`5.06%` $\to$ `5.42%`), and `ILD@10` (`0.3117` $\to$ `0.3215`), confirming that MMR mitigates dense cluster redundancy. However, `TF-IDF v1.1 + MMR (λ=0.5)` (`NDCG@10 = 0.009091`) remains significantly stronger on sparse metadata ($p = 0.0497$).
+

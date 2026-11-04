@@ -360,3 +360,4 @@ def try_get_semantic_recommendations(
         "ranking_stats": rank_stats,
         "top_scored": top_scored,
     }
+

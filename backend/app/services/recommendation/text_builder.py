@@ -437,3 +437,4 @@ def prepare_catalog_documents(
         "field_coverage": field_coverage,
     }
     return docs, summary
+

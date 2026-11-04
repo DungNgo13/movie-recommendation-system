@@ -87,3 +87,4 @@ d:\TLTN\movie-recommendation-system\backend\.venv\Scripts\python.exe -m test_cen
 # 4. Generate all TEC reports (JSON, CSV, Markdown, Vietnamese Summary, Self-Contained HTML)
 d:\TLTN\movie-recommendation-system\backend\.venv\Scripts\python.exe -m test_center report --run test_center/reports/tec-20261104-090658-8f3e707 --format all
 ```
+

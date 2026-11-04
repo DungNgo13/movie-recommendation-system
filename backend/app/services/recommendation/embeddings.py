@@ -499,3 +499,4 @@ def generate_catalog_embeddings(
         "generation_duration_seconds": round(duration_sec, 4),
         "peak_memory_mb": round(peak_memory_mb, 4),
     }
+

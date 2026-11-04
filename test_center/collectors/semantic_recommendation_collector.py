@@ -165,3 +165,4 @@ class SemanticRecommendationCollector:
             tests_failed=0,
             metadata=data,
         )
+

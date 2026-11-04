@@ -75,3 +75,4 @@ To inspect model behavior when **100% of candidate movies** have uniform Phase 8
 
 ### 3.2 Diagnostic Observation
 Within the uniformly enriched `10`-movie subset, enriching metadata increases `Semantic-EN` `NDCG@10` from `0.6593` to `0.7190` (`+9.05%`) and `MAP@10` from `0.5446` to `0.6261` (`+14.96%`), while increasing native embedding diversity (`ILD@10` from `0.6719` to `0.7750`) because rich plot overviews differentiate movies that previously had similar short genre strings. Confirming this effect at scale requires enriching a high percentage ($\ge 80\%$) of the evaluation catalog via batch TMDB ingestion in Phase 9.
+

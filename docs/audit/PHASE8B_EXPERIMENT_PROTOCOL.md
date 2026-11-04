@@ -94,3 +94,4 @@ Implemented in [`compute_extended_paired_comparison`](file:///d:/TLTN/movie-reco
   - Paired Cohen's $d = \bar{\Delta} / s_{\Delta}$
   - Non-parametric 95% bootstrap confidence interval (`2,000` resamples, fixed seed `42`)
   - Per-user Win / Tie / Loss breakdown (`|diff| > 1e-9`)
+
