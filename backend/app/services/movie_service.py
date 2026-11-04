@@ -165,6 +165,14 @@ def create_movie(db: Session, movie_data: MovieCreateSchema):
         db_movie.is_public_domain = movie_data.is_public_domain
     if movie_data.media_rights_status is not None:
         db_movie.media_rights_status = movie_data.media_rights_status
+    if movie_data.tmdb_id is not None:
+        db_movie.tmdb_id = movie_data.tmdb_id
+    if movie_data.imdb_id is not None:
+        db_movie.imdb_id = movie_data.imdb_id
+    if movie_data.original_title is not None:
+        db_movie.original_title = movie_data.original_title
+    if movie_data.original_language is not None:
+        db_movie.original_language = movie_data.original_language
 
     db.add(db_movie)
     db.commit()

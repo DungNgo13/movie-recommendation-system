@@ -43,6 +43,7 @@ from app.models import rating         # noqa: F401
 from app.models import admin_audit_log  # noqa: F401
 from app.models import movie_asset      # noqa: F401
 from app.models import upload_session   # noqa: F401
+from app.models import metadata_enrichment  # noqa: F401
 
 target_metadata = Base.metadata
 

@@ -232,6 +232,13 @@ class MovieDetailSchema(BaseModel):
     is_public_domain: bool = False
     media_rights_status: Optional[str] = "unknown"
 
+    # External identifiers & metadata concurrency version (Phase 8A)
+    tmdb_id: Optional[int] = None
+    imdb_id: Optional[str] = None
+    original_title: Optional[str] = None
+    original_language: Optional[str] = None
+    metadata_version: int = 1
+
     # Excluded Physical Native Paths
     poster_path: Optional[str] = Field(None, exclude=True)
     backdrop_path: Optional[str] = Field(None, exclude=True)
@@ -316,6 +323,11 @@ class MovieCreateSchema(BaseModel):
     is_public_domain: Optional[bool] = None
     media_rights_status: Optional[str] = None
 
+    tmdb_id: Optional[int] = None
+    imdb_id: Optional[str] = None
+    original_title: Optional[str] = None
+    original_language: Optional[str] = None
+
     @field_validator('release_date')
     @classmethod
     def parse_release_date(cls, v):
@@ -380,6 +392,11 @@ class MovieUpdateSchema(BaseModel):
     attribution: Optional[str] = None
     is_public_domain: Optional[bool] = None
     media_rights_status: Optional[str] = None
+
+    tmdb_id: Optional[int] = None
+    imdb_id: Optional[str] = None
+    original_title: Optional[str] = None
+    original_language: Optional[str] = None
 
     @field_validator('release_date')
     @classmethod

@@ -18,6 +18,7 @@ from .models import rating as rating_model
 from .models import admin_audit_log as admin_audit_log_model
 from .models import movie_asset as movie_asset_model  # noqa: F401
 from .models import upload_session as upload_session_model  # noqa: F401
+from .models import metadata_enrichment as metadata_enrichment_model  # noqa: F401
 from .routers import movies
 from .routers import auth
 from .routers import favorites

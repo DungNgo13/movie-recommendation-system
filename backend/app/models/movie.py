@@ -48,3 +48,11 @@ class Movie(Base):
         String(30), default="unknown", nullable=False, server_default="unknown",
     )
     # Allowed values: safe_to_use, attribution_required, non_commercial_only, unknown, blocked
+
+    # ── Phase 8A: External Identity & Metadata Provenance Concurrency ────────
+    tmdb_id = Column(Integer, nullable=True, unique=True, index=True)
+    imdb_id = Column(String(20), nullable=True, index=True)
+    original_title = Column(String(255), nullable=True)
+    original_language = Column(String(16), nullable=True)
+    metadata_version = Column(Integer, default=1, nullable=False, server_default="1")
+
