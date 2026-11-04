@@ -22,8 +22,9 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from ..core.api_errors import (
-     CodedHTTPException,
+    CodedHTTPException,
     ENRICHMENT_CANDIDATE_NOT_FOUND,
+    ENRICHMENT_CONCURRENT_MODIFICATION,
     ENRICHMENT_DUPLICATE_ACTIVE_JOB,
     ENRICHMENT_INVALID_STATE,
     ENRICHMENT_JOB_NOT_FOUND,
@@ -202,7 +203,10 @@ def start_enrichment_job(
         review_state="pending_review",
         application_status="not_applied",
         initiated_by_email=admin_email,
-        is_mocked=bool(client._transport is not None),
+        is_mocked=bool(
+            getattr(client, "is_mocked", False)
+            or getattr(client, "_transport", None) is not None
+        ),
     )
     db.add(job)
     try:
@@ -475,6 +479,7 @@ def review_approve_enrichment_job(
     approved_fields: list[str],
     admin_email: str,
     allow_overwrite_existing: bool = False,
+    expected_metadata_version: Optional[int] = None,
     notes: Optional[str] = None,
 ) -> MetadataEnrichmentJob:
     """
@@ -498,6 +503,20 @@ def review_approve_enrichment_job(
             detail=f"Cannot approve a job in status '{job.status}'.",
             code=ENRICHMENT_INVALID_STATE,
         )
+
+    if expected_metadata_version is not None:
+        movie = db.query(Movie).filter(Movie.id == job.movie_id).first()
+        current_version = int(getattr(movie, "metadata_version", 1) or 1) if movie else 1
+        if expected_metadata_version != current_version:
+            raise CodedHTTPException(
+                status_code=409,
+                detail=(
+                    f"Concurrent modification detected for movie '{job.movie_id}': "
+                    f"expected metadata_version={expected_metadata_version}, "
+                    f"found metadata_version={current_version}."
+                ),
+                code=ENRICHMENT_CONCURRENT_MODIFICATION,
+            )
 
     candidate = (
         db.query(MetadataCandidate)

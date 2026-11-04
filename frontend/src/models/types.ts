@@ -33,6 +33,13 @@ export interface Movie {
   attribution?: string | null;
   is_public_domain?: boolean;
   media_rights_status?: string | null;
+
+  // Phase 8A: External identity & provenance versioning
+  tmdb_id?: number | null;
+  imdb_id?: string | null;
+  original_title?: string | null;
+  original_language?: string | null;
+  metadata_version?: number;
 }
 
 export interface MovieListItem {

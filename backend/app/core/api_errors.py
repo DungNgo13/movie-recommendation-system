@@ -75,4 +75,5 @@ ENRICHMENT_DUPLICATE_ACTIVE_JOB = "enrichment_duplicate_active_job"
 ENRICHMENT_CONCURRENT_MODIFICATION = "enrichment_concurrent_modification"
 ENRICHMENT_VALIDATION_FAILED = "enrichment_validation_failed"
 ENRICHMENT_INVALID_STATE = "enrichment_invalid_state"
+ENRICHMENT_APPLICATION_FAILED = "enrichment_application_failed"
 

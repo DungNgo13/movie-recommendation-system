@@ -19,6 +19,7 @@ A movie is considered "uploaded" if ANY of these conditions hold:
 """
 
 import os
+from datetime import datetime, timezone
 
 from sklearn.feature_extraction.text import TfidfVectorizer
 from scipy.sparse import spmatrix
@@ -59,12 +60,27 @@ def _candidate_query(db: Session):
 
 
 # ─── In-memory cache ─────────────────────────────────────────────
+# Cache Lifecycle & Synchronization:
+# 1. What is cached:
+#    - Fitted TfidfVectorizer, sparse TF-IDF document-term matrix, parallel
+#      movie_ids list, movie_count, and filter_flag.
+# 2. When it is invalidated (`invalidate_cache()`):
+#    - After movie creation, update, or deletion in `movie_service.py`
+#    - After approved metadata enrichment application in `metadata_application_service.py`
+#    - After HLS conversion transitions a movie to `processing_status = "ready"`
+# 3. When it is rebuilt (`fit_vectorizer(db)` / `refresh_cache(db)`):
+#    - Lazily on the next call to `get_movie_vectors(db)` or `get_movie_vector_by_id(db, id)`
+#      when `_is_cache_valid(db)` returns False, or eagerly via `refresh_cache(db)`.
 _cache: dict = {
     "vectorizer": None,       # fitted TfidfVectorizer
     "matrix": None,           # sparse TF-IDF matrix (n_movies × n_features)
-    "movie_ids": [],           # list[str] parallel to matrix rows
-    "movie_count": 0,          # number of movies at fit time
-    "filter_flag": None,       # the flag value used at fit time
+    "movie_ids": [],          # list[str] parallel to matrix rows
+    "movie_count": 0,         # number of movies at fit time
+    "filter_flag": None,      # the flag value used at fit time
+    "cache_generation": 0,    # increments each time fit_vectorizer completes
+    "invalidation_count": 0,  # increments each time invalidate_cache is called
+    "refresh_count": 0,       # increments each time refresh_cache succeeds
+    "last_refreshed_at": None,# UTC ISO timestamp of last fit
 }
 
 
@@ -93,6 +109,8 @@ def fit_vectorizer(db: Session) -> None:
         _cache["movie_ids"] = []
         _cache["movie_count"] = 0
         _cache["filter_flag"] = current_flag
+        _cache["cache_generation"] = _cache.get("cache_generation", 0) + 1
+        _cache["last_refreshed_at"] = datetime.now(timezone.utc).isoformat()
         return
 
     corpus = build_movie_corpus(movies)
@@ -115,6 +133,8 @@ def fit_vectorizer(db: Session) -> None:
     _cache["movie_ids"] = movie_ids
     _cache["movie_count"] = len(movies)
     _cache["filter_flag"] = current_flag
+    _cache["cache_generation"] = _cache.get("cache_generation", 0) + 1
+    _cache["last_refreshed_at"] = datetime.now(timezone.utc).isoformat()
 
 
 def get_movie_vectors(db: Session) -> tuple[spmatrix, list[str]]:
@@ -151,9 +171,34 @@ def get_movie_vector_by_id(db: Session, movie_id: str) -> np.ndarray | None:
 
 
 def invalidate_cache() -> None:
-    """Force cache invalidation (e.g., after adding/deleting movies)."""
+    """Force cache invalidation (e.g., after adding/deleting/enriching movies)."""
     _cache["vectorizer"] = None
     _cache["matrix"] = None
     _cache["movie_ids"] = []
     _cache["movie_count"] = 0
     _cache["filter_flag"] = None
+    _cache["invalidation_count"] = _cache.get("invalidation_count", 0) + 1
+
+
+def refresh_cache(db: Session) -> bool:
+    """
+    Invalidate and immediately refit the TF-IDF vectorizer cache on the current
+    database state. Returns True if refresh succeeded without raising errors.
+    """
+    invalidate_cache()
+    fit_vectorizer(db)
+    _cache["refresh_count"] = _cache.get("refresh_count", 0) + 1
+    return True
+
+
+def get_cache_stats() -> dict:
+    """Return non-sensitive diagnostic counters for the TF-IDF cache."""
+    return {
+        "is_populated": _cache["vectorizer"] is not None,
+        "movie_count": _cache["movie_count"],
+        "filter_flag": _cache["filter_flag"],
+        "cache_generation": _cache.get("cache_generation", 0),
+        "invalidation_count": _cache.get("invalidation_count", 0),
+        "refresh_count": _cache.get("refresh_count", 0),
+        "last_refreshed_at": _cache.get("last_refreshed_at"),
+    }

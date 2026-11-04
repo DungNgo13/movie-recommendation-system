@@ -34,6 +34,7 @@ from .routers import users
 from .routers import movie_assets
 from .routers import admin_uploads
 from .routers import admin_movie_source
+from .routers import admin_metadata_enrichment
 from .core.api_errors import CodedHTTPException, coded_http_exception_handler
 
 # NOTE: Database schema is now managed by Alembic migrations.
@@ -115,6 +116,7 @@ app.include_router(users.router)
 app.include_router(movie_assets.router)
 app.include_router(admin_uploads.router)
 app.include_router(admin_movie_source.router)
+app.include_router(admin_metadata_enrichment.router)
 
 @app.get("/")
 def read_root():

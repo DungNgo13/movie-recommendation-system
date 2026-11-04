@@ -5,6 +5,7 @@ import type { MovieFormData } from '../../services/movieService';
 import { uploadMovieImage, uploadMovieVideo, processMovieVideo, getMovieProcessingStatus } from '../../services/movieService';
 import { useTranslation } from 'react-i18next';
 import R2DirectUpload from './R2DirectUpload';
+import MetadataEnrichmentPanel from './MetadataEnrichmentPanel';
 import { useMovieSourceStatus } from '../../hooks/useMovieSourceStatus';
 
 // ─── TagInput ─────────────────────────────────────────────────────────────────
@@ -368,6 +369,27 @@ const MovieForm: React.FC<MovieFormProps> = ({ movie, onSubmit, onCancel }) => {
       <h2>{movie ? t("admin:movieForm.editMovie", "Edit Movie") : t("admin:movieForm.addMovie", "Add Movie")}</h2>
 
       {error && <p className="admin-form-error">{error}</p>}
+
+      {movie && (
+        <MetadataEnrichmentPanel
+          movieId={movie.id}
+          movieMetadataVersion={movie.metadata_version}
+          onApplied={(applied) => {
+            if (typeof applied.title === 'string') setTitle(applied.title);
+            if (typeof applied.overview === 'string') setOverview(applied.overview);
+            if (typeof applied.release_date === 'string') setReleaseDate(applied.release_date.split('-')[0]);
+            if (typeof applied.director === 'string') setDirector(applied.director);
+            if (Array.isArray(applied.genres)) setGenres(applied.genres as string[]);
+            if (Array.isArray(applied.cast)) setCast(applied.cast as string[]);
+            if (Array.isArray(applied.keywords)) setKeywords(applied.keywords as string[]);
+            if (typeof applied.title_vi === 'string') setTitleVi(applied.title_vi);
+            if (typeof applied.overview_vi === 'string') setOverviewVi(applied.overview_vi);
+            if (typeof applied.poster_path === 'string') setPosterUrl(applied.poster_path);
+            if (typeof applied.backdrop_path === 'string') setBackdropUrl(applied.backdrop_path);
+            setSourceName((prev) => prev || 'TMDB');
+          }}
+        />
+      )}
 
       {/* ── Basic metadata ───────────────────────────────────────────── */}
       <div className="admin-form-group">
