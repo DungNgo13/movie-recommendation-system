@@ -385,10 +385,15 @@ def explain_recommendations(
         })
 
     # ── 7. Assemble final payload ─────────────────────────────────────────────
+    from .semantic_engine import get_recommendation_strategy
+    configured_strategy = get_recommendation_strategy()
+
     payload = {
         "user_id":           str(user_id),
         "user_email":        user_email,
         "algorithm_version": "TF-IDF + Cosine Similarity + Weighted User Profile v2",
+        "configured_strategy": configured_strategy,
+        "active_strategy":   "tfidf_v1_1",
         "is_cold_start":     False,
         "algorithm_summary": (
             "1) Build a text profile for each movie (title×2, overview, genres, "

@@ -110,6 +110,64 @@ def get_recommendations(
     Returns:
         List of dicts: { id, title, poster_url, release_year, score, reason }
     """
+    # Build exclusion set (R1 Fix)
+    exclude_ids: set[str] = set()
+    if exclude_interacted:
+        exclude_ids = get_user_excluded_movie_ids(
+            db=db,
+            user_id=user_id,
+            exclude_favorited=True,
+            exclude_rated=exclude_rated,
+            exclude_watched=exclude_watched,
+            watched_progress_threshold=watched_progress_threshold,
+        )
+
+    mmr_enabled, mmr_lambda, mmr_pool_size = _mmr_config()
+
+    # ── Optional Semantic Embedding Strategy (Phase 8B) ───────────────────
+    # Default strategy is "tfidf_v1_1". When RECOMMENDATION_STRATEGY is set to
+    # a semantic model ("semantic_en" or "semantic_multi"), attempt to use
+    # precomputed embedding artifacts; if missing, stale, or incompatible,
+    # fall back safely to TF-IDF v1.1 without raising errors.
+    from .semantic_engine import get_recommendation_strategy, try_get_semantic_recommendations
+
+    strategy = get_recommendation_strategy()
+    if strategy != "tfidf_v1_1":
+        sem_movies, sem_info = try_get_semantic_recommendations(
+            db=db,
+            user_id=user_id,
+            strategy=strategy,
+            top_n=top_n,
+            exclude_ids=exclude_ids,
+            suppress_negative=suppress_negative,
+            mmr_enabled=mmr_enabled,
+            mmr_lambda=mmr_lambda,
+            mmr_pool_size=mmr_pool_size,
+        )
+        if not sem_info.get("fallback", False):
+            if sem_info.get("is_cold_start", False):
+                return _cold_start_fallback(db, top_n)
+            if sem_movies is not None:
+                from ...schemas.movie import normalize_url
+                summary = get_interaction_summary(db, user_id)
+                top_scored_map = dict(sem_info.get("top_scored", []))
+                sem_results = []
+                for movie in sem_movies:
+                    mid = str(movie.id)
+                    score = float(top_scored_map.get(mid, 0.0))
+                    release_year = movie.release_date.year if movie.release_date else None
+                    sem_results.append({
+                        "id": mid,
+                        "title": movie.title,
+                        "title_vi": getattr(movie, "title_vi", None),
+                        "poster_url": normalize_url(movie.poster_path),
+                        "release_year": release_year,
+                        "score": round(score, 4),
+                        "reason": generate_reason(summary, score),
+                    })
+                return sem_results
+
+    # ── TF-IDF v1.1 Production Baseline / Safe Fallback ───────────────────
     # Build user profile vector
     user_vector = build_user_profile(db, user_id, suppress_negative=suppress_negative)
 
@@ -125,18 +183,6 @@ def get_recommendations(
     # Compute cosine similarity: user_vector vs all movie vectors
     scores = cosine_similarity(user_vector.reshape(1, -1), matrix).flatten()
 
-    # Build exclusion set (R1 Fix)
-    exclude_ids: set[str] = set()
-    if exclude_interacted:
-        exclude_ids = get_user_excluded_movie_ids(
-            db=db,
-            user_id=user_id,
-            exclude_favorited=True,
-            exclude_rated=exclude_rated,
-            exclude_watched=exclude_watched,
-            watched_progress_threshold=watched_progress_threshold,
-        )
-
     # Get interaction summary for explanation
     summary = get_interaction_summary(db, user_id)
 
@@ -149,7 +195,6 @@ def get_recommendations(
     scored_movies.sort(key=lambda x: x[1], reverse=True)
 
     # ── Optional MMR Re-ranking ───────────────────────────────────────
-    mmr_enabled, mmr_lambda, mmr_pool_size = _mmr_config()
     if mmr_enabled and len(scored_movies) > 0:
         from ...recommendation_evaluation.mmr import mmr_rerank
 

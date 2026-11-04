@@ -80,3 +80,6 @@ skills-lock.json
 *.log
 tmp/
 temp/
+
+# ===== Binary Embedding Caches =====
+*.npz

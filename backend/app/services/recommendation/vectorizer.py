@@ -178,6 +178,11 @@ def invalidate_cache() -> None:
     _cache["movie_count"] = 0
     _cache["filter_flag"] = None
     _cache["invalidation_count"] = _cache.get("invalidation_count", 0) + 1
+    try:
+        from .embedding_cache import invalidate_embedding_cache
+        invalidate_embedding_cache()
+    except Exception:
+        pass
 
 
 def refresh_cache(db: Session) -> bool:
