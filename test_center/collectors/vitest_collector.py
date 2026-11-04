@@ -12,7 +12,7 @@ from pathlib import Path
 
 from ..config.settings import TECSettings
 from ..parsers.junit_xml import parse_junit_xml
-from .base import CollectorResult
+from .base import CollectorResult, TestCaseRecord
 
 logger = logging.getLogger(__name__)
 
@@ -113,6 +113,19 @@ class VitestCollector:
                     artifacts=[str(junit_xml_path)],
                 )
 
+            # Build complete test case list from JUnit XML
+            all_cases = [
+                TestCaseRecord(
+                    name=tc.name,
+                    classname=tc.classname,
+                    status=tc.status.upper(),
+                    duration_seconds=tc.time_seconds,
+                    message=tc.message,
+                    source="frontend",
+                )
+                for tc in suite.test_cases
+            ]
+
             failures = [
                 {
                     "name": tc.name,
@@ -135,6 +148,7 @@ class VitestCollector:
                 tests_skipped=suite.skipped,
                 duration_seconds=suite.time_seconds or duration,
                 pass_rate=suite.pass_rate,
+                test_cases=all_cases,
                 failures=failures,
                 metadata={"returncode": proc.returncode},
                 artifacts=[str(junit_xml_path)],

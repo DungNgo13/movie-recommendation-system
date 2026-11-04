@@ -125,24 +125,28 @@ def sample_ablation_json(tmp_path: Path) -> Path:
 
 @pytest.fixture
 def baseline_report_data() -> dict:
-    """Return a dict simulating a baseline TEC run report."""
+    """Return a dict simulating a baseline TEC run report.
+
+    Includes ALL test cases (passed + failed) in ``functional_tests``
+    to match the fixed collector behaviour.
+    """
     return {
         "metadata": {
             "run_id": "tec-20261029-000000-abc1234",
             "timestamp_utc": "2026-10-29T00:00:00Z",
             "git_commit": "abc1234def5678",
         },
-        "overall_status": "PASS",
+        "overall_status": "FAIL",
         "summary": {
             "functional": {"total": 4, "passed": 3, "failed": 1, "skipped": 0},
             "backend_tests": {"total": 3, "passed": 2, "failed": 1, "skipped": 0, "status": "FAIL"},
             "frontend_tests": {"total": 1, "passed": 1, "failed": 0, "skipped": 0, "status": "PASS"},
         },
         "functional_tests": [
-            {"name": "test_login", "classname": "tests.test_auth", "status": "PASSED"},
-            {"name": "test_register", "classname": "tests.test_auth", "status": "PASSED"},
-            {"name": "test_upload", "classname": "tests.test_r2", "status": "FAILED", "message": "timeout"},
-            {"name": "test_list_movies", "classname": "tests.test_movies", "status": "PASSED"},
+            {"name": "test_login", "classname": "tests.test_auth", "status": "PASSED", "duration_seconds": 0.1, "message": "", "source": "backend"},
+            {"name": "test_register", "classname": "tests.test_auth", "status": "PASSED", "duration_seconds": 0.2, "message": "", "source": "backend"},
+            {"name": "test_upload", "classname": "tests.test_r2", "status": "FAILED", "duration_seconds": 0.5, "message": "timeout", "source": "backend"},
+            {"name": "test_list_movies", "classname": "tests.test_movies", "status": "PASSED", "duration_seconds": 0.3, "message": "", "source": "frontend"},
         ],
         "recommendation_metrics": {
             "by_k": {
@@ -158,7 +162,11 @@ def baseline_report_data() -> dict:
 
 @pytest.fixture
 def candidate_report_data() -> dict:
-    """Return a dict simulating a candidate TEC run with one regression."""
+    """Return a dict simulating a candidate TEC run with one regression.
+
+    ``test_login`` went PASSED → FAILED (regression).
+    ``test_upload`` went FAILED → PASSED (fix).
+    """
     return {
         "metadata": {
             "run_id": "tec-20261029-010000-def5678",
@@ -167,13 +175,15 @@ def candidate_report_data() -> dict:
         },
         "overall_status": "FAIL",
         "summary": {
-            "functional": {"total": 4, "passed": 2, "failed": 2, "skipped": 0},
+            "functional": {"total": 4, "passed": 3, "failed": 1, "skipped": 0},
+            "backend_tests": {"total": 3, "passed": 2, "failed": 1, "skipped": 0, "status": "FAIL"},
+            "frontend_tests": {"total": 1, "passed": 1, "failed": 0, "skipped": 0, "status": "PASS"},
         },
         "functional_tests": [
-            {"name": "test_login", "classname": "tests.test_auth", "status": "FAILED", "message": "500 error"},
-            {"name": "test_register", "classname": "tests.test_auth", "status": "PASSED"},
-            {"name": "test_upload", "classname": "tests.test_r2", "status": "PASSED"},
-            {"name": "test_list_movies", "classname": "tests.test_movies", "status": "PASSED"},
+            {"name": "test_login", "classname": "tests.test_auth", "status": "FAILED", "duration_seconds": 0.1, "message": "500 error", "source": "backend"},
+            {"name": "test_register", "classname": "tests.test_auth", "status": "PASSED", "duration_seconds": 0.2, "message": "", "source": "backend"},
+            {"name": "test_upload", "classname": "tests.test_r2", "status": "PASSED", "duration_seconds": 0.4, "message": "", "source": "backend"},
+            {"name": "test_list_movies", "classname": "tests.test_movies", "status": "PASSED", "duration_seconds": 0.3, "message": "", "source": "frontend"},
         ],
         "recommendation_metrics": {
             "by_k": {
@@ -184,4 +194,57 @@ def candidate_report_data() -> dict:
             "dataset_checksum": "696d65a3dfce",
             "split_checksum": "48cc8f10cce9",
         },
+    }
+
+
+@pytest.fixture
+def legacy_report_data_empty_tests() -> dict:
+    """Simulate a legacy run where functional_tests is empty (Bug #1).
+
+    Only summary counts are available — the comparison must fall back
+    to them for pass-rate calculation.
+    """
+    return {
+        "metadata": {
+            "run_id": "tec-20261029-legacy-aaa0000",
+            "timestamp_utc": "2026-10-29T00:00:00Z",
+            "git_commit": "aaa0000bbb1111",
+        },
+        "overall_status": "PASS",
+        "summary": {
+            "functional": {"total": 378, "passed": 378, "failed": 0, "skipped": 0},
+            "backend_tests": {"total": 378, "passed": 378, "failed": 0, "skipped": 0, "status": "PASS"},
+            "frontend_tests": {"total": 0, "passed": 0, "failed": 0, "skipped": 0, "status": "NOT_RUN"},
+        },
+        "functional_tests": [],
+        "recommendation_metrics": {},
+    }
+
+
+@pytest.fixture
+def report_data_missing_suite() -> dict:
+    """Simulate a candidate run where backend suite is missing.
+
+    Baseline had backend tests but candidate doesn't — should be INCOMPLETE.
+    """
+    return {
+        "metadata": {
+            "run_id": "tec-20261029-partial-ccc0000",
+            "timestamp_utc": "2026-10-29T02:00:00Z",
+            "git_commit": "ccc0000ddd1111",
+        },
+        "overall_status": "PASS",
+        "summary": {
+            "functional": {"total": 5, "passed": 5, "failed": 0, "skipped": 0},
+            "backend_tests": {"total": 0, "passed": 0, "failed": 0, "skipped": 0, "status": "NOT_RUN"},
+            "frontend_tests": {"total": 5, "passed": 5, "failed": 0, "skipped": 0, "status": "PASS"},
+        },
+        "functional_tests": [
+            {"name": "test_render", "classname": "tests.test_ui", "status": "PASSED", "duration_seconds": 0.1, "message": "", "source": "frontend"},
+            {"name": "test_nav", "classname": "tests.test_ui", "status": "PASSED", "duration_seconds": 0.1, "message": "", "source": "frontend"},
+            {"name": "test_form", "classname": "tests.test_ui", "status": "PASSED", "duration_seconds": 0.1, "message": "", "source": "frontend"},
+            {"name": "test_list", "classname": "tests.test_ui", "status": "PASSED", "duration_seconds": 0.1, "message": "", "source": "frontend"},
+            {"name": "test_detail", "classname": "tests.test_ui", "status": "PASSED", "duration_seconds": 0.1, "message": "", "source": "frontend"},
+        ],
+        "recommendation_metrics": {},
     }

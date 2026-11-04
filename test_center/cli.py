@@ -60,6 +60,18 @@ def main() -> None:
     )
     run_p.add_argument("--backend-only", action="store_true")
     run_p.add_argument("--frontend-only", action="store_true")
+    run_p.add_argument(
+        "--with-coverage", action="store_true",
+        help="Enable coverage reporting (requires pytest-cov / vitest coverage).",
+    )
+    run_p.add_argument(
+        "--with-lint", action="store_true",
+        help="Run frontend ESLint check.",
+    )
+    run_p.add_argument(
+        "--with-build", action="store_true",
+        help="Run TypeScript production build check.",
+    )
 
     # import-history
     sub.add_parser("import-history", help="Import historical phase data.")
@@ -318,16 +330,41 @@ def _cmd_run(settings: Any, args: argparse.Namespace) -> None:
     print(f"⏱ Total time: {total_time:.1f}s")
     print(f"📋 Run ID: {meta.run_id}")
 
+    # Exit with non-zero code when any test has failed (Bug #5 fix)
+    if report_data["overall_status"] in ("FAIL", "ERROR"):
+        sys.exit(1)
+
 
 def _collect_test_dicts(result: Any, prefix: str) -> list[dict]:
-    """Convert CollectorResult failures into test dicts."""
+    """Convert CollectorResult test_cases into serialisable dicts.
+
+    Uses the full ``test_cases`` list (all statuses), falling back to
+    ``failures`` only for legacy collectors that don't populate it.
+    """
+    # Prefer the complete test_cases list (Bug #1 fix)
+    if hasattr(result, "test_cases") and result.test_cases:
+        return [
+            {
+                "name": tc.name,
+                "classname": tc.classname,
+                "status": tc.status,
+                "duration_seconds": tc.duration_seconds,
+                "message": tc.message or "",
+                "source": tc.source or prefix,
+            }
+            for tc in result.test_cases
+        ]
+
+    # Legacy fallback: only failures available
     tests: list[dict] = []
     for f in result.failures:
         tests.append({
             "name": f.get("name", "unknown"),
             "classname": f.get("classname", prefix),
             "status": "FAILED",
+            "duration_seconds": 0.0,
             "message": f.get("message", ""),
+            "source": prefix,
         })
     return tests
 
@@ -372,10 +409,8 @@ def _build_report_data(
         overall = "FAIL"
     elif total == 0:
         overall = "NOT_RUN"
-    elif failed == 0:
-        overall = "PASS"
     else:
-        overall = "MIXED"
+        overall = "PASS"
 
     # Extract rec metrics for report
     rec = results.get("recommendation", {})

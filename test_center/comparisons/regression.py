@@ -116,7 +116,13 @@ class RegressionAnalyzer:
         return None
 
     def _compare_functional_tests(self) -> dict[str, Any]:
-        """Compare functional test results between baseline and candidate."""
+        """Compare functional test results between baseline and candidate.
+
+        Uses the ``functional_tests`` array as primary evidence.  When it
+        is empty (legacy runs that only stored failures), falls back to
+        the ``summary.functional`` counts so that pass-rate calculations
+        are still meaningful.
+        """
         b_tests = self._baseline.get("functional_tests", [])
         c_tests = self._candidate.get("functional_tests", [])
 
@@ -128,6 +134,7 @@ class RegressionAnalyzer:
 
         tests_added = sorted(c_names - b_names)
         tests_removed = sorted(b_names - c_names)
+        tests_missing: list[str] = []
         common = b_names & c_names
 
         tests_changed: list[dict[str, str]] = []
@@ -150,6 +157,8 @@ class RegressionAnalyzer:
                 elif b_status in _FAIL_STATES and c_status in _PASS_STATES:
                     fixes.append(change)
 
+        # --- Pass-rate calculation ---
+        # Primary: count from functional_tests array
         b_total = len(b_tests)
         c_total = len(c_tests)
         b_passed = sum(
@@ -158,18 +167,56 @@ class RegressionAnalyzer:
         c_passed = sum(
             1 for t in c_tests if t.get("status", "").upper() in _PASS_STATES
         )
+
+        # Fallback: use summary.functional counts when functional_tests
+        # is empty but summary has real numbers (Bug #2 fix).
+        b_summary = (
+            self._baseline.get("summary", {}).get("functional", {})
+        )
+        c_summary = (
+            self._candidate.get("summary", {}).get("functional", {})
+        )
+
+        if b_total == 0 and b_summary.get("total", 0) > 0:
+            b_total = b_summary["total"]
+            b_passed = b_summary.get("passed", 0)
+        if c_total == 0 and c_summary.get("total", 0) > 0:
+            c_total = c_summary["total"]
+            c_passed = c_summary.get("passed", 0)
+
         b_rate = b_passed / b_total if b_total else 0.0
         c_rate = c_passed / c_total if c_total else 0.0
+
+        # Detect missing suites — a suite present in baseline but absent
+        # from candidate is suspicious.
+        b_be = self._baseline.get("summary", {}).get("backend_tests", {})
+        c_be = self._candidate.get("summary", {}).get("backend_tests", {})
+        b_fe = self._baseline.get("summary", {}).get("frontend_tests", {})
+        c_fe = self._candidate.get("summary", {}).get("frontend_tests", {})
+
+        if b_be.get("total", 0) > 0 and c_be.get("total", 0) == 0:
+            tests_missing.append("backend_tests")
+        if b_fe.get("total", 0) > 0 and c_fe.get("total", 0) == 0:
+            tests_missing.append("frontend_tests")
+
+        # Determine evidence quality
+        evidence = "complete"
+        if b_total == 0 and c_total == 0:
+            evidence = "none"
+        elif (len(b_tests) == 0 or len(c_tests) == 0):
+            evidence = "summary_only"
 
         return {
             "tests_added": tests_added,
             "tests_removed": tests_removed,
             "tests_changed": tests_changed,
+            "tests_missing": tests_missing,
             "regressions": regressions,
             "fixes": fixes,
             "pass_rate_baseline": b_rate,
             "pass_rate_candidate": c_rate,
             "pass_rate_delta": c_rate - b_rate,
+            "evidence_quality": evidence,
         }
 
     def _compare_metrics(self) -> dict[str, Any]:
@@ -259,9 +306,23 @@ class RegressionAnalyzer:
         func_diff: dict[str, Any],
         metric_diff: dict[str, Any],
     ) -> str:
-        """Determine overall verdict from functional and metric diffs."""
+        """Determine overall verdict from functional and metric diffs.
+
+        Possible verdicts:
+        - ``DEGRADED``: functional regressions or net metric degradation.
+        - ``IMPROVED``: functional fixes or net metric improvement.
+        - ``STABLE``: no significant changes detected.
+        - ``INCOMPLETE``: one or both runs have missing test suites.
+        - ``NOT_COMPARABLE``: handled upstream (checksum mismatch).
+        """
         regressions = func_diff.get("regressions", [])
         fixes = func_diff.get("fixes", [])
+        tests_missing = func_diff.get("tests_missing", [])
+        evidence = func_diff.get("evidence_quality", "complete")
+
+        # If suites are missing from the candidate, mark as incomplete
+        if tests_missing or evidence == "none":
+            return "INCOMPLETE"
 
         if regressions:
             return "DEGRADED"

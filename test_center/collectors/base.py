@@ -6,6 +6,32 @@ serialised to JSON and consumed by the reporting layer.
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass, field
+from typing import Any
+
+
+@dataclass
+class TestCaseRecord:
+    """A single test case result.
+
+    Attributes:
+        name: Test function / method name.
+        classname: Fully qualified class or module path.
+        status: One of ``PASSED``, ``FAILED``, ``ERROR``, ``SKIPPED``.
+        duration_seconds: Execution duration in seconds.
+        message: Failure/error/skip message, if any.
+        source: Origin suite identifier (e.g. ``backend``, ``frontend``).
+    """
+
+    name: str
+    classname: str
+    status: str  # "PASSED" | "FAILED" | "ERROR" | "SKIPPED"
+    duration_seconds: float = 0.0
+    message: str | None = None
+    source: str = ""
+
+    def to_dict(self) -> dict[str, Any]:
+        """Return a JSON-serialisable dict."""
+        return asdict(self)
 
 
 @dataclass
@@ -23,7 +49,9 @@ class CollectorResult:
         tests_skipped: Tests that were skipped.
         duration_seconds: Wall-clock duration of the run.
         pass_rate: Fraction of tests that passed (0.0–1.0).
-        failures: List of dicts describing individual failures.
+        test_cases: Individual test case results — ALL tests, not just
+            failures.  This is the primary evidence for regressions.
+        failures: Dicts describing individual failures (legacy compat).
         metadata: Additional collector-specific metadata.
         artifacts: File paths to generated artifacts (logs, XML, etc.).
     """
@@ -37,13 +65,15 @@ class CollectorResult:
     tests_skipped: int = 0
     duration_seconds: float = 0.0
     pass_rate: float = 0.0
+    test_cases: list[TestCaseRecord] = field(default_factory=list)
     failures: list[dict] = field(default_factory=list)
     metadata: dict = field(default_factory=dict)
     artifacts: list[str] = field(default_factory=list)
 
     def to_dict(self) -> dict:
         """Return a JSON-serialisable dict representation."""
-        return asdict(self)
+        d = asdict(self)
+        return d
 
     @staticmethod
     def not_run(suite_name: str, reason: str = "") -> CollectorResult:
