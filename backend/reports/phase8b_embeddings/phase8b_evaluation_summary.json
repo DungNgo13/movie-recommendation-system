@@ -1,0 +1,2352 @@
+{
+  "phase": "Phase 8B \u2014 Semantic Embeddings, Metadata Quality Experiments, and TEC Evaluation",
+  "timestamp_utc": "2026-11-04T08:54:59.311733+00:00",
+  "git_commit": "8f3e7071b02c6be51cd99839c0e2acfc519c8fa7",
+  "environment": {
+    "timestamp_utc": "2026-11-04T08:54:59.311733+00:00",
+    "python_version": "3.14.3 (tags/v3.14.3:323c59a, Feb  3 2026, 16:04:56) [MSC v.1944 64 bit (AMD64)]",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "machine": "AMD64",
+    "processor": "Intel64 Family 6 Model 186 Stepping 2, GenuineIntel",
+    "git_commit": "8f3e7071b02c6be51cd99839c0e2acfc519c8fa7",
+    "dependencies": {
+      "scikit-learn": "1.9.0",
+      "scipy": "1.18.0",
+      "numpy": "2.5.1"
+    }
+  },
+  "dataset_checksum": "d830d1e560efffd547d0360da5042a5d97884e5cd99dfd145ec9ecc0efbbaa86",
+  "split_checksum": "48cc8f10cce949d0add60ad6320bf75668370d1753e5456d6fbd69479f931d67",
+  "cohort": {
+    "catalog_size": 9742,
+    "total_users": 610,
+    "evaluated_test_users": 587,
+    "relevance_threshold": 4.0,
+    "exclude_seen_policy": "train",
+    "k_values": [
+      5,
+      10,
+      20
+    ]
+  },
+  "condition_a_variants": {
+    "tfidf_v1_1": {
+      "name": "TF-IDF v1.1 (no MMR)",
+      "condition": "A_Original",
+      "config_checksum": "c990d62156592b92",
+      "metrics": {
+        "evaluation_cohort": {
+          "total_test_users": 610,
+          "users_with_relevant_items": 587,
+          "users_without_relevant_items": 23,
+          "catalog_size": 9742,
+          "relevance_threshold": 4.0,
+          "exclude_seen_policy": "train",
+          "fit_duration_seconds": 0.4839,
+          "eval_duration_seconds": 3.8159
+        },
+        "latency": {
+          "p50_ms": 5.741200000102253,
+          "p90_ms": 7.541990000390797,
+          "p95_ms": 8.932744999719937,
+          "mean_ms": 6.215711803270096,
+          "cold_start_ms": 0.004
+        },
+        "by_k": {
+          "k_5": {
+            "precision": 0.005111,
+            "recall": 0.003798,
+            "ndcg": 0.005987,
+            "hit_rate": 0.025554,
+            "map": 0.00304,
+            "all_users_precision": 0.004918,
+            "all_users_recall": 0.003655,
+            "all_users_ndcg": 0.005761,
+            "all_users_hit_rate": 0.02459,
+            "all_users_map": 0.002925,
+            "catalog_coverage": 0.087456,
+            "intra_list_diversity": 0.524714,
+            "novelty": 13.961894
+          },
+          "k_10": {
+            "precision": 0.0046,
+            "recall": 0.006896,
+            "ndcg": 0.007153,
+            "hit_rate": 0.040886,
+            "map": 0.003061,
+            "all_users_precision": 0.004426,
+            "all_users_recall": 0.006636,
+            "all_users_ndcg": 0.006883,
+            "all_users_hit_rate": 0.039344,
+            "all_users_map": 0.002945,
+            "catalog_coverage": 0.130979,
+            "intra_list_diversity": 0.571865,
+            "novelty": 14.052426
+          },
+          "k_20": {
+            "precision": 0.005451,
+            "recall": 0.015573,
+            "ndcg": 0.010476,
+            "hit_rate": 0.0954,
+            "map": 0.003352,
+            "all_users_precision": 0.005246,
+            "all_users_recall": 0.014986,
+            "all_users_ndcg": 0.010081,
+            "all_users_hit_rate": 0.091803,
+            "all_users_map": 0.003226,
+            "catalog_coverage": 0.191029,
+            "intra_list_diversity": 0.625022,
+            "novelty": 14.164957
+          }
+        }
+      }
+    },
+    "tfidf_v1_1_mmr_05": {
+      "name": "TF-IDF v1.1 + MMR (\u03bb=0.5, pool=100)",
+      "condition": "A_Original",
+      "config_checksum": "59bd0f8b968ce596",
+      "metrics": {
+        "evaluation_cohort": {
+          "total_test_users": 610,
+          "users_with_relevant_items": 587,
+          "users_without_relevant_items": 23,
+          "catalog_size": 9742,
+          "relevance_threshold": 4.0,
+          "exclude_seen_policy": "train",
+          "fit_duration_seconds": 0.4792,
+          "eval_duration_seconds": 21.1352
+        },
+        "latency": {
+          "p50_ms": 34.06775000030393,
+          "p90_ms": 36.20245999991312,
+          "p95_ms": 37.6028099999985,
+          "mean_ms": 34.59535885244879,
+          "cold_start_ms": 0.006
+        },
+        "by_k": {
+          "k_5": {
+            "precision": 0.005451,
+            "recall": 0.005775,
+            "ndcg": 0.007066,
+            "hit_rate": 0.027257,
+            "map": 0.003799,
+            "all_users_precision": 0.005246,
+            "all_users_recall": 0.005557,
+            "all_users_ndcg": 0.0068,
+            "all_users_hit_rate": 0.02623,
+            "all_users_map": 0.003656,
+            "catalog_coverage": 0.087148,
+            "intra_list_diversity": 0.788935,
+            "novelty": 13.737923,
+            "tfidf_space_ild": 0.788935
+          },
+          "k_10": {
+            "precision": 0.005451,
+            "recall": 0.010158,
+            "ndcg": 0.009091,
+            "hit_rate": 0.052811,
+            "map": 0.004047,
+            "all_users_precision": 0.005246,
+            "all_users_recall": 0.009775,
+            "all_users_ndcg": 0.008748,
+            "all_users_hit_rate": 0.05082,
+            "all_users_map": 0.003895,
+            "catalog_coverage": 0.142168,
+            "intra_list_diversity": 0.768555,
+            "novelty": 13.837244,
+            "tfidf_space_ild": 0.768555
+          },
+          "k_20": {
+            "precision": 0.006303,
+            "recall": 0.018111,
+            "ndcg": 0.012724,
+            "hit_rate": 0.112436,
+            "map": 0.004517,
+            "all_users_precision": 0.006066,
+            "all_users_recall": 0.017428,
+            "all_users_ndcg": 0.012244,
+            "all_users_hit_rate": 0.108197,
+            "all_users_map": 0.004346,
+            "catalog_coverage": 0.223157,
+            "intra_list_diversity": 0.763774,
+            "novelty": 13.891863,
+            "tfidf_space_ild": 0.763774
+          }
+        }
+      }
+    },
+    "tfidf_v1_1_mmr_07": {
+      "name": "TF-IDF v1.1 + MMR (\u03bb=0.7, pool=100)",
+      "condition": "A_Original",
+      "config_checksum": "521f09e353e5e70b",
+      "metrics": {
+        "evaluation_cohort": {
+          "total_test_users": 610,
+          "users_with_relevant_items": 587,
+          "users_without_relevant_items": 23,
+          "catalog_size": 9742,
+          "relevance_threshold": 4.0,
+          "exclude_seen_policy": "train",
+          "fit_duration_seconds": 0.52,
+          "eval_duration_seconds": 21.4244
+        },
+        "latency": {
+          "p50_ms": 34.604050000325515,
+          "p90_ms": 36.80326000003333,
+          "p95_ms": 37.925405000260064,
+          "mean_ms": 35.07021688525784,
+          "cold_start_ms": 0.0044
+        },
+        "by_k": {
+          "k_5": {
+            "precision": 0.006814,
+            "recall": 0.005751,
+            "ndcg": 0.007531,
+            "hit_rate": 0.034072,
+            "map": 0.003657,
+            "all_users_precision": 0.006557,
+            "all_users_recall": 0.005534,
+            "all_users_ndcg": 0.007247,
+            "all_users_hit_rate": 0.032787,
+            "all_users_map": 0.003519,
+            "catalog_coverage": 0.087456,
+            "intra_list_diversity": 0.655842,
+            "novelty": 13.820715,
+            "tfidf_space_ild": 0.655842
+          },
+          "k_10": {
+            "precision": 0.005622,
+            "recall": 0.008606,
+            "ndcg": 0.008508,
+            "hit_rate": 0.054514,
+            "map": 0.003508,
+            "all_users_precision": 0.00541,
+            "all_users_recall": 0.008282,
+            "all_users_ndcg": 0.008187,
+            "all_users_hit_rate": 0.052459,
+            "all_users_map": 0.003376,
+            "catalog_coverage": 0.136933,
+            "intra_list_diversity": 0.662405,
+            "novelty": 13.907444,
+            "tfidf_space_ild": 0.662405
+          },
+          "k_20": {
+            "precision": 0.005366,
+            "recall": 0.01529,
+            "ndcg": 0.010997,
+            "hit_rate": 0.0954,
+            "map": 0.003775,
+            "all_users_precision": 0.005164,
+            "all_users_recall": 0.014713,
+            "all_users_ndcg": 0.010582,
+            "all_users_hit_rate": 0.091803,
+            "all_users_map": 0.003632,
+            "catalog_coverage": 0.20622,
+            "intra_list_diversity": 0.684583,
+            "novelty": 14.037919,
+            "tfidf_space_ild": 0.684583
+          }
+        }
+      }
+    },
+    "semantic_en": {
+      "name": "English Semantic Embeddings (all-MiniLM-L6-v2)",
+      "condition": "A_Original",
+      "config_checksum": "918913f65443d5fb",
+      "metrics": {
+        "evaluation_cohort": {
+          "total_test_users": 610,
+          "users_with_relevant_items": 587,
+          "users_without_relevant_items": 23,
+          "catalog_size": 9742,
+          "relevance_threshold": 4.0,
+          "exclude_seen_policy": "train",
+          "fit_duration_seconds": 30.8842,
+          "eval_duration_seconds": 5.3331
+        },
+        "latency": {
+          "p50_ms": 8.517000000210828,
+          "p90_ms": 9.726770000361284,
+          "p95_ms": 10.22958000030485,
+          "mean_ms": 8.691229180313995,
+          "cold_start_ms": 0.0055
+        },
+        "by_k": {
+          "k_5": {
+            "precision": 0.003066,
+            "recall": 0.0009,
+            "ndcg": 0.003339,
+            "hit_rate": 0.015332,
+            "map": 0.001601,
+            "all_users_precision": 0.002951,
+            "all_users_recall": 0.000866,
+            "all_users_ndcg": 0.003213,
+            "all_users_hit_rate": 0.014754,
+            "all_users_map": 0.001541,
+            "catalog_coverage": 0.028434,
+            "intra_list_diversity": 0.287493,
+            "novelty": 14.561415,
+            "tfidf_space_ild": 0.883265
+          },
+          "k_10": {
+            "precision": 0.004089,
+            "recall": 0.005347,
+            "ndcg": 0.00493,
+            "hit_rate": 0.040886,
+            "map": 0.001545,
+            "all_users_precision": 0.003934,
+            "all_users_recall": 0.005145,
+            "all_users_ndcg": 0.004744,
+            "all_users_hit_rate": 0.039344,
+            "all_users_map": 0.001487,
+            "catalog_coverage": 0.050606,
+            "intra_list_diversity": 0.311738,
+            "novelty": 14.592052,
+            "tfidf_space_ild": 0.89054
+          },
+          "k_20": {
+            "precision": 0.003748,
+            "recall": 0.010709,
+            "ndcg": 0.006573,
+            "hit_rate": 0.06644,
+            "map": 0.001643,
+            "all_users_precision": 0.003607,
+            "all_users_recall": 0.010305,
+            "all_users_ndcg": 0.006325,
+            "all_users_hit_rate": 0.063934,
+            "all_users_map": 0.001581,
+            "catalog_coverage": 0.085095,
+            "intra_list_diversity": 0.338403,
+            "novelty": 14.57382,
+            "tfidf_space_ild": 0.909703
+          }
+        },
+        "embedding_artifact": {
+          "artifact_id": "condition_a_original_9742__english_minilm__189a92ac195c",
+          "model_key": "english_minilm",
+          "model_name": "sentence-transformers/all-MiniLM-L6-v2",
+          "model_revision": "1110a243fdf4706b3f48f1d95db1a4f5529b4d41",
+          "is_pretrained_neural": true,
+          "language_policy": "en_only",
+          "dimensions": 384,
+          "metadata_snapshot_checksum": "189a92ac195cd94f602b90627be789f0b38ebcd4caf4d9cd73da76f3a089d2cc",
+          "embedding_config_checksum": "2d1da9b43785e83dc6801b5ab0db026151304d15f8b745be63a0d15e70b689e4",
+          "movie_id_mapping_checksum": "e15f03e9e8e4e8949ea4919e7e23f95512b408ed9f4b9cff40ba770b2bb622bf",
+          "vectors_sha256": "adde832d99492732f0c22c4559e91e226646dd8da4da12feaddeacbb93181dc3",
+          "generation_duration_seconds": 29.9943,
+          "cache_load_ms": 108.6185,
+          "was_cached_on_disk": false,
+          "storage_bytes": 14948112,
+          "storage_mb": 14.2556,
+          "peak_memory_mb": 49.7264,
+          "missing_vector_rate": 0.0,
+          "fallback_rate": 0.0
+        }
+      }
+    },
+    "semantic_multi": {
+      "name": "Multilingual Semantic Embeddings (paraphrase-multilingual-MiniLM-L12-v2)",
+      "condition": "A_Original",
+      "config_checksum": "d52fe33070b49719",
+      "metrics": {
+        "evaluation_cohort": {
+          "total_test_users": 610,
+          "users_with_relevant_items": 587,
+          "users_without_relevant_items": 23,
+          "catalog_size": 9742,
+          "relevance_threshold": 4.0,
+          "exclude_seen_policy": "train",
+          "fit_duration_seconds": 59.933,
+          "eval_duration_seconds": 5.5582
+        },
+        "latency": {
+          "p50_ms": 8.910099999866361,
+          "p90_ms": 10.094130000197765,
+          "p95_ms": 10.710009999820613,
+          "mean_ms": 9.064925245907109,
+          "cold_start_ms": 0.0067
+        },
+        "by_k": {
+          "k_5": {
+            "precision": 0.002726,
+            "recall": 0.000951,
+            "ndcg": 0.002342,
+            "hit_rate": 0.013629,
+            "map": 0.000943,
+            "all_users_precision": 0.002623,
+            "all_users_recall": 0.000915,
+            "all_users_ndcg": 0.002254,
+            "all_users_hit_rate": 0.013115,
+            "all_users_map": 0.000907,
+            "catalog_coverage": 0.026381,
+            "intra_list_diversity": 0.235875,
+            "novelty": 14.467578,
+            "tfidf_space_ild": 0.92931
+          },
+          "k_10": {
+            "precision": 0.002726,
+            "recall": 0.003193,
+            "ndcg": 0.002921,
+            "hit_rate": 0.027257,
+            "map": 0.000835,
+            "all_users_precision": 0.002623,
+            "all_users_recall": 0.003072,
+            "all_users_ndcg": 0.002811,
+            "all_users_hit_rate": 0.02623,
+            "all_users_map": 0.000803,
+            "catalog_coverage": 0.042702,
+            "intra_list_diversity": 0.249229,
+            "novelty": 14.433599,
+            "tfidf_space_ild": 0.937164
+          },
+          "k_20": {
+            "precision": 0.002896,
+            "recall": 0.007275,
+            "ndcg": 0.004508,
+            "hit_rate": 0.057922,
+            "map": 0.000957,
+            "all_users_precision": 0.002787,
+            "all_users_recall": 0.007001,
+            "all_users_ndcg": 0.004338,
+            "all_users_hit_rate": 0.055738,
+            "all_users_map": 0.000921,
+            "catalog_coverage": 0.070417,
+            "intra_list_diversity": 0.265465,
+            "novelty": 14.433125,
+            "tfidf_space_ild": 0.944592
+          }
+        },
+        "embedding_artifact": {
+          "artifact_id": "condition_a_original_9742__multilingual_minilm__189a92ac195c",
+          "model_key": "multilingual_minilm",
+          "model_name": "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
+          "model_revision": "e8f8c211226b894fcb81acc59f3b34ba3efd5f42",
+          "is_pretrained_neural": true,
+          "language_policy": "multilingual",
+          "dimensions": 384,
+          "metadata_snapshot_checksum": "189a92ac195cd94f602b90627be789f0b38ebcd4caf4d9cd73da76f3a089d2cc",
+          "embedding_config_checksum": "8fb94b7f6b6193b464c0aa66979e4dac153e0a797053c7cea4603c76743be9ca",
+          "movie_id_mapping_checksum": "e15f03e9e8e4e8949ea4919e7e23f95512b408ed9f4b9cff40ba770b2bb622bf",
+          "vectors_sha256": "b6704ce382a63e04d2b94bfe681eadf12de40d158eb319a71d512de7d2ca4e55",
+          "generation_duration_seconds": 58.8596,
+          "cache_load_ms": 134.7099,
+          "was_cached_on_disk": false,
+          "storage_bytes": 14937646,
+          "storage_mb": 14.2456,
+          "peak_memory_mb": 52.0495,
+          "missing_vector_rate": 0.0,
+          "fallback_rate": 0.0
+        }
+      }
+    },
+    "semantic_en_mmr_05": {
+      "name": "English Semantic Embeddings + MMR (\u03bb=0.5, pool=100)",
+      "condition": "A_Original",
+      "config_checksum": "c3db255bfe441886",
+      "metrics": {
+        "evaluation_cohort": {
+          "total_test_users": 610,
+          "users_with_relevant_items": 587,
+          "users_without_relevant_items": 23,
+          "catalog_size": 9742,
+          "relevance_threshold": 4.0,
+          "exclude_seen_policy": "train",
+          "fit_duration_seconds": 0.2662,
+          "eval_duration_seconds": 16.3285
+        },
+        "latency": {
+          "p50_ms": 26.567799999611452,
+          "p90_ms": 27.95084000017596,
+          "p95_ms": 28.533490000336315,
+          "mean_ms": 26.71858967210997,
+          "cold_start_ms": 0.0063
+        },
+        "by_k": {
+          "k_5": {
+            "precision": 0.004429,
+            "recall": 0.001456,
+            "ndcg": 0.00439,
+            "hit_rate": 0.022147,
+            "map": 0.001982,
+            "all_users_precision": 0.004262,
+            "all_users_recall": 0.001401,
+            "all_users_ndcg": 0.004224,
+            "all_users_hit_rate": 0.021311,
+            "all_users_map": 0.001907,
+            "catalog_coverage": 0.029665,
+            "intra_list_diversity": 0.298511,
+            "novelty": 14.559965,
+            "tfidf_space_ild": 0.895579
+          },
+          "k_10": {
+            "precision": 0.004089,
+            "recall": 0.005378,
+            "ndcg": 0.005113,
+            "hit_rate": 0.039182,
+            "map": 0.001664,
+            "all_users_precision": 0.003934,
+            "all_users_recall": 0.005175,
+            "all_users_ndcg": 0.00492,
+            "all_users_hit_rate": 0.037705,
+            "all_users_map": 0.001601,
+            "catalog_coverage": 0.054198,
+            "intra_list_diversity": 0.321523,
+            "novelty": 14.579015,
+            "tfidf_space_ild": 0.901347
+          },
+          "k_20": {
+            "precision": 0.003748,
+            "recall": 0.01061,
+            "ndcg": 0.006616,
+            "hit_rate": 0.06644,
+            "map": 0.001687,
+            "all_users_precision": 0.003607,
+            "all_users_recall": 0.01021,
+            "all_users_ndcg": 0.006366,
+            "all_users_hit_rate": 0.063934,
+            "all_users_map": 0.001623,
+            "catalog_coverage": 0.091254,
+            "intra_list_diversity": 0.346118,
+            "novelty": 14.571826,
+            "tfidf_space_ild": 0.917293
+          }
+        },
+        "embedding_artifact": {
+          "artifact_id": "condition_a_original_9742__english_minilm__189a92ac195c",
+          "model_key": "english_minilm",
+          "model_name": "sentence-transformers/all-MiniLM-L6-v2",
+          "model_revision": "1110a243fdf4706b3f48f1d95db1a4f5529b4d41",
+          "is_pretrained_neural": true,
+          "language_policy": "en_only",
+          "dimensions": 384,
+          "metadata_snapshot_checksum": "189a92ac195cd94f602b90627be789f0b38ebcd4caf4d9cd73da76f3a089d2cc",
+          "embedding_config_checksum": "2d1da9b43785e83dc6801b5ab0db026151304d15f8b745be63a0d15e70b689e4",
+          "movie_id_mapping_checksum": "e15f03e9e8e4e8949ea4919e7e23f95512b408ed9f4b9cff40ba770b2bb622bf",
+          "vectors_sha256": "adde832d99492732f0c22c4559e91e226646dd8da4da12feaddeacbb93181dc3",
+          "generation_duration_seconds": 29.9943,
+          "cache_load_ms": 84.5802,
+          "was_cached_on_disk": true,
+          "storage_bytes": 14948112,
+          "storage_mb": 14.2556,
+          "peak_memory_mb": 49.7264,
+          "missing_vector_rate": 0.0,
+          "fallback_rate": 0.0
+        }
+      }
+    },
+    "semantic_en_mmr_07": {
+      "name": "English Semantic Embeddings + MMR (\u03bb=0.7, pool=100)",
+      "condition": "A_Original",
+      "config_checksum": "85ed860f60bd4179",
+      "metrics": {
+        "evaluation_cohort": {
+          "total_test_users": 610,
+          "users_with_relevant_items": 587,
+          "users_without_relevant_items": 23,
+          "catalog_size": 9742,
+          "relevance_threshold": 4.0,
+          "exclude_seen_policy": "train",
+          "fit_duration_seconds": 0.26,
+          "eval_duration_seconds": 15.9805
+        },
+        "latency": {
+          "p50_ms": 25.884700000005978,
+          "p90_ms": 27.390530000047875,
+          "p95_ms": 28.06610499965245,
+          "mean_ms": 26.150096885281588,
+          "cold_start_ms": 0.0072
+        },
+        "by_k": {
+          "k_5": {
+            "precision": 0.004429,
+            "recall": 0.001456,
+            "ndcg": 0.004299,
+            "hit_rate": 0.022147,
+            "map": 0.001919,
+            "all_users_precision": 0.004262,
+            "all_users_recall": 0.001401,
+            "all_users_ndcg": 0.004137,
+            "all_users_hit_rate": 0.021311,
+            "all_users_map": 0.001847,
+            "catalog_coverage": 0.028844,
+            "intra_list_diversity": 0.292265,
+            "novelty": 14.572888,
+            "tfidf_space_ild": 0.889194
+          },
+          "k_10": {
+            "precision": 0.003918,
+            "recall": 0.005359,
+            "ndcg": 0.004925,
+            "hit_rate": 0.039182,
+            "map": 0.001585,
+            "all_users_precision": 0.00377,
+            "all_users_recall": 0.005157,
+            "all_users_ndcg": 0.004739,
+            "all_users_hit_rate": 0.037705,
+            "all_users_map": 0.001525,
+            "catalog_coverage": 0.052043,
+            "intra_list_diversity": 0.315312,
+            "novelty": 14.588904,
+            "tfidf_space_ild": 0.894091
+          },
+          "k_20": {
+            "precision": 0.003748,
+            "recall": 0.010581,
+            "ndcg": 0.006612,
+            "hit_rate": 0.06644,
+            "map": 0.001677,
+            "all_users_precision": 0.003607,
+            "all_users_recall": 0.010182,
+            "all_users_ndcg": 0.006363,
+            "all_users_hit_rate": 0.063934,
+            "all_users_map": 0.001614,
+            "catalog_coverage": 0.087559,
+            "intra_list_diversity": 0.341498,
+            "novelty": 14.571734,
+            "tfidf_space_ild": 0.912841
+          }
+        },
+        "embedding_artifact": {
+          "artifact_id": "condition_a_original_9742__english_minilm__189a92ac195c",
+          "model_key": "english_minilm",
+          "model_name": "sentence-transformers/all-MiniLM-L6-v2",
+          "model_revision": "1110a243fdf4706b3f48f1d95db1a4f5529b4d41",
+          "is_pretrained_neural": true,
+          "language_policy": "en_only",
+          "dimensions": 384,
+          "metadata_snapshot_checksum": "189a92ac195cd94f602b90627be789f0b38ebcd4caf4d9cd73da76f3a089d2cc",
+          "embedding_config_checksum": "2d1da9b43785e83dc6801b5ab0db026151304d15f8b745be63a0d15e70b689e4",
+          "movie_id_mapping_checksum": "e15f03e9e8e4e8949ea4919e7e23f95512b408ed9f4b9cff40ba770b2bb622bf",
+          "vectors_sha256": "adde832d99492732f0c22c4559e91e226646dd8da4da12feaddeacbb93181dc3",
+          "generation_duration_seconds": 29.9943,
+          "cache_load_ms": 84.0275,
+          "was_cached_on_disk": true,
+          "storage_bytes": 14948112,
+          "storage_mb": 14.2556,
+          "peak_memory_mb": 49.7264,
+          "missing_vector_rate": 0.0,
+          "fallback_rate": 0.0
+        }
+      }
+    }
+  },
+  "ablation_2x2": {
+    "protocol_b1_full_catalog_partial_enrichment": {
+      "description": "Full 9,742-movie MovieLens catalog where 11 matched movies receive admin-approved Phase 8A TMDB enriched metadata (overview, overview_vi, title_vi, cast, director, keywords).",
+      "catalog_size": 9742,
+      "enriched_movies_count": 10,
+      "evaluated_test_users": 587,
+      "cells": {
+        "tfidf_original": {
+          "evaluation_cohort": {
+            "total_test_users": 610,
+            "users_with_relevant_items": 587,
+            "users_without_relevant_items": 23,
+            "catalog_size": 9742,
+            "relevance_threshold": 4.0,
+            "exclude_seen_policy": "train",
+            "fit_duration_seconds": 0.4839,
+            "eval_duration_seconds": 3.8159
+          },
+          "latency": {
+            "p50_ms": 5.741200000102253,
+            "p90_ms": 7.541990000390797,
+            "p95_ms": 8.932744999719937,
+            "mean_ms": 6.215711803270096,
+            "cold_start_ms": 0.004
+          },
+          "by_k": {
+            "k_5": {
+              "precision": 0.005111,
+              "recall": 0.003798,
+              "ndcg": 0.005987,
+              "hit_rate": 0.025554,
+              "map": 0.00304,
+              "all_users_precision": 0.004918,
+              "all_users_recall": 0.003655,
+              "all_users_ndcg": 0.005761,
+              "all_users_hit_rate": 0.02459,
+              "all_users_map": 0.002925,
+              "catalog_coverage": 0.087456,
+              "intra_list_diversity": 0.524714,
+              "novelty": 13.961894
+            },
+            "k_10": {
+              "precision": 0.0046,
+              "recall": 0.006896,
+              "ndcg": 0.007153,
+              "hit_rate": 0.040886,
+              "map": 0.003061,
+              "all_users_precision": 0.004426,
+              "all_users_recall": 0.006636,
+              "all_users_ndcg": 0.006883,
+              "all_users_hit_rate": 0.039344,
+              "all_users_map": 0.002945,
+              "catalog_coverage": 0.130979,
+              "intra_list_diversity": 0.571865,
+              "novelty": 14.052426
+            },
+            "k_20": {
+              "precision": 0.005451,
+              "recall": 0.015573,
+              "ndcg": 0.010476,
+              "hit_rate": 0.0954,
+              "map": 0.003352,
+              "all_users_precision": 0.005246,
+              "all_users_recall": 0.014986,
+              "all_users_ndcg": 0.010081,
+              "all_users_hit_rate": 0.091803,
+              "all_users_map": 0.003226,
+              "catalog_coverage": 0.191029,
+              "intra_list_diversity": 0.625022,
+              "novelty": 14.164957
+            }
+          }
+        },
+        "tfidf_enriched": {
+          "evaluation_cohort": {
+            "total_test_users": 610,
+            "users_with_relevant_items": 587,
+            "users_without_relevant_items": 23,
+            "catalog_size": 9742,
+            "relevance_threshold": 4.0,
+            "exclude_seen_policy": "train",
+            "fit_duration_seconds": 0.5159,
+            "eval_duration_seconds": 4.0099
+          },
+          "latency": {
+            "p50_ms": 6.088099999487895,
+            "p90_ms": 8.026870000139752,
+            "p95_ms": 9.161639999911129,
+            "mean_ms": 6.533097868835836,
+            "cold_start_ms": 0.0037
+          },
+          "by_k": {
+            "k_5": {
+              "precision": 0.005111,
+              "recall": 0.003798,
+              "ndcg": 0.005987,
+              "hit_rate": 0.025554,
+              "map": 0.00304,
+              "all_users_precision": 0.004918,
+              "all_users_recall": 0.003655,
+              "all_users_ndcg": 0.005761,
+              "all_users_hit_rate": 0.02459,
+              "all_users_map": 0.002925,
+              "catalog_coverage": 0.08684,
+              "intra_list_diversity": 0.524712,
+              "novelty": 13.961761,
+              "tfidf_space_ild": 0.524696
+            },
+            "k_10": {
+              "precision": 0.005281,
+              "recall": 0.008131,
+              "ndcg": 0.007819,
+              "hit_rate": 0.0477,
+              "map": 0.003209,
+              "all_users_precision": 0.005082,
+              "all_users_recall": 0.007824,
+              "all_users_ndcg": 0.007524,
+              "all_users_hit_rate": 0.045902,
+              "all_users_map": 0.003088,
+              "catalog_coverage": 0.130979,
+              "intra_list_diversity": 0.573277,
+              "novelty": 14.046227,
+              "tfidf_space_ild": 0.573343
+            },
+            "k_20": {
+              "precision": 0.005366,
+              "recall": 0.015403,
+              "ndcg": 0.01054,
+              "hit_rate": 0.093697,
+              "map": 0.003423,
+              "all_users_precision": 0.005164,
+              "all_users_recall": 0.014822,
+              "all_users_ndcg": 0.010143,
+              "all_users_hit_rate": 0.090164,
+              "all_users_map": 0.003294,
+              "catalog_coverage": 0.192774,
+              "intra_list_diversity": 0.626538,
+              "novelty": 14.15883,
+              "tfidf_space_ild": 0.626611
+            }
+          }
+        },
+        "semantic_en_original": {
+          "evaluation_cohort": {
+            "total_test_users": 610,
+            "users_with_relevant_items": 587,
+            "users_without_relevant_items": 23,
+            "catalog_size": 9742,
+            "relevance_threshold": 4.0,
+            "exclude_seen_policy": "train",
+            "fit_duration_seconds": 30.8842,
+            "eval_duration_seconds": 5.3331
+          },
+          "latency": {
+            "p50_ms": 8.517000000210828,
+            "p90_ms": 9.726770000361284,
+            "p95_ms": 10.22958000030485,
+            "mean_ms": 8.691229180313995,
+            "cold_start_ms": 0.0055
+          },
+          "by_k": {
+            "k_5": {
+              "precision": 0.003066,
+              "recall": 0.0009,
+              "ndcg": 0.003339,
+              "hit_rate": 0.015332,
+              "map": 0.001601,
+              "all_users_precision": 0.002951,
+              "all_users_recall": 0.000866,
+              "all_users_ndcg": 0.003213,
+              "all_users_hit_rate": 0.014754,
+              "all_users_map": 0.001541,
+              "catalog_coverage": 0.028434,
+              "intra_list_diversity": 0.287493,
+              "novelty": 14.561415,
+              "tfidf_space_ild": 0.883265
+            },
+            "k_10": {
+              "precision": 0.004089,
+              "recall": 0.005347,
+              "ndcg": 0.00493,
+              "hit_rate": 0.040886,
+              "map": 0.001545,
+              "all_users_precision": 0.003934,
+              "all_users_recall": 0.005145,
+              "all_users_ndcg": 0.004744,
+              "all_users_hit_rate": 0.039344,
+              "all_users_map": 0.001487,
+              "catalog_coverage": 0.050606,
+              "intra_list_diversity": 0.311738,
+              "novelty": 14.592052,
+              "tfidf_space_ild": 0.89054
+            },
+            "k_20": {
+              "precision": 0.003748,
+              "recall": 0.010709,
+              "ndcg": 0.006573,
+              "hit_rate": 0.06644,
+              "map": 0.001643,
+              "all_users_precision": 0.003607,
+              "all_users_recall": 0.010305,
+              "all_users_ndcg": 0.006325,
+              "all_users_hit_rate": 0.063934,
+              "all_users_map": 0.001581,
+              "catalog_coverage": 0.085095,
+              "intra_list_diversity": 0.338403,
+              "novelty": 14.57382,
+              "tfidf_space_ild": 0.909703
+            }
+          },
+          "embedding_artifact": {
+            "artifact_id": "condition_a_original_9742__english_minilm__189a92ac195c",
+            "model_key": "english_minilm",
+            "model_name": "sentence-transformers/all-MiniLM-L6-v2",
+            "model_revision": "1110a243fdf4706b3f48f1d95db1a4f5529b4d41",
+            "is_pretrained_neural": true,
+            "language_policy": "en_only",
+            "dimensions": 384,
+            "metadata_snapshot_checksum": "189a92ac195cd94f602b90627be789f0b38ebcd4caf4d9cd73da76f3a089d2cc",
+            "embedding_config_checksum": "2d1da9b43785e83dc6801b5ab0db026151304d15f8b745be63a0d15e70b689e4",
+            "movie_id_mapping_checksum": "e15f03e9e8e4e8949ea4919e7e23f95512b408ed9f4b9cff40ba770b2bb622bf",
+            "vectors_sha256": "adde832d99492732f0c22c4559e91e226646dd8da4da12feaddeacbb93181dc3",
+            "generation_duration_seconds": 29.9943,
+            "cache_load_ms": 108.6185,
+            "was_cached_on_disk": false,
+            "storage_bytes": 14948112,
+            "storage_mb": 14.2556,
+            "peak_memory_mb": 49.7264,
+            "missing_vector_rate": 0.0,
+            "fallback_rate": 0.0
+          }
+        },
+        "semantic_en_enriched": {
+          "evaluation_cohort": {
+            "total_test_users": 610,
+            "users_with_relevant_items": 587,
+            "users_without_relevant_items": 23,
+            "catalog_size": 9742,
+            "relevance_threshold": 4.0,
+            "exclude_seen_policy": "train",
+            "fit_duration_seconds": 1.2787,
+            "eval_duration_seconds": 5.4335
+          },
+          "latency": {
+            "p50_ms": 8.577849999255704,
+            "p90_ms": 9.99283999990439,
+            "p95_ms": 10.664235000558618,
+            "mean_ms": 8.862760491795553,
+            "cold_start_ms": 0.0114
+          },
+          "by_k": {
+            "k_5": {
+              "precision": 0.002726,
+              "recall": 0.000859,
+              "ndcg": 0.003116,
+              "hit_rate": 0.013629,
+              "map": 0.001533,
+              "all_users_precision": 0.002623,
+              "all_users_recall": 0.000827,
+              "all_users_ndcg": 0.002998,
+              "all_users_hit_rate": 0.013115,
+              "all_users_map": 0.001475,
+              "catalog_coverage": 0.028434,
+              "intra_list_diversity": 0.288035,
+              "novelty": 14.566346,
+              "tfidf_space_ild": 0.882881
+            },
+            "k_10": {
+              "precision": 0.004089,
+              "recall": 0.005347,
+              "ndcg": 0.004897,
+              "hit_rate": 0.040886,
+              "map": 0.001519,
+              "all_users_precision": 0.003934,
+              "all_users_recall": 0.005145,
+              "all_users_ndcg": 0.004712,
+              "all_users_hit_rate": 0.039344,
+              "all_users_map": 0.001462,
+              "catalog_coverage": 0.050606,
+              "intra_list_diversity": 0.312153,
+              "novelty": 14.583357,
+              "tfidf_space_ild": 0.891104
+            },
+            "k_20": {
+              "precision": 0.003663,
+              "recall": 0.010368,
+              "ndcg": 0.006402,
+              "hit_rate": 0.064736,
+              "map": 0.001598,
+              "all_users_precision": 0.003525,
+              "all_users_recall": 0.009977,
+              "all_users_ndcg": 0.006161,
+              "all_users_hit_rate": 0.062295,
+              "all_users_map": 0.001537,
+              "catalog_coverage": 0.086327,
+              "intra_list_diversity": 0.339084,
+              "novelty": 14.570766,
+              "tfidf_space_ild": 0.910875
+            }
+          },
+          "embedding_artifact": {
+            "artifact_id": "condition_b1_full_partial_enriched_9742__english_minilm__942560a589e5",
+            "model_key": "english_minilm",
+            "model_name": "sentence-transformers/all-MiniLM-L6-v2",
+            "model_revision": "1110a243fdf4706b3f48f1d95db1a4f5529b4d41",
+            "is_pretrained_neural": true,
+            "language_policy": "en_only",
+            "dimensions": 384,
+            "metadata_snapshot_checksum": "942560a589e5e49e827fa2f8c47d7ffd9ee1fafbe5e2be43fe4638588a1386df",
+            "embedding_config_checksum": "2d1da9b43785e83dc6801b5ab0db026151304d15f8b745be63a0d15e70b689e4",
+            "movie_id_mapping_checksum": "e15f03e9e8e4e8949ea4919e7e23f95512b408ed9f4b9cff40ba770b2bb622bf",
+            "vectors_sha256": "a6a175c9f694d52b3dfb10bcc624271ead879d6d8438f73ae346de5c0fa2fad3",
+            "generation_duration_seconds": 0.2576,
+            "cache_load_ms": 130.1168,
+            "was_cached_on_disk": false,
+            "storage_bytes": 14948133,
+            "storage_mb": 14.2557,
+            "peak_memory_mb": 49.7264,
+            "missing_vector_rate": 0.0,
+            "fallback_rate": 0.0
+          }
+        },
+        "semantic_multi_original": {
+          "evaluation_cohort": {
+            "total_test_users": 610,
+            "users_with_relevant_items": 587,
+            "users_without_relevant_items": 23,
+            "catalog_size": 9742,
+            "relevance_threshold": 4.0,
+            "exclude_seen_policy": "train",
+            "fit_duration_seconds": 59.933,
+            "eval_duration_seconds": 5.5582
+          },
+          "latency": {
+            "p50_ms": 8.910099999866361,
+            "p90_ms": 10.094130000197765,
+            "p95_ms": 10.710009999820613,
+            "mean_ms": 9.064925245907109,
+            "cold_start_ms": 0.0067
+          },
+          "by_k": {
+            "k_5": {
+              "precision": 0.002726,
+              "recall": 0.000951,
+              "ndcg": 0.002342,
+              "hit_rate": 0.013629,
+              "map": 0.000943,
+              "all_users_precision": 0.002623,
+              "all_users_recall": 0.000915,
+              "all_users_ndcg": 0.002254,
+              "all_users_hit_rate": 0.013115,
+              "all_users_map": 0.000907,
+              "catalog_coverage": 0.026381,
+              "intra_list_diversity": 0.235875,
+              "novelty": 14.467578,
+              "tfidf_space_ild": 0.92931
+            },
+            "k_10": {
+              "precision": 0.002726,
+              "recall": 0.003193,
+              "ndcg": 0.002921,
+              "hit_rate": 0.027257,
+              "map": 0.000835,
+              "all_users_precision": 0.002623,
+              "all_users_recall": 0.003072,
+              "all_users_ndcg": 0.002811,
+              "all_users_hit_rate": 0.02623,
+              "all_users_map": 0.000803,
+              "catalog_coverage": 0.042702,
+              "intra_list_diversity": 0.249229,
+              "novelty": 14.433599,
+              "tfidf_space_ild": 0.937164
+            },
+            "k_20": {
+              "precision": 0.002896,
+              "recall": 0.007275,
+              "ndcg": 0.004508,
+              "hit_rate": 0.057922,
+              "map": 0.000957,
+              "all_users_precision": 0.002787,
+              "all_users_recall": 0.007001,
+              "all_users_ndcg": 0.004338,
+              "all_users_hit_rate": 0.055738,
+              "all_users_map": 0.000921,
+              "catalog_coverage": 0.070417,
+              "intra_list_diversity": 0.265465,
+              "novelty": 14.433125,
+              "tfidf_space_ild": 0.944592
+            }
+          },
+          "embedding_artifact": {
+            "artifact_id": "condition_a_original_9742__multilingual_minilm__189a92ac195c",
+            "model_key": "multilingual_minilm",
+            "model_name": "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
+            "model_revision": "e8f8c211226b894fcb81acc59f3b34ba3efd5f42",
+            "is_pretrained_neural": true,
+            "language_policy": "multilingual",
+            "dimensions": 384,
+            "metadata_snapshot_checksum": "189a92ac195cd94f602b90627be789f0b38ebcd4caf4d9cd73da76f3a089d2cc",
+            "embedding_config_checksum": "8fb94b7f6b6193b464c0aa66979e4dac153e0a797053c7cea4603c76743be9ca",
+            "movie_id_mapping_checksum": "e15f03e9e8e4e8949ea4919e7e23f95512b408ed9f4b9cff40ba770b2bb622bf",
+            "vectors_sha256": "b6704ce382a63e04d2b94bfe681eadf12de40d158eb319a71d512de7d2ca4e55",
+            "generation_duration_seconds": 58.8596,
+            "cache_load_ms": 134.7099,
+            "was_cached_on_disk": false,
+            "storage_bytes": 14937646,
+            "storage_mb": 14.2456,
+            "peak_memory_mb": 52.0495,
+            "missing_vector_rate": 0.0,
+            "fallback_rate": 0.0
+          }
+        },
+        "semantic_multi_enriched": {
+          "evaluation_cohort": {
+            "total_test_users": 610,
+            "users_with_relevant_items": 587,
+            "users_without_relevant_items": 23,
+            "catalog_size": 9742,
+            "relevance_threshold": 4.0,
+            "exclude_seen_policy": "train",
+            "fit_duration_seconds": 2.107,
+            "eval_duration_seconds": 5.4171
+          },
+          "latency": {
+            "p50_ms": 8.697100000063074,
+            "p90_ms": 9.842720000051486,
+            "p95_ms": 10.12564999996357,
+            "mean_ms": 8.836632295051608,
+            "cold_start_ms": 0.0063
+          },
+          "by_k": {
+            "k_5": {
+              "precision": 0.002726,
+              "recall": 0.000951,
+              "ndcg": 0.002515,
+              "hit_rate": 0.013629,
+              "map": 0.001085,
+              "all_users_precision": 0.002623,
+              "all_users_recall": 0.000915,
+              "all_users_ndcg": 0.00242,
+              "all_users_hit_rate": 0.013115,
+              "all_users_map": 0.001044,
+              "catalog_coverage": 0.026586,
+              "intra_list_diversity": 0.235672,
+              "novelty": 14.508003,
+              "tfidf_space_ild": 0.928988
+            },
+            "k_10": {
+              "precision": 0.002215,
+              "recall": 0.001773,
+              "ndcg": 0.00239,
+              "hit_rate": 0.022147,
+              "map": 0.000747,
+              "all_users_precision": 0.002131,
+              "all_users_recall": 0.001706,
+              "all_users_ndcg": 0.0023,
+              "all_users_hit_rate": 0.021311,
+              "all_users_map": 0.000718,
+              "catalog_coverage": 0.042291,
+              "intra_list_diversity": 0.248903,
+              "novelty": 14.469803,
+              "tfidf_space_ild": 0.937157
+            },
+            "k_20": {
+              "precision": 0.003066,
+              "recall": 0.008979,
+              "ndcg": 0.004926,
+              "hit_rate": 0.061329,
+              "map": 0.001005,
+              "all_users_precision": 0.002951,
+              "all_users_recall": 0.00864,
+              "all_users_ndcg": 0.004741,
+              "all_users_hit_rate": 0.059016,
+              "all_users_map": 0.000967,
+              "catalog_coverage": 0.070725,
+              "intra_list_diversity": 0.265218,
+              "novelty": 14.462581,
+              "tfidf_space_ild": 0.944809
+            }
+          },
+          "embedding_artifact": {
+            "artifact_id": "condition_b1_full_partial_enriched_9742__multilingual_minilm__e3dc40342da9",
+            "model_key": "multilingual_minilm",
+            "model_name": "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
+            "model_revision": "e8f8c211226b894fcb81acc59f3b34ba3efd5f42",
+            "is_pretrained_neural": true,
+            "language_policy": "multilingual",
+            "dimensions": 384,
+            "metadata_snapshot_checksum": "e3dc40342da92530e3be6667a6213c9cda9dc4ffba8f931eb32d215e6253ee04",
+            "embedding_config_checksum": "8fb94b7f6b6193b464c0aa66979e4dac153e0a797053c7cea4603c76743be9ca",
+            "movie_id_mapping_checksum": "e15f03e9e8e4e8949ea4919e7e23f95512b408ed9f4b9cff40ba770b2bb622bf",
+            "vectors_sha256": "4c47370f9365bd36c2d8a27c6818d1bbe9cea3c2dabbffde9f078a92b532a59b",
+            "generation_duration_seconds": 0.932,
+            "cache_load_ms": 134.8897,
+            "was_cached_on_disk": false,
+            "storage_bytes": 14937686,
+            "storage_mb": 14.2457,
+            "peak_memory_mb": 52.0495,
+            "missing_vector_rate": 0.0,
+            "fallback_rate": 0.0
+          }
+        }
+      }
+    },
+    "protocol_b2_matched_enriched_subset": {
+      "description": "Restricted 11-movie candidate catalog containing ONLY the MovieLens movies with approved Phase 8A enriched metadata.",
+      "evidence_status": "NOT ENOUGH EVIDENCE",
+      "evidence_note": "Only 10 of 9742 MovieLens movies (0.10%) have approved Phase 8A enriched metadata (no fabricated metadata permitted). With 10 candidate items and 33 users having both training and relevant test interactions inside the subset, statistical power is insufficient for confirmatory claims (`NOT ENOUGH EVIDENCE`).",
+      "catalog_size": 10,
+      "evaluated_test_users": 33,
+      "cells": {
+        "tfidf_original": {
+          "evaluation_cohort": {
+            "total_test_users": 47,
+            "users_with_relevant_items": 33,
+            "users_without_relevant_items": 14,
+            "catalog_size": 10,
+            "relevance_threshold": 4.0,
+            "exclude_seen_policy": "train",
+            "fit_duration_seconds": 0.0024,
+            "eval_duration_seconds": 0.0172
+          },
+          "latency": {
+            "p50_ms": 0.3192000003764406,
+            "p90_ms": 0.44161999958305376,
+            "p95_ms": 0.5314799995176143,
+            "mean_ms": 0.3480468084818951,
+            "cold_start_ms": 0.0021
+          },
+          "by_k": {
+            "k_5": {
+              "precision": 0.181818,
+              "recall": 0.80303,
+              "ndcg": 0.543191,
+              "hit_rate": 0.818182,
+              "map": 0.455556,
+              "all_users_precision": 0.12766,
+              "all_users_recall": 0.56383,
+              "all_users_ndcg": 0.38139,
+              "all_users_hit_rate": 0.574468,
+              "all_users_map": 0.319858,
+              "catalog_coverage": 0.9,
+              "intra_list_diversity": 0.98977,
+              "novelty": 4.21791
+            },
+            "k_10": {
+              "precision": 0.112121,
+              "recall": 1.0,
+              "ndcg": 0.605855,
+              "hit_rate": 1.0,
+              "map": 0.482071,
+              "all_users_precision": 0.078723,
+              "all_users_recall": 0.702128,
+              "all_users_ndcg": 0.425387,
+              "all_users_hit_rate": 0.702128,
+              "all_users_map": 0.338475,
+              "catalog_coverage": 1.0,
+              "intra_list_diversity": 0.991595,
+              "novelty": 4.486095
+            },
+            "k_20": {
+              "precision": 0.056061,
+              "recall": 1.0,
+              "ndcg": 0.605855,
+              "hit_rate": 1.0,
+              "map": 0.482071,
+              "all_users_precision": 0.039362,
+              "all_users_recall": 0.702128,
+              "all_users_ndcg": 0.425387,
+              "all_users_hit_rate": 0.702128,
+              "all_users_map": 0.338475,
+              "catalog_coverage": 1.0,
+              "intra_list_diversity": 0.991595,
+              "novelty": 4.486095
+            }
+          }
+        },
+        "tfidf_enriched": {
+          "evaluation_cohort": {
+            "total_test_users": 47,
+            "users_with_relevant_items": 33,
+            "users_without_relevant_items": 14,
+            "catalog_size": 10,
+            "relevance_threshold": 4.0,
+            "exclude_seen_policy": "train",
+            "fit_duration_seconds": 0.0034,
+            "eval_duration_seconds": 0.0155
+          },
+          "latency": {
+            "p50_ms": 0.3071999999519903,
+            "p90_ms": 0.37351999962993426,
+            "p95_ms": 0.4356999994342912,
+            "mean_ms": 0.3129425530982615,
+            "cold_start_ms": 0.002
+          },
+          "by_k": {
+            "k_5": {
+              "precision": 0.181818,
+              "recall": 0.80303,
+              "ndcg": 0.540514,
+              "hit_rate": 0.818182,
+              "map": 0.447475,
+              "all_users_precision": 0.12766,
+              "all_users_recall": 0.56383,
+              "all_users_ndcg": 0.37951,
+              "all_users_hit_rate": 0.574468,
+              "all_users_map": 0.314184,
+              "catalog_coverage": 1.0,
+              "intra_list_diversity": 0.993406,
+              "novelty": 4.494727
+            },
+            "k_10": {
+              "precision": 0.112121,
+              "recall": 1.0,
+              "ndcg": 0.607179,
+              "hit_rate": 1.0,
+              "map": 0.477718,
+              "all_users_precision": 0.078723,
+              "all_users_recall": 0.702128,
+              "all_users_ndcg": 0.426317,
+              "all_users_hit_rate": 0.702128,
+              "all_users_map": 0.335419,
+              "catalog_coverage": 1.0,
+              "intra_list_diversity": 0.992758,
+              "novelty": 4.486095
+            },
+            "k_20": {
+              "precision": 0.056061,
+              "recall": 1.0,
+              "ndcg": 0.607179,
+              "hit_rate": 1.0,
+              "map": 0.477718,
+              "all_users_precision": 0.039362,
+              "all_users_recall": 0.702128,
+              "all_users_ndcg": 0.426317,
+              "all_users_hit_rate": 0.702128,
+              "all_users_map": 0.335419,
+              "catalog_coverage": 1.0,
+              "intra_list_diversity": 0.992758,
+              "novelty": 4.486095
+            }
+          }
+        },
+        "semantic_en_original": {
+          "evaluation_cohort": {
+            "total_test_users": 47,
+            "users_with_relevant_items": 33,
+            "users_without_relevant_items": 14,
+            "catalog_size": 10,
+            "relevance_threshold": 4.0,
+            "exclude_seen_policy": "train",
+            "fit_duration_seconds": 0.3995,
+            "eval_duration_seconds": 0.0015
+          },
+          "latency": {
+            "p50_ms": 0.016999999388644937,
+            "p90_ms": 0.025320000167994294,
+            "p95_ms": 0.030690000312461028,
+            "mean_ms": 0.020361702054481397,
+            "cold_start_ms": 0.0015
+          },
+          "by_k": {
+            "k_5": {
+              "precision": 0.175758,
+              "recall": 0.787879,
+              "ndcg": 0.587258,
+              "hit_rate": 0.818182,
+              "map": 0.510606,
+              "all_users_precision": 0.123404,
+              "all_users_recall": 0.553191,
+              "all_users_ndcg": 0.41233,
+              "all_users_hit_rate": 0.574468,
+              "all_users_map": 0.358511,
+              "catalog_coverage": 0.9,
+              "intra_list_diversity": 0.650942,
+              "novelty": 4.213319
+            },
+            "k_10": {
+              "precision": 0.112121,
+              "recall": 1.0,
+              "ndcg": 0.659307,
+              "hit_rate": 1.0,
+              "map": 0.544637,
+              "all_users_precision": 0.078723,
+              "all_users_recall": 0.702128,
+              "all_users_ndcg": 0.462918,
+              "all_users_hit_rate": 0.702128,
+              "all_users_map": 0.382405,
+              "catalog_coverage": 1.0,
+              "intra_list_diversity": 0.671901,
+              "novelty": 4.486095
+            },
+            "k_20": {
+              "precision": 0.056061,
+              "recall": 1.0,
+              "ndcg": 0.659307,
+              "hit_rate": 1.0,
+              "map": 0.544637,
+              "all_users_precision": 0.039362,
+              "all_users_recall": 0.702128,
+              "all_users_ndcg": 0.462918,
+              "all_users_hit_rate": 0.702128,
+              "all_users_map": 0.382405,
+              "catalog_coverage": 1.0,
+              "intra_list_diversity": 0.671901,
+              "novelty": 4.486095
+            }
+          },
+          "embedding_artifact": {
+            "artifact_id": "condition_b2_subset_original_10__english_minilm__4674b0e72547",
+            "model_key": "english_minilm",
+            "model_name": "sentence-transformers/all-MiniLM-L6-v2",
+            "model_revision": "1110a243fdf4706b3f48f1d95db1a4f5529b4d41",
+            "is_pretrained_neural": true,
+            "language_policy": "en_only",
+            "dimensions": 384,
+            "metadata_snapshot_checksum": "4674b0e72547b3d99d820dd75d17274dc92e865f2fec0980536f29b444337f5a",
+            "embedding_config_checksum": "2d1da9b43785e83dc6801b5ab0db026151304d15f8b745be63a0d15e70b689e4",
+            "movie_id_mapping_checksum": "135bbdab3c533370db79d8cc6305e5eb4d1f7e64c9ad0ca57fca7003394d9584",
+            "vectors_sha256": "7ecdaa0cf68bf3b84b3291bbd3d31cb0432381fc2cdb8b9a9df6396cd5e6c9cc",
+            "generation_duration_seconds": 0.2594,
+            "cache_load_ms": 18.7489,
+            "was_cached_on_disk": false,
+            "storage_bytes": 16657,
+            "storage_mb": 0.0159,
+            "peak_memory_mb": 49.7264,
+            "missing_vector_rate": 0.0,
+            "fallback_rate": 0.0
+          }
+        },
+        "semantic_en_enriched": {
+          "evaluation_cohort": {
+            "total_test_users": 47,
+            "users_with_relevant_items": 33,
+            "users_without_relevant_items": 14,
+            "catalog_size": 10,
+            "relevance_threshold": 4.0,
+            "exclude_seen_policy": "train",
+            "fit_duration_seconds": 0.3223,
+            "eval_duration_seconds": 0.0015
+          },
+          "latency": {
+            "p50_ms": 0.0183000001925393,
+            "p90_ms": 0.026639999668987002,
+            "p95_ms": 0.028060000022378514,
+            "mean_ms": 0.02092340412460505,
+            "cold_start_ms": 0.0018
+          },
+          "by_k": {
+            "k_5": {
+              "precision": 0.187879,
+              "recall": 0.833333,
+              "ndcg": 0.664177,
+              "hit_rate": 0.848485,
+              "map": 0.60202,
+              "all_users_precision": 0.131915,
+              "all_users_recall": 0.585106,
+              "all_users_ndcg": 0.466337,
+              "all_users_hit_rate": 0.595745,
+              "all_users_map": 0.422695,
+              "catalog_coverage": 0.9,
+              "intra_list_diversity": 0.736214,
+              "novelty": 4.115514
+            },
+            "k_10": {
+              "precision": 0.112121,
+              "recall": 1.0,
+              "ndcg": 0.718965,
+              "hit_rate": 1.0,
+              "map": 0.62613,
+              "all_users_precision": 0.078723,
+              "all_users_recall": 0.702128,
+              "all_users_ndcg": 0.504805,
+              "all_users_hit_rate": 0.702128,
+              "all_users_map": 0.439623,
+              "catalog_coverage": 1.0,
+              "intra_list_diversity": 0.775039,
+              "novelty": 4.486095
+            },
+            "k_20": {
+              "precision": 0.056061,
+              "recall": 1.0,
+              "ndcg": 0.718965,
+              "hit_rate": 1.0,
+              "map": 0.62613,
+              "all_users_precision": 0.039362,
+              "all_users_recall": 0.702128,
+              "all_users_ndcg": 0.504805,
+              "all_users_hit_rate": 0.702128,
+              "all_users_map": 0.439623,
+              "catalog_coverage": 1.0,
+              "intra_list_diversity": 0.775039,
+              "novelty": 4.486095
+            }
+          },
+          "embedding_artifact": {
+            "artifact_id": "condition_b2_subset_enriched_10__english_minilm__14cfb50998e2",
+            "model_key": "english_minilm",
+            "model_name": "sentence-transformers/all-MiniLM-L6-v2",
+            "model_revision": "1110a243fdf4706b3f48f1d95db1a4f5529b4d41",
+            "is_pretrained_neural": true,
+            "language_policy": "en_only",
+            "dimensions": 384,
+            "metadata_snapshot_checksum": "14cfb50998e207b557ff505439d2050090f136e2e55afb2888215499c597187f",
+            "embedding_config_checksum": "2d1da9b43785e83dc6801b5ab0db026151304d15f8b745be63a0d15e70b689e4",
+            "movie_id_mapping_checksum": "135bbdab3c533370db79d8cc6305e5eb4d1f7e64c9ad0ca57fca7003394d9584",
+            "vectors_sha256": "5b594205842760edb54daa2a2168635e07e68c38530f4dbe82504daa46d82511",
+            "generation_duration_seconds": 0.2656,
+            "cache_load_ms": 20.1313,
+            "was_cached_on_disk": false,
+            "storage_bytes": 16656,
+            "storage_mb": 0.0159,
+            "peak_memory_mb": 49.7264,
+            "missing_vector_rate": 0.0,
+            "fallback_rate": 0.0
+          }
+        },
+        "semantic_multi_original": {
+          "evaluation_cohort": {
+            "total_test_users": 47,
+            "users_with_relevant_items": 33,
+            "users_without_relevant_items": 14,
+            "catalog_size": 10,
+            "relevance_threshold": 4.0,
+            "exclude_seen_policy": "train",
+            "fit_duration_seconds": 1.1374,
+            "eval_duration_seconds": 0.0016
+          },
+          "latency": {
+            "p50_ms": 0.01810000048863003,
+            "p90_ms": 0.026939999406749845,
+            "p95_ms": 0.035120000393362695,
+            "mean_ms": 0.022489361691305988,
+            "cold_start_ms": 0.0025
+          },
+          "by_k": {
+            "k_5": {
+              "precision": 0.127273,
+              "recall": 0.530303,
+              "ndcg": 0.309513,
+              "hit_rate": 0.545455,
+              "map": 0.229798,
+              "all_users_precision": 0.089362,
+              "all_users_recall": 0.37234,
+              "all_users_ndcg": 0.217318,
+              "all_users_hit_rate": 0.382979,
+              "all_users_map": 0.161348,
+              "catalog_coverage": 1.0,
+              "intra_list_diversity": 0.455437,
+              "novelty": 4.783364
+            },
+            "k_10": {
+              "precision": 0.112121,
+              "recall": 1.0,
+              "ndcg": 0.46923,
+              "hit_rate": 1.0,
+              "map": 0.300986,
+              "all_users_precision": 0.078723,
+              "all_users_recall": 0.702128,
+              "all_users_ndcg": 0.32946,
+              "all_users_hit_rate": 0.702128,
+              "all_users_map": 0.211331,
+              "catalog_coverage": 1.0,
+              "intra_list_diversity": 0.527253,
+              "novelty": 4.486095
+            },
+            "k_20": {
+              "precision": 0.056061,
+              "recall": 1.0,
+              "ndcg": 0.46923,
+              "hit_rate": 1.0,
+              "map": 0.300986,
+              "all_users_precision": 0.039362,
+              "all_users_recall": 0.702128,
+              "all_users_ndcg": 0.32946,
+              "all_users_hit_rate": 0.702128,
+              "all_users_map": 0.211331,
+              "catalog_coverage": 1.0,
+              "intra_list_diversity": 0.527253,
+              "novelty": 4.486095
+            }
+          },
+          "embedding_artifact": {
+            "artifact_id": "condition_b2_subset_original_10__multilingual_minilm__4674b0e72547",
+            "model_key": "multilingual_minilm",
+            "model_name": "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
+            "model_revision": "e8f8c211226b894fcb81acc59f3b34ba3efd5f42",
+            "is_pretrained_neural": true,
+            "language_policy": "multilingual",
+            "dimensions": 384,
+            "metadata_snapshot_checksum": "4674b0e72547b3d99d820dd75d17274dc92e865f2fec0980536f29b444337f5a",
+            "embedding_config_checksum": "8fb94b7f6b6193b464c0aa66979e4dac153e0a797053c7cea4603c76743be9ca",
+            "movie_id_mapping_checksum": "135bbdab3c533370db79d8cc6305e5eb4d1f7e64c9ad0ca57fca7003394d9584",
+            "vectors_sha256": "efb42a7afca6264b74769d75035e8709641c0d1a15d22f26451c3b4b3d9e5255",
+            "generation_duration_seconds": 0.8678,
+            "cache_load_ms": 20.4647,
+            "was_cached_on_disk": false,
+            "storage_bytes": 16707,
+            "storage_mb": 0.0159,
+            "peak_memory_mb": 52.0495,
+            "missing_vector_rate": 0.0,
+            "fallback_rate": 0.0
+          }
+        },
+        "semantic_multi_enriched": {
+          "evaluation_cohort": {
+            "total_test_users": 47,
+            "users_with_relevant_items": 33,
+            "users_without_relevant_items": 14,
+            "catalog_size": 10,
+            "relevance_threshold": 4.0,
+            "exclude_seen_policy": "train",
+            "fit_duration_seconds": 1.117,
+            "eval_duration_seconds": 0.0014
+          },
+          "latency": {
+            "p50_ms": 0.01629999951546779,
+            "p90_ms": 0.024140000095940195,
+            "p95_ms": 0.025300000197603364,
+            "mean_ms": 0.01931914899382428,
+            "cold_start_ms": 0.003
+          },
+          "by_k": {
+            "k_5": {
+              "precision": 0.10303,
+              "recall": 0.469697,
+              "ndcg": 0.271458,
+              "hit_rate": 0.515152,
+              "map": 0.19596,
+              "all_users_precision": 0.07234,
+              "all_users_recall": 0.329787,
+              "all_users_ndcg": 0.190598,
+              "all_users_hit_rate": 0.361702,
+              "all_users_map": 0.137589,
+              "catalog_coverage": 1.0,
+              "intra_list_diversity": 0.468213,
+              "novelty": 4.783037
+            },
+            "k_10": {
+              "precision": 0.112121,
+              "recall": 1.0,
+              "ndcg": 0.458035,
+              "hit_rate": 1.0,
+              "map": 0.284404,
+              "all_users_precision": 0.078723,
+              "all_users_recall": 0.702128,
+              "all_users_ndcg": 0.321599,
+              "all_users_hit_rate": 0.702128,
+              "all_users_map": 0.199688,
+              "catalog_coverage": 1.0,
+              "intra_list_diversity": 0.493121,
+              "novelty": 4.486095
+            },
+            "k_20": {
+              "precision": 0.056061,
+              "recall": 1.0,
+              "ndcg": 0.458035,
+              "hit_rate": 1.0,
+              "map": 0.284404,
+              "all_users_precision": 0.039362,
+              "all_users_recall": 0.702128,
+              "all_users_ndcg": 0.321599,
+              "all_users_hit_rate": 0.702128,
+              "all_users_map": 0.199688,
+              "catalog_coverage": 1.0,
+              "intra_list_diversity": 0.493121,
+              "novelty": 4.486095
+            }
+          },
+          "embedding_artifact": {
+            "artifact_id": "condition_b2_subset_enriched_10__multilingual_minilm__c4c5b33c9aae",
+            "model_key": "multilingual_minilm",
+            "model_name": "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
+            "model_revision": "e8f8c211226b894fcb81acc59f3b34ba3efd5f42",
+            "is_pretrained_neural": true,
+            "language_policy": "multilingual",
+            "dimensions": 384,
+            "metadata_snapshot_checksum": "c4c5b33c9aae2d92e5e2155d0156729a866e4fb833a7823ce7e433e9be5d2668",
+            "embedding_config_checksum": "8fb94b7f6b6193b464c0aa66979e4dac153e0a797053c7cea4603c76743be9ca",
+            "movie_id_mapping_checksum": "135bbdab3c533370db79d8cc6305e5eb4d1f7e64c9ad0ca57fca7003394d9584",
+            "vectors_sha256": "969fa6b2376d062cf348f2864af252650ab929fccf4714f16e5a978bc1d246e3",
+            "generation_duration_seconds": 0.9376,
+            "cache_load_ms": 17.5513,
+            "was_cached_on_disk": false,
+            "storage_bytes": 16706,
+            "storage_mb": 0.0159,
+            "peak_memory_mb": 52.0495,
+            "missing_vector_rate": 0.0,
+            "fallback_rate": 0.0
+          }
+        }
+      }
+    },
+    "enrichment_coverage": {
+      "total_movielens_catalog": 9742,
+      "phase8a_approved_movies_total": 13,
+      "matched_movielens_movies_count": 10,
+      "catalog_enrichment_coverage_ratio": 0.001026,
+      "matched_movies": [
+        {
+          "movielens_movie_id": "5618",
+          "tmdb_id": 129,
+          "title": "Spirited Away (Sen to Chihiro no kamikakushi) (2001)",
+          "title_vi": "V\u00f9ng \u0110\u1ea5t Linh H\u1ed3n",
+          "director": "Hayao Miyazaki",
+          "enriched_token_count": 81
+        },
+        {
+          "movielens_movie_id": "1221",
+          "tmdb_id": 240,
+          "title": "Godfather: Part II, The (1974)",
+          "title_vi": "B\u1ed1 Gi\u00e0 Ph\u1ea7n II",
+          "director": "Francis Ford Coppola",
+          "enriched_token_count": 64
+        },
+        {
+          "movielens_movie_id": "318",
+          "tmdb_id": 278,
+          "title": "Shawshank Redemption, The (1994)",
+          "title_vi": "Nh\u00e0 T\u00f9 Shawshank",
+          "director": "Frank Darabont",
+          "enriched_token_count": 64
+        },
+        {
+          "movielens_movie_id": "1348",
+          "tmdb_id": 653,
+          "title": "Nosferatu (Nosferatu, eine Symphonie des Grauens) (1922)",
+          "title_vi": "Ma C\u00e0 R\u1ed3ng Nosferatu (1922)",
+          "director": "F. W. Murnau",
+          "enriched_token_count": 62
+        },
+        {
+          "movielens_movie_id": "296",
+          "tmdb_id": 680,
+          "title": "Pulp Fiction (1994)",
+          "title_vi": "Chuy\u1ec7n T\u00e0o Lao",
+          "director": "Quentin Tarantino",
+          "enriched_token_count": 569
+        },
+        {
+          "movielens_movie_id": "3022",
+          "tmdb_id": 961,
+          "title": "General, The (1926)",
+          "title_vi": "\u0110\u1ea7u M\u00e1y T\u01b0\u1edbng Qu\u00e2n",
+          "director": "Buster Keaton",
+          "enriched_token_count": 69
+        },
+        {
+          "movielens_movie_id": "911",
+          "tmdb_id": 4808,
+          "title": "Charade (1963)",
+          "title_vi": "Tr\u00f2 \u0110\u00f9a B\u00ed \u1ea8n",
+          "director": "Stanley Donen",
+          "enriched_token_count": 63
+        },
+        {
+          "movielens_movie_id": "968",
+          "tmdb_id": 10331,
+          "title": "Night of the Living Dead (1968)",
+          "title_vi": "\u0110\u00eam C\u1ee7a Nh\u1eefng X\u00e1c S\u1ed1ng",
+          "director": "George A. Romero",
+          "enriched_token_count": 55
+        },
+        {
+          "movielens_movie_id": "109487",
+          "tmdb_id": 157336,
+          "title": "Interstellar (2014)",
+          "title_vi": "H\u1ed1 \u0110en T\u1eed Th\u1ea7n",
+          "director": "Christopher Nolan",
+          "enriched_token_count": 79
+        },
+        {
+          "movielens_movie_id": "140247",
+          "tmdb_id": 328425,
+          "title": "The Gift (2015)",
+          "title_vi": "M\u00f3n Qu\u00e0 B\u00ed \u1ea8n",
+          "director": "Joel Edgerton",
+          "enriched_token_count": 65
+        }
+      ],
+      "matched_subset_cohort": {
+        "candidate_movies": 10,
+        "users_with_train_and_test": 47,
+        "users_with_relevant_test": 33,
+        "total_subset_ratings": 159,
+        "evidence_status": "NOT ENOUGH EVIDENCE",
+        "evidence_note": "Only 10 of 9742 MovieLens movies (0.10%) have approved Phase 8A enriched metadata (no fabricated metadata permitted). With 10 candidate items and 33 users having both training and relevant test interactions inside the subset, statistical power is insufficient for confirmatory claims (`NOT ENOUGH EVIDENCE`)."
+      }
+    }
+  },
+  "statistical_comparisons": {
+    "rq1_tfidf_enriched_vs_original_full_catalog": {
+      "research_question": "RQ1: Does enriching movie metadata improve TF-IDF recommendation quality (Full Catalog with 11/9742 enriched)?",
+      "ndcg_at_10": {
+        "sample_size": 587,
+        "mean_baseline": 0.007153,
+        "mean_variant": 0.007819,
+        "mean_difference": 0.000666,
+        "std_difference": 0.008364,
+        "cohens_d": 0.0797,
+        "t_statistic": 1.9304,
+        "p_value_ttest": 0.054040738433991244,
+        "wilcoxon_stat": 0.0,
+        "p_value_wilcoxon": 0.043114446783075355,
+        "bootstrap_ci_95": [
+          0.000114,
+          0.001421
+        ],
+        "win_tie_loss": {
+          "wins": 5,
+          "ties": 582,
+          "losses": 0
+        },
+        "statistically_significant_05": false,
+        "statistically_significant_001": false,
+        "evidence_status": "SUFFICIENT_SAMPLE"
+      },
+      "precision_at_10": {
+        "sample_size": 587,
+        "mean_baseline": 0.0046,
+        "mean_variant": 0.005281,
+        "mean_difference": 0.000681,
+        "std_difference": 0.008234,
+        "cohens_d": 0.0828,
+        "t_statistic": 2.0051,
+        "p_value_ttest": 0.04540755820705899,
+        "wilcoxon_stat": 0.0,
+        "p_value_wilcoxon": 0.04550026389635839,
+        "bootstrap_ci_95": [
+          0.00017,
+          0.001363
+        ],
+        "win_tie_loss": {
+          "wins": 4,
+          "ties": 583,
+          "losses": 0
+        },
+        "statistically_significant_05": true,
+        "statistically_significant_001": false,
+        "evidence_status": "SUFFICIENT_SAMPLE"
+      },
+      "recall_at_10": {
+        "sample_size": 587,
+        "mean_baseline": 0.006896,
+        "mean_variant": 0.008131,
+        "mean_difference": 0.001235,
+        "std_difference": 0.017047,
+        "cohens_d": 0.0725,
+        "t_statistic": 1.7554,
+        "p_value_ttest": 0.07971108758610851,
+        "wilcoxon_stat": 0.0,
+        "p_value_wilcoxon": 0.06788915486182899,
+        "bootstrap_ci_95": [
+          0.000114,
+          0.002797
+        ],
+        "win_tie_loss": {
+          "wins": 4,
+          "ties": 583,
+          "losses": 0
+        },
+        "statistically_significant_05": false,
+        "statistically_significant_001": false,
+        "evidence_status": "SUFFICIENT_SAMPLE"
+      }
+    },
+    "rq1_semantic_en_enriched_vs_original_full_catalog": {
+      "research_question": "RQ1b: Does enriching movie metadata improve English Semantic Embeddings (Full Catalog with 11/9742 enriched)?",
+      "ndcg_at_10": {
+        "sample_size": 587,
+        "mean_baseline": 0.00493,
+        "mean_variant": 0.004897,
+        "mean_difference": -3.3e-05,
+        "std_difference": 0.000716,
+        "cohens_d": -0.0463,
+        "t_statistic": -1.1228,
+        "p_value_ttest": 0.26200058808967214,
+        "wilcoxon_stat": 2.0,
+        "p_value_wilcoxon": 0.27332167829229814,
+        "bootstrap_ci_95": [
+          -9.9e-05,
+          1.4e-05
+        ],
+        "win_tie_loss": {
+          "wins": 1,
+          "ties": 583,
+          "losses": 3
+        },
+        "statistically_significant_05": false,
+        "statistically_significant_001": false,
+        "evidence_status": "SUFFICIENT_SAMPLE"
+      }
+    },
+    "rq1_semantic_multi_enriched_vs_original_full_catalog": {
+      "research_question": "RQ1c: Does enriching movie metadata (with Vietnamese title_vi/overview_vi) improve Multilingual Semantic Embeddings?",
+      "ndcg_at_10": {
+        "sample_size": 587,
+        "mean_baseline": 0.002921,
+        "mean_variant": 0.00239,
+        "mean_difference": -0.000531,
+        "std_difference": 0.009647,
+        "cohens_d": -0.055,
+        "t_statistic": -1.3326,
+        "p_value_ttest": 0.18318055199762473,
+        "wilcoxon_stat": 5.0,
+        "p_value_wilcoxon": 0.12819017434510785,
+        "bootstrap_ci_95": [
+          -0.001312,
+          0.000167
+        ],
+        "win_tie_loss": {
+          "wins": 2,
+          "ties": 580,
+          "losses": 5
+        },
+        "statistically_significant_05": false,
+        "statistically_significant_001": false,
+        "evidence_status": "SUFFICIENT_SAMPLE"
+      }
+    },
+    "rq2_semantic_en_vs_tfidf_original": {
+      "research_question": "RQ2a: Do English semantic embeddings (all-MiniLM-L6-v2) outperform TF-IDF v1.1 on Original Metadata?",
+      "ndcg_at_5": {
+        "sample_size": 587,
+        "mean_baseline": 0.005987,
+        "mean_variant": 0.003339,
+        "mean_difference": -0.002648,
+        "std_difference": 0.048413,
+        "cohens_d": -0.0547,
+        "t_statistic": -1.325,
+        "p_value_ttest": 0.18568802516671973,
+        "wilcoxon_stat": 96.0,
+        "p_value_wilcoxon": 0.19893983413266747,
+        "bootstrap_ci_95": [
+          -0.006744,
+          0.001242
+        ],
+        "win_tie_loss": {
+          "wins": 9,
+          "ties": 564,
+          "losses": 14
+        },
+        "statistically_significant_05": false,
+        "statistically_significant_001": false,
+        "evidence_status": "SUFFICIENT_SAMPLE"
+      },
+      "ndcg_at_10": {
+        "sample_size": 587,
+        "mean_baseline": 0.007153,
+        "mean_variant": 0.00493,
+        "mean_difference": -0.002222,
+        "std_difference": 0.045711,
+        "cohens_d": -0.0486,
+        "t_statistic": -1.178,
+        "p_value_ttest": 0.23929310659221328,
+        "wilcoxon_stat": 424.5,
+        "p_value_wilcoxon": 0.4104517171869837,
+        "bootstrap_ci_95": [
+          -0.006019,
+          0.001196
+        ],
+        "win_tie_loss": {
+          "wins": 20,
+          "ties": 543,
+          "losses": 24
+        },
+        "statistically_significant_05": false,
+        "statistically_significant_001": false,
+        "evidence_status": "SUFFICIENT_SAMPLE"
+      },
+      "ndcg_at_20": {
+        "sample_size": 587,
+        "mean_baseline": 0.010476,
+        "mean_variant": 0.006573,
+        "mean_difference": -0.003903,
+        "std_difference": 0.047398,
+        "cohens_d": -0.0824,
+        "t_statistic": -1.9952,
+        "p_value_ttest": 0.04648355070007641,
+        "wilcoxon_stat": 1464.5,
+        "p_value_wilcoxon": 0.0804205796103918,
+        "bootstrap_ci_95": [
+          -0.007747,
+          -0.000297
+        ],
+        "win_tie_loss": {
+          "wins": 35,
+          "ties": 501,
+          "losses": 51
+        },
+        "statistically_significant_05": true,
+        "statistically_significant_001": false,
+        "evidence_status": "SUFFICIENT_SAMPLE"
+      },
+      "precision_at_10": {
+        "sample_size": 587,
+        "mean_baseline": 0.0046,
+        "mean_variant": 0.004089,
+        "mean_difference": -0.000511,
+        "std_difference": 0.027707,
+        "cohens_d": -0.0184,
+        "t_statistic": -0.4469,
+        "p_value_ttest": 0.6551061452377944,
+        "wilcoxon_stat": 420.0,
+        "p_value_wilcoxon": 0.6547208460185769,
+        "bootstrap_ci_95": [
+          -0.002555,
+          0.001533
+        ],
+        "win_tie_loss": {
+          "wins": 20,
+          "ties": 545,
+          "losses": 22
+        },
+        "statistically_significant_05": false,
+        "statistically_significant_001": false,
+        "evidence_status": "SUFFICIENT_SAMPLE"
+      },
+      "recall_at_10": {
+        "sample_size": 587,
+        "mean_baseline": 0.006896,
+        "mean_variant": 0.005347,
+        "mean_difference": -0.001549,
+        "std_difference": 0.062559,
+        "cohens_d": -0.0248,
+        "t_statistic": -0.5998,
+        "p_value_ttest": 0.5488498220570708,
+        "wilcoxon_stat": 384.5,
+        "p_value_wilcoxon": 0.4020402729494482,
+        "bootstrap_ci_95": [
+          -0.006459,
+          0.003546
+        ],
+        "win_tie_loss": {
+          "wins": 20,
+          "ties": 545,
+          "losses": 22
+        },
+        "statistically_significant_05": false,
+        "statistically_significant_001": false,
+        "evidence_status": "SUFFICIENT_SAMPLE"
+      }
+    },
+    "rq2_semantic_multi_vs_tfidf_original": {
+      "research_question": "RQ2b: Do Multilingual semantic embeddings (paraphrase-multilingual-MiniLM-L12-v2) outperform TF-IDF v1.1 on Original Metadata?",
+      "ndcg_at_5": {
+        "sample_size": 587,
+        "mean_baseline": 0.005987,
+        "mean_variant": 0.002342,
+        "mean_difference": -0.003645,
+        "std_difference": 0.045061,
+        "cohens_d": -0.0809,
+        "t_statistic": -1.9598,
+        "p_value_ttest": 0.05048940649734906,
+        "wilcoxon_stat": 70.5,
+        "p_value_wilcoxon": 0.039038929143162614,
+        "bootstrap_ci_95": [
+          -0.007237,
+          -9.9e-05
+        ],
+        "win_tie_loss": {
+          "wins": 8,
+          "ties": 564,
+          "losses": 15
+        },
+        "statistically_significant_05": false,
+        "statistically_significant_001": false,
+        "evidence_status": "SUFFICIENT_SAMPLE"
+      },
+      "ndcg_at_10": {
+        "sample_size": 587,
+        "mean_baseline": 0.007153,
+        "mean_variant": 0.002921,
+        "mean_difference": -0.004232,
+        "std_difference": 0.044632,
+        "cohens_d": -0.0948,
+        "t_statistic": -2.2972,
+        "p_value_ttest": 0.021958973633038753,
+        "wilcoxon_stat": 249.0,
+        "p_value_wilcoxon": 0.030413730572049148,
+        "bootstrap_ci_95": [
+          -0.00775,
+          -0.000834
+        ],
+        "win_tie_loss": {
+          "wins": 16,
+          "ties": 547,
+          "losses": 24
+        },
+        "statistically_significant_05": true,
+        "statistically_significant_001": false,
+        "evidence_status": "SUFFICIENT_SAMPLE"
+      },
+      "ndcg_at_20": {
+        "sample_size": 587,
+        "mean_baseline": 0.010476,
+        "mean_variant": 0.004508,
+        "mean_difference": -0.005968,
+        "std_difference": 0.046393,
+        "cohens_d": -0.1286,
+        "t_statistic": -3.1168,
+        "p_value_ttest": 0.00191804044571665,
+        "wilcoxon_stat": 1222.0,
+        "p_value_wilcoxon": 0.007972611544750955,
+        "bootstrap_ci_95": [
+          -0.009817,
+          -0.002268
+        ],
+        "win_tie_loss": {
+          "wins": 33,
+          "ties": 502,
+          "losses": 52
+        },
+        "statistically_significant_05": true,
+        "statistically_significant_001": false,
+        "evidence_status": "SUFFICIENT_SAMPLE"
+      },
+      "precision_at_10": {
+        "sample_size": 587,
+        "mean_baseline": 0.0046,
+        "mean_variant": 0.002726,
+        "mean_difference": -0.001874,
+        "std_difference": 0.028856,
+        "cohens_d": -0.0649,
+        "t_statistic": -1.5734,
+        "p_value_ttest": 0.1161653799851322,
+        "wilcoxon_stat": 304.0,
+        "p_value_wilcoxon": 0.11326703480812461,
+        "bootstrap_ci_95": [
+          -0.004089,
+          0.000511
+        ],
+        "win_tie_loss": {
+          "wins": 16,
+          "ties": 547,
+          "losses": 24
+        },
+        "statistically_significant_05": false,
+        "statistically_significant_001": false,
+        "evidence_status": "SUFFICIENT_SAMPLE"
+      },
+      "recall_at_10": {
+        "sample_size": 587,
+        "mean_baseline": 0.006896,
+        "mean_variant": 0.003193,
+        "mean_difference": -0.003703,
+        "std_difference": 0.052032,
+        "cohens_d": -0.0712,
+        "t_statistic": -1.7243,
+        "p_value_ttest": 0.08517534706340811,
+        "wilcoxon_stat": 301.0,
+        "p_value_wilcoxon": 0.14270367146480786,
+        "bootstrap_ci_95": [
+          -0.008241,
+          0.00039
+        ],
+        "win_tie_loss": {
+          "wins": 16,
+          "ties": 547,
+          "losses": 24
+        },
+        "statistically_significant_05": false,
+        "statistically_significant_001": false,
+        "evidence_status": "SUFFICIENT_SAMPLE"
+      }
+    },
+    "rq2_semantic_en_vs_semantic_multi_original": {
+      "research_question": "RQ2c: How does English MiniLM compare against Multilingual MiniLM on Original Metadata?",
+      "ndcg_at_10": {
+        "sample_size": 587,
+        "mean_baseline": 0.002921,
+        "mean_variant": 0.00493,
+        "mean_difference": 0.002009,
+        "std_difference": 0.032301,
+        "cohens_d": 0.0622,
+        "t_statistic": 1.5072,
+        "p_value_ttest": 0.13230159154071822,
+        "wilcoxon_stat": 294.0,
+        "p_value_wilcoxon": 0.1801319611866785,
+        "bootstrap_ci_95": [
+          -0.000498,
+          0.004716
+        ],
+        "win_tie_loss": {
+          "wins": 24,
+          "ties": 548,
+          "losses": 15
+        },
+        "statistically_significant_05": false,
+        "statistically_significant_001": false,
+        "evidence_status": "SUFFICIENT_SAMPLE"
+      }
+    },
+    "rq2_semantic_en_vs_tfidf_enriched": {
+      "research_question": "RQ2d: Do English semantic embeddings outperform TF-IDF v1.1 when both use Enriched Metadata (Condition B1)?",
+      "ndcg_at_10": {
+        "sample_size": 587,
+        "mean_baseline": 0.007819,
+        "mean_variant": 0.004897,
+        "mean_difference": -0.002922,
+        "std_difference": 0.046274,
+        "cohens_d": -0.0631,
+        "t_statistic": -1.5299,
+        "p_value_ttest": 0.1265748345723376,
+        "wilcoxon_stat": 472.5,
+        "p_value_wilcoxon": 0.23591681761437366,
+        "bootstrap_ci_95": [
+          -0.006736,
+          0.000572
+        ],
+        "win_tie_loss": {
+          "wins": 20,
+          "ties": 539,
+          "losses": 28
+        },
+        "statistically_significant_05": false,
+        "statistically_significant_001": false,
+        "evidence_status": "SUFFICIENT_SAMPLE"
+      }
+    },
+    "rq3_semantic_en_vs_tfidf_mmr_05": {
+      "research_question": "RQ3a: How do English semantic embeddings compare against TF-IDF v1.1 + MMR (\u03bb=0.5, pool=100)?",
+      "ndcg_at_10": {
+        "sample_size": 587,
+        "mean_baseline": 0.009091,
+        "mean_variant": 0.00493,
+        "mean_difference": -0.00416,
+        "std_difference": 0.051251,
+        "cohens_d": -0.0812,
+        "t_statistic": -1.9668,
+        "p_value_ttest": 0.049676131285642265,
+        "wilcoxon_stat": 479.0,
+        "p_value_wilcoxon": 0.0845219700348722,
+        "bootstrap_ci_95": [
+          -0.00844,
+          -0.000251
+        ],
+        "win_tie_loss": {
+          "wins": 21,
+          "ties": 536,
+          "losses": 30
+        },
+        "statistically_significant_05": true,
+        "statistically_significant_001": false,
+        "evidence_status": "SUFFICIENT_SAMPLE"
+      }
+    },
+    "rq3_semantic_en_mmr_05_vs_tfidf_mmr_05": {
+      "research_question": "RQ3b: How does Semantic-EN + MMR (\u03bb=0.5) compare against TF-IDF v1.1 + MMR (\u03bb=0.5)?",
+      "ndcg_at_10": {
+        "sample_size": 587,
+        "mean_baseline": 0.009091,
+        "mean_variant": 0.005113,
+        "mean_difference": -0.003978,
+        "std_difference": 0.051802,
+        "cohens_d": -0.0768,
+        "t_statistic": -1.8604,
+        "p_value_ttest": 0.0633258239631124,
+        "wilcoxon_stat": 487.5,
+        "p_value_wilcoxon": 0.14752027297427941,
+        "bootstrap_ci_95": [
+          -0.008381,
+          -1.2e-05
+        ],
+        "win_tie_loss": {
+          "wins": 20,
+          "ties": 537,
+          "losses": 30
+        },
+        "statistically_significant_05": false,
+        "statistically_significant_001": false,
+        "evidence_status": "SUFFICIENT_SAMPLE"
+      }
+    },
+    "rq3_semantic_en_mmr_05_vs_semantic_en": {
+      "research_question": "RQ3c: Does adding MMR (\u03bb=0.5, pool=100) to Semantic-EN improve diversity or ranking?",
+      "ndcg_at_10": {
+        "sample_size": 587,
+        "mean_baseline": 0.00493,
+        "mean_variant": 0.005113,
+        "mean_difference": 0.000183,
+        "std_difference": 0.006074,
+        "cohens_d": 0.0301,
+        "t_statistic": 0.7288,
+        "p_value_ttest": 0.4664348645705668,
+        "wilcoxon_stat": 40.5,
+        "p_value_wilcoxon": 0.2677771522678005,
+        "bootstrap_ci_95": [
+          -0.000324,
+          0.000654
+        ],
+        "win_tie_loss": {
+          "wins": 9,
+          "ties": 572,
+          "losses": 6
+        },
+        "statistically_significant_05": false,
+        "statistically_significant_001": false,
+        "evidence_status": "SUFFICIENT_SAMPLE"
+      }
+    },
+    "rq3_semantic_en_mmr_07_vs_semantic_en": {
+      "research_question": "RQ3d: Does adding MMR (\u03bb=0.7, pool=100) to Semantic-EN improve diversity or ranking?",
+      "ndcg_at_10": {
+        "sample_size": 587,
+        "mean_baseline": 0.00493,
+        "mean_variant": 0.004925,
+        "mean_difference": -5e-06,
+        "std_difference": 0.004942,
+        "cohens_d": -0.0011,
+        "t_statistic": -0.0263,
+        "p_value_ttest": 0.9790668548187414,
+        "wilcoxon_stat": 20.5,
+        "p_value_wilcoxon": 0.4752458321391806,
+        "bootstrap_ci_95": [
+          -0.000436,
+          0.00037
+        ],
+        "win_tie_loss": {
+          "wins": 7,
+          "ties": 577,
+          "losses": 3
+        },
+        "statistically_significant_05": false,
+        "statistically_significant_001": false,
+        "evidence_status": "SUFFICIENT_SAMPLE"
+      }
+    }
+  },
+  "performance_benchmark": {
+    "catalog_size": 9742,
+    "evaluated_users": 587,
+    "models": {
+      "tfidf_v1_1": {
+        "algorithm_name": "TFIDF-v1.1",
+        "dimensions": 5000,
+        "generation_duration_seconds": 0.4839,
+        "cache_load_ms": 483.89,
+        "storage_bytes": 981848,
+        "storage_mb": 0.9364,
+        "peak_memory_mb": 0.9364,
+        "recommendation_latency_p50_ms": 5.7412,
+        "recommendation_latency_p95_ms": 8.9327,
+        "recommendation_latency_mean_ms": 6.2157,
+        "cold_start_latency_ms": 0.004,
+        "missing_vector_rate": 0.0,
+        "fallback_rate": 0.0
+      },
+      "tfidf_v1_1_mmr_05": {
+        "algorithm_name": "TFIDF-v1.1+MMR(\u03bb=0.5,pool=100)",
+        "dimensions": 5000,
+        "generation_duration_seconds": 0.4792,
+        "cache_load_ms": 479.24,
+        "storage_bytes": 981848,
+        "storage_mb": 0.9364,
+        "peak_memory_mb": 0.9364,
+        "recommendation_latency_p50_ms": 34.0678,
+        "recommendation_latency_p95_ms": 37.6028,
+        "recommendation_latency_mean_ms": 34.5954,
+        "cold_start_latency_ms": 0.006,
+        "missing_vector_rate": 0.0,
+        "fallback_rate": 0.0
+      },
+      "semantic_en": {
+        "algorithm_name": "Semantic-MiniLM-EN (Original Metadata)",
+        "model_name": "sentence-transformers/all-MiniLM-L6-v2",
+        "model_revision": "1110a243fdf4706b3f48f1d95db1a4f5529b4d41",
+        "is_pretrained_neural": true,
+        "dimensions": 384,
+        "generation_duration_seconds": 29.9943,
+        "cache_load_ms": 108.6185,
+        "storage_bytes": 14948112,
+        "storage_mb": 14.2556,
+        "peak_memory_mb": 49.7264,
+        "recommendation_latency_p50_ms": 8.517,
+        "recommendation_latency_p95_ms": 10.2296,
+        "recommendation_latency_mean_ms": 8.6912,
+        "cold_start_latency_ms": 0.0055,
+        "missing_vector_rate": 0.0,
+        "fallback_rate": 0.0
+      },
+      "semantic_multi": {
+        "algorithm_name": "Semantic-Multilingual-MiniLM (Original Metadata)",
+        "model_name": "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
+        "model_revision": "e8f8c211226b894fcb81acc59f3b34ba3efd5f42",
+        "is_pretrained_neural": true,
+        "dimensions": 384,
+        "generation_duration_seconds": 58.8596,
+        "cache_load_ms": 134.7099,
+        "storage_bytes": 14937646,
+        "storage_mb": 14.2456,
+        "peak_memory_mb": 52.0495,
+        "recommendation_latency_p50_ms": 8.9101,
+        "recommendation_latency_p95_ms": 10.71,
+        "recommendation_latency_mean_ms": 9.0649,
+        "cold_start_latency_ms": 0.0067,
+        "missing_vector_rate": 0.0,
+        "fallback_rate": 0.0
+      },
+      "semantic_en_mmr_05": {
+        "algorithm_name": "Semantic-MiniLM-EN+MMR(\u03bb=0.5,pool=100)",
+        "model_name": "sentence-transformers/all-MiniLM-L6-v2",
+        "model_revision": "1110a243fdf4706b3f48f1d95db1a4f5529b4d41",
+        "is_pretrained_neural": true,
+        "dimensions": 384,
+        "generation_duration_seconds": 29.9943,
+        "cache_load_ms": 108.6185,
+        "storage_bytes": 14948112,
+        "storage_mb": 14.2556,
+        "peak_memory_mb": 49.7264,
+        "recommendation_latency_p50_ms": 26.5678,
+        "recommendation_latency_p95_ms": 28.5335,
+        "recommendation_latency_mean_ms": 26.7186,
+        "cold_start_latency_ms": 0.0063,
+        "missing_vector_rate": 0.0,
+        "fallback_rate": 0.0
+      }
+    }
+  }
+}

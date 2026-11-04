@@ -1,0 +1,539 @@
+{
+  "rq1_tfidf_enriched_vs_original_full_catalog": {
+    "research_question": "RQ1: Does enriching movie metadata improve TF-IDF recommendation quality (Full Catalog with 11/9742 enriched)?",
+    "ndcg_at_10": {
+      "sample_size": 587,
+      "mean_baseline": 0.007153,
+      "mean_variant": 0.007819,
+      "mean_difference": 0.000666,
+      "std_difference": 0.008364,
+      "cohens_d": 0.0797,
+      "t_statistic": 1.9304,
+      "p_value_ttest": 0.054040738433991244,
+      "wilcoxon_stat": 0.0,
+      "p_value_wilcoxon": 0.043114446783075355,
+      "bootstrap_ci_95": [
+        0.000114,
+        0.001421
+      ],
+      "win_tie_loss": {
+        "wins": 5,
+        "ties": 582,
+        "losses": 0
+      },
+      "statistically_significant_05": false,
+      "statistically_significant_001": false,
+      "evidence_status": "SUFFICIENT_SAMPLE"
+    },
+    "precision_at_10": {
+      "sample_size": 587,
+      "mean_baseline": 0.0046,
+      "mean_variant": 0.005281,
+      "mean_difference": 0.000681,
+      "std_difference": 0.008234,
+      "cohens_d": 0.0828,
+      "t_statistic": 2.0051,
+      "p_value_ttest": 0.04540755820705899,
+      "wilcoxon_stat": 0.0,
+      "p_value_wilcoxon": 0.04550026389635839,
+      "bootstrap_ci_95": [
+        0.00017,
+        0.001363
+      ],
+      "win_tie_loss": {
+        "wins": 4,
+        "ties": 583,
+        "losses": 0
+      },
+      "statistically_significant_05": true,
+      "statistically_significant_001": false,
+      "evidence_status": "SUFFICIENT_SAMPLE"
+    },
+    "recall_at_10": {
+      "sample_size": 587,
+      "mean_baseline": 0.006896,
+      "mean_variant": 0.008131,
+      "mean_difference": 0.001235,
+      "std_difference": 0.017047,
+      "cohens_d": 0.0725,
+      "t_statistic": 1.7554,
+      "p_value_ttest": 0.07971108758610851,
+      "wilcoxon_stat": 0.0,
+      "p_value_wilcoxon": 0.06788915486182899,
+      "bootstrap_ci_95": [
+        0.000114,
+        0.002797
+      ],
+      "win_tie_loss": {
+        "wins": 4,
+        "ties": 583,
+        "losses": 0
+      },
+      "statistically_significant_05": false,
+      "statistically_significant_001": false,
+      "evidence_status": "SUFFICIENT_SAMPLE"
+    }
+  },
+  "rq1_semantic_en_enriched_vs_original_full_catalog": {
+    "research_question": "RQ1b: Does enriching movie metadata improve English Semantic Embeddings (Full Catalog with 11/9742 enriched)?",
+    "ndcg_at_10": {
+      "sample_size": 587,
+      "mean_baseline": 0.00493,
+      "mean_variant": 0.004897,
+      "mean_difference": -3.3e-05,
+      "std_difference": 0.000716,
+      "cohens_d": -0.0463,
+      "t_statistic": -1.1228,
+      "p_value_ttest": 0.26200058808967214,
+      "wilcoxon_stat": 2.0,
+      "p_value_wilcoxon": 0.27332167829229814,
+      "bootstrap_ci_95": [
+        -9.9e-05,
+        1.4e-05
+      ],
+      "win_tie_loss": {
+        "wins": 1,
+        "ties": 583,
+        "losses": 3
+      },
+      "statistically_significant_05": false,
+      "statistically_significant_001": false,
+      "evidence_status": "SUFFICIENT_SAMPLE"
+    }
+  },
+  "rq1_semantic_multi_enriched_vs_original_full_catalog": {
+    "research_question": "RQ1c: Does enriching movie metadata (with Vietnamese title_vi/overview_vi) improve Multilingual Semantic Embeddings?",
+    "ndcg_at_10": {
+      "sample_size": 587,
+      "mean_baseline": 0.002921,
+      "mean_variant": 0.00239,
+      "mean_difference": -0.000531,
+      "std_difference": 0.009647,
+      "cohens_d": -0.055,
+      "t_statistic": -1.3326,
+      "p_value_ttest": 0.18318055199762473,
+      "wilcoxon_stat": 5.0,
+      "p_value_wilcoxon": 0.12819017434510785,
+      "bootstrap_ci_95": [
+        -0.001312,
+        0.000167
+      ],
+      "win_tie_loss": {
+        "wins": 2,
+        "ties": 580,
+        "losses": 5
+      },
+      "statistically_significant_05": false,
+      "statistically_significant_001": false,
+      "evidence_status": "SUFFICIENT_SAMPLE"
+    }
+  },
+  "rq2_semantic_en_vs_tfidf_original": {
+    "research_question": "RQ2a: Do English semantic embeddings (all-MiniLM-L6-v2) outperform TF-IDF v1.1 on Original Metadata?",
+    "ndcg_at_5": {
+      "sample_size": 587,
+      "mean_baseline": 0.005987,
+      "mean_variant": 0.003339,
+      "mean_difference": -0.002648,
+      "std_difference": 0.048413,
+      "cohens_d": -0.0547,
+      "t_statistic": -1.325,
+      "p_value_ttest": 0.18568802516671973,
+      "wilcoxon_stat": 96.0,
+      "p_value_wilcoxon": 0.19893983413266747,
+      "bootstrap_ci_95": [
+        -0.006744,
+        0.001242
+      ],
+      "win_tie_loss": {
+        "wins": 9,
+        "ties": 564,
+        "losses": 14
+      },
+      "statistically_significant_05": false,
+      "statistically_significant_001": false,
+      "evidence_status": "SUFFICIENT_SAMPLE"
+    },
+    "ndcg_at_10": {
+      "sample_size": 587,
+      "mean_baseline": 0.007153,
+      "mean_variant": 0.00493,
+      "mean_difference": -0.002222,
+      "std_difference": 0.045711,
+      "cohens_d": -0.0486,
+      "t_statistic": -1.178,
+      "p_value_ttest": 0.23929310659221328,
+      "wilcoxon_stat": 424.5,
+      "p_value_wilcoxon": 0.4104517171869837,
+      "bootstrap_ci_95": [
+        -0.006019,
+        0.001196
+      ],
+      "win_tie_loss": {
+        "wins": 20,
+        "ties": 543,
+        "losses": 24
+      },
+      "statistically_significant_05": false,
+      "statistically_significant_001": false,
+      "evidence_status": "SUFFICIENT_SAMPLE"
+    },
+    "ndcg_at_20": {
+      "sample_size": 587,
+      "mean_baseline": 0.010476,
+      "mean_variant": 0.006573,
+      "mean_difference": -0.003903,
+      "std_difference": 0.047398,
+      "cohens_d": -0.0824,
+      "t_statistic": -1.9952,
+      "p_value_ttest": 0.04648355070007641,
+      "wilcoxon_stat": 1464.5,
+      "p_value_wilcoxon": 0.0804205796103918,
+      "bootstrap_ci_95": [
+        -0.007747,
+        -0.000297
+      ],
+      "win_tie_loss": {
+        "wins": 35,
+        "ties": 501,
+        "losses": 51
+      },
+      "statistically_significant_05": true,
+      "statistically_significant_001": false,
+      "evidence_status": "SUFFICIENT_SAMPLE"
+    },
+    "precision_at_10": {
+      "sample_size": 587,
+      "mean_baseline": 0.0046,
+      "mean_variant": 0.004089,
+      "mean_difference": -0.000511,
+      "std_difference": 0.027707,
+      "cohens_d": -0.0184,
+      "t_statistic": -0.4469,
+      "p_value_ttest": 0.6551061452377944,
+      "wilcoxon_stat": 420.0,
+      "p_value_wilcoxon": 0.6547208460185769,
+      "bootstrap_ci_95": [
+        -0.002555,
+        0.001533
+      ],
+      "win_tie_loss": {
+        "wins": 20,
+        "ties": 545,
+        "losses": 22
+      },
+      "statistically_significant_05": false,
+      "statistically_significant_001": false,
+      "evidence_status": "SUFFICIENT_SAMPLE"
+    },
+    "recall_at_10": {
+      "sample_size": 587,
+      "mean_baseline": 0.006896,
+      "mean_variant": 0.005347,
+      "mean_difference": -0.001549,
+      "std_difference": 0.062559,
+      "cohens_d": -0.0248,
+      "t_statistic": -0.5998,
+      "p_value_ttest": 0.5488498220570708,
+      "wilcoxon_stat": 384.5,
+      "p_value_wilcoxon": 0.4020402729494482,
+      "bootstrap_ci_95": [
+        -0.006459,
+        0.003546
+      ],
+      "win_tie_loss": {
+        "wins": 20,
+        "ties": 545,
+        "losses": 22
+      },
+      "statistically_significant_05": false,
+      "statistically_significant_001": false,
+      "evidence_status": "SUFFICIENT_SAMPLE"
+    }
+  },
+  "rq2_semantic_multi_vs_tfidf_original": {
+    "research_question": "RQ2b: Do Multilingual semantic embeddings (paraphrase-multilingual-MiniLM-L12-v2) outperform TF-IDF v1.1 on Original Metadata?",
+    "ndcg_at_5": {
+      "sample_size": 587,
+      "mean_baseline": 0.005987,
+      "mean_variant": 0.002342,
+      "mean_difference": -0.003645,
+      "std_difference": 0.045061,
+      "cohens_d": -0.0809,
+      "t_statistic": -1.9598,
+      "p_value_ttest": 0.05048940649734906,
+      "wilcoxon_stat": 70.5,
+      "p_value_wilcoxon": 0.039038929143162614,
+      "bootstrap_ci_95": [
+        -0.007237,
+        -9.9e-05
+      ],
+      "win_tie_loss": {
+        "wins": 8,
+        "ties": 564,
+        "losses": 15
+      },
+      "statistically_significant_05": false,
+      "statistically_significant_001": false,
+      "evidence_status": "SUFFICIENT_SAMPLE"
+    },
+    "ndcg_at_10": {
+      "sample_size": 587,
+      "mean_baseline": 0.007153,
+      "mean_variant": 0.002921,
+      "mean_difference": -0.004232,
+      "std_difference": 0.044632,
+      "cohens_d": -0.0948,
+      "t_statistic": -2.2972,
+      "p_value_ttest": 0.021958973633038753,
+      "wilcoxon_stat": 249.0,
+      "p_value_wilcoxon": 0.030413730572049148,
+      "bootstrap_ci_95": [
+        -0.00775,
+        -0.000834
+      ],
+      "win_tie_loss": {
+        "wins": 16,
+        "ties": 547,
+        "losses": 24
+      },
+      "statistically_significant_05": true,
+      "statistically_significant_001": false,
+      "evidence_status": "SUFFICIENT_SAMPLE"
+    },
+    "ndcg_at_20": {
+      "sample_size": 587,
+      "mean_baseline": 0.010476,
+      "mean_variant": 0.004508,
+      "mean_difference": -0.005968,
+      "std_difference": 0.046393,
+      "cohens_d": -0.1286,
+      "t_statistic": -3.1168,
+      "p_value_ttest": 0.00191804044571665,
+      "wilcoxon_stat": 1222.0,
+      "p_value_wilcoxon": 0.007972611544750955,
+      "bootstrap_ci_95": [
+        -0.009817,
+        -0.002268
+      ],
+      "win_tie_loss": {
+        "wins": 33,
+        "ties": 502,
+        "losses": 52
+      },
+      "statistically_significant_05": true,
+      "statistically_significant_001": false,
+      "evidence_status": "SUFFICIENT_SAMPLE"
+    },
+    "precision_at_10": {
+      "sample_size": 587,
+      "mean_baseline": 0.0046,
+      "mean_variant": 0.002726,
+      "mean_difference": -0.001874,
+      "std_difference": 0.028856,
+      "cohens_d": -0.0649,
+      "t_statistic": -1.5734,
+      "p_value_ttest": 0.1161653799851322,
+      "wilcoxon_stat": 304.0,
+      "p_value_wilcoxon": 0.11326703480812461,
+      "bootstrap_ci_95": [
+        -0.004089,
+        0.000511
+      ],
+      "win_tie_loss": {
+        "wins": 16,
+        "ties": 547,
+        "losses": 24
+      },
+      "statistically_significant_05": false,
+      "statistically_significant_001": false,
+      "evidence_status": "SUFFICIENT_SAMPLE"
+    },
+    "recall_at_10": {
+      "sample_size": 587,
+      "mean_baseline": 0.006896,
+      "mean_variant": 0.003193,
+      "mean_difference": -0.003703,
+      "std_difference": 0.052032,
+      "cohens_d": -0.0712,
+      "t_statistic": -1.7243,
+      "p_value_ttest": 0.08517534706340811,
+      "wilcoxon_stat": 301.0,
+      "p_value_wilcoxon": 0.14270367146480786,
+      "bootstrap_ci_95": [
+        -0.008241,
+        0.00039
+      ],
+      "win_tie_loss": {
+        "wins": 16,
+        "ties": 547,
+        "losses": 24
+      },
+      "statistically_significant_05": false,
+      "statistically_significant_001": false,
+      "evidence_status": "SUFFICIENT_SAMPLE"
+    }
+  },
+  "rq2_semantic_en_vs_semantic_multi_original": {
+    "research_question": "RQ2c: How does English MiniLM compare against Multilingual MiniLM on Original Metadata?",
+    "ndcg_at_10": {
+      "sample_size": 587,
+      "mean_baseline": 0.002921,
+      "mean_variant": 0.00493,
+      "mean_difference": 0.002009,
+      "std_difference": 0.032301,
+      "cohens_d": 0.0622,
+      "t_statistic": 1.5072,
+      "p_value_ttest": 0.13230159154071822,
+      "wilcoxon_stat": 294.0,
+      "p_value_wilcoxon": 0.1801319611866785,
+      "bootstrap_ci_95": [
+        -0.000498,
+        0.004716
+      ],
+      "win_tie_loss": {
+        "wins": 24,
+        "ties": 548,
+        "losses": 15
+      },
+      "statistically_significant_05": false,
+      "statistically_significant_001": false,
+      "evidence_status": "SUFFICIENT_SAMPLE"
+    }
+  },
+  "rq2_semantic_en_vs_tfidf_enriched": {
+    "research_question": "RQ2d: Do English semantic embeddings outperform TF-IDF v1.1 when both use Enriched Metadata (Condition B1)?",
+    "ndcg_at_10": {
+      "sample_size": 587,
+      "mean_baseline": 0.007819,
+      "mean_variant": 0.004897,
+      "mean_difference": -0.002922,
+      "std_difference": 0.046274,
+      "cohens_d": -0.0631,
+      "t_statistic": -1.5299,
+      "p_value_ttest": 0.1265748345723376,
+      "wilcoxon_stat": 472.5,
+      "p_value_wilcoxon": 0.23591681761437366,
+      "bootstrap_ci_95": [
+        -0.006736,
+        0.000572
+      ],
+      "win_tie_loss": {
+        "wins": 20,
+        "ties": 539,
+        "losses": 28
+      },
+      "statistically_significant_05": false,
+      "statistically_significant_001": false,
+      "evidence_status": "SUFFICIENT_SAMPLE"
+    }
+  },
+  "rq3_semantic_en_vs_tfidf_mmr_05": {
+    "research_question": "RQ3a: How do English semantic embeddings compare against TF-IDF v1.1 + MMR (\u03bb=0.5, pool=100)?",
+    "ndcg_at_10": {
+      "sample_size": 587,
+      "mean_baseline": 0.009091,
+      "mean_variant": 0.00493,
+      "mean_difference": -0.00416,
+      "std_difference": 0.051251,
+      "cohens_d": -0.0812,
+      "t_statistic": -1.9668,
+      "p_value_ttest": 0.049676131285642265,
+      "wilcoxon_stat": 479.0,
+      "p_value_wilcoxon": 0.0845219700348722,
+      "bootstrap_ci_95": [
+        -0.00844,
+        -0.000251
+      ],
+      "win_tie_loss": {
+        "wins": 21,
+        "ties": 536,
+        "losses": 30
+      },
+      "statistically_significant_05": true,
+      "statistically_significant_001": false,
+      "evidence_status": "SUFFICIENT_SAMPLE"
+    }
+  },
+  "rq3_semantic_en_mmr_05_vs_tfidf_mmr_05": {
+    "research_question": "RQ3b: How does Semantic-EN + MMR (\u03bb=0.5) compare against TF-IDF v1.1 + MMR (\u03bb=0.5)?",
+    "ndcg_at_10": {
+      "sample_size": 587,
+      "mean_baseline": 0.009091,
+      "mean_variant": 0.005113,
+      "mean_difference": -0.003978,
+      "std_difference": 0.051802,
+      "cohens_d": -0.0768,
+      "t_statistic": -1.8604,
+      "p_value_ttest": 0.0633258239631124,
+      "wilcoxon_stat": 487.5,
+      "p_value_wilcoxon": 0.14752027297427941,
+      "bootstrap_ci_95": [
+        -0.008381,
+        -1.2e-05
+      ],
+      "win_tie_loss": {
+        "wins": 20,
+        "ties": 537,
+        "losses": 30
+      },
+      "statistically_significant_05": false,
+      "statistically_significant_001": false,
+      "evidence_status": "SUFFICIENT_SAMPLE"
+    }
+  },
+  "rq3_semantic_en_mmr_05_vs_semantic_en": {
+    "research_question": "RQ3c: Does adding MMR (\u03bb=0.5, pool=100) to Semantic-EN improve diversity or ranking?",
+    "ndcg_at_10": {
+      "sample_size": 587,
+      "mean_baseline": 0.00493,
+      "mean_variant": 0.005113,
+      "mean_difference": 0.000183,
+      "std_difference": 0.006074,
+      "cohens_d": 0.0301,
+      "t_statistic": 0.7288,
+      "p_value_ttest": 0.4664348645705668,
+      "wilcoxon_stat": 40.5,
+      "p_value_wilcoxon": 0.2677771522678005,
+      "bootstrap_ci_95": [
+        -0.000324,
+        0.000654
+      ],
+      "win_tie_loss": {
+        "wins": 9,
+        "ties": 572,
+        "losses": 6
+      },
+      "statistically_significant_05": false,
+      "statistically_significant_001": false,
+      "evidence_status": "SUFFICIENT_SAMPLE"
+    }
+  },
+  "rq3_semantic_en_mmr_07_vs_semantic_en": {
+    "research_question": "RQ3d: Does adding MMR (\u03bb=0.7, pool=100) to Semantic-EN improve diversity or ranking?",
+    "ndcg_at_10": {
+      "sample_size": 587,
+      "mean_baseline": 0.00493,
+      "mean_variant": 0.004925,
+      "mean_difference": -5e-06,
+      "std_difference": 0.004942,
+      "cohens_d": -0.0011,
+      "t_statistic": -0.0263,
+      "p_value_ttest": 0.9790668548187414,
+      "wilcoxon_stat": 20.5,
+      "p_value_wilcoxon": 0.4752458321391806,
+      "bootstrap_ci_95": [
+        -0.000436,
+        0.00037
+      ],
+      "win_tie_loss": {
+        "wins": 7,
+        "ties": 577,
+        "losses": 3
+      },
+      "statistically_significant_05": false,
+      "statistically_significant_001": false,
+      "evidence_status": "SUFFICIENT_SAMPLE"
+    }
+  }
+}

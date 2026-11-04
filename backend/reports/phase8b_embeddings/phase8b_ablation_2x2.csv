@@ -1,0 +1,13 @@
+protocol,cell_key,catalog_size,evaluated_users,P@10,R@10,NDCG@10,HR@10,MAP@10,Coverage@10,ILD@10,Novelty@10
+protocol_b1_full_catalog_partial_enrichment,tfidf_original,9742,587,0.0046,0.006896,0.007153,0.040886,0.003061,0.130979,0.571865,14.052426
+protocol_b1_full_catalog_partial_enrichment,tfidf_enriched,9742,587,0.005281,0.008131,0.007819,0.0477,0.003209,0.130979,0.573277,14.046227
+protocol_b1_full_catalog_partial_enrichment,semantic_en_original,9742,587,0.004089,0.005347,0.00493,0.040886,0.001545,0.050606,0.311738,14.592052
+protocol_b1_full_catalog_partial_enrichment,semantic_en_enriched,9742,587,0.004089,0.005347,0.004897,0.040886,0.001519,0.050606,0.312153,14.583357
+protocol_b1_full_catalog_partial_enrichment,semantic_multi_original,9742,587,0.002726,0.003193,0.002921,0.027257,0.000835,0.042702,0.249229,14.433599
+protocol_b1_full_catalog_partial_enrichment,semantic_multi_enriched,9742,587,0.002215,0.001773,0.00239,0.022147,0.000747,0.042291,0.248903,14.469803
+protocol_b2_matched_enriched_subset,tfidf_original,10,33,0.112121,1.0,0.605855,1.0,0.482071,1.0,0.991595,4.486095
+protocol_b2_matched_enriched_subset,tfidf_enriched,10,33,0.112121,1.0,0.607179,1.0,0.477718,1.0,0.992758,4.486095
+protocol_b2_matched_enriched_subset,semantic_en_original,10,33,0.112121,1.0,0.659307,1.0,0.544637,1.0,0.671901,4.486095
+protocol_b2_matched_enriched_subset,semantic_en_enriched,10,33,0.112121,1.0,0.718965,1.0,0.62613,1.0,0.775039,4.486095
+protocol_b2_matched_enriched_subset,semantic_multi_original,10,33,0.112121,1.0,0.46923,1.0,0.300986,1.0,0.527253,4.486095
+protocol_b2_matched_enriched_subset,semantic_multi_enriched,10,33,0.112121,1.0,0.458035,1.0,0.284404,1.0,0.493121,4.486095
