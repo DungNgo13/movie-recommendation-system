@@ -13,6 +13,7 @@ from .history_collector import HistoryCollector
 from .metadata_enrichment_collector import MetadataEnrichmentCollector
 from .pytest_collector import PytestCollector
 from .recommendation_collector import RecommendationCollector
+from .semantic_recommendation_collector import SemanticRecommendationCollector
 from .vitest_collector import VitestCollector
 
 __all__ = [
@@ -23,4 +24,5 @@ __all__ = [
     "RecommendationCollector",
     "HistoryCollector",
     "MetadataEnrichmentCollector",
+    "SemanticRecommendationCollector",
 ]

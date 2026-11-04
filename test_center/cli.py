@@ -261,6 +261,7 @@ def _cmd_run(settings: Any, args: argparse.Namespace) -> None:
             VitestCollector,
             RecommendationCollector,
             MetadataEnrichmentCollector,
+            SemanticRecommendationCollector,
             CollectorResult,
         )
     except ImportError:
@@ -270,6 +271,7 @@ def _cmd_run(settings: Any, args: argparse.Namespace) -> None:
             VitestCollector,
             RecommendationCollector,
             MetadataEnrichmentCollector,
+            SemanticRecommendationCollector,
             CollectorResult,
         )
 
@@ -327,6 +329,18 @@ def _cmd_run(settings: Any, args: argparse.Namespace) -> None:
                 f"  📊 Metadata Enrichment ({enr_meta.get('evidence_type', 'unknown')}): "
                 f"{enr_meta.get('total_movies_inspected', 0)} movies inspected, "
                 f"completeness {before_pct:.1f}% → {after_pct:.1f}%"
+            )
+
+        print("▶ Collecting Phase 8B semantic recommendation & ablation metrics...")
+        sem_col = SemanticRecommendationCollector(settings)
+        sem_res = sem_col.collect_or_run()
+        results["semantic_recommendation"] = sem_res.to_dict()
+        sem_meta = sem_res.metadata or {}
+        if sem_meta:
+            cond_a = sem_meta.get("condition_a_variants", {})
+            print(
+                f"  📊 Phase 8B Semantic Evaluation: {len(cond_a)} Condition A variants + "
+                f"2×2 Metadata Ablation collected"
             )
 
     # Optional: Coverage reporting
@@ -650,6 +664,11 @@ def _build_report_data(
     enr = results.get("metadata_enrichment", {})
     enr_meta = enr.get("metadata", {}) if isinstance(enr, dict) else {}
 
+    # Extract semantic recommendation metrics (Phase 8B)
+    sem = results.get("semantic_recommendation", {})
+    sem_meta = sem.get("metadata", {}) if isinstance(sem, dict) else {}
+    sem_variants = sem_meta.get("condition_a_variants", {}) if isinstance(sem_meta, dict) else {}
+
     return {
         "metadata": meta.to_dict(),
         "overall_status": overall,
@@ -677,8 +696,8 @@ def _build_report_data(
             },
             "recommendations": {
                 "status": rec.get("status", "NOT_RUN"),
-                "algorithm": "TF-IDF v1.1 + MMR" if rec.get("records") else "—",
-                "record_count": rec.get("record_count", 0),
+                "algorithm": "TF-IDF v1.1 + MMR + Semantic Embeddings" if sem_variants else ("TF-IDF v1.1 + MMR" if rec.get("records") else "—"),
+                "record_count": rec.get("record_count", 0) + len(sem_variants),
             },
             "metadata_enrichment": {
                 "status": enr.get("status", "NOT_RUN"),
@@ -693,6 +712,12 @@ def _build_report_data(
                 "admin_approval_rate": enr_meta.get("admin_approval_rate", 0.0),
                 "successful_cache_refreshes": enr_meta.get("successful_cache_refreshes", 0),
             },
+            "semantic_recommendation": {
+                "status": sem.get("status", "NOT_RUN"),
+                "condition_a_variants_count": len(sem_variants),
+                "dataset_checksum": sem_meta.get("dataset_checksum", ""),
+                "split_checksum": sem_meta.get("split_checksum", ""),
+            },
             "security": {
                 "total_findings": 0,
                 "critical": 0,
@@ -702,6 +727,7 @@ def _build_report_data(
         "functional_tests": all_tests,
         "recommendation_metrics": rec_metrics,
         "metadata_enrichment": enr_meta,
+        "semantic_recommendation": sem_meta,
         "known_limitations": [
             "Security scanning tools not installed (pip-audit, bandit, npm audit).",
             "Load testing requires explicit TEC_ALLOW_LOAD_TEST=1.",

@@ -690,6 +690,53 @@ def _render_metadata_enrichment(data: dict) -> str:
 </section>"""
 
 
+def _render_semantic_recommendation(data: dict) -> str:
+    """Render Phase 8B Semantic Embeddings & Metadata Ablation section in HTML."""
+    sem = data.get("semantic_recommendation", {})
+    variants = sem.get("condition_a_variants", {}) if isinstance(sem, dict) else {}
+    if not variants:
+        return ""
+
+    rows = []
+    for vkey, vdata in variants.items():
+        m10 = vdata.get("metrics", {}).get("by_k", {}).get("k_10", {})
+        lat = vdata.get("metrics", {}).get("latency", {})
+        rows.append(
+            f"<tr>"
+            f"<td>{_esc(vdata.get('name', vkey))}</td>"
+            f"<td>{_fmt_num(m10.get('precision'), 6)}</td>"
+            f"<td>{_fmt_num(m10.get('recall'), 6)}</td>"
+            f"<td>{_fmt_num(m10.get('ndcg'), 6)}</td>"
+            f"<td>{_fmt_num(m10.get('hit_rate'), 6)}</td>"
+            f"<td>{_fmt_pct(m10.get('catalog_coverage', 0.0))}</td>"
+            f"<td>{_fmt_num(m10.get('intra_list_diversity'), 4)}</td>"
+            f"<td>{_fmt_ms(lat.get('p50_ms'))}</td>"
+            f"</tr>"
+        )
+
+    return f"""<section id="semantic-recommendation">
+  <h2>Phase 8B — Semantic Embeddings &amp; Metadata Quality Ablation</h2>
+  <p class="meta">Dataset SHA-256: <code>{_esc(sem.get("dataset_checksum", "")[:16])}...</code> | Split SHA-256: <code>{_esc(sem.get("split_checksum", "")[:16])}...</code></p>
+  <table>
+    <thead>
+      <tr>
+        <th data-sort>Variant (Condition A)</th>
+        <th data-sort>P@10</th>
+        <th data-sort>R@10</th>
+        <th data-sort>NDCG@10</th>
+        <th data-sort>HR@10</th>
+        <th data-sort>Coverage@10</th>
+        <th data-sort>ILD@10</th>
+        <th data-sort>P50 Latency</th>
+      </tr>
+    </thead>
+    <tbody>
+      {"".join(rows)}
+    </tbody>
+  </table>
+</section>"""
+
+
 def _render_limitations(data: dict) -> str:
     """Render known limitations section."""
     limitations = data.get("known_limitations", [])
@@ -737,6 +784,7 @@ def generate_html_report(report_data: dict, output_path: Path) -> Path:
         _render_lint_build(report_data),
         _render_rec_metrics(report_data),
         _render_metadata_enrichment(report_data),
+        _render_semantic_recommendation(report_data),
         _render_mmr_tradeoff(report_data),
         _render_latency_comparison(report_data),
         _render_security(report_data),

@@ -31,6 +31,17 @@ class MovieMetadata:
     genres: list[str]
     tags: list[str] = field(default_factory=list)
     text_profile: str = ""
+    original_title: str = ""
+    title_vi: str = ""
+    overview: str = ""
+    overview_vi: str = ""
+    cast: list[str] = field(default_factory=list)
+    director: str = ""
+    keywords: list[str] = field(default_factory=list)
+    tmdb_id: int | None = None
+    metadata_source: str = "movielens_original"
+    metadata_version: int = 1
+    metadata_enrichment_status: str = "not_requested"
 
 
 @dataclass

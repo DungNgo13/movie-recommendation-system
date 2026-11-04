@@ -72,6 +72,9 @@ def generate_markdown_report(report_data: dict[str, Any], output_path: Path) -> 
     # Phase 8A Metadata Enrichment
     _render_metadata_enrichment(lines, report_data.get("metadata_enrichment", {}))
 
+    # Phase 8B Semantic Embeddings & Metadata Ablation
+    _render_semantic_recommendation(lines, report_data.get("semantic_recommendation", {}))
+
     # MMR trade-off
     _render_mmr(lines, report_data.get("mmr_tradeoff", {}))
 
@@ -197,6 +200,32 @@ def generate_vietnamese_summary(
             _w(f"- **Dataset SHA-256:** `{ds}`")
         if sp:
             _w(f"- **Split SHA-256:** `{sp}`")
+        _w("")
+
+    # Phase 8B Semantic Embeddings in Vietnamese summary
+    sem = report_data.get("semantic_recommendation", {})
+    if sem and sem.get("condition_a_variants"):
+        _w("## 3B. Đánh Giá Semantic Embeddings & Ablation Chất Lượng Metadata (Phase 8B)")
+        _w("")
+        _w(f"- **Dataset SHA-256:** `{sem.get('dataset_checksum', '—')}`")
+        _w(f"- **Split SHA-256:** `{sem.get('split_checksum', '—')}`")
+        _w("")
+        _w("| Mô hình (Condition A) | Precision@10 | Recall@10 | NDCG@10 | HitRate@10 | Coverage@10 | ILD@10 | Novelty@10 | Latency p50 (ms) |")
+        _w("|-----------------------|-------------:|----------:|--------:|-----------:|------------:|-------:|-----------:|-----------------:|")
+        for vkey, vdata in sem.get("condition_a_variants", {}).items():
+            m10 = vdata.get("metrics", {}).get("by_k", {}).get("k_10", {})
+            lat = vdata.get("metrics", {}).get("latency", {})
+            _w(
+                f"| {vdata.get('name', vkey)} "
+                f"| {_fmt(m10.get('precision'), 6)} "
+                f"| {_fmt(m10.get('recall'), 6)} "
+                f"| {_fmt(m10.get('ndcg'), 6)} "
+                f"| {_fmt(m10.get('hit_rate'), 6)} "
+                f"| {_fmt(m10.get('catalog_coverage'), 4)} "
+                f"| {_fmt(m10.get('intra_list_diversity'), 4)} "
+                f"| {_fmt(m10.get('novelty'), 2)} "
+                f"| {_fmt(lat.get('p50_ms'), 2)} |"
+            )
         _w("")
 
     # Lint / Build
@@ -520,6 +549,64 @@ def _render_metadata_enrichment(lines: list[str], enr: dict[str, Any]) -> None:
             delta = a_pct - b_pct
             lines.append(
                 f"| `{field}` | {b_pop} | {b_pct:.1f}% | {a_pop} | {a_pct:.1f}% | {delta:+.1f}% |"
+            )
+        lines.append("")
+
+
+def _render_semantic_recommendation(lines: list[str], sem: dict[str, Any]) -> None:
+    """Render Phase 8B Semantic Embeddings & Metadata Ablation metrics."""
+    if not sem or not sem.get("condition_a_variants"):
+        return
+
+    lines.append("## Phase 8B — Semantic Embeddings & Metadata Quality Ablation")
+    lines.append("")
+    cohort = sem.get("cohort", {})
+    lines.append(f"- **Dataset Checksum (SHA-256):** `{sem.get('dataset_checksum', '—')}`")
+    lines.append(f"- **Split Checksum (SHA-256):** `{sem.get('split_checksum', '—')}`")
+    lines.append(
+        f"- **Evaluation Cohort:** {cohort.get('catalog_size', 0)} movies · "
+        f"{cohort.get('evaluated_test_users', 0)} active test users (of {cohort.get('total_users', 0)} total)"
+    )
+    lines.append("")
+    lines.append("### Condition A — Original Metadata Comparison (K=10)")
+    lines.append("")
+    lines.append("| Variant | P@10 | R@10 | NDCG@10 | HR@10 | MAP@10 | Coverage@10 | ILD@10 | Novelty@10 | P50 (ms) | P95 (ms) |")
+    lines.append("|---------|-----:|-----:|--------:|------:|-------:|------------:|-------:|-----------:|---------:|---------:|")
+
+    for vkey, vdata in sem.get("condition_a_variants", {}).items():
+        m10 = vdata.get("metrics", {}).get("by_k", {}).get("k_10", {})
+        lat = vdata.get("metrics", {}).get("latency", {})
+        lines.append(
+            f"| {vdata.get('name', vkey)} "
+            f"| {_fmt(m10.get('precision'), 6)} "
+            f"| {_fmt(m10.get('recall'), 6)} "
+            f"| {_fmt(m10.get('ndcg'), 6)} "
+            f"| {_fmt(m10.get('hit_rate'), 6)} "
+            f"| {_fmt(m10.get('map'), 6)} "
+            f"| {_fmt(m10.get('catalog_coverage'), 4)} "
+            f"| {_fmt(m10.get('intra_list_diversity'), 4)} "
+            f"| {_fmt(m10.get('novelty'), 2)} "
+            f"| {_fmt(lat.get('p50_ms'), 2)} "
+            f"| {_fmt(lat.get('p95_ms'), 2)} |"
+        )
+    lines.append("")
+
+    perf = sem.get("performance_benchmark", {}).get("models", {})
+    if perf:
+        lines.append("### Operational Cost & Resource Benchmark")
+        lines.append("")
+        lines.append("| Model | Dim | Gen Time (s) | Cache Load (ms) | Storage (MB) | Peak Mem (MB) | P50 (ms) | P95 (ms) |")
+        lines.append("|-------|----:|-------------:|----------------:|-------------:|--------------:|---------:|---------:|")
+        for mkey, pdata in perf.items():
+            lines.append(
+                f"| `{mkey}` "
+                f"| {pdata.get('dimensions', '—')} "
+                f"| {_fmt(pdata.get('generation_duration_seconds'), 2)} "
+                f"| {_fmt(pdata.get('cache_load_ms'), 2)} "
+                f"| {_fmt(pdata.get('storage_mb'), 2)} "
+                f"| {_fmt(pdata.get('peak_memory_mb'), 2)} "
+                f"| {_fmt(pdata.get('recommendation_latency_p50_ms'), 2)} "
+                f"| {_fmt(pdata.get('recommendation_latency_p95_ms'), 2)} |"
             )
         lines.append("")
 

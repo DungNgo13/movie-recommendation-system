@@ -85,6 +85,22 @@ def parse_args():
         action="store_true",
         help="Run MMR diversity-aware re-ranking ablation study (Phase 6)",
     )
+    parser.add_argument(
+        "--phase8b",
+        action="store_true",
+        help="Run Phase 8B Semantic Embeddings & Metadata Quality Ablation experiments",
+    )
+    parser.add_argument(
+        "--allow-model-download",
+        action="store_true",
+        help="Allow downloading HuggingFace ONNX model files if not cached locally",
+    )
+    parser.add_argument(
+        "--batch-size",
+        type=int,
+        default=128,
+        help="Batch size for CPU ONNX embedding generation (default: 128)",
+    )
     return parser.parse_args()
 
 
@@ -169,6 +185,20 @@ def main():
         from .mmr_ablation import run_mmr_ablation
         run_mmr_ablation(dataset, out_dir)
         logger.info("MMR ablation study completed. Reports saved to %s", out_dir.resolve())
+        return
+
+    if args.phase8b:
+        out_dir = Path("reports/phase8b_embeddings") if args.output_dir == "reports/experiments/baseline_tfidf_v1_0" else Path(args.output_dir)
+        logger.info("Running Phase 8B Semantic Embeddings & Metadata Quality Ablation study...")
+        from .semantic_eval import run_phase8b_experiments
+        run_phase8b_experiments(
+            dataset=dataset,
+            dataset_dir=data_dir,
+            output_dir=out_dir,
+            allow_download=args.allow_model_download,
+            batch_size=args.batch_size,
+        )
+        logger.info("Phase 8B study completed. Reports saved to %s", out_dir.resolve())
         return
 
     evaluator = OfflineEvaluator(config)
