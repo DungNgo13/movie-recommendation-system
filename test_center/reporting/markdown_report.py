@@ -59,6 +59,13 @@ def generate_markdown_report(report_data: dict[str, Any], output_path: Path) -> 
     # Functional tests
     _render_functional_tests(lines, report_data.get("functional_tests", []))
 
+    # Coverage
+    _render_coverage(lines, report_data.get("coverage", {}))
+
+    # Lint / build checks
+    _render_lint(lines, report_data.get("lint", {}))
+    _render_build(lines, report_data.get("build_check", {}))
+
     # Recommendation metrics
     _render_rec_metrics(lines, report_data.get("recommendation_metrics", {}))
 
@@ -86,6 +93,147 @@ def generate_markdown_report(report_data: dict[str, Any], output_path: Path) -> 
     content = "\n".join(lines)
     output_path.write_text(content, encoding="utf-8")
     logger.info("Markdown report written to %s", output_path)
+    return output_path
+
+
+def generate_vietnamese_summary(
+    report_data: dict[str, Any], output_path: Path,
+) -> Path:
+    """Generate a Vietnamese executive summary (bao_cao_tom_tat.md).
+
+    Technical terms (TF-IDF, NDCG, Precision, Coverage, etc.) are kept in
+    English per academic convention.  The structure and narrative are in
+    Vietnamese.
+
+    Args:
+        report_data: Report dict from a TEC run.
+        output_path: Destination for the ``.md`` file.
+
+    Returns:
+        The resolved ``output_path`` that was written.
+    """
+    output_path = Path(output_path)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+
+    lines: list[str] = []
+    _w = lines.append
+
+    meta = report_data.get("metadata", {})
+    overall = report_data.get("overall_status", "UNKNOWN")
+    summary = report_data.get("summary", {})
+    func = summary.get("functional", {})
+    rec = report_data.get("recommendation_metrics", {})
+
+    _w("# MovSug — Báo Cáo Tóm Tắt Kiểm Thử và Đánh Giá")
+    _w("")
+    _w(f"**Mã chạy (Run ID):** `{meta.get('run_id', '—')}`  ")
+    _w(f"**Thời gian:** {meta.get('timestamp_utc', '—')}  ")
+    _w(f"**Git Commit:** `{meta.get('git_commit', '—')}`  ")
+    _w(f"**Kết quả tổng thể:** **{overall}**")
+    _w("")
+
+    # Tổng quan kiểm thử
+    _w("## 1. Tổng Quan Kiểm Thử Chức Năng")
+    _w("")
+    total = func.get("total", 0)
+    passed = func.get("passed", 0)
+    failed = func.get("failed", 0)
+    _w(f"- **Tổng số test:** {total}")
+    _w(f"- **Đạt (Passed):** {passed}")
+    _w(f"- **Thất bại (Failed):** {failed}")
+    _w(f"- **Tỷ lệ đạt:** {passed/total*100:.1f}%" if total > 0 else "- **Tỷ lệ đạt:** N/A")
+    _w("")
+
+    be = summary.get("backend_tests", {})
+    fe = summary.get("frontend_tests", {})
+    _w("| Thành phần | Tổng | Đạt | Thất bại | Bỏ qua | Trạng thái |")
+    _w("|------------|-----:|----:|---------:|-------:|------------|")
+    _w(f"| Backend | {be.get('total', '—')} | {be.get('passed', '—')} "
+       f"| {be.get('failed', '—')} | {be.get('skipped', '—')} | {be.get('status', '—')} |")
+    _w(f"| Frontend | {fe.get('total', '—')} | {fe.get('passed', '—')} "
+       f"| {fe.get('failed', '—')} | {fe.get('skipped', '—')} | {fe.get('status', '—')} |")
+    _w("")
+
+    # Coverage
+    coverage = report_data.get("coverage", {})
+    if coverage:
+        _w("## 2. Mức Độ Bao Phủ Mã Nguồn (Code Coverage)")
+        _w("")
+        for comp in ("backend", "frontend"):
+            cdata = coverage.get(comp, {})
+            if cdata and "line_rate" in cdata:
+                _w(f"- **{comp.title()}:** {cdata['line_rate']*100:.1f}% line coverage")
+            else:
+                note = cdata.get("note", cdata.get("error", "Không có dữ liệu"))
+                _w(f"- **{comp.title()}:** {note}")
+        _w("")
+
+    # Recommendation metrics
+    by_k = rec.get("by_k", {})
+    if by_k:
+        _w("## 3. Kết Quả Đánh Giá Hệ Thống Gợi Ý")
+        _w("")
+        _w("Thuật toán đánh giá: **TF-IDF v1.1** (có hỗ trợ MMR re-ranking)")
+        _w("")
+
+        first_k_data = next(iter(by_k.values()), {})
+        metric_names = sorted(first_k_data.keys())
+        header = "| K | " + " | ".join(metric_names) + " |"
+        sep = "|---|" + "|".join(["---:" for _ in metric_names]) + "|"
+        _w(header)
+        _w(sep)
+        for k_label in sorted(by_k.keys()):
+            metrics = by_k[k_label]
+            vals = " | ".join(_fmt(metrics.get(m), 6) for m in metric_names)
+            _w(f"| {k_label} | {vals} |")
+        _w("")
+
+        ds = rec.get("dataset_checksum", "")
+        sp = rec.get("split_checksum", "")
+        if ds:
+            _w(f"- **Dataset SHA-256:** `{ds}`")
+        if sp:
+            _w(f"- **Split SHA-256:** `{sp}`")
+        _w("")
+
+    # Lint / Build
+    lint = report_data.get("lint", {})
+    build = report_data.get("build_check", {})
+    if lint or build:
+        _w("## 4. Chất Lượng Mã Nguồn")
+        _w("")
+        if lint:
+            _w(f"- **ESLint:** {lint.get('errors', 0)} lỗi, {lint.get('warnings', 0)} cảnh báo")
+        if build:
+            _w(f"- **TypeScript build:** {build.get('status', '—')} "
+               f"({build.get('error_count', 0)} lỗi kiểu)")
+        _w("")
+
+    # Hạn chế
+    limitations = report_data.get("known_limitations", [])
+    if limitations:
+        _w("## 5. Hạn Chế Đã Biết")
+        _w("")
+        for lim in limitations:
+            _w(f"- {lim}")
+        _w("")
+
+    # Khả năng tái tạo
+    _w("## 6. Khả Năng Tái Tạo (Reproducibility)")
+    _w("")
+    _w(f"- **Git Commit:** `{meta.get('git_commit', '—')}`")
+    _w(f"- **Python:** `{meta.get('python_version', '—')}`")
+    _w(f"- **Nền tảng:** {meta.get('platform_info', '—')}")
+    _w("")
+
+    _w("---")
+    now = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")
+    _w(f"*Được tạo bởi MovSug Test & Evaluation Center — {now}*")
+    _w("")
+
+    content = "\n".join(lines)
+    output_path.write_text(content, encoding="utf-8")
+    logger.info("Vietnamese summary written to %s", output_path)
     return output_path
 
 
@@ -257,6 +405,70 @@ def _render_security(lines: list[str], findings: list[dict]) -> None:
             f"| {f.get('title', '—')} "
             f"| {f.get('location', '—')} |"
         )
+    lines.append("")
+
+
+def _render_coverage(lines: list[str], coverage: dict[str, Any]) -> None:
+    """Render coverage section."""
+    if not coverage:
+        return
+    lines.append("## Test Coverage")
+    lines.append("")
+
+    lines.append("| Component | Line Rate | Covered | Missing | Statements |")
+    lines.append("|-----------|----------:|--------:|--------:|-----------:|")
+
+    for component in ("backend", "frontend"):
+        data = coverage.get(component, {})
+        if not data or "error" in data:
+            status = data.get("error", data.get("note", "N/A"))
+            lines.append(f"| {component.title()} | — | — | — | {status} |")
+        else:
+            rate = data.get("line_rate", 0)
+            covered = data.get("covered_lines", "—")
+            missing = data.get("missing_lines", "—")
+            stmts = data.get("num_statements", data.get("total_lines", "—"))
+            lines.append(
+                f"| {component.title()} | {rate*100:.1f}% "
+                f"| {covered} | {missing} | {stmts} |"
+            )
+    lines.append("")
+
+
+def _render_lint(lines: list[str], lint: dict[str, Any]) -> None:
+    """Render ESLint results."""
+    if not lint:
+        return
+    lines.append("## ESLint Analysis")
+    lines.append("")
+    status = lint.get("status", "—")
+    errors = lint.get("errors", 0)
+    warnings = lint.get("warnings", 0)
+    files = lint.get("files_checked", 0)
+    lines.append(f"- **Status:** {status}")
+    lines.append(f"- **Errors:** {errors}")
+    lines.append(f"- **Warnings:** {warnings}")
+    lines.append(f"- **Files checked:** {files}")
+    lines.append("")
+
+
+def _render_build(lines: list[str], build: dict[str, Any]) -> None:
+    """Render TypeScript build check results."""
+    if not build:
+        return
+    lines.append("## TypeScript Build Check")
+    lines.append("")
+    status = build.get("status", "—")
+    error_count = build.get("error_count", 0)
+    lines.append(f"- **Status:** {status}")
+    lines.append(f"- **Type errors:** {error_count}")
+    if build.get("errors_sample"):
+        lines.append("")
+        lines.append("### Sample errors")
+        lines.append("```")
+        for err in build["errors_sample"][:10]:
+            lines.append(err)
+        lines.append("```")
     lines.append("")
 
 

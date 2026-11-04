@@ -794,12 +794,14 @@ def _cmd_report(settings: Any, args: argparse.Namespace) -> None:
         from .reporting import (
             generate_json_report,
             generate_markdown_report,
+            generate_vietnamese_summary,
             generate_html_report,
         )
     except ImportError:
         from reporting import (
             generate_json_report,
             generate_markdown_report,
+            generate_vietnamese_summary,
             generate_html_report,
         )
 
@@ -820,6 +822,9 @@ def _cmd_report(settings: Any, args: argparse.Namespace) -> None:
     if fmt in ("markdown", "all"):
         p = generate_markdown_report(data, run_dir / "report" / "report.md")
         print(f"  📝 Markdown: {p}")
+        # Vietnamese executive summary
+        p_vi = generate_vietnamese_summary(data, run_dir / "report" / "bao_cao_tom_tat.md")
+        print(f"  📝 Tóm tắt:  {p_vi}")
 
     if fmt in ("html", "all"):
         p = generate_html_report(data, run_dir / "report" / "report.html")

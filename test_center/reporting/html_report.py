@@ -540,6 +540,87 @@ def _render_history(data: dict) -> str:
 </section>"""
 
 
+def _render_coverage(data: dict) -> str:
+    """Render code coverage section in HTML."""
+    coverage = data.get("coverage", {})
+    if not coverage:
+        return ""
+
+    rows = []
+    for component in ("backend", "frontend"):
+        cdata = coverage.get(component, {})
+        if not cdata or "error" in cdata:
+            note = _esc(cdata.get("error", cdata.get("note", "N/A")))
+            rows.append(f'<tr><td>{component.title()}</td>'
+                        f'<td colspan="3">{note}</td></tr>')
+        elif "line_rate" in cdata:
+            rate = cdata["line_rate"] * 100
+            covered = cdata.get("covered_lines", "—")
+            missing = cdata.get("missing_lines", "—")
+            stmts = cdata.get("num_statements", cdata.get("total_lines", "—"))
+            rate_cls = "status-pass" if rate >= 70 else ("status-warn" if rate >= 50 else "status-fail")
+            rows.append(f'<tr><td>{component.title()}</td>'
+                        f'<td class="{rate_cls}">{rate:.1f}%</td>'
+                        f'<td>{covered}</td>'
+                        f'<td>{missing}</td></tr>')
+        else:
+            status = _esc(cdata.get("status", "unavailable"))
+            rows.append(f'<tr><td>{component.title()}</td>'
+                        f'<td colspan="3">{status}</td></tr>')
+
+    return f"""<section>
+  <h2>Test Coverage</h2>
+  <table>
+    <thead><tr>
+      <th data-sort>Component</th><th data-sort>Line Rate</th>
+      <th data-sort>Covered</th><th data-sort>Missing</th>
+    </tr></thead>
+    <tbody>{"".join(rows)}</tbody>
+  </table>
+</section>"""
+
+
+def _render_lint_build(data: dict) -> str:
+    """Render ESLint and TypeScript build check results."""
+    lint = data.get("lint", {})
+    build = data.get("build_check", {})
+    if not lint and not build:
+        return ""
+
+    cards = []
+
+    if lint:
+        lint_status = lint.get("status", "—")
+        lint_cls = _status_class(lint_status)
+        errors = lint.get("errors", 0)
+        warnings = lint.get("warnings", 0)
+        files = lint.get("files_checked", 0)
+        cards.append(f"""<div class="card">
+      <h3>ESLint</h3>
+      <div class="big-num {lint_cls}">{_esc(lint_status)}</div>
+      <div style="font-size:.8rem;color:var(--text-muted)">
+        {errors} errors · {warnings} warnings · {files} files
+      </div>
+    </div>""")
+
+    if build:
+        build_status = build.get("status", "—")
+        build_cls = _status_class(build_status)
+        error_count = build.get("error_count", 0)
+        cards.append(f"""<div class="card">
+      <h3>TypeScript Build</h3>
+      <div class="big-num {build_cls}">{_esc(build_status)}</div>
+      <div style="font-size:.8rem;color:var(--text-muted)">
+        {error_count} type errors
+      </div>
+    </div>""")
+
+    return f"""<section>
+  <h2>Code Quality</h2>
+  <div class="cards">{"".join(cards)}</div>
+</section>"""
+
+
 def _render_limitations(data: dict) -> str:
     """Render known limitations section."""
     limitations = data.get("known_limitations", [])
@@ -583,6 +664,8 @@ def generate_html_report(report_data: dict, output_path: Path) -> Path:
         '<main class="container">',
         _render_summary_cards(report_data),
         _render_functional_tests(report_data),
+        _render_coverage(report_data),
+        _render_lint_build(report_data),
         _render_rec_metrics(report_data),
         _render_mmr_tradeoff(report_data),
         _render_latency_comparison(report_data),
