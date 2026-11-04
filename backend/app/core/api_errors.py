@@ -53,3 +53,26 @@ STORAGE_UNAVAILABLE = "storage_unavailable"              # retryable
 
 # HLS processing
 HLS_R2_SOURCE_UNSUPPORTED = "hls_r2_source_unsupported"
+
+# TMDB Metadata Enrichment (Phase 8A)
+TMDB_NOT_CONFIGURED = "tmdb_not_configured"
+TMDB_LIVE_REQUESTS_DISABLED = "tmdb_live_requests_disabled"
+TMDB_DISALLOWED_HOST = "tmdb_disallowed_host"
+TMDB_INVALID_INPUT = "tmdb_invalid_input"
+TMDB_PAGINATION_LIMIT_EXCEEDED = "tmdb_pagination_limit_exceeded"
+TMDB_UNAUTHORIZED = "tmdb_unauthorized"
+TMDB_FORBIDDEN = "tmdb_forbidden"
+TMDB_NOT_FOUND = "tmdb_not_found"
+TMDB_RATE_LIMITED = "tmdb_rate_limited"
+TMDB_TIMEOUT = "tmdb_timeout"
+TMDB_UPSTREAM_ERROR = "tmdb_upstream_error"
+TMDB_NETWORK_ERROR = "tmdb_network_error"
+TMDB_INVALID_RESPONSE = "tmdb_invalid_response"
+
+ENRICHMENT_JOB_NOT_FOUND = "enrichment_job_not_found"
+ENRICHMENT_CANDIDATE_NOT_FOUND = "enrichment_candidate_not_found"
+ENRICHMENT_DUPLICATE_ACTIVE_JOB = "enrichment_duplicate_active_job"
+ENRICHMENT_CONCURRENT_MODIFICATION = "enrichment_concurrent_modification"
+ENRICHMENT_VALIDATION_FAILED = "enrichment_validation_failed"
+ENRICHMENT_INVALID_STATE = "enrichment_invalid_state"
+
