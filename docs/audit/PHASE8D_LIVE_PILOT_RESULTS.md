@@ -198,3 +198,4 @@ $env:TMDB_API_READ_ACCESS_TOKEN="<your-tmdb-v3-read-access-token>"
 .\.venv\Scripts\python.exe -m app.recommendation_evaluation.cli --phase8d --phase8d-live
 ```
 Hệ thống sẽ tự động thực thi đúng 37 phim có `tmdbId` (tối đa 74 lượt gọi HTTP bao gồm cả retry ở tốc độ ≤ 4 RPS) và cập nhật toàn bộ báo cáo chất lượng cùng báo cáo TEC.
+
