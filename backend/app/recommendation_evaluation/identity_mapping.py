@@ -289,3 +289,4 @@ def generate_identity_coverage_report(
     report_path.write_text(json.dumps(report, indent=2), encoding="utf-8")
     logger.info("Identity coverage report written to %s", report_path)
     return report_path
+

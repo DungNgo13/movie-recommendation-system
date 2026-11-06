@@ -599,3 +599,4 @@ class TestProductionIsolation:
         source = Path(mod.__file__).read_text(encoding="utf-8")
         assert "sqlalchemy" not in source.lower()
         assert "from app.models" not in source
+

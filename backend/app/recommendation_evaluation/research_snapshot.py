@@ -325,3 +325,4 @@ def load_movies_from_snapshot(
         mid: deserialize_movie_metadata(mdata)
         for mid, mdata in snapshot.movies.items()
     }
+

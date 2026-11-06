@@ -62,3 +62,4 @@ Current status: **INSUFFICIENT EVIDENCE** for coverage sensitivity analysis.
 The mock TMDB catalog contains only 16 test movies. Meaningful coverage
 sensitivity analysis at 1%, 5%, 10%, 25%, 50%, 80%, 100% levels requires
 live TMDB API access with explicit user authorization.
+

@@ -1,0 +1,70 @@
+{
+  "snapshot_id": "phase8c_20261106_023451",
+  "created_at": "2026-11-06T02:34:51.265401+00:00",
+  "movielens_checksum": "d830d1e560efffd547d0360da5042a5d97884e5cd99dfd145ec9ecc0efbbaa86",
+  "split_checksum": "48cc8f10cce949d0add60ad6320bf75668370d1753e5456d6fbd69479f931d67",
+  "links_checksum": "97ad18e4e56a09363c65676b6cb3482ce3e2cea2372a24620c1599c843325f31",
+  "total_movies": 9742,
+  "enriched_count": 200,
+  "unenriched_count": 9542,
+  "failed_count": 0,
+  "field_coverage": {
+    "title": {
+      "count": 9742,
+      "total": 9742,
+      "coverage_pct": 100.0
+    },
+    "original_title": {
+      "count": 0,
+      "total": 9742,
+      "coverage_pct": 0.0
+    },
+    "title_vi": {
+      "count": 0,
+      "total": 9742,
+      "coverage_pct": 0.0
+    },
+    "genres": {
+      "count": 9708,
+      "total": 9742,
+      "coverage_pct": 99.651
+    },
+    "overview": {
+      "count": 0,
+      "total": 9742,
+      "coverage_pct": 0.0
+    },
+    "overview_vi": {
+      "count": 0,
+      "total": 9742,
+      "coverage_pct": 0.0
+    },
+    "keywords": {
+      "count": 1572,
+      "total": 9742,
+      "coverage_pct": 16.1363
+    },
+    "cast": {
+      "count": 0,
+      "total": 9742,
+      "coverage_pct": 0.0
+    },
+    "director": {
+      "count": 0,
+      "total": 9742,
+      "coverage_pct": 0.0
+    },
+    "original_language": {
+      "count": 0,
+      "total": 9742,
+      "coverage_pct": 0.0
+    }
+  },
+  "enrichment_source": "mock_tmdb_catalog",
+  "enrichment_config": {
+    "pilot_sample_size": 200,
+    "seed": 8042,
+    "enrichment_source": "mock_tmdb_catalog"
+  },
+  "snapshot_checksum": "7d6a61a6595365e3e6f7e65e595e066c7d04f69141da9839a9baa9163a87dc70"
+}

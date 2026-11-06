@@ -489,3 +489,4 @@ def generate_coverage_report(
 
     logger.info("Coverage report written to %s", json_path)
     return json_path
+

@@ -93,3 +93,4 @@ All artifacts are saved to `backend/reports/phase8c_research/`:
 | `phase8c_statistical_comparisons.json` | Statistical test results         |
 | `snapshots/snapshot_*.json`       | Immutable research metadata snapshots |
 | `snapshots/manifest_*.json`       | Compact snapshot manifests            |
+

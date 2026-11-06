@@ -1,0 +1,69 @@
+{
+  "report_type": "phase8c_field_coverage",
+  "generated_at": "2026-11-06T02:34:51.295140+00:00",
+  "snapshot_id": "phase8c_20261106_023451",
+  "catalog": {
+    "total_movies": 9742,
+    "enriched_movies": 200,
+    "enrichment_coverage_pct": 2.053,
+    "movies_with_tmdb_id": 9734,
+    "tmdb_id_coverage_pct": 99.9179
+  },
+  "field_coverage": {
+    "title": {
+      "count": 200,
+      "total": 200,
+      "coverage_pct": 100.0
+    },
+    "original_title": {
+      "count": 0,
+      "total": 200,
+      "coverage_pct": 0.0
+    },
+    "title_vi": {
+      "count": 0,
+      "total": 200,
+      "coverage_pct": 0.0
+    },
+    "genres": {
+      "count": 189,
+      "total": 200,
+      "coverage_pct": 94.5
+    },
+    "overview": {
+      "count": 0,
+      "total": 200,
+      "coverage_pct": 0.0
+    },
+    "overview_vi": {
+      "count": 0,
+      "total": 200,
+      "coverage_pct": 0.0
+    },
+    "keywords": {
+      "count": 33,
+      "total": 200,
+      "coverage_pct": 16.5
+    },
+    "cast": {
+      "count": 0,
+      "total": 200,
+      "coverage_pct": 0.0
+    },
+    "director": {
+      "count": 0,
+      "total": 200,
+      "coverage_pct": 0.0
+    }
+  },
+  "retrieval_summary": {
+    "total_attempted": 200,
+    "successful": 200,
+    "not_found": 0,
+    "api_errors": 0,
+    "mismatches": 0,
+    "skipped": 0,
+    "success_rate_pct": 100.0
+  },
+  "retrieval_failures": []
+}

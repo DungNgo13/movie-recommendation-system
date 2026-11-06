@@ -161,3 +161,4 @@ cd d:\TLTN\movie-recommendation-system\backend
 # 5. Run with semantic models
 .\.venv\Scripts\python.exe -m app.recommendation_evaluation.cli --phase8c --allow-model-download --phase8c-pilot-size 200
 ```
+

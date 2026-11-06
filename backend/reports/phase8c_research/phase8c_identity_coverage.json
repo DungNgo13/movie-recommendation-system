@@ -1,0 +1,82 @@
+{
+  "report_type": "phase8c_identity_coverage",
+  "generated_at": "2026-11-06T02:34:51.110844+00:00",
+  "links_csv_checksum": "97ad18e4e56a09363c65676b6cb3482ce3e2cea2372a24620c1599c843325f31",
+  "summary": {
+    "total_movielens_catalog": 9742,
+    "total_links_rows": 9742,
+    "movies_with_tmdb_id": 9734,
+    "movies_without_tmdb_id": 8,
+    "movies_with_imdb_id": 9742,
+    "movies_without_imdb_id": 0,
+    "tmdb_coverage_pct": 99.9179,
+    "imdb_coverage_pct": 100.0
+  },
+  "data_quality": {
+    "duplicate_tmdb_ids_count": 1,
+    "duplicate_tmdb_ids": [
+      {
+        "tmdb_id": 4912,
+        "movielens_ids": [
+          "6003",
+          "144606"
+        ]
+      }
+    ],
+    "movies_only_in_links_count": 0,
+    "movies_only_in_links": [],
+    "movies_only_in_catalog_count": 0,
+    "movies_only_in_catalog": []
+  },
+  "unmapped_movies_sample": [
+    {
+      "movie_id": "1107",
+      "title": "Loser (1991)",
+      "year": 1991
+    },
+    {
+      "movie_id": "26587",
+      "title": "Decalogue, The (Dekalog) (1989)",
+      "year": 1989
+    },
+    {
+      "movie_id": "2851",
+      "title": "Saturn 3 (1980)",
+      "year": 1980
+    },
+    {
+      "movie_id": "32600",
+      "title": "Eros (2004)",
+      "year": 2004
+    },
+    {
+      "movie_id": "4051",
+      "title": "Horrors of Spider Island (Ein Toter Hing im Netz) (1960)",
+      "year": 1960
+    },
+    {
+      "movie_id": "40697",
+      "title": "Babylon 5",
+      "year": null
+    },
+    {
+      "movie_id": "791",
+      "title": "Last Klezmer: Leopold Kozlowski, His Life and Music, The (1994)",
+      "year": 1994
+    },
+    {
+      "movie_id": "79299",
+      "title": "No. 1 Ladies' Detective Agency, The (2008)",
+      "year": 2008
+    }
+  ],
+  "provenance": {
+    "source": "movielens_links_csv",
+    "dataset": "ml-latest-small",
+    "id_fields": [
+      "movieId",
+      "imdbId",
+      "tmdbId"
+    ]
+  }
+}
