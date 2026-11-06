@@ -1,0 +1,604 @@
+{
+  "manifest_type": "phase8d_pilot_manifest",
+  "generated_at": "2026-11-06T02:56:15.903082+00:00",
+  "pilot_size": 40,
+  "seed": 8042,
+  "estimated_api_requests": 74,
+  "estimated_retry_budget": 20,
+  "total_request_budget": 94,
+  "operations_contacting_tmdb": [
+    "GET /movie/{tmdb_id}?append_to_response=credits,keywords,alternative_titles,external_ids (English details)",
+    "GET /movie/{tmdb_id}?language=vi-VN (Vietnamese localization)"
+  ],
+  "tmdb_host": "api.themoviedb.org",
+  "rate_limit": "4 requests/second (configurable via TMDB_RATE_LIMIT_RPS)",
+  "provider_terms": "TMDB API usage is governed by the TMDB Terms of Service. Metadata retrieved is for research and educational purposes only. Attribution to TMDB is required per their terms.",
+  "output_locations": [
+    "backend/reports/phase8d_pilot/ (all pilot artifacts)",
+    "backend/reports/phase8d_pilot/checkpoint/ (resumable checkpoints)",
+    "backend/reports/phase8d_pilot/snapshots/ (immutable research snapshots)"
+  ],
+  "selection_rationale": {
+    "pilot_size": 40,
+    "seed": 8042,
+    "total_catalog": 9742,
+    "eligible_with_tmdb": 9734,
+    "without_tmdb_included": 3,
+    "popular_included": 13,
+    "longtail_included": 17,
+    "has_tags_count": 13,
+    "no_tags_count": 24,
+    "non_english_count": 5,
+    "decade_distribution": {
+      "pre_1980": 6,
+      "1980s": 4,
+      "1990s": 11,
+      "2000s": 10,
+      "2010s_plus": 6
+    }
+  },
+  "movies": [
+    {
+      "movielens_id": "1029",
+      "title": "Dumbo (1941)",
+      "year": 1941,
+      "tmdb_id": 11360,
+      "imdb_id": "tt0033563",
+      "genres": [
+        "Animation",
+        "Children",
+        "Drama",
+        "Musical"
+      ],
+      "tag_count": 1,
+      "rating_count": 35,
+      "has_tmdb_id": true
+    },
+    {
+      "movielens_id": "106782",
+      "title": "Wolf of Wall Street, The (2013)",
+      "year": 2013,
+      "tmdb_id": 106646,
+      "imdb_id": "tt0993846",
+      "genres": [
+        "Comedy",
+        "Crime",
+        "Drama"
+      ],
+      "tag_count": 5,
+      "rating_count": 54,
+      "has_tmdb_id": true
+    },
+    {
+      "movielens_id": "110826",
+      "title": "Brick Mansions (2014)",
+      "year": 2014,
+      "tmdb_id": 254473,
+      "imdb_id": "tt1430612",
+      "genres": [
+        "Action",
+        "Crime",
+        "Drama"
+      ],
+      "tag_count": 0,
+      "rating_count": 1,
+      "has_tmdb_id": true
+    },
+    {
+      "movielens_id": "112788",
+      "title": "Sex Tape (2014)",
+      "year": 2014,
+      "tmdb_id": 225886,
+      "imdb_id": "tt1956620",
+      "genres": [
+        "Comedy"
+      ],
+      "tag_count": 0,
+      "rating_count": 5,
+      "has_tmdb_id": true
+    },
+    {
+      "movielens_id": "135",
+      "title": "Down Periscope (1996)",
+      "year": 1996,
+      "tmdb_id": 9101,
+      "imdb_id": "tt0116130",
+      "genres": [
+        "Comedy"
+      ],
+      "tag_count": 0,
+      "rating_count": 31,
+      "has_tmdb_id": true
+    },
+    {
+      "movielens_id": "1493",
+      "title": "Love and Other Catastrophes (1996)",
+      "year": 1996,
+      "tmdb_id": 76996,
+      "imdb_id": "tt0116931",
+      "genres": [
+        "Romance"
+      ],
+      "tag_count": 0,
+      "rating_count": 1,
+      "has_tmdb_id": true
+    },
+    {
+      "movielens_id": "151317",
+      "title": "Maggie's Plan (2015)",
+      "year": 2015,
+      "tmdb_id": 312669,
+      "imdb_id": "tt3471098",
+      "genres": [
+        "Comedy"
+      ],
+      "tag_count": 0,
+      "rating_count": 1,
+      "has_tmdb_id": true
+    },
+    {
+      "movielens_id": "152077",
+      "title": "10 Cloverfield Lane (2016)",
+      "year": 2016,
+      "tmdb_id": 333371,
+      "imdb_id": "tt1179933",
+      "genres": [
+        "Thriller"
+      ],
+      "tag_count": 2,
+      "rating_count": 14,
+      "has_tmdb_id": true
+    },
+    {
+      "movielens_id": "1891",
+      "title": "Ugly, The (1997)",
+      "year": 1997,
+      "tmdb_id": 40961,
+      "imdb_id": "tt0120401",
+      "genres": [
+        "Horror",
+        "Thriller"
+      ],
+      "tag_count": 0,
+      "rating_count": 1,
+      "has_tmdb_id": true
+    },
+    {
+      "movielens_id": "2080",
+      "title": "Lady and the Tramp (1955)",
+      "year": 1955,
+      "tmdb_id": 10340,
+      "imdb_id": "tt0048280",
+      "genres": [
+        "Animation",
+        "Children",
+        "Comedy",
+        "Romance"
+      ],
+      "tag_count": 1,
+      "rating_count": 55,
+      "has_tmdb_id": true
+    },
+    {
+      "movielens_id": "2282",
+      "title": "Pecker (1998)",
+      "year": 1998,
+      "tmdb_id": 11855,
+      "imdb_id": "tt0126604",
+      "genres": [
+        "Comedy",
+        "Drama"
+      ],
+      "tag_count": 0,
+      "rating_count": 6,
+      "has_tmdb_id": true
+    },
+    {
+      "movielens_id": "2342",
+      "title": "Hard Core Logo (1996)",
+      "year": 1996,
+      "tmdb_id": 21589,
+      "imdb_id": "tt0116488",
+      "genres": [
+        "Comedy",
+        "Drama"
+      ],
+      "tag_count": 0,
+      "rating_count": 2,
+      "has_tmdb_id": true
+    },
+    {
+      "movielens_id": "2478",
+      "title": "\u00a1Three Amigos! (1986)",
+      "year": 1986,
+      "tmdb_id": 8388,
+      "imdb_id": "tt0092086",
+      "genres": [
+        "Comedy",
+        "Western"
+      ],
+      "tag_count": 0,
+      "rating_count": 26,
+      "has_tmdb_id": true
+    },
+    {
+      "movielens_id": "2730",
+      "title": "Barry Lyndon (1975)",
+      "year": 1975,
+      "tmdb_id": 3175,
+      "imdb_id": "tt0072684",
+      "genres": [
+        "Drama",
+        "Romance",
+        "War"
+      ],
+      "tag_count": 0,
+      "rating_count": 7,
+      "has_tmdb_id": true
+    },
+    {
+      "movielens_id": "284",
+      "title": "New York Cop (Ny\u00fb Y\u00f4ku no koppu) (1993)",
+      "year": 1993,
+      "tmdb_id": 109560,
+      "imdb_id": "tt0117169",
+      "genres": [
+        "Action",
+        "Crime"
+      ],
+      "tag_count": 0,
+      "rating_count": 1,
+      "has_tmdb_id": true
+    },
+    {
+      "movielens_id": "2851",
+      "title": "Saturn 3 (1980)",
+      "year": 1980,
+      "tmdb_id": null,
+      "imdb_id": "tt0081454",
+      "genres": [
+        "Adventure",
+        "Sci-Fi",
+        "Thriller"
+      ],
+      "tag_count": 0,
+      "rating_count": 4,
+      "has_tmdb_id": false
+    },
+    {
+      "movielens_id": "3",
+      "title": "Grumpier Old Men (1995)",
+      "year": 1995,
+      "tmdb_id": 15602,
+      "imdb_id": "tt0113228",
+      "genres": [
+        "Comedy",
+        "Romance"
+      ],
+      "tag_count": 2,
+      "rating_count": 52,
+      "has_tmdb_id": true
+    },
+    {
+      "movielens_id": "3152",
+      "title": "Last Picture Show, The (1971)",
+      "year": 1971,
+      "tmdb_id": 25188,
+      "imdb_id": "tt0067328",
+      "genres": [
+        "Drama"
+      ],
+      "tag_count": 1,
+      "rating_count": 8,
+      "has_tmdb_id": true
+    },
+    {
+      "movielens_id": "32600",
+      "title": "Eros (2004)",
+      "year": 2004,
+      "tmdb_id": null,
+      "imdb_id": "tt0377059",
+      "genres": [
+        "Drama"
+      ],
+      "tag_count": 0,
+      "rating_count": 1,
+      "has_tmdb_id": false
+    },
+    {
+      "movielens_id": "3385",
+      "title": "Volunteers (1985)",
+      "year": 1985,
+      "tmdb_id": 19259,
+      "imdb_id": "tt0090274",
+      "genres": [
+        "Comedy"
+      ],
+      "tag_count": 1,
+      "rating_count": 8,
+      "has_tmdb_id": true
+    },
+    {
+      "movielens_id": "3825",
+      "title": "Coyote Ugly (2000)",
+      "year": 2000,
+      "tmdb_id": 6282,
+      "imdb_id": "tt0200550",
+      "genres": [
+        "Comedy",
+        "Drama",
+        "Romance"
+      ],
+      "tag_count": 0,
+      "rating_count": 29,
+      "has_tmdb_id": true
+    },
+    {
+      "movielens_id": "414",
+      "title": "Air Up There, The (1994)",
+      "year": 1994,
+      "tmdb_id": 46094,
+      "imdb_id": "tt0109067",
+      "genres": [
+        "Comedy"
+      ],
+      "tag_count": 0,
+      "rating_count": 6,
+      "has_tmdb_id": true
+    },
+    {
+      "movielens_id": "4998",
+      "title": "Defiant Ones, The (1958)",
+      "year": 1958,
+      "tmdb_id": 11414,
+      "imdb_id": "tt0051525",
+      "genres": [
+        "Adventure",
+        "Crime",
+        "Drama",
+        "Thriller"
+      ],
+      "tag_count": 1,
+      "rating_count": 1,
+      "has_tmdb_id": true
+    },
+    {
+      "movielens_id": "57147",
+      "title": "Cassandra's Dream (2007)",
+      "year": 2007,
+      "tmdb_id": 4787,
+      "imdb_id": "tt0795493",
+      "genres": [
+        "Crime",
+        "Drama",
+        "Thriller"
+      ],
+      "tag_count": 0,
+      "rating_count": 1,
+      "has_tmdb_id": true
+    },
+    {
+      "movielens_id": "5791",
+      "title": "Frida (2002)",
+      "year": 2002,
+      "tmdb_id": 1360,
+      "imdb_id": "tt0120679",
+      "genres": [
+        "Drama",
+        "Romance"
+      ],
+      "tag_count": 1,
+      "rating_count": 16,
+      "has_tmdb_id": true
+    },
+    {
+      "movielens_id": "58351",
+      "title": "City of Men (Cidade dos Homens) (2007)",
+      "year": 2007,
+      "tmdb_id": 7343,
+      "imdb_id": "tt0870090",
+      "genres": [
+        "Drama"
+      ],
+      "tag_count": 0,
+      "rating_count": 1,
+      "has_tmdb_id": true
+    },
+    {
+      "movielens_id": "59220",
+      "title": "Outsourced (2006)",
+      "year": 2006,
+      "tmdb_id": 7861,
+      "imdb_id": "tt0425326",
+      "genres": [
+        "Comedy",
+        "Romance"
+      ],
+      "tag_count": 0,
+      "rating_count": 1,
+      "has_tmdb_id": true
+    },
+    {
+      "movielens_id": "6123",
+      "title": "Sunless (Sans Soleil) (1983)",
+      "year": 1983,
+      "tmdb_id": 1563,
+      "imdb_id": "tt0084628",
+      "genres": [
+        "Documentary"
+      ],
+      "tag_count": 0,
+      "rating_count": 1,
+      "has_tmdb_id": true
+    },
+    {
+      "movielens_id": "6289",
+      "title": "Ghosts of the Abyss (2003)",
+      "year": 2003,
+      "tmdb_id": 24982,
+      "imdb_id": "tt0297144",
+      "genres": [
+        "Documentary",
+        "IMAX"
+      ],
+      "tag_count": 1,
+      "rating_count": 1,
+      "has_tmdb_id": true
+    },
+    {
+      "movielens_id": "67534",
+      "title": "Big Stan (2007)",
+      "year": 2007,
+      "tmdb_id": 13161,
+      "imdb_id": "tt0490086",
+      "genres": [
+        "Comedy"
+      ],
+      "tag_count": 0,
+      "rating_count": 2,
+      "has_tmdb_id": true
+    },
+    {
+      "movielens_id": "6807",
+      "title": "Monty Python's The Meaning of Life (1983)",
+      "year": 1983,
+      "tmdb_id": 4543,
+      "imdb_id": "tt0085959",
+      "genres": [
+        "Comedy"
+      ],
+      "tag_count": 1,
+      "rating_count": 40,
+      "has_tmdb_id": true
+    },
+    {
+      "movielens_id": "6944",
+      "title": "Father of the Bride (1991)",
+      "year": 1991,
+      "tmdb_id": 11846,
+      "imdb_id": "tt0101862",
+      "genres": [
+        "Comedy"
+      ],
+      "tag_count": 2,
+      "rating_count": 13,
+      "has_tmdb_id": true
+    },
+    {
+      "movielens_id": "70301",
+      "title": "Obsessed (2009)",
+      "year": 2009,
+      "tmdb_id": 17335,
+      "imdb_id": "tt1198138",
+      "genres": [
+        "Crime",
+        "Drama",
+        "Thriller"
+      ],
+      "tag_count": 0,
+      "rating_count": 1,
+      "has_tmdb_id": true
+    },
+    {
+      "movielens_id": "745",
+      "title": "Wallace & Gromit: A Close Shave (1995)",
+      "year": 1995,
+      "tmdb_id": 532,
+      "imdb_id": "tt0112691",
+      "genres": [
+        "Animation",
+        "Children",
+        "Comedy"
+      ],
+      "tag_count": 1,
+      "rating_count": 48,
+      "has_tmdb_id": true
+    },
+    {
+      "movielens_id": "78142",
+      "title": "Baar\u00eca (2009)",
+      "year": 2009,
+      "tmdb_id": 25846,
+      "imdb_id": "tt1081935",
+      "genres": [
+        "Comedy",
+        "Drama",
+        "War"
+      ],
+      "tag_count": 0,
+      "rating_count": 1,
+      "has_tmdb_id": true
+    },
+    {
+      "movielens_id": "79091",
+      "title": "Despicable Me (2010)",
+      "year": 2010,
+      "tmdb_id": 20352,
+      "imdb_id": "tt1323594",
+      "genres": [
+        "Animation",
+        "Children",
+        "Comedy",
+        "Crime"
+      ],
+      "tag_count": 0,
+      "rating_count": 38,
+      "has_tmdb_id": true
+    },
+    {
+      "movielens_id": "791",
+      "title": "Last Klezmer: Leopold Kozlowski, His Life and Music, The (1994)",
+      "year": 1994,
+      "tmdb_id": null,
+      "imdb_id": "tt0113610",
+      "genres": [
+        "Documentary"
+      ],
+      "tag_count": 0,
+      "rating_count": 1,
+      "has_tmdb_id": false
+    },
+    {
+      "movielens_id": "79536",
+      "title": "Hellsinki (R\u00f6\u00f6peri) (2009)",
+      "year": 2009,
+      "tmdb_id": 25335,
+      "imdb_id": "tt1227536",
+      "genres": [
+        "Crime"
+      ],
+      "tag_count": 0,
+      "rating_count": 1,
+      "has_tmdb_id": true
+    },
+    {
+      "movielens_id": "8712",
+      "title": "My Favorite Wife (1940)",
+      "year": 1940,
+      "tmdb_id": 41463,
+      "imdb_id": "tt0029284",
+      "genres": [
+        "Comedy",
+        "Romance"
+      ],
+      "tag_count": 0,
+      "rating_count": 1,
+      "has_tmdb_id": true
+    },
+    {
+      "movielens_id": "95497",
+      "title": "Dragon Ball Z: Super Android 13! (Doragon b\u00f4ru Z 7: Kyokugen batoru!! San dai s\u00fbp\u00e2 saiyajin) (1992)",
+      "year": 1992,
+      "tmdb_id": 39104,
+      "imdb_id": "tt0142241",
+      "genres": [
+        "Action",
+        "Adventure",
+        "Animation"
+      ],
+      "tag_count": 0,
+      "rating_count": 2,
+      "has_tmdb_id": true
+    }
+  ]
+}

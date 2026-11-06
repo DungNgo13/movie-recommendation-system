@@ -1,0 +1,38 @@
+{
+  "report_type": "phase8d_full_catalog_estimate",
+  "generated_at": "2026-11-06T02:56:15.904299+00:00",
+  "catalog": {
+    "total_movies": 9742,
+    "with_valid_tmdb_id": 9734,
+    "without_tmdb_id": 8,
+    "tmdb_coverage_pct": 99.9179
+  },
+  "request_estimate": {
+    "base_requests": 19468,
+    "estimated_retries": 973,
+    "total_estimated_requests": 20441,
+    "requests_per_movie": 2
+  },
+  "duration_estimate": {
+    "rate_limit_rps": 4.0,
+    "estimated_seconds": 5110.2,
+    "estimated_minutes": 85.2,
+    "estimated_hours": 1.42
+  },
+  "storage_estimate": {
+    "per_movie_bytes": 5120,
+    "total_bytes": 49838080,
+    "total_mb": 47.53
+  },
+  "recommended_checkpoint_size": 100,
+  "recovery_strategy": "Checkpoint after each movie. On interruption, resume from last checkpoint. Already-retrieved movies are skipped.",
+  "compliance_notes": "TMDB API rate limit: 40 requests per 10 seconds (~4 RPS). Attribution required per TMDB Terms of Service. Data used for academic research only.",
+  "minimum_useful_coverage": {
+    "recommendation_experiment": "\u2265500 movies (5% catalog) for exploratory analysis",
+    "confirmatory_study": "\u22652000 movies (20% catalog) with stratified sampling",
+    "full_catalog": "9734 movies (all mapped)",
+    "note": "These are engineering estimates, not guaranteed accuracy thresholds."
+  },
+  "approval_required": true,
+  "approval_note": "A large-scale live retrieval requires separate approval after the 40-movie pilot results are reviewed."
+}

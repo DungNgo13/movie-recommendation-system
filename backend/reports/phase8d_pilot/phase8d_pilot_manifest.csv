@@ -1,0 +1,41 @@
+movielens_id,title,year,tmdb_id,imdb_id,genres,tag_count,rating_count,has_tmdb_id
+1029,Dumbo (1941),1941,11360,tt0033563,Animation|Children|Drama|Musical,1,35,True
+106782,"Wolf of Wall Street, The (2013)",2013,106646,tt0993846,Comedy|Crime|Drama,5,54,True
+110826,Brick Mansions (2014),2014,254473,tt1430612,Action|Crime|Drama,0,1,True
+112788,Sex Tape (2014),2014,225886,tt1956620,Comedy,0,5,True
+135,Down Periscope (1996),1996,9101,tt0116130,Comedy,0,31,True
+1493,Love and Other Catastrophes (1996),1996,76996,tt0116931,Romance,0,1,True
+151317,Maggie's Plan (2015),2015,312669,tt3471098,Comedy,0,1,True
+152077,10 Cloverfield Lane (2016),2016,333371,tt1179933,Thriller,2,14,True
+1891,"Ugly, The (1997)",1997,40961,tt0120401,Horror|Thriller,0,1,True
+2080,Lady and the Tramp (1955),1955,10340,tt0048280,Animation|Children|Comedy|Romance,1,55,True
+2282,Pecker (1998),1998,11855,tt0126604,Comedy|Drama,0,6,True
+2342,Hard Core Logo (1996),1996,21589,tt0116488,Comedy|Drama,0,2,True
+2478,¡Three Amigos! (1986),1986,8388,tt0092086,Comedy|Western,0,26,True
+2730,Barry Lyndon (1975),1975,3175,tt0072684,Drama|Romance|War,0,7,True
+284,New York Cop (Nyû Yôku no koppu) (1993),1993,109560,tt0117169,Action|Crime,0,1,True
+2851,Saturn 3 (1980),1980,,tt0081454,Adventure|Sci-Fi|Thriller,0,4,False
+3,Grumpier Old Men (1995),1995,15602,tt0113228,Comedy|Romance,2,52,True
+3152,"Last Picture Show, The (1971)",1971,25188,tt0067328,Drama,1,8,True
+32600,Eros (2004),2004,,tt0377059,Drama,0,1,False
+3385,Volunteers (1985),1985,19259,tt0090274,Comedy,1,8,True
+3825,Coyote Ugly (2000),2000,6282,tt0200550,Comedy|Drama|Romance,0,29,True
+414,"Air Up There, The (1994)",1994,46094,tt0109067,Comedy,0,6,True
+4998,"Defiant Ones, The (1958)",1958,11414,tt0051525,Adventure|Crime|Drama|Thriller,1,1,True
+57147,Cassandra's Dream (2007),2007,4787,tt0795493,Crime|Drama|Thriller,0,1,True
+5791,Frida (2002),2002,1360,tt0120679,Drama|Romance,1,16,True
+58351,City of Men (Cidade dos Homens) (2007),2007,7343,tt0870090,Drama,0,1,True
+59220,Outsourced (2006),2006,7861,tt0425326,Comedy|Romance,0,1,True
+6123,Sunless (Sans Soleil) (1983),1983,1563,tt0084628,Documentary,0,1,True
+6289,Ghosts of the Abyss (2003),2003,24982,tt0297144,Documentary|IMAX,1,1,True
+67534,Big Stan (2007),2007,13161,tt0490086,Comedy,0,2,True
+6807,Monty Python's The Meaning of Life (1983),1983,4543,tt0085959,Comedy,1,40,True
+6944,Father of the Bride (1991),1991,11846,tt0101862,Comedy,2,13,True
+70301,Obsessed (2009),2009,17335,tt1198138,Crime|Drama|Thriller,0,1,True
+745,Wallace & Gromit: A Close Shave (1995),1995,532,tt0112691,Animation|Children|Comedy,1,48,True
+78142,Baarìa (2009),2009,25846,tt1081935,Comedy|Drama|War,0,1,True
+79091,Despicable Me (2010),2010,20352,tt1323594,Animation|Children|Comedy|Crime,0,38,True
+791,"Last Klezmer: Leopold Kozlowski, His Life and Music, The (1994)",1994,,tt0113610,Documentary,0,1,False
+79536,Hellsinki (Rööperi) (2009),2009,25335,tt1227536,Crime,0,1,True
+8712,My Favorite Wife (1940),1940,41463,tt0029284,Comedy|Romance,0,1,True
+95497,Dragon Ball Z: Super Android 13! (Doragon bôru Z 7: Kyokugen batoru!! San dai sûpâ saiyajin) (1992),1992,39104,tt0142241,Action|Adventure|Animation,0,2,True
