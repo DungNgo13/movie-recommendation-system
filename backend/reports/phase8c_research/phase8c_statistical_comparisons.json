@@ -1,0 +1,1973 @@
+{
+  "rq1_tfidf_enriched_vs_original": {
+    "research_question": "Does enriching metadata improve TF-IDF v1.1 quality?",
+    "ndcg_at_5": {
+      "sample_size": 587,
+      "mean_baseline": 0.005987,
+      "mean_variant": 0.005987,
+      "mean_difference": 0.0,
+      "std_difference": 0.0,
+      "cohens_d": 0.0,
+      "t_statistic": 0.0,
+      "p_value_ttest": 1.0,
+      "wilcoxon_stat": 0.0,
+      "p_value_wilcoxon": 1.0,
+      "bootstrap_ci_95": [
+        0.0,
+        0.0
+      ],
+      "win_tie_loss": {
+        "wins": 0,
+        "ties": 587,
+        "losses": 0
+      },
+      "statistically_significant_05": false,
+      "statistically_significant_001": false,
+      "evidence_status": "IDENTICAL_PREDICTIONS"
+    },
+    "precision_at_5": {
+      "sample_size": 587,
+      "mean_baseline": 0.005111,
+      "mean_variant": 0.005111,
+      "mean_difference": 0.0,
+      "std_difference": 0.0,
+      "cohens_d": 0.0,
+      "t_statistic": 0.0,
+      "p_value_ttest": 1.0,
+      "wilcoxon_stat": 0.0,
+      "p_value_wilcoxon": 1.0,
+      "bootstrap_ci_95": [
+        0.0,
+        0.0
+      ],
+      "win_tie_loss": {
+        "wins": 0,
+        "ties": 587,
+        "losses": 0
+      },
+      "statistically_significant_05": false,
+      "statistically_significant_001": false,
+      "evidence_status": "IDENTICAL_PREDICTIONS"
+    },
+    "recall_at_5": {
+      "sample_size": 587,
+      "mean_baseline": 0.003798,
+      "mean_variant": 0.003798,
+      "mean_difference": 0.0,
+      "std_difference": 0.0,
+      "cohens_d": 0.0,
+      "t_statistic": 0.0,
+      "p_value_ttest": 1.0,
+      "wilcoxon_stat": 0.0,
+      "p_value_wilcoxon": 1.0,
+      "bootstrap_ci_95": [
+        0.0,
+        0.0
+      ],
+      "win_tie_loss": {
+        "wins": 0,
+        "ties": 587,
+        "losses": 0
+      },
+      "statistically_significant_05": false,
+      "statistically_significant_001": false,
+      "evidence_status": "IDENTICAL_PREDICTIONS"
+    },
+    "ndcg_at_10": {
+      "sample_size": 587,
+      "mean_baseline": 0.007153,
+      "mean_variant": 0.007153,
+      "mean_difference": 0.0,
+      "std_difference": 0.0,
+      "cohens_d": 0.0,
+      "t_statistic": 0.0,
+      "p_value_ttest": 1.0,
+      "wilcoxon_stat": 0.0,
+      "p_value_wilcoxon": 1.0,
+      "bootstrap_ci_95": [
+        0.0,
+        0.0
+      ],
+      "win_tie_loss": {
+        "wins": 0,
+        "ties": 587,
+        "losses": 0
+      },
+      "statistically_significant_05": false,
+      "statistically_significant_001": false,
+      "evidence_status": "IDENTICAL_PREDICTIONS"
+    },
+    "precision_at_10": {
+      "sample_size": 587,
+      "mean_baseline": 0.0046,
+      "mean_variant": 0.0046,
+      "mean_difference": 0.0,
+      "std_difference": 0.0,
+      "cohens_d": 0.0,
+      "t_statistic": 0.0,
+      "p_value_ttest": 1.0,
+      "wilcoxon_stat": 0.0,
+      "p_value_wilcoxon": 1.0,
+      "bootstrap_ci_95": [
+        0.0,
+        0.0
+      ],
+      "win_tie_loss": {
+        "wins": 0,
+        "ties": 587,
+        "losses": 0
+      },
+      "statistically_significant_05": false,
+      "statistically_significant_001": false,
+      "evidence_status": "IDENTICAL_PREDICTIONS"
+    },
+    "recall_at_10": {
+      "sample_size": 587,
+      "mean_baseline": 0.006896,
+      "mean_variant": 0.006896,
+      "mean_difference": 0.0,
+      "std_difference": 0.0,
+      "cohens_d": 0.0,
+      "t_statistic": 0.0,
+      "p_value_ttest": 1.0,
+      "wilcoxon_stat": 0.0,
+      "p_value_wilcoxon": 1.0,
+      "bootstrap_ci_95": [
+        0.0,
+        0.0
+      ],
+      "win_tie_loss": {
+        "wins": 0,
+        "ties": 587,
+        "losses": 0
+      },
+      "statistically_significant_05": false,
+      "statistically_significant_001": false,
+      "evidence_status": "IDENTICAL_PREDICTIONS"
+    },
+    "ndcg_at_20": {
+      "sample_size": 587,
+      "mean_baseline": 0.010476,
+      "mean_variant": 0.010476,
+      "mean_difference": 0.0,
+      "std_difference": 0.0,
+      "cohens_d": 0.0,
+      "t_statistic": 0.0,
+      "p_value_ttest": 1.0,
+      "wilcoxon_stat": 0.0,
+      "p_value_wilcoxon": 1.0,
+      "bootstrap_ci_95": [
+        0.0,
+        0.0
+      ],
+      "win_tie_loss": {
+        "wins": 0,
+        "ties": 587,
+        "losses": 0
+      },
+      "statistically_significant_05": false,
+      "statistically_significant_001": false,
+      "evidence_status": "IDENTICAL_PREDICTIONS"
+    },
+    "precision_at_20": {
+      "sample_size": 587,
+      "mean_baseline": 0.005451,
+      "mean_variant": 0.005451,
+      "mean_difference": 0.0,
+      "std_difference": 0.0,
+      "cohens_d": 0.0,
+      "t_statistic": 0.0,
+      "p_value_ttest": 1.0,
+      "wilcoxon_stat": 0.0,
+      "p_value_wilcoxon": 1.0,
+      "bootstrap_ci_95": [
+        0.0,
+        0.0
+      ],
+      "win_tie_loss": {
+        "wins": 0,
+        "ties": 587,
+        "losses": 0
+      },
+      "statistically_significant_05": false,
+      "statistically_significant_001": false,
+      "evidence_status": "IDENTICAL_PREDICTIONS"
+    },
+    "recall_at_20": {
+      "sample_size": 587,
+      "mean_baseline": 0.015573,
+      "mean_variant": 0.015573,
+      "mean_difference": 0.0,
+      "std_difference": 0.0,
+      "cohens_d": 0.0,
+      "t_statistic": 0.0,
+      "p_value_ttest": 1.0,
+      "wilcoxon_stat": 0.0,
+      "p_value_wilcoxon": 1.0,
+      "bootstrap_ci_95": [
+        0.0,
+        0.0
+      ],
+      "win_tie_loss": {
+        "wins": 0,
+        "ties": 587,
+        "losses": 0
+      },
+      "statistically_significant_05": false,
+      "statistically_significant_001": false,
+      "evidence_status": "IDENTICAL_PREDICTIONS"
+    }
+  },
+  "rq1_semantic_en_enriched_vs_original": {
+    "research_question": "Does enriching metadata improve Semantic-EN quality?",
+    "ndcg_at_5": {
+      "sample_size": 587,
+      "mean_baseline": 0.003339,
+      "mean_variant": 0.003339,
+      "mean_difference": 0.0,
+      "std_difference": 0.0,
+      "cohens_d": 0.0,
+      "t_statistic": 0.0,
+      "p_value_ttest": 1.0,
+      "wilcoxon_stat": 0.0,
+      "p_value_wilcoxon": 1.0,
+      "bootstrap_ci_95": [
+        0.0,
+        0.0
+      ],
+      "win_tie_loss": {
+        "wins": 0,
+        "ties": 587,
+        "losses": 0
+      },
+      "statistically_significant_05": false,
+      "statistically_significant_001": false,
+      "evidence_status": "IDENTICAL_PREDICTIONS"
+    },
+    "precision_at_5": {
+      "sample_size": 587,
+      "mean_baseline": 0.003066,
+      "mean_variant": 0.003066,
+      "mean_difference": 0.0,
+      "std_difference": 0.0,
+      "cohens_d": 0.0,
+      "t_statistic": 0.0,
+      "p_value_ttest": 1.0,
+      "wilcoxon_stat": 0.0,
+      "p_value_wilcoxon": 1.0,
+      "bootstrap_ci_95": [
+        0.0,
+        0.0
+      ],
+      "win_tie_loss": {
+        "wins": 0,
+        "ties": 587,
+        "losses": 0
+      },
+      "statistically_significant_05": false,
+      "statistically_significant_001": false,
+      "evidence_status": "IDENTICAL_PREDICTIONS"
+    },
+    "recall_at_5": {
+      "sample_size": 587,
+      "mean_baseline": 0.0009,
+      "mean_variant": 0.0009,
+      "mean_difference": 0.0,
+      "std_difference": 0.0,
+      "cohens_d": 0.0,
+      "t_statistic": 0.0,
+      "p_value_ttest": 1.0,
+      "wilcoxon_stat": 0.0,
+      "p_value_wilcoxon": 1.0,
+      "bootstrap_ci_95": [
+        0.0,
+        0.0
+      ],
+      "win_tie_loss": {
+        "wins": 0,
+        "ties": 587,
+        "losses": 0
+      },
+      "statistically_significant_05": false,
+      "statistically_significant_001": false,
+      "evidence_status": "IDENTICAL_PREDICTIONS"
+    },
+    "ndcg_at_10": {
+      "sample_size": 587,
+      "mean_baseline": 0.00493,
+      "mean_variant": 0.00493,
+      "mean_difference": 0.0,
+      "std_difference": 0.0,
+      "cohens_d": 0.0,
+      "t_statistic": 0.0,
+      "p_value_ttest": 1.0,
+      "wilcoxon_stat": 0.0,
+      "p_value_wilcoxon": 1.0,
+      "bootstrap_ci_95": [
+        0.0,
+        0.0
+      ],
+      "win_tie_loss": {
+        "wins": 0,
+        "ties": 587,
+        "losses": 0
+      },
+      "statistically_significant_05": false,
+      "statistically_significant_001": false,
+      "evidence_status": "IDENTICAL_PREDICTIONS"
+    },
+    "precision_at_10": {
+      "sample_size": 587,
+      "mean_baseline": 0.004089,
+      "mean_variant": 0.004089,
+      "mean_difference": 0.0,
+      "std_difference": 0.0,
+      "cohens_d": 0.0,
+      "t_statistic": 0.0,
+      "p_value_ttest": 1.0,
+      "wilcoxon_stat": 0.0,
+      "p_value_wilcoxon": 1.0,
+      "bootstrap_ci_95": [
+        0.0,
+        0.0
+      ],
+      "win_tie_loss": {
+        "wins": 0,
+        "ties": 587,
+        "losses": 0
+      },
+      "statistically_significant_05": false,
+      "statistically_significant_001": false,
+      "evidence_status": "IDENTICAL_PREDICTIONS"
+    },
+    "recall_at_10": {
+      "sample_size": 587,
+      "mean_baseline": 0.005347,
+      "mean_variant": 0.005347,
+      "mean_difference": 0.0,
+      "std_difference": 0.0,
+      "cohens_d": 0.0,
+      "t_statistic": 0.0,
+      "p_value_ttest": 1.0,
+      "wilcoxon_stat": 0.0,
+      "p_value_wilcoxon": 1.0,
+      "bootstrap_ci_95": [
+        0.0,
+        0.0
+      ],
+      "win_tie_loss": {
+        "wins": 0,
+        "ties": 587,
+        "losses": 0
+      },
+      "statistically_significant_05": false,
+      "statistically_significant_001": false,
+      "evidence_status": "IDENTICAL_PREDICTIONS"
+    },
+    "ndcg_at_20": {
+      "sample_size": 587,
+      "mean_baseline": 0.006573,
+      "mean_variant": 0.006573,
+      "mean_difference": 0.0,
+      "std_difference": 0.0,
+      "cohens_d": 0.0,
+      "t_statistic": 0.0,
+      "p_value_ttest": 1.0,
+      "wilcoxon_stat": 0.0,
+      "p_value_wilcoxon": 1.0,
+      "bootstrap_ci_95": [
+        0.0,
+        0.0
+      ],
+      "win_tie_loss": {
+        "wins": 0,
+        "ties": 587,
+        "losses": 0
+      },
+      "statistically_significant_05": false,
+      "statistically_significant_001": false,
+      "evidence_status": "IDENTICAL_PREDICTIONS"
+    },
+    "precision_at_20": {
+      "sample_size": 587,
+      "mean_baseline": 0.003748,
+      "mean_variant": 0.003748,
+      "mean_difference": 0.0,
+      "std_difference": 0.0,
+      "cohens_d": 0.0,
+      "t_statistic": 0.0,
+      "p_value_ttest": 1.0,
+      "wilcoxon_stat": 0.0,
+      "p_value_wilcoxon": 1.0,
+      "bootstrap_ci_95": [
+        0.0,
+        0.0
+      ],
+      "win_tie_loss": {
+        "wins": 0,
+        "ties": 587,
+        "losses": 0
+      },
+      "statistically_significant_05": false,
+      "statistically_significant_001": false,
+      "evidence_status": "IDENTICAL_PREDICTIONS"
+    },
+    "recall_at_20": {
+      "sample_size": 587,
+      "mean_baseline": 0.010709,
+      "mean_variant": 0.010709,
+      "mean_difference": 0.0,
+      "std_difference": 0.0,
+      "cohens_d": 0.0,
+      "t_statistic": 0.0,
+      "p_value_ttest": 1.0,
+      "wilcoxon_stat": 0.0,
+      "p_value_wilcoxon": 1.0,
+      "bootstrap_ci_95": [
+        0.0,
+        0.0
+      ],
+      "win_tie_loss": {
+        "wins": 0,
+        "ties": 587,
+        "losses": 0
+      },
+      "statistically_significant_05": false,
+      "statistically_significant_001": false,
+      "evidence_status": "IDENTICAL_PREDICTIONS"
+    }
+  },
+  "rq1_semantic_multi_enriched_vs_original": {
+    "research_question": "Does enriching metadata improve Semantic-Multi quality?",
+    "ndcg_at_5": {
+      "sample_size": 587,
+      "mean_baseline": 0.002342,
+      "mean_variant": 0.002342,
+      "mean_difference": 0.0,
+      "std_difference": 0.0,
+      "cohens_d": 0.0,
+      "t_statistic": 0.0,
+      "p_value_ttest": 1.0,
+      "wilcoxon_stat": 0.0,
+      "p_value_wilcoxon": 1.0,
+      "bootstrap_ci_95": [
+        0.0,
+        0.0
+      ],
+      "win_tie_loss": {
+        "wins": 0,
+        "ties": 587,
+        "losses": 0
+      },
+      "statistically_significant_05": false,
+      "statistically_significant_001": false,
+      "evidence_status": "IDENTICAL_PREDICTIONS"
+    },
+    "precision_at_5": {
+      "sample_size": 587,
+      "mean_baseline": 0.002726,
+      "mean_variant": 0.002726,
+      "mean_difference": 0.0,
+      "std_difference": 0.0,
+      "cohens_d": 0.0,
+      "t_statistic": 0.0,
+      "p_value_ttest": 1.0,
+      "wilcoxon_stat": 0.0,
+      "p_value_wilcoxon": 1.0,
+      "bootstrap_ci_95": [
+        0.0,
+        0.0
+      ],
+      "win_tie_loss": {
+        "wins": 0,
+        "ties": 587,
+        "losses": 0
+      },
+      "statistically_significant_05": false,
+      "statistically_significant_001": false,
+      "evidence_status": "IDENTICAL_PREDICTIONS"
+    },
+    "recall_at_5": {
+      "sample_size": 587,
+      "mean_baseline": 0.000951,
+      "mean_variant": 0.000951,
+      "mean_difference": 0.0,
+      "std_difference": 0.0,
+      "cohens_d": 0.0,
+      "t_statistic": 0.0,
+      "p_value_ttest": 1.0,
+      "wilcoxon_stat": 0.0,
+      "p_value_wilcoxon": 1.0,
+      "bootstrap_ci_95": [
+        0.0,
+        0.0
+      ],
+      "win_tie_loss": {
+        "wins": 0,
+        "ties": 587,
+        "losses": 0
+      },
+      "statistically_significant_05": false,
+      "statistically_significant_001": false,
+      "evidence_status": "IDENTICAL_PREDICTIONS"
+    },
+    "ndcg_at_10": {
+      "sample_size": 587,
+      "mean_baseline": 0.002921,
+      "mean_variant": 0.002921,
+      "mean_difference": 0.0,
+      "std_difference": 0.0,
+      "cohens_d": 0.0,
+      "t_statistic": 0.0,
+      "p_value_ttest": 1.0,
+      "wilcoxon_stat": 0.0,
+      "p_value_wilcoxon": 1.0,
+      "bootstrap_ci_95": [
+        0.0,
+        0.0
+      ],
+      "win_tie_loss": {
+        "wins": 0,
+        "ties": 587,
+        "losses": 0
+      },
+      "statistically_significant_05": false,
+      "statistically_significant_001": false,
+      "evidence_status": "IDENTICAL_PREDICTIONS"
+    },
+    "precision_at_10": {
+      "sample_size": 587,
+      "mean_baseline": 0.002726,
+      "mean_variant": 0.002726,
+      "mean_difference": 0.0,
+      "std_difference": 0.0,
+      "cohens_d": 0.0,
+      "t_statistic": 0.0,
+      "p_value_ttest": 1.0,
+      "wilcoxon_stat": 0.0,
+      "p_value_wilcoxon": 1.0,
+      "bootstrap_ci_95": [
+        0.0,
+        0.0
+      ],
+      "win_tie_loss": {
+        "wins": 0,
+        "ties": 587,
+        "losses": 0
+      },
+      "statistically_significant_05": false,
+      "statistically_significant_001": false,
+      "evidence_status": "IDENTICAL_PREDICTIONS"
+    },
+    "recall_at_10": {
+      "sample_size": 587,
+      "mean_baseline": 0.003193,
+      "mean_variant": 0.003193,
+      "mean_difference": 0.0,
+      "std_difference": 0.0,
+      "cohens_d": 0.0,
+      "t_statistic": 0.0,
+      "p_value_ttest": 1.0,
+      "wilcoxon_stat": 0.0,
+      "p_value_wilcoxon": 1.0,
+      "bootstrap_ci_95": [
+        0.0,
+        0.0
+      ],
+      "win_tie_loss": {
+        "wins": 0,
+        "ties": 587,
+        "losses": 0
+      },
+      "statistically_significant_05": false,
+      "statistically_significant_001": false,
+      "evidence_status": "IDENTICAL_PREDICTIONS"
+    },
+    "ndcg_at_20": {
+      "sample_size": 587,
+      "mean_baseline": 0.004508,
+      "mean_variant": 0.004508,
+      "mean_difference": 0.0,
+      "std_difference": 0.0,
+      "cohens_d": 0.0,
+      "t_statistic": 0.0,
+      "p_value_ttest": 1.0,
+      "wilcoxon_stat": 0.0,
+      "p_value_wilcoxon": 1.0,
+      "bootstrap_ci_95": [
+        0.0,
+        0.0
+      ],
+      "win_tie_loss": {
+        "wins": 0,
+        "ties": 587,
+        "losses": 0
+      },
+      "statistically_significant_05": false,
+      "statistically_significant_001": false,
+      "evidence_status": "IDENTICAL_PREDICTIONS"
+    },
+    "precision_at_20": {
+      "sample_size": 587,
+      "mean_baseline": 0.002896,
+      "mean_variant": 0.002896,
+      "mean_difference": 0.0,
+      "std_difference": 0.0,
+      "cohens_d": 0.0,
+      "t_statistic": 0.0,
+      "p_value_ttest": 1.0,
+      "wilcoxon_stat": 0.0,
+      "p_value_wilcoxon": 1.0,
+      "bootstrap_ci_95": [
+        0.0,
+        0.0
+      ],
+      "win_tie_loss": {
+        "wins": 0,
+        "ties": 587,
+        "losses": 0
+      },
+      "statistically_significant_05": false,
+      "statistically_significant_001": false,
+      "evidence_status": "IDENTICAL_PREDICTIONS"
+    },
+    "recall_at_20": {
+      "sample_size": 587,
+      "mean_baseline": 0.007275,
+      "mean_variant": 0.007275,
+      "mean_difference": 0.0,
+      "std_difference": 0.0,
+      "cohens_d": 0.0,
+      "t_statistic": 0.0,
+      "p_value_ttest": 1.0,
+      "wilcoxon_stat": 0.0,
+      "p_value_wilcoxon": 1.0,
+      "bootstrap_ci_95": [
+        0.0,
+        0.0
+      ],
+      "win_tie_loss": {
+        "wins": 0,
+        "ties": 587,
+        "losses": 0
+      },
+      "statistically_significant_05": false,
+      "statistically_significant_001": false,
+      "evidence_status": "IDENTICAL_PREDICTIONS"
+    }
+  },
+  "rq2_tfidf_vs_semantic_en_original": {
+    "research_question": "TF-IDF v1.1 vs Semantic-EN on original metadata",
+    "ndcg_at_5": {
+      "sample_size": 587,
+      "mean_baseline": 0.005987,
+      "mean_variant": 0.003339,
+      "mean_difference": -0.002648,
+      "std_difference": 0.048413,
+      "cohens_d": -0.0547,
+      "t_statistic": -1.325,
+      "p_value_ttest": 0.18568802516671973,
+      "wilcoxon_stat": 96.0,
+      "p_value_wilcoxon": 0.19893983413266747,
+      "bootstrap_ci_95": [
+        -0.006744,
+        0.001242
+      ],
+      "win_tie_loss": {
+        "wins": 9,
+        "ties": 564,
+        "losses": 14
+      },
+      "statistically_significant_05": false,
+      "statistically_significant_001": false,
+      "evidence_status": "SUFFICIENT_SAMPLE"
+    },
+    "precision_at_5": {
+      "sample_size": 587,
+      "mean_baseline": 0.005111,
+      "mean_variant": 0.003066,
+      "mean_difference": -0.002044,
+      "std_difference": 0.038698,
+      "cohens_d": -0.0528,
+      "t_statistic": -1.2799,
+      "p_value_ttest": 0.20108696182202115,
+      "wilcoxon_stat": 92.0,
+      "p_value_wilcoxon": 0.2008251226951454,
+      "bootstrap_ci_95": [
+        -0.005111,
+        0.001022
+      ],
+      "win_tie_loss": {
+        "wins": 8,
+        "ties": 565,
+        "losses": 14
+      },
+      "statistically_significant_05": false,
+      "statistically_significant_001": false,
+      "evidence_status": "SUFFICIENT_SAMPLE"
+    },
+    "recall_at_5": {
+      "sample_size": 587,
+      "mean_baseline": 0.003798,
+      "mean_variant": 0.0009,
+      "mean_difference": -0.002898,
+      "std_difference": 0.030278,
+      "cohens_d": -0.0957,
+      "t_statistic": -2.3192,
+      "p_value_ttest": 0.020725497573911164,
+      "wilcoxon_stat": 59.5,
+      "p_value_wilcoxon": 0.029432949039708712,
+      "bootstrap_ci_95": [
+        -0.005623,
+        -0.000678
+      ],
+      "win_tie_loss": {
+        "wins": 8,
+        "ties": 565,
+        "losses": 14
+      },
+      "statistically_significant_05": true,
+      "statistically_significant_001": false,
+      "evidence_status": "SUFFICIENT_SAMPLE"
+    },
+    "ndcg_at_10": {
+      "sample_size": 587,
+      "mean_baseline": 0.007153,
+      "mean_variant": 0.00493,
+      "mean_difference": -0.002222,
+      "std_difference": 0.045711,
+      "cohens_d": -0.0486,
+      "t_statistic": -1.178,
+      "p_value_ttest": 0.23929310659221328,
+      "wilcoxon_stat": 424.5,
+      "p_value_wilcoxon": 0.4104517171869837,
+      "bootstrap_ci_95": [
+        -0.006019,
+        0.001196
+      ],
+      "win_tie_loss": {
+        "wins": 20,
+        "ties": 543,
+        "losses": 24
+      },
+      "statistically_significant_05": false,
+      "statistically_significant_001": false,
+      "evidence_status": "SUFFICIENT_SAMPLE"
+    },
+    "precision_at_10": {
+      "sample_size": 587,
+      "mean_baseline": 0.0046,
+      "mean_variant": 0.004089,
+      "mean_difference": -0.000511,
+      "std_difference": 0.027707,
+      "cohens_d": -0.0184,
+      "t_statistic": -0.4469,
+      "p_value_ttest": 0.6551061452377944,
+      "wilcoxon_stat": 420.0,
+      "p_value_wilcoxon": 0.6547208460185769,
+      "bootstrap_ci_95": [
+        -0.002555,
+        0.001533
+      ],
+      "win_tie_loss": {
+        "wins": 20,
+        "ties": 545,
+        "losses": 22
+      },
+      "statistically_significant_05": false,
+      "statistically_significant_001": false,
+      "evidence_status": "SUFFICIENT_SAMPLE"
+    },
+    "recall_at_10": {
+      "sample_size": 587,
+      "mean_baseline": 0.006896,
+      "mean_variant": 0.005347,
+      "mean_difference": -0.001549,
+      "std_difference": 0.062559,
+      "cohens_d": -0.0248,
+      "t_statistic": -0.5998,
+      "p_value_ttest": 0.5488498220570708,
+      "wilcoxon_stat": 384.5,
+      "p_value_wilcoxon": 0.4020402729494482,
+      "bootstrap_ci_95": [
+        -0.006459,
+        0.003546
+      ],
+      "win_tie_loss": {
+        "wins": 20,
+        "ties": 545,
+        "losses": 22
+      },
+      "statistically_significant_05": false,
+      "statistically_significant_001": false,
+      "evidence_status": "SUFFICIENT_SAMPLE"
+    },
+    "ndcg_at_20": {
+      "sample_size": 587,
+      "mean_baseline": 0.010476,
+      "mean_variant": 0.006573,
+      "mean_difference": -0.003903,
+      "std_difference": 0.047398,
+      "cohens_d": -0.0824,
+      "t_statistic": -1.9952,
+      "p_value_ttest": 0.04648355070007641,
+      "wilcoxon_stat": 1464.5,
+      "p_value_wilcoxon": 0.0804205796103918,
+      "bootstrap_ci_95": [
+        -0.007747,
+        -0.000297
+      ],
+      "win_tie_loss": {
+        "wins": 35,
+        "ties": 501,
+        "losses": 51
+      },
+      "statistically_significant_05": true,
+      "statistically_significant_001": false,
+      "evidence_status": "SUFFICIENT_SAMPLE"
+    },
+    "precision_at_20": {
+      "sample_size": 587,
+      "mean_baseline": 0.005451,
+      "mean_variant": 0.003748,
+      "mean_difference": -0.001704,
+      "std_difference": 0.020791,
+      "cohens_d": -0.0819,
+      "t_statistic": -1.9853,
+      "p_value_ttest": 0.047582378152719075,
+      "wilcoxon_stat": 1387.5,
+      "p_value_wilcoxon": 0.04793727336502236,
+      "bootstrap_ci_95": [
+        -0.003407,
+        -8.5e-05
+      ],
+      "win_tie_loss": {
+        "wins": 33,
+        "ties": 503,
+        "losses": 51
+      },
+      "statistically_significant_05": true,
+      "statistically_significant_001": false,
+      "evidence_status": "SUFFICIENT_SAMPLE"
+    },
+    "recall_at_20": {
+      "sample_size": 587,
+      "mean_baseline": 0.015573,
+      "mean_variant": 0.010709,
+      "mean_difference": -0.004864,
+      "std_difference": 0.082911,
+      "cohens_d": -0.0587,
+      "t_statistic": -1.4214,
+      "p_value_ttest": 0.15573687087300334,
+      "wilcoxon_stat": 1308.5,
+      "p_value_wilcoxon": 0.03351153789580112,
+      "bootstrap_ci_95": [
+        -0.011491,
+        0.001873
+      ],
+      "win_tie_loss": {
+        "wins": 33,
+        "ties": 503,
+        "losses": 51
+      },
+      "statistically_significant_05": false,
+      "statistically_significant_001": false,
+      "evidence_status": "SUFFICIENT_SAMPLE"
+    }
+  },
+  "rq2_tfidf_vs_semantic_en_enriched": {
+    "research_question": "TF-IDF v1.1 vs Semantic-EN on enriched metadata",
+    "ndcg_at_5": {
+      "sample_size": 587,
+      "mean_baseline": 0.005987,
+      "mean_variant": 0.003339,
+      "mean_difference": -0.002648,
+      "std_difference": 0.048413,
+      "cohens_d": -0.0547,
+      "t_statistic": -1.325,
+      "p_value_ttest": 0.18568802516671973,
+      "wilcoxon_stat": 96.0,
+      "p_value_wilcoxon": 0.19893983413266747,
+      "bootstrap_ci_95": [
+        -0.006744,
+        0.001242
+      ],
+      "win_tie_loss": {
+        "wins": 9,
+        "ties": 564,
+        "losses": 14
+      },
+      "statistically_significant_05": false,
+      "statistically_significant_001": false,
+      "evidence_status": "SUFFICIENT_SAMPLE"
+    },
+    "precision_at_5": {
+      "sample_size": 587,
+      "mean_baseline": 0.005111,
+      "mean_variant": 0.003066,
+      "mean_difference": -0.002044,
+      "std_difference": 0.038698,
+      "cohens_d": -0.0528,
+      "t_statistic": -1.2799,
+      "p_value_ttest": 0.20108696182202115,
+      "wilcoxon_stat": 92.0,
+      "p_value_wilcoxon": 0.2008251226951454,
+      "bootstrap_ci_95": [
+        -0.005111,
+        0.001022
+      ],
+      "win_tie_loss": {
+        "wins": 8,
+        "ties": 565,
+        "losses": 14
+      },
+      "statistically_significant_05": false,
+      "statistically_significant_001": false,
+      "evidence_status": "SUFFICIENT_SAMPLE"
+    },
+    "recall_at_5": {
+      "sample_size": 587,
+      "mean_baseline": 0.003798,
+      "mean_variant": 0.0009,
+      "mean_difference": -0.002898,
+      "std_difference": 0.030278,
+      "cohens_d": -0.0957,
+      "t_statistic": -2.3192,
+      "p_value_ttest": 0.020725497573911164,
+      "wilcoxon_stat": 59.5,
+      "p_value_wilcoxon": 0.029432949039708712,
+      "bootstrap_ci_95": [
+        -0.005623,
+        -0.000678
+      ],
+      "win_tie_loss": {
+        "wins": 8,
+        "ties": 565,
+        "losses": 14
+      },
+      "statistically_significant_05": true,
+      "statistically_significant_001": false,
+      "evidence_status": "SUFFICIENT_SAMPLE"
+    },
+    "ndcg_at_10": {
+      "sample_size": 587,
+      "mean_baseline": 0.007153,
+      "mean_variant": 0.00493,
+      "mean_difference": -0.002222,
+      "std_difference": 0.045711,
+      "cohens_d": -0.0486,
+      "t_statistic": -1.178,
+      "p_value_ttest": 0.23929310659221328,
+      "wilcoxon_stat": 424.5,
+      "p_value_wilcoxon": 0.4104517171869837,
+      "bootstrap_ci_95": [
+        -0.006019,
+        0.001196
+      ],
+      "win_tie_loss": {
+        "wins": 20,
+        "ties": 543,
+        "losses": 24
+      },
+      "statistically_significant_05": false,
+      "statistically_significant_001": false,
+      "evidence_status": "SUFFICIENT_SAMPLE"
+    },
+    "precision_at_10": {
+      "sample_size": 587,
+      "mean_baseline": 0.0046,
+      "mean_variant": 0.004089,
+      "mean_difference": -0.000511,
+      "std_difference": 0.027707,
+      "cohens_d": -0.0184,
+      "t_statistic": -0.4469,
+      "p_value_ttest": 0.6551061452377944,
+      "wilcoxon_stat": 420.0,
+      "p_value_wilcoxon": 0.6547208460185769,
+      "bootstrap_ci_95": [
+        -0.002555,
+        0.001533
+      ],
+      "win_tie_loss": {
+        "wins": 20,
+        "ties": 545,
+        "losses": 22
+      },
+      "statistically_significant_05": false,
+      "statistically_significant_001": false,
+      "evidence_status": "SUFFICIENT_SAMPLE"
+    },
+    "recall_at_10": {
+      "sample_size": 587,
+      "mean_baseline": 0.006896,
+      "mean_variant": 0.005347,
+      "mean_difference": -0.001549,
+      "std_difference": 0.062559,
+      "cohens_d": -0.0248,
+      "t_statistic": -0.5998,
+      "p_value_ttest": 0.5488498220570708,
+      "wilcoxon_stat": 384.5,
+      "p_value_wilcoxon": 0.4020402729494482,
+      "bootstrap_ci_95": [
+        -0.006459,
+        0.003546
+      ],
+      "win_tie_loss": {
+        "wins": 20,
+        "ties": 545,
+        "losses": 22
+      },
+      "statistically_significant_05": false,
+      "statistically_significant_001": false,
+      "evidence_status": "SUFFICIENT_SAMPLE"
+    },
+    "ndcg_at_20": {
+      "sample_size": 587,
+      "mean_baseline": 0.010476,
+      "mean_variant": 0.006573,
+      "mean_difference": -0.003903,
+      "std_difference": 0.047398,
+      "cohens_d": -0.0824,
+      "t_statistic": -1.9952,
+      "p_value_ttest": 0.04648355070007641,
+      "wilcoxon_stat": 1464.5,
+      "p_value_wilcoxon": 0.0804205796103918,
+      "bootstrap_ci_95": [
+        -0.007747,
+        -0.000297
+      ],
+      "win_tie_loss": {
+        "wins": 35,
+        "ties": 501,
+        "losses": 51
+      },
+      "statistically_significant_05": true,
+      "statistically_significant_001": false,
+      "evidence_status": "SUFFICIENT_SAMPLE"
+    },
+    "precision_at_20": {
+      "sample_size": 587,
+      "mean_baseline": 0.005451,
+      "mean_variant": 0.003748,
+      "mean_difference": -0.001704,
+      "std_difference": 0.020791,
+      "cohens_d": -0.0819,
+      "t_statistic": -1.9853,
+      "p_value_ttest": 0.047582378152719075,
+      "wilcoxon_stat": 1387.5,
+      "p_value_wilcoxon": 0.04793727336502236,
+      "bootstrap_ci_95": [
+        -0.003407,
+        -8.5e-05
+      ],
+      "win_tie_loss": {
+        "wins": 33,
+        "ties": 503,
+        "losses": 51
+      },
+      "statistically_significant_05": true,
+      "statistically_significant_001": false,
+      "evidence_status": "SUFFICIENT_SAMPLE"
+    },
+    "recall_at_20": {
+      "sample_size": 587,
+      "mean_baseline": 0.015573,
+      "mean_variant": 0.010709,
+      "mean_difference": -0.004864,
+      "std_difference": 0.082911,
+      "cohens_d": -0.0587,
+      "t_statistic": -1.4214,
+      "p_value_ttest": 0.15573687087300334,
+      "wilcoxon_stat": 1308.5,
+      "p_value_wilcoxon": 0.03351153789580112,
+      "bootstrap_ci_95": [
+        -0.011491,
+        0.001873
+      ],
+      "win_tie_loss": {
+        "wins": 33,
+        "ties": 503,
+        "losses": 51
+      },
+      "statistically_significant_05": false,
+      "statistically_significant_001": false,
+      "evidence_status": "SUFFICIENT_SAMPLE"
+    }
+  },
+  "rq2_tfidf_vs_semantic_multi_original": {
+    "research_question": "TF-IDF v1.1 vs Semantic-Multi on original metadata",
+    "ndcg_at_5": {
+      "sample_size": 587,
+      "mean_baseline": 0.005987,
+      "mean_variant": 0.002342,
+      "mean_difference": -0.003645,
+      "std_difference": 0.045061,
+      "cohens_d": -0.0809,
+      "t_statistic": -1.9598,
+      "p_value_ttest": 0.05048940649734906,
+      "wilcoxon_stat": 70.5,
+      "p_value_wilcoxon": 0.039038929143162614,
+      "bootstrap_ci_95": [
+        -0.007237,
+        -9.9e-05
+      ],
+      "win_tie_loss": {
+        "wins": 8,
+        "ties": 564,
+        "losses": 15
+      },
+      "statistically_significant_05": false,
+      "statistically_significant_001": false,
+      "evidence_status": "SUFFICIENT_SAMPLE"
+    },
+    "precision_at_5": {
+      "sample_size": 587,
+      "mean_baseline": 0.005111,
+      "mean_variant": 0.002726,
+      "mean_difference": -0.002385,
+      "std_difference": 0.039551,
+      "cohens_d": -0.0603,
+      "t_statistic": -1.461,
+      "p_value_ttest": 0.1445484510161849,
+      "wilcoxon_stat": 96.0,
+      "p_value_wilcoxon": 0.14439979221307142,
+      "bootstrap_ci_95": [
+        -0.005451,
+        0.00069
+      ],
+      "win_tie_loss": {
+        "wins": 8,
+        "ties": 564,
+        "losses": 15
+      },
+      "statistically_significant_05": false,
+      "statistically_significant_001": false,
+      "evidence_status": "SUFFICIENT_SAMPLE"
+    },
+    "recall_at_5": {
+      "sample_size": 587,
+      "mean_baseline": 0.003798,
+      "mean_variant": 0.000951,
+      "mean_difference": -0.002847,
+      "std_difference": 0.030719,
+      "cohens_d": -0.0927,
+      "t_statistic": -2.2456,
+      "p_value_ttest": 0.02510322132112815,
+      "wilcoxon_stat": 74.0,
+      "p_value_wilcoxon": 0.05126394213914368,
+      "bootstrap_ci_95": [
+        -0.005549,
+        -0.000452
+      ],
+      "win_tie_loss": {
+        "wins": 8,
+        "ties": 564,
+        "losses": 15
+      },
+      "statistically_significant_05": true,
+      "statistically_significant_001": false,
+      "evidence_status": "SUFFICIENT_SAMPLE"
+    },
+    "ndcg_at_10": {
+      "sample_size": 587,
+      "mean_baseline": 0.007153,
+      "mean_variant": 0.002921,
+      "mean_difference": -0.004232,
+      "std_difference": 0.044632,
+      "cohens_d": -0.0948,
+      "t_statistic": -2.2972,
+      "p_value_ttest": 0.021958973633038753,
+      "wilcoxon_stat": 249.0,
+      "p_value_wilcoxon": 0.030413730572049148,
+      "bootstrap_ci_95": [
+        -0.00775,
+        -0.000834
+      ],
+      "win_tie_loss": {
+        "wins": 16,
+        "ties": 547,
+        "losses": 24
+      },
+      "statistically_significant_05": true,
+      "statistically_significant_001": false,
+      "evidence_status": "SUFFICIENT_SAMPLE"
+    },
+    "precision_at_10": {
+      "sample_size": 587,
+      "mean_baseline": 0.0046,
+      "mean_variant": 0.002726,
+      "mean_difference": -0.001874,
+      "std_difference": 0.028856,
+      "cohens_d": -0.0649,
+      "t_statistic": -1.5734,
+      "p_value_ttest": 0.1161653799851322,
+      "wilcoxon_stat": 304.0,
+      "p_value_wilcoxon": 0.11326703480812461,
+      "bootstrap_ci_95": [
+        -0.004089,
+        0.000511
+      ],
+      "win_tie_loss": {
+        "wins": 16,
+        "ties": 547,
+        "losses": 24
+      },
+      "statistically_significant_05": false,
+      "statistically_significant_001": false,
+      "evidence_status": "SUFFICIENT_SAMPLE"
+    },
+    "recall_at_10": {
+      "sample_size": 587,
+      "mean_baseline": 0.006896,
+      "mean_variant": 0.003193,
+      "mean_difference": -0.003703,
+      "std_difference": 0.052032,
+      "cohens_d": -0.0712,
+      "t_statistic": -1.7243,
+      "p_value_ttest": 0.08517534706340811,
+      "wilcoxon_stat": 301.0,
+      "p_value_wilcoxon": 0.14270367146480786,
+      "bootstrap_ci_95": [
+        -0.008241,
+        0.00039
+      ],
+      "win_tie_loss": {
+        "wins": 16,
+        "ties": 547,
+        "losses": 24
+      },
+      "statistically_significant_05": false,
+      "statistically_significant_001": false,
+      "evidence_status": "SUFFICIENT_SAMPLE"
+    },
+    "ndcg_at_20": {
+      "sample_size": 587,
+      "mean_baseline": 0.010476,
+      "mean_variant": 0.004508,
+      "mean_difference": -0.005968,
+      "std_difference": 0.046393,
+      "cohens_d": -0.1286,
+      "t_statistic": -3.1168,
+      "p_value_ttest": 0.00191804044571665,
+      "wilcoxon_stat": 1222.0,
+      "p_value_wilcoxon": 0.007972611544750955,
+      "bootstrap_ci_95": [
+        -0.009817,
+        -0.002268
+      ],
+      "win_tie_loss": {
+        "wins": 33,
+        "ties": 502,
+        "losses": 52
+      },
+      "statistically_significant_05": true,
+      "statistically_significant_001": false,
+      "evidence_status": "SUFFICIENT_SAMPLE"
+    },
+    "precision_at_20": {
+      "sample_size": 587,
+      "mean_baseline": 0.005451,
+      "mean_variant": 0.002896,
+      "mean_difference": -0.002555,
+      "std_difference": 0.021111,
+      "cohens_d": -0.121,
+      "t_statistic": -2.9327,
+      "p_value_ttest": 0.0034920021091051335,
+      "wilcoxon_stat": 1125.0,
+      "p_value_wilcoxon": 0.0032375351363590145,
+      "bootstrap_ci_95": [
+        -0.004259,
+        -0.000935
+      ],
+      "win_tie_loss": {
+        "wins": 30,
+        "ties": 505,
+        "losses": 52
+      },
+      "statistically_significant_05": true,
+      "statistically_significant_001": false,
+      "evidence_status": "SUFFICIENT_SAMPLE"
+    },
+    "recall_at_20": {
+      "sample_size": 587,
+      "mean_baseline": 0.015573,
+      "mean_variant": 0.007275,
+      "mean_difference": -0.008298,
+      "std_difference": 0.073035,
+      "cohens_d": -0.1136,
+      "t_statistic": -2.7526,
+      "p_value_ttest": 0.006095906133641692,
+      "wilcoxon_stat": 1126.0,
+      "p_value_wilcoxon": 0.007784899608397112,
+      "bootstrap_ci_95": [
+        -0.014366,
+        -0.00223
+      ],
+      "win_tie_loss": {
+        "wins": 30,
+        "ties": 505,
+        "losses": 52
+      },
+      "statistically_significant_05": true,
+      "statistically_significant_001": false,
+      "evidence_status": "SUFFICIENT_SAMPLE"
+    }
+  },
+  "rq2_tfidf_vs_semantic_multi_enriched": {
+    "research_question": "TF-IDF v1.1 vs Semantic-Multi on enriched metadata",
+    "ndcg_at_5": {
+      "sample_size": 587,
+      "mean_baseline": 0.005987,
+      "mean_variant": 0.002342,
+      "mean_difference": -0.003645,
+      "std_difference": 0.045061,
+      "cohens_d": -0.0809,
+      "t_statistic": -1.9598,
+      "p_value_ttest": 0.05048940649734906,
+      "wilcoxon_stat": 70.5,
+      "p_value_wilcoxon": 0.039038929143162614,
+      "bootstrap_ci_95": [
+        -0.007237,
+        -9.9e-05
+      ],
+      "win_tie_loss": {
+        "wins": 8,
+        "ties": 564,
+        "losses": 15
+      },
+      "statistically_significant_05": false,
+      "statistically_significant_001": false,
+      "evidence_status": "SUFFICIENT_SAMPLE"
+    },
+    "precision_at_5": {
+      "sample_size": 587,
+      "mean_baseline": 0.005111,
+      "mean_variant": 0.002726,
+      "mean_difference": -0.002385,
+      "std_difference": 0.039551,
+      "cohens_d": -0.0603,
+      "t_statistic": -1.461,
+      "p_value_ttest": 0.1445484510161849,
+      "wilcoxon_stat": 96.0,
+      "p_value_wilcoxon": 0.14439979221307142,
+      "bootstrap_ci_95": [
+        -0.005451,
+        0.00069
+      ],
+      "win_tie_loss": {
+        "wins": 8,
+        "ties": 564,
+        "losses": 15
+      },
+      "statistically_significant_05": false,
+      "statistically_significant_001": false,
+      "evidence_status": "SUFFICIENT_SAMPLE"
+    },
+    "recall_at_5": {
+      "sample_size": 587,
+      "mean_baseline": 0.003798,
+      "mean_variant": 0.000951,
+      "mean_difference": -0.002847,
+      "std_difference": 0.030719,
+      "cohens_d": -0.0927,
+      "t_statistic": -2.2456,
+      "p_value_ttest": 0.02510322132112815,
+      "wilcoxon_stat": 74.0,
+      "p_value_wilcoxon": 0.05126394213914368,
+      "bootstrap_ci_95": [
+        -0.005549,
+        -0.000452
+      ],
+      "win_tie_loss": {
+        "wins": 8,
+        "ties": 564,
+        "losses": 15
+      },
+      "statistically_significant_05": true,
+      "statistically_significant_001": false,
+      "evidence_status": "SUFFICIENT_SAMPLE"
+    },
+    "ndcg_at_10": {
+      "sample_size": 587,
+      "mean_baseline": 0.007153,
+      "mean_variant": 0.002921,
+      "mean_difference": -0.004232,
+      "std_difference": 0.044632,
+      "cohens_d": -0.0948,
+      "t_statistic": -2.2972,
+      "p_value_ttest": 0.021958973633038753,
+      "wilcoxon_stat": 249.0,
+      "p_value_wilcoxon": 0.030413730572049148,
+      "bootstrap_ci_95": [
+        -0.00775,
+        -0.000834
+      ],
+      "win_tie_loss": {
+        "wins": 16,
+        "ties": 547,
+        "losses": 24
+      },
+      "statistically_significant_05": true,
+      "statistically_significant_001": false,
+      "evidence_status": "SUFFICIENT_SAMPLE"
+    },
+    "precision_at_10": {
+      "sample_size": 587,
+      "mean_baseline": 0.0046,
+      "mean_variant": 0.002726,
+      "mean_difference": -0.001874,
+      "std_difference": 0.028856,
+      "cohens_d": -0.0649,
+      "t_statistic": -1.5734,
+      "p_value_ttest": 0.1161653799851322,
+      "wilcoxon_stat": 304.0,
+      "p_value_wilcoxon": 0.11326703480812461,
+      "bootstrap_ci_95": [
+        -0.004089,
+        0.000511
+      ],
+      "win_tie_loss": {
+        "wins": 16,
+        "ties": 547,
+        "losses": 24
+      },
+      "statistically_significant_05": false,
+      "statistically_significant_001": false,
+      "evidence_status": "SUFFICIENT_SAMPLE"
+    },
+    "recall_at_10": {
+      "sample_size": 587,
+      "mean_baseline": 0.006896,
+      "mean_variant": 0.003193,
+      "mean_difference": -0.003703,
+      "std_difference": 0.052032,
+      "cohens_d": -0.0712,
+      "t_statistic": -1.7243,
+      "p_value_ttest": 0.08517534706340811,
+      "wilcoxon_stat": 301.0,
+      "p_value_wilcoxon": 0.14270367146480786,
+      "bootstrap_ci_95": [
+        -0.008241,
+        0.00039
+      ],
+      "win_tie_loss": {
+        "wins": 16,
+        "ties": 547,
+        "losses": 24
+      },
+      "statistically_significant_05": false,
+      "statistically_significant_001": false,
+      "evidence_status": "SUFFICIENT_SAMPLE"
+    },
+    "ndcg_at_20": {
+      "sample_size": 587,
+      "mean_baseline": 0.010476,
+      "mean_variant": 0.004508,
+      "mean_difference": -0.005968,
+      "std_difference": 0.046393,
+      "cohens_d": -0.1286,
+      "t_statistic": -3.1168,
+      "p_value_ttest": 0.00191804044571665,
+      "wilcoxon_stat": 1222.0,
+      "p_value_wilcoxon": 0.007972611544750955,
+      "bootstrap_ci_95": [
+        -0.009817,
+        -0.002268
+      ],
+      "win_tie_loss": {
+        "wins": 33,
+        "ties": 502,
+        "losses": 52
+      },
+      "statistically_significant_05": true,
+      "statistically_significant_001": false,
+      "evidence_status": "SUFFICIENT_SAMPLE"
+    },
+    "precision_at_20": {
+      "sample_size": 587,
+      "mean_baseline": 0.005451,
+      "mean_variant": 0.002896,
+      "mean_difference": -0.002555,
+      "std_difference": 0.021111,
+      "cohens_d": -0.121,
+      "t_statistic": -2.9327,
+      "p_value_ttest": 0.0034920021091051335,
+      "wilcoxon_stat": 1125.0,
+      "p_value_wilcoxon": 0.0032375351363590145,
+      "bootstrap_ci_95": [
+        -0.004259,
+        -0.000935
+      ],
+      "win_tie_loss": {
+        "wins": 30,
+        "ties": 505,
+        "losses": 52
+      },
+      "statistically_significant_05": true,
+      "statistically_significant_001": false,
+      "evidence_status": "SUFFICIENT_SAMPLE"
+    },
+    "recall_at_20": {
+      "sample_size": 587,
+      "mean_baseline": 0.015573,
+      "mean_variant": 0.007275,
+      "mean_difference": -0.008298,
+      "std_difference": 0.073035,
+      "cohens_d": -0.1136,
+      "t_statistic": -2.7526,
+      "p_value_ttest": 0.006095906133641692,
+      "wilcoxon_stat": 1126.0,
+      "p_value_wilcoxon": 0.007784899608397112,
+      "bootstrap_ci_95": [
+        -0.014366,
+        -0.00223
+      ],
+      "win_tie_loss": {
+        "wins": 30,
+        "ties": 505,
+        "losses": 52
+      },
+      "statistically_significant_05": true,
+      "statistically_significant_001": false,
+      "evidence_status": "SUFFICIENT_SAMPLE"
+    }
+  },
+  "rq2_semantic_en_vs_multi_original": {
+    "research_question": "Semantic-EN vs Semantic-Multi on original metadata",
+    "ndcg_at_5": {
+      "sample_size": 587,
+      "mean_baseline": 0.003339,
+      "mean_variant": 0.002342,
+      "mean_difference": -0.000997,
+      "std_difference": 0.034976,
+      "cohens_d": -0.0285,
+      "t_statistic": -0.6909,
+      "p_value_ttest": 0.48988550424361077,
+      "wilcoxon_stat": 59.0,
+      "p_value_wilcoxon": 0.4030523292971665,
+      "bootstrap_ci_95": [
+        -0.003964,
+        0.001944
+      ],
+      "win_tie_loss": {
+        "wins": 8,
+        "ties": 570,
+        "losses": 9
+      },
+      "statistically_significant_05": false,
+      "statistically_significant_001": false,
+      "evidence_status": "SUFFICIENT_SAMPLE"
+    },
+    "precision_at_5": {
+      "sample_size": 587,
+      "mean_baseline": 0.003066,
+      "mean_variant": 0.002726,
+      "mean_difference": -0.000341,
+      "std_difference": 0.034063,
+      "cohens_d": -0.01,
+      "t_statistic": -0.2423,
+      "p_value_ttest": 0.8086006666942441,
+      "wilcoxon_stat": 72.0,
+      "p_value_wilcoxon": 0.8083651559145103,
+      "bootstrap_ci_95": [
+        -0.003066,
+        0.002726
+      ],
+      "win_tie_loss": {
+        "wins": 8,
+        "ties": 570,
+        "losses": 9
+      },
+      "statistically_significant_05": false,
+      "statistically_significant_001": false,
+      "evidence_status": "SUFFICIENT_SAMPLE"
+    },
+    "recall_at_5": {
+      "sample_size": 587,
+      "mean_baseline": 0.0009,
+      "mean_variant": 0.000951,
+      "mean_difference": 5.1e-05,
+      "std_difference": 0.013733,
+      "cohens_d": 0.0037,
+      "t_statistic": 0.0904,
+      "p_value_ttest": 0.9280296752988537,
+      "wilcoxon_stat": 75.0,
+      "p_value_wilcoxon": 0.943368296969677,
+      "bootstrap_ci_95": [
+        -0.001079,
+        0.001261
+      ],
+      "win_tie_loss": {
+        "wins": 8,
+        "ties": 570,
+        "losses": 9
+      },
+      "statistically_significant_05": false,
+      "statistically_significant_001": false,
+      "evidence_status": "SUFFICIENT_SAMPLE"
+    },
+    "ndcg_at_10": {
+      "sample_size": 587,
+      "mean_baseline": 0.00493,
+      "mean_variant": 0.002921,
+      "mean_difference": -0.002009,
+      "std_difference": 0.032301,
+      "cohens_d": -0.0622,
+      "t_statistic": -1.5072,
+      "p_value_ttest": 0.13230159154071822,
+      "wilcoxon_stat": 294.0,
+      "p_value_wilcoxon": 0.1801319611866785,
+      "bootstrap_ci_95": [
+        -0.004716,
+        0.000498
+      ],
+      "win_tie_loss": {
+        "wins": 15,
+        "ties": 548,
+        "losses": 24
+      },
+      "statistically_significant_05": false,
+      "statistically_significant_001": false,
+      "evidence_status": "SUFFICIENT_SAMPLE"
+    },
+    "precision_at_10": {
+      "sample_size": 587,
+      "mean_baseline": 0.004089,
+      "mean_variant": 0.002726,
+      "mean_difference": -0.001363,
+      "std_difference": 0.025428,
+      "cohens_d": -0.0536,
+      "t_statistic": -1.2985,
+      "p_value_ttest": 0.19461615790336514,
+      "wilcoxon_stat": 292.5,
+      "p_value_wilcoxon": 0.19436591080310905,
+      "bootstrap_ci_95": [
+        -0.003407,
+        0.000681
+      ],
+      "win_tie_loss": {
+        "wins": 15,
+        "ties": 549,
+        "losses": 23
+      },
+      "statistically_significant_05": false,
+      "statistically_significant_001": false,
+      "evidence_status": "SUFFICIENT_SAMPLE"
+    },
+    "recall_at_10": {
+      "sample_size": 587,
+      "mean_baseline": 0.005347,
+      "mean_variant": 0.003193,
+      "mean_difference": -0.002154,
+      "std_difference": 0.052067,
+      "cohens_d": -0.0414,
+      "t_statistic": -1.0025,
+      "p_value_ttest": 0.3165317078590547,
+      "wilcoxon_stat": 312.5,
+      "p_value_wilcoxon": 0.4001315000019232,
+      "bootstrap_ci_95": [
+        -0.006703,
+        0.001535
+      ],
+      "win_tie_loss": {
+        "wins": 15,
+        "ties": 549,
+        "losses": 23
+      },
+      "statistically_significant_05": false,
+      "statistically_significant_001": false,
+      "evidence_status": "SUFFICIENT_SAMPLE"
+    },
+    "ndcg_at_20": {
+      "sample_size": 587,
+      "mean_baseline": 0.006573,
+      "mean_variant": 0.004508,
+      "mean_difference": -0.002065,
+      "std_difference": 0.03356,
+      "cohens_d": -0.0615,
+      "t_statistic": -1.4907,
+      "p_value_ttest": 0.13657851847408276,
+      "wilcoxon_stat": 872.5,
+      "p_value_wilcoxon": 0.13662438510733035,
+      "bootstrap_ci_95": [
+        -0.00477,
+        0.000588
+      ],
+      "win_tie_loss": {
+        "wins": 30,
+        "ties": 521,
+        "losses": 36
+      },
+      "statistically_significant_05": false,
+      "statistically_significant_001": false,
+      "evidence_status": "SUFFICIENT_SAMPLE"
+    },
+    "precision_at_20": {
+      "sample_size": 587,
+      "mean_baseline": 0.003748,
+      "mean_variant": 0.002896,
+      "mean_difference": -0.000852,
+      "std_difference": 0.017986,
+      "cohens_d": -0.0474,
+      "t_statistic": -1.1474,
+      "p_value_ttest": 0.25168957530297886,
+      "wilcoxon_stat": 798.0,
+      "p_value_wilcoxon": 0.2394645545583557,
+      "bootstrap_ci_95": [
+        -0.0023,
+        0.000513
+      ],
+      "win_tie_loss": {
+        "wins": 28,
+        "ties": 526,
+        "losses": 33
+      },
+      "statistically_significant_05": false,
+      "statistically_significant_001": false,
+      "evidence_status": "SUFFICIENT_SAMPLE"
+    },
+    "recall_at_20": {
+      "sample_size": 587,
+      "mean_baseline": 0.010709,
+      "mean_variant": 0.007275,
+      "mean_difference": -0.003433,
+      "std_difference": 0.069245,
+      "cohens_d": -0.0496,
+      "t_statistic": -1.2013,
+      "p_value_ttest": 0.23010685625763574,
+      "wilcoxon_stat": 866.0,
+      "p_value_wilcoxon": 0.567857737254894,
+      "bootstrap_ci_95": [
+        -0.009225,
+        0.001845
+      ],
+      "win_tie_loss": {
+        "wins": 28,
+        "ties": 526,
+        "losses": 33
+      },
+      "statistically_significant_05": false,
+      "statistically_significant_001": false,
+      "evidence_status": "SUFFICIENT_SAMPLE"
+    }
+  },
+  "rq2_semantic_en_vs_multi_enriched": {
+    "research_question": "Semantic-EN vs Semantic-Multi on enriched metadata",
+    "ndcg_at_5": {
+      "sample_size": 587,
+      "mean_baseline": 0.003339,
+      "mean_variant": 0.002342,
+      "mean_difference": -0.000997,
+      "std_difference": 0.034976,
+      "cohens_d": -0.0285,
+      "t_statistic": -0.6909,
+      "p_value_ttest": 0.48988550424361077,
+      "wilcoxon_stat": 59.0,
+      "p_value_wilcoxon": 0.4030523292971665,
+      "bootstrap_ci_95": [
+        -0.003964,
+        0.001944
+      ],
+      "win_tie_loss": {
+        "wins": 8,
+        "ties": 570,
+        "losses": 9
+      },
+      "statistically_significant_05": false,
+      "statistically_significant_001": false,
+      "evidence_status": "SUFFICIENT_SAMPLE"
+    },
+    "precision_at_5": {
+      "sample_size": 587,
+      "mean_baseline": 0.003066,
+      "mean_variant": 0.002726,
+      "mean_difference": -0.000341,
+      "std_difference": 0.034063,
+      "cohens_d": -0.01,
+      "t_statistic": -0.2423,
+      "p_value_ttest": 0.8086006666942441,
+      "wilcoxon_stat": 72.0,
+      "p_value_wilcoxon": 0.8083651559145103,
+      "bootstrap_ci_95": [
+        -0.003066,
+        0.002726
+      ],
+      "win_tie_loss": {
+        "wins": 8,
+        "ties": 570,
+        "losses": 9
+      },
+      "statistically_significant_05": false,
+      "statistically_significant_001": false,
+      "evidence_status": "SUFFICIENT_SAMPLE"
+    },
+    "recall_at_5": {
+      "sample_size": 587,
+      "mean_baseline": 0.0009,
+      "mean_variant": 0.000951,
+      "mean_difference": 5.1e-05,
+      "std_difference": 0.013733,
+      "cohens_d": 0.0037,
+      "t_statistic": 0.0904,
+      "p_value_ttest": 0.9280296752988537,
+      "wilcoxon_stat": 75.0,
+      "p_value_wilcoxon": 0.943368296969677,
+      "bootstrap_ci_95": [
+        -0.001079,
+        0.001261
+      ],
+      "win_tie_loss": {
+        "wins": 8,
+        "ties": 570,
+        "losses": 9
+      },
+      "statistically_significant_05": false,
+      "statistically_significant_001": false,
+      "evidence_status": "SUFFICIENT_SAMPLE"
+    },
+    "ndcg_at_10": {
+      "sample_size": 587,
+      "mean_baseline": 0.00493,
+      "mean_variant": 0.002921,
+      "mean_difference": -0.002009,
+      "std_difference": 0.032301,
+      "cohens_d": -0.0622,
+      "t_statistic": -1.5072,
+      "p_value_ttest": 0.13230159154071822,
+      "wilcoxon_stat": 294.0,
+      "p_value_wilcoxon": 0.1801319611866785,
+      "bootstrap_ci_95": [
+        -0.004716,
+        0.000498
+      ],
+      "win_tie_loss": {
+        "wins": 15,
+        "ties": 548,
+        "losses": 24
+      },
+      "statistically_significant_05": false,
+      "statistically_significant_001": false,
+      "evidence_status": "SUFFICIENT_SAMPLE"
+    },
+    "precision_at_10": {
+      "sample_size": 587,
+      "mean_baseline": 0.004089,
+      "mean_variant": 0.002726,
+      "mean_difference": -0.001363,
+      "std_difference": 0.025428,
+      "cohens_d": -0.0536,
+      "t_statistic": -1.2985,
+      "p_value_ttest": 0.19461615790336514,
+      "wilcoxon_stat": 292.5,
+      "p_value_wilcoxon": 0.19436591080310905,
+      "bootstrap_ci_95": [
+        -0.003407,
+        0.000681
+      ],
+      "win_tie_loss": {
+        "wins": 15,
+        "ties": 549,
+        "losses": 23
+      },
+      "statistically_significant_05": false,
+      "statistically_significant_001": false,
+      "evidence_status": "SUFFICIENT_SAMPLE"
+    },
+    "recall_at_10": {
+      "sample_size": 587,
+      "mean_baseline": 0.005347,
+      "mean_variant": 0.003193,
+      "mean_difference": -0.002154,
+      "std_difference": 0.052067,
+      "cohens_d": -0.0414,
+      "t_statistic": -1.0025,
+      "p_value_ttest": 0.3165317078590547,
+      "wilcoxon_stat": 312.5,
+      "p_value_wilcoxon": 0.4001315000019232,
+      "bootstrap_ci_95": [
+        -0.006703,
+        0.001535
+      ],
+      "win_tie_loss": {
+        "wins": 15,
+        "ties": 549,
+        "losses": 23
+      },
+      "statistically_significant_05": false,
+      "statistically_significant_001": false,
+      "evidence_status": "SUFFICIENT_SAMPLE"
+    },
+    "ndcg_at_20": {
+      "sample_size": 587,
+      "mean_baseline": 0.006573,
+      "mean_variant": 0.004508,
+      "mean_difference": -0.002065,
+      "std_difference": 0.03356,
+      "cohens_d": -0.0615,
+      "t_statistic": -1.4907,
+      "p_value_ttest": 0.13657851847408276,
+      "wilcoxon_stat": 872.5,
+      "p_value_wilcoxon": 0.13662438510733035,
+      "bootstrap_ci_95": [
+        -0.00477,
+        0.000588
+      ],
+      "win_tie_loss": {
+        "wins": 30,
+        "ties": 521,
+        "losses": 36
+      },
+      "statistically_significant_05": false,
+      "statistically_significant_001": false,
+      "evidence_status": "SUFFICIENT_SAMPLE"
+    },
+    "precision_at_20": {
+      "sample_size": 587,
+      "mean_baseline": 0.003748,
+      "mean_variant": 0.002896,
+      "mean_difference": -0.000852,
+      "std_difference": 0.017986,
+      "cohens_d": -0.0474,
+      "t_statistic": -1.1474,
+      "p_value_ttest": 0.25168957530297886,
+      "wilcoxon_stat": 798.0,
+      "p_value_wilcoxon": 0.2394645545583557,
+      "bootstrap_ci_95": [
+        -0.0023,
+        0.000513
+      ],
+      "win_tie_loss": {
+        "wins": 28,
+        "ties": 526,
+        "losses": 33
+      },
+      "statistically_significant_05": false,
+      "statistically_significant_001": false,
+      "evidence_status": "SUFFICIENT_SAMPLE"
+    },
+    "recall_at_20": {
+      "sample_size": 587,
+      "mean_baseline": 0.010709,
+      "mean_variant": 0.007275,
+      "mean_difference": -0.003433,
+      "std_difference": 0.069245,
+      "cohens_d": -0.0496,
+      "t_statistic": -1.2013,
+      "p_value_ttest": 0.23010685625763574,
+      "wilcoxon_stat": 866.0,
+      "p_value_wilcoxon": 0.567857737254894,
+      "bootstrap_ci_95": [
+        -0.009225,
+        0.001845
+      ],
+      "win_tie_loss": {
+        "wins": 28,
+        "ties": 526,
+        "losses": 33
+      },
+      "statistically_significant_05": false,
+      "statistically_significant_001": false,
+      "evidence_status": "SUFFICIENT_SAMPLE"
+    }
+  }
+}
