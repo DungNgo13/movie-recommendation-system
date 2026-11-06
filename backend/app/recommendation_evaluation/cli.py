@@ -91,6 +91,17 @@ def parse_args():
         help="Run Phase 8B Semantic Embeddings & Metadata Quality Ablation experiments",
     )
     parser.add_argument(
+        "--phase8c",
+        action="store_true",
+        help="Run Phase 8C MovieLens-TMDB Identity Mapping & Metadata Re-evaluation experiments",
+    )
+    parser.add_argument(
+        "--phase8c-pilot-size",
+        type=int,
+        default=200,
+        help="Number of movies in the Phase 8C stratified pilot subset (default: 200)",
+    )
+    parser.add_argument(
         "--allow-model-download",
         action="store_true",
         help="Allow downloading HuggingFace ONNX model files if not cached locally",
@@ -199,6 +210,24 @@ def main():
             batch_size=args.batch_size,
         )
         logger.info("Phase 8B study completed. Reports saved to %s", out_dir.resolve())
+        return
+
+    if args.phase8c:
+        out_dir = Path("reports/phase8c_research") if args.output_dir == "reports/experiments/baseline_tfidf_v1_0" else Path(args.output_dir)
+        logger.info("Running Phase 8C MovieLens-TMDB Identity Mapping & Metadata Re-evaluation...")
+        from .phase8c_eval import Phase8CEvalConfig, run_phase8c_evaluation
+        phase8c_config = Phase8CEvalConfig(
+            pilot_sample_size=args.phase8c_pilot_size,
+        )
+        run_phase8c_evaluation(
+            dataset=dataset,
+            dataset_dir=data_dir,
+            output_dir=out_dir,
+            config=phase8c_config,
+            allow_download=args.allow_model_download,
+            batch_size=args.batch_size,
+        )
+        logger.info("Phase 8C study completed. Reports saved to %s", out_dir.resolve())
         return
 
     evaluator = OfflineEvaluator(config)
