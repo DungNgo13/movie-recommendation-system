@@ -26,6 +26,7 @@ from urllib.parse import urlparse
 import httpx
 
 from ..core.api_errors import (
+    TMDB_BUDGET_EXHAUSTED,
     TMDB_DISALLOWED_HOST,
     TMDB_FORBIDDEN,
     TMDB_INVALID_INPUT,
@@ -129,17 +130,38 @@ class TMDBClientStats:
     """Runtime telemetry for MovSug TEC and operational monitoring."""
 
     requests_total: int = 0
+    requests_succeeded: int = 0
     api_failures: int = 0
     http_429_count: int = 0
+    http_5xx_count: int = 0
     retry_count: int = 0
+    budget_exhausted_count: int = 0
     latencies_ms: list[float] = field(default_factory=list)
+    request_timestamps: list[float] = field(default_factory=list)
+
+    def max_observed_rps(self) -> float:
+        """Maximum requests observed within any 1.0-second sliding window."""
+        ts = self.request_timestamps
+        if not ts:
+            return 0.0
+        if len(ts) == 1:
+            return 1.0
+        max_in_window = max(
+            sum(1 for t2 in ts if t1 <= t2 < t1 + 1.0 - 1e-9)
+            for t1 in ts
+        )
+        return float(max_in_window)
 
     def to_dict(self) -> dict[str, Any]:
         return {
             "requests_total": self.requests_total,
+            "requests_succeeded": self.requests_succeeded,
             "api_failures": self.api_failures,
             "http_429_count": self.http_429_count,
+            "http_5xx_count": self.http_5xx_count,
             "retry_count": self.retry_count,
+            "budget_exhausted_count": self.budget_exhausted_count,
+            "max_observed_rps": self.max_observed_rps(),
             "latencies_ms": list(self.latencies_ms),
         }
 
@@ -159,6 +181,7 @@ class TMDBConfig:
     max_pages: int = 5
     max_connections: int = 10
     max_keepalive_connections: int = 5
+    max_total_requests: Optional[int] = None
 
     def __repr__(self) -> str:
         masked = "***REDACTED***" if self.read_access_token else "<empty>"
@@ -254,6 +277,8 @@ class TMDBClient:
         transport: Optional[httpx.BaseTransport] = None,
         sleep_fn: Callable[[float], None] = time.sleep,
         clock_fn: Callable[[], float] = time.monotonic,
+        initial_requests_total: int = 0,
+        on_attempt_callback: Optional[Callable[[TMDBClientStats], None]] = None,
     ) -> None:
         self.config = config or TMDBConfig.from_env()
         self._validated_base_url = validate_allowlisted_base_url(self.config.base_url)
@@ -261,7 +286,8 @@ class TMDBClient:
         self._sleep = sleep_fn
         self._clock = clock_fn
         self._last_request_ts: Optional[float] = None
-        self.stats = TMDBClientStats()
+        self._on_attempt_callback = on_attempt_callback
+        self.stats = TMDBClientStats(requests_total=max(0, int(initial_requests_total)))
 
         timeout = httpx.Timeout(
             connect=min(5.0, self.config.timeout_seconds),
@@ -366,12 +392,26 @@ class TMDBClient:
         last_error: Optional[TMDBClientError] = None
 
         for attempt in range(max_attempts):
+            if (
+                self.config.max_total_requests is not None
+                and self.stats.requests_total >= self.config.max_total_requests
+            ):
+                self.stats.budget_exhausted_count += 1
+                raise TMDBClientError(
+                    f"TMDB HTTP attempt budget exhausted ({self.stats.requests_total}/{self.config.max_total_requests} total attempts).",
+                    code=TMDB_BUDGET_EXHAUSTED,
+                    retryable=False,
+                )
+
             if attempt > 0:
                 self.stats.retry_count += 1
 
             self._enforce_rate_limit()
             self.stats.requests_total += 1
             start_ts = self._clock()
+            self.stats.request_timestamps.append(start_ts)
+            if self._on_attempt_callback is not None:
+                self._on_attempt_callback(self.stats)
 
             try:
                 response = self._client.get(safe_path, params=params, headers=headers)
@@ -389,9 +429,19 @@ class TMDBClient:
                     "TMDB timeout on %s (attempt %d/%d)",
                     safe_path, attempt + 1, max_attempts,
                 )
-                if attempt + 1 < max_attempts:
+                can_retry = (attempt + 1 < max_attempts) and (
+                    self.config.max_total_requests is None
+                    or self.stats.requests_total < self.config.max_total_requests
+                )
+                if can_retry:
                     self._sleep(self._compute_backoff(attempt))
                     continue
+                if (
+                    attempt + 1 < max_attempts
+                    and self.config.max_total_requests is not None
+                    and self.stats.requests_total >= self.config.max_total_requests
+                ):
+                    self.stats.budget_exhausted_count += 1
                 self.stats.api_failures += 1
                 raise last_error from None
             except httpx.RequestError as exc:
@@ -406,9 +456,19 @@ class TMDBClient:
                     "TMDB network error on %s (attempt %d/%d)",
                     safe_path, attempt + 1, max_attempts,
                 )
-                if attempt + 1 < max_attempts:
+                can_retry = (attempt + 1 < max_attempts) and (
+                    self.config.max_total_requests is None
+                    or self.stats.requests_total < self.config.max_total_requests
+                )
+                if can_retry:
                     self._sleep(self._compute_backoff(attempt))
                     continue
+                if (
+                    attempt + 1 < max_attempts
+                    and self.config.max_total_requests is not None
+                    and self.stats.requests_total >= self.config.max_total_requests
+                ):
+                    self.stats.budget_exhausted_count += 1
                 self.stats.api_failures += 1
                 raise last_error from None
 
@@ -431,6 +491,7 @@ class TMDBClient:
                         code=TMDB_INVALID_RESPONSE,
                         status_code=status,
                     )
+                self.stats.requests_succeeded += 1
                 return payload
 
             if status == 401:
@@ -476,13 +537,24 @@ class TMDBClient:
                     "TMDB rate limited (HTTP 429) on %s (attempt %d/%d, Retry-After=%s)",
                     safe_path, attempt + 1, max_attempts, retry_after,
                 )
-                if attempt + 1 < max_attempts:
+                can_retry = (attempt + 1 < max_attempts) and (
+                    self.config.max_total_requests is None
+                    or self.stats.requests_total < self.config.max_total_requests
+                )
+                if can_retry:
                     self._sleep(self._compute_backoff(attempt, retry_after))
                     continue
+                if (
+                    attempt + 1 < max_attempts
+                    and self.config.max_total_requests is not None
+                    and self.stats.requests_total >= self.config.max_total_requests
+                ):
+                    self.stats.budget_exhausted_count += 1
                 self.stats.api_failures += 1
                 raise last_error
 
             if 500 <= status <= 599:
+                self.stats.http_5xx_count += 1
                 last_error = TMDBClientError(
                     f"TMDB upstream server error (HTTP {status}) on {safe_path}.",
                     code=TMDB_UPSTREAM_ERROR,
@@ -493,9 +565,19 @@ class TMDBClient:
                     "TMDB upstream error HTTP %d on %s (attempt %d/%d)",
                     status, safe_path, attempt + 1, max_attempts,
                 )
-                if attempt + 1 < max_attempts:
+                can_retry = (attempt + 1 < max_attempts) and (
+                    self.config.max_total_requests is None
+                    or self.stats.requests_total < self.config.max_total_requests
+                )
+                if can_retry:
                     self._sleep(self._compute_backoff(attempt))
                     continue
+                if (
+                    attempt + 1 < max_attempts
+                    and self.config.max_total_requests is not None
+                    and self.stats.requests_total >= self.config.max_total_requests
+                ):
+                    self.stats.budget_exhausted_count += 1
                 self.stats.api_failures += 1
                 raise last_error
 

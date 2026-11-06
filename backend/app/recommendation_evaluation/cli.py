@@ -131,8 +131,8 @@ def parse_args():
     parser.add_argument(
         "--phase8d-request-budget",
         type=int,
-        default=120,
-        help="Maximum TMDB API requests (default: 120)",
+        default=74,
+        help="Maximum TMDB API HTTP attempts including retries (default: 74, approved hard cap: 74)",
     )
     return parser.parse_args()
 
@@ -253,6 +253,12 @@ def main():
         return
 
     if args.phase8d:
+        try:
+            from dotenv import load_dotenv
+            load_dotenv(override=False)
+        except Exception:
+            pass
+
         out_dir = Path("reports/phase8d_pilot") if args.output_dir == "reports/experiments/baseline_tfidf_v1_0" else Path(args.output_dir)
         logger.info("Running Phase 8D Controlled Live TMDB Pilot...")
         from .phase8d_live_pilot import (
@@ -262,6 +268,7 @@ def main():
             generate_pilot_manifest,
             generate_pilot_quality_report,
             run_live_pilot,
+            run_phase8d_preflight_checks,
             select_phase8d_pilot,
         )
         from .identity_mapping import load_identity_mapping
@@ -284,7 +291,20 @@ def main():
         logger.info("Selected %d pilot movies (seed=%d)", len(pilot_ids), phase8d_config.seed)
 
         # Generate manifest
-        generate_pilot_manifest(pilot_ids, dataset, mapping, rationale, out_dir)
+        manifest_path = generate_pilot_manifest(
+            pilot_ids,
+            dataset,
+            mapping,
+            rationale,
+            out_dir,
+        )
+
+        # Run preflight checks and save report
+        preflight = run_phase8d_preflight_checks(manifest_path, phase8d_config, out_dir)
+        preflight_path = out_dir / "phase8d_preflight_report.json"
+        out_dir.mkdir(parents=True, exist_ok=True)
+        preflight_path.write_text(json.dumps(preflight, indent=2), encoding="utf-8")
+        logger.info("Preflight report saved to %s (passed=%s)", preflight_path, preflight["preflight_passed"])
 
         # Check authorization gate
         gate = check_authorization_gate(phase8d_config)
@@ -293,7 +313,6 @@ def main():
         # Full catalog estimate
         estimate = estimate_full_catalog_enrichment(mapping)
         estimate_path = out_dir / "phase8d_full_catalog_estimate.json"
-        out_dir.mkdir(parents=True, exist_ok=True)
         estimate_path.write_text(json.dumps(estimate, indent=2), encoding="utf-8")
         logger.info("Full catalog estimate saved to %s", estimate_path)
 
@@ -303,16 +322,19 @@ def main():
 
         # Print summary
         print("\n" + "=" * 70)
-        print(f" PHASE 8D: Controlled Live TMDB Pilot")
+        print(" PHASE 8D: Controlled Live TMDB Pilot")
         print("=" * 70)
         print(f"Pilot size: {summary.pilot_size} | Mode: {'LIVE' if summary.is_live else 'DRY-RUN'}")
         print(f"Authorization: {gate['gate_status']}")
+        print(f"Preflight checks (1-7): {'PASSED' if preflight['preflight_passed'] else 'FAILED'}")
         print(f"Total attempted: {summary.total_attempted}")
         print(f"Successful: {summary.successful} | Conflicts: {summary.identity_conflicts}")
-        print(f"Skipped: {summary.skipped} | API errors: {summary.api_errors}")
-        print(f"Total requests: {summary.total_requests}/{summary.request_budget}")
+        print(f"Skipped: {summary.skipped} | API errors: {summary.api_errors} | Not attempted: {summary.not_attempted}")
+        print(f"Total HTTP attempts: {summary.total_requests}/{summary.request_budget} (max RPS: {summary.max_observed_rps:.2f})")
         print(f"Verification mode: {summary.verification_mode}")
-        if summary.is_live:
+        if summary.blocker_code:
+            print(f"Blocker: [{summary.blocker_code}] {summary.blocker_message}")
+        if summary.is_live and summary.total_requests > 0:
             print(f"Latency: p50={summary.latency_p50_ms:.1f}ms, p95={summary.latency_p95_ms:.1f}ms")
         print(f"Reports saved to: {out_dir.resolve()}")
         print("=" * 70 + "\n")
@@ -320,10 +342,10 @@ def main():
         if not summary.is_live:
             print("[DRY-RUN] This was a DRY-RUN. No TMDB API requests were made.")
             print("To authorize live execution:")
-            print(f"  1. Set PHASE8D_LIVE_AUTHORIZED=true")
-            print(f"  2. Set TMDB_ENABLE_LIVE_REQUESTS=true")
-            print(f"  3. Set TMDB_API_READ_ACCESS_TOKEN=<your-token>")
-            print(f"  4. Run: python -m app.recommendation_evaluation.cli --phase8d --phase8d-live")
+            print("  1. Set PHASE8D_LIVE_AUTHORIZED=true")
+            print("  2. Set TMDB_ENABLE_LIVE_REQUESTS=true")
+            print("  3. Set TMDB_API_READ_ACCESS_TOKEN=<your-token>")
+            print("  4. Run: python -m app.recommendation_evaluation.cli --phase8d --phase8d-live")
         return
 
     evaluator = OfflineEvaluator(config)

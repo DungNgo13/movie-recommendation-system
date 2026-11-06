@@ -1,17 +1,21 @@
 {
   "manifest_type": "phase8d_pilot_manifest",
-  "generated_at": "2026-11-06T02:56:15.903082+00:00",
+  "generated_at": "2026-11-06T04:37:50.882386+00:00",
+  "manifest_checksum": "d23fc802aefe509088127ede5d03009bc22354165d1b1adbc8f4906567d8800c",
   "pilot_size": 40,
   "seed": 8042,
   "estimated_api_requests": 74,
-  "estimated_retry_budget": 20,
-  "total_request_budget": 94,
+  "estimated_retry_budget": 0,
+  "total_request_budget": 74,
+  "approved_hard_cap_requests": 74,
+  "retries_included_in_budget": true,
   "operations_contacting_tmdb": [
     "GET /movie/{tmdb_id}?append_to_response=credits,keywords,alternative_titles,external_ids (English details)",
     "GET /movie/{tmdb_id}?language=vi-VN (Vietnamese localization)"
   ],
   "tmdb_host": "api.themoviedb.org",
-  "rate_limit": "4 requests/second (configurable via TMDB_RATE_LIMIT_RPS)",
+  "rate_limit": "4 requests/second (hard-capped at 4.0 RPS across all requests and retries)",
+  "rate_limit_rps": 4.0,
   "provider_terms": "TMDB API usage is governed by the TMDB Terms of Service. Metadata retrieved is for research and educational purposes only. Attribution to TMDB is required per their terms.",
   "output_locations": [
     "backend/reports/phase8d_pilot/ (all pilot artifacts)",

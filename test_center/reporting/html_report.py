@@ -737,6 +737,55 @@ def _render_semantic_recommendation(data: dict) -> str:
 </section>"""
 
 
+def _render_phase8d_pilot(data: dict) -> str:
+    """Render Phase 8D Controlled Live TMDB Pilot section in HTML."""
+    p8d = data.get("phase8d_pilot", {})
+    if not p8d or not isinstance(p8d, dict):
+        return ""
+    manifest = p8d.get("pilot_manifest", {})
+    quality = p8d.get("data_quality", {})
+    q_sum = quality.get("summary", {}) if isinstance(quality, dict) else {}
+    if not manifest and not q_sum:
+        return ""
+
+    mode_str = "LIVE" if q_sum.get("is_live") else "DRY-RUN"
+    v_mode = _esc(q_sum.get("verification_mode", "NOT_RUN"))
+    total_reqs = q_sum.get("total_requests", 0)
+    budget = q_sum.get("request_budget", 74)
+    blocker = _esc(q_sum.get("blocker_code", ""))
+    blocker_msg = _esc(q_sum.get("blocker_message", ""))
+    blocker_html = f'<p class="meta"><strong>Gate Blocker:</strong> <code>{blocker}</code> — {blocker_msg}</p>' if blocker else ""
+
+    return f"""<section id="phase8d-pilot">
+  <h2>Phase 8D — Controlled Live TMDB Pilot</h2>
+  <p class="meta">Manifest SHA-256: <code>{_esc(manifest.get("manifest_checksum", "")[:16])}...</code> | Mode: <code>{mode_str}</code> | Verification: <code>{v_mode}</code></p>
+  {blocker_html}
+  <div class="cards">
+    <div class="card">
+      <h3>Pilot Size</h3>
+      <div class="big-num">{q_sum.get("pilot_size", 40)}</div>
+      <div style="font-size:.8rem;color:var(--text-muted)">
+        37 with TMDB ID · 3 missing TMDB ID
+      </div>
+    </div>
+    <div class="card">
+      <h3>HTTP Budget (Retries Included)</h3>
+      <div class="big-num">{total_reqs} / {budget}</div>
+      <div style="font-size:.8rem;color:var(--text-muted)">
+        Rate limit: {q_sum.get("configured_rate_limit_rps", 4.0)} RPS (max obs: {q_sum.get("max_observed_rps", 0.0):.2f} RPS)
+      </div>
+    </div>
+    <div class="card">
+      <h3>Verification Outcomes</h3>
+      <div class="big-num">{q_sum.get("successful", 0)}</div>
+      <div style="font-size:.8rem;color:var(--text-muted)">
+        LIVE_VERIFIED · {q_sum.get("partially_verified", 0)} partial · {q_sum.get("not_attempted", 0)} unattempted
+      </div>
+    </div>
+  </div>
+</section>"""
+
+
 def _render_limitations(data: dict) -> str:
     """Render known limitations section."""
     limitations = data.get("known_limitations", [])
@@ -785,6 +834,7 @@ def generate_html_report(report_data: dict, output_path: Path) -> Path:
         _render_rec_metrics(report_data),
         _render_metadata_enrichment(report_data),
         _render_semantic_recommendation(report_data),
+        _render_phase8d_pilot(report_data),
         _render_mmr_tradeoff(report_data),
         _render_latency_comparison(report_data),
         _render_security(report_data),

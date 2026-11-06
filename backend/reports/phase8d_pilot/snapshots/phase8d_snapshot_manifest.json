@@ -1,0 +1,18 @@
+{
+  "manifest_type": "phase8d_snapshot_checksum_manifest",
+  "generated_at": "2026-11-06T04:37:51.070529+00:00",
+  "verification_mode": "NOT_RUN",
+  "production_db_modified": false,
+  "historical_snapshots_overwritten": false,
+  "artifacts": {
+    "pilot_manifest_json": {
+      "path": "backend/reports/phase8d_pilot/phase8d_pilot_manifest.json",
+      "sha256": "7a2696347bc7d01203dec5d571e8584db0bb6e16432a6fc9d8a4e74758623bd5"
+    },
+    "pilot_snapshot_json": {
+      "path": "backend/reports/phase8d_pilot/snapshots/phase8d_pilot_snapshot.json",
+      "sha256": "b317e5d419e343736780567c1c9fba018824e5dffcd607cf1352875483aa7505",
+      "records_count": 0
+    }
+  }
+}

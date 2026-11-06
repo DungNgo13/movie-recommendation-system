@@ -1,0 +1,61 @@
+{
+  "preflight_passed": true,
+  "checked_at": "2026-11-06T04:37:50.898059+00:00",
+  "checks": {
+    "1_manifest_40_unique_and_checksum": {
+      "passed": true,
+      "movies_count": 40,
+      "unique_ids_count": 40,
+      "manifest_checksum": "d23fc802aefe509088127ede5d03009bc22354165d1b1adbc8f4906567d8800c"
+    },
+    "2_max_http_attempt_budget_74": {
+      "passed": true,
+      "config_request_budget": 74,
+      "manifest_total_request_budget": 74,
+      "approved_hard_cap": 74,
+      "retries_included": true
+    },
+    "3_global_rate_limiter_4_rps": {
+      "passed": true,
+      "configured_rate_limit_rps": 4.0,
+      "max_allowed_rps": 4.0,
+      "covers_retries": true
+    },
+    "4_all_http_attempts_counted_pre_request": {
+      "passed": true,
+      "mechanism": "TMDBClient._request_json enforces max_total_requests and increments stats.requests_total before client.get() on every attempt/retry"
+    },
+    "5_checkpoint_preserves_cumulative_usage": {
+      "passed": true,
+      "prior_completed_movies": 0,
+      "prior_cumulative_requests": 0
+    },
+    "6_zero_production_db_modifications": {
+      "passed": true,
+      "allowlisted_hosts": [
+        "api.themoviedb.org"
+      ]
+    },
+    "7_research_output_isolation": {
+      "passed": true,
+      "output_dir": "D:\\TLTN\\movie-recommendation-system\\backend\\reports\\phase8d_pilot"
+    },
+    "8_authorization_gates_operational": {
+      "passed": true,
+      "gate": {
+        "dry_run": false,
+        "live_flag_passed": true,
+        "tmdb_live_requests_enabled": true,
+        "phase8d_authorization_env": true,
+        "api_token_present": false,
+        "authorization_granted": true,
+        "request_budget": 74,
+        "approved_hard_cap": 74,
+        "budget_within_approved_cap": true,
+        "gate_status": "AUTHORIZED",
+        "ready_for_network": false,
+        "message": "Live pilot authorized. Proceeding with bounded TMDB requests (max 74 HTTP attempts)."
+      }
+    }
+  }
+}

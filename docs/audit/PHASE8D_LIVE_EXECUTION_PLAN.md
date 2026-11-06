@@ -70,12 +70,12 @@ Each movie requires **2 TMDB API requests**:
 
 | Component | Count |
 |-----------|-------|
-| Pilot movies with TMDB IDs | ~36–37 (40 total minus 3–4 without TMDB IDs) |
-| Requests per movie | 2 (EN + VI) |
-| Base requests | ~72–74 |
-| Movies without TMDB IDs (no API call) | 3–4 (logged as skipped) |
-| Estimated retries (5% retry rate) | ~4–5 |
-| **Maximum total requests** | **≤120** |
+| Pilot movies in manifest | 40 unique movies (seed=8042) |
+| Pilot movies with TMDB IDs in `links.csv` | 37 |
+| Pilot movies without TMDB IDs in `links.csv` | 3 (`2851`, `32600`, `791` — marked `NOT_ATTEMPTED_MISSING_TMDB_ID` / `REVIEW_REQUIRED`) |
+| Requests per movie with TMDB ID | 2 (EN details + VI localization) |
+| Base requests | 37 × 2 = 74 |
+| **Approved maximum total HTTP attempts (including retries)** | **≤ 74 (strict hard cap)** |
 
 ### 3.3 Operations That Contact TMDB
 

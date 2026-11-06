@@ -1,0 +1,73 @@
+{
+  "report_type": "phase8d_field_completeness",
+  "generated_at": "2026-11-06T04:37:51.070798+00:00",
+  "verification_mode": "NOT_RUN",
+  "pilot_size": 40,
+  "movies_queried": 0,
+  "completeness_before_enrichment": {
+    "title": {
+      "populated": 40,
+      "pct": 100.0
+    },
+    "genres": {
+      "populated": 40,
+      "pct": 100.0
+    },
+    "overview_en": {
+      "populated": 0,
+      "pct": 0.0
+    },
+    "keywords": {
+      "populated": 0,
+      "pct": 0.0
+    },
+    "cast": {
+      "populated": 0,
+      "pct": 0.0
+    },
+    "director": {
+      "populated": 0,
+      "pct": 0.0
+    },
+    "title_vi": {
+      "populated": 0,
+      "pct": 0.0
+    },
+    "overview_vi": {
+      "populated": 0,
+      "pct": 0.0
+    }
+  },
+  "completeness_after_pilot": {
+    "has_overview": {
+      "populated": 0,
+      "pct_of_pilot_40": 0.0,
+      "pct_of_queried": 0.0
+    },
+    "has_keywords": {
+      "populated": 0,
+      "pct_of_pilot_40": 0.0,
+      "pct_of_queried": 0.0
+    },
+    "has_cast": {
+      "populated": 0,
+      "pct_of_pilot_40": 0.0,
+      "pct_of_queried": 0.0
+    },
+    "has_director": {
+      "populated": 0,
+      "pct_of_pilot_40": 0.0,
+      "pct_of_queried": 0.0
+    },
+    "has_vi_title": {
+      "populated": 0,
+      "pct_of_pilot_40": 0.0,
+      "pct_of_queried": 0.0
+    },
+    "has_vi_overview": {
+      "populated": 0,
+      "pct_of_pilot_40": 0.0,
+      "pct_of_queried": 0.0
+    }
+  }
+}

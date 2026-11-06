@@ -83,22 +83,23 @@ class TestPhase8DPilotConfig:
             assert config.request_budget == 1
 
     def test_budget_clamping_upper(self):
-        """Budget above 500 is clamped to 500."""
+        """Budget above approved 74 cap (including 94 or 120) is clamped to 74."""
         with patch.dict(os.environ, {}, clear=False):
             os.environ.pop("PHASE8D_LIVE_AUTHORIZED", None)
             from app.recommendation_evaluation.phase8d_live_pilot import Phase8DPilotConfig
 
-            config2 = Phase8DPilotConfig.from_args(request_budget=9999)
-            assert config2.request_budget == 500
+            assert Phase8DPilotConfig.from_args(request_budget=94).request_budget == 74
+            assert Phase8DPilotConfig.from_args(request_budget=120).request_budget == 74
+            assert Phase8DPilotConfig.from_args(request_budget=9999).request_budget == 74
 
     def test_budget_within_range(self):
-        """Budget within valid range is preserved."""
+        """Budget within valid range [1, 74] is preserved."""
         with patch.dict(os.environ, {}, clear=False):
             os.environ.pop("PHASE8D_LIVE_AUTHORIZED", None)
             from app.recommendation_evaluation.phase8d_live_pilot import Phase8DPilotConfig
 
-            config = Phase8DPilotConfig.from_args(request_budget=200)
-            assert config.request_budget == 200
+            config = Phase8DPilotConfig.from_args(request_budget=50)
+            assert config.request_budget == 50
 
     def test_default_constants(self):
         """Default config values match module constants."""
@@ -164,12 +165,23 @@ class TestTitleMatch:
         assert _check_title_match("The Matrix (1999)", "The Matrix", "") is True
 
     def test_empty_tmdb_titles(self):
-        """Empty TMDB titles match via substring (empty string is substring of anything)."""
+        """Empty TMDB titles must NOT match (prevents false positive on empty string)."""
         from app.recommendation_evaluation.phase8d_live_pilot import _check_title_match
 
-        # Empty string is always a substring, so the function returns True.
-        # Identity verification relies on year matching as a secondary check.
-        assert _check_title_match("Toy Story (1995)", "", "") is True
+        assert _check_title_match("Toy Story (1995)", "", "") is False
+
+    def test_trailing_article_movielens_format(self):
+        """MovieLens 'Title, The (Year)' matches TMDB 'The Title'."""
+        from app.recommendation_evaluation.phase8d_live_pilot import _check_title_match
+
+        assert (
+            _check_title_match(
+                "Wolf of Wall Street, The (2013)",
+                "The Wolf of Wall Street",
+                "The Wolf of Wall Street",
+            )
+            is True
+        )
 
     def test_case_insensitive(self):
         from app.recommendation_evaluation.phase8d_live_pilot import _check_title_match
@@ -1057,10 +1069,12 @@ class TestModuleConstants:
 
     def test_default_request_budget(self):
         from app.recommendation_evaluation.phase8d_live_pilot import (
+            PHASE8D_APPROVED_MAX_REQUESTS,
             PHASE8D_DEFAULT_REQUEST_BUDGET,
         )
 
-        assert PHASE8D_DEFAULT_REQUEST_BUDGET == 120
+        assert PHASE8D_DEFAULT_REQUEST_BUDGET == 74
+        assert PHASE8D_APPROVED_MAX_REQUESTS == 74
 
     def test_authorization_env_name(self):
         from app.recommendation_evaluation.phase8d_live_pilot import (
@@ -1097,3 +1111,362 @@ class TestNormalizeTitle:
         from app.recommendation_evaluation.phase8d_live_pilot import _normalize_title
 
         assert _normalize_title("  Toy Story  (1995)  ") == "toy story"
+
+
+# ---------------------------------------------------------------------------
+# Strict Request Budget Enforcement (74 HTTP attempts including retries)
+# ---------------------------------------------------------------------------
+
+
+class TestStrictBudgetEnforcement:
+    """Verify TMDBClient and run_live_pilot strictly enforce the 74-attempt hard cap."""
+
+    def test_tmdb_client_stops_before_exceeding_max_total_requests_with_retries(self):
+        """Retries, HTTP 429s, 5xxs, timeouts, and vi-VN calls all count toward max_total_requests."""
+        import httpx
+        from app.core.api_errors import TMDB_BUDGET_EXHAUSTED
+        from app.services.tmdb_client import TMDBClient, TMDBClientError, TMDBConfig
+
+        call_count = 0
+
+        def handler(request: httpx.Request) -> httpx.Response:
+            nonlocal call_count
+            call_count += 1
+            if call_count in (1, 2):
+                # First two attempts return 503 Service Unavailable (triggers retry)
+                return httpx.Response(503, json={"status_message": "Service Unavailable"})
+            if call_count == 3:
+                # Third attempt returns 429 Too Many Requests
+                return httpx.Response(429, headers={"Retry-After": "0.01"}, json={"status_message": "Rate limit"})
+            return httpx.Response(
+                200,
+                json={
+                    "id": 862,
+                    "title": "Toy Story",
+                    "original_title": "Toy Story",
+                    "release_date": "1995-10-30",
+                    "overview": "Toys come to life.",
+                },
+            )
+
+        transport = httpx.MockTransport(handler)
+        config = TMDBConfig(
+            read_access_token="valid_test_token_123456",
+            enable_live_requests=True,
+            max_retries=5,
+            backoff_base_seconds=0.001,
+            rate_limit_rps=100.0,
+            max_total_requests=3,  # Hard cap of 3 attempts total!
+        )
+        client = TMDBClient(config=config, transport=transport, sleep_fn=lambda _: None)
+
+        with pytest.raises(TMDBClientError) as exc_info:
+            client.get_movie_details(862, language="en-US")
+
+        # Exactly 3 HTTP attempts were sent; the 4th retry was blocked before sending!
+        assert call_count == 3
+        assert client.stats.requests_total == 3
+        assert client.stats.http_5xx_count == 2
+        assert client.stats.http_429_count == 1
+        assert client.stats.retry_count == 2
+        assert exc_info.value.code in (TMDB_BUDGET_EXHAUSTED, "tmdb_rate_limited")
+
+        # Any subsequent call immediately raises TMDB_BUDGET_EXHAUSTED without sending a 4th HTTP request
+        with pytest.raises(TMDBClientError) as exc_info2:
+            client.get_movie_details(862, language="vi-VN")
+        assert exc_info2.value.code == TMDB_BUDGET_EXHAUSTED
+        assert call_count == 3
+        assert client.stats.requests_total == 3
+
+    def test_live_pilot_preserves_all_manifest_records_on_budget_exhaustion(self, tmp_path):
+        """When budget is exhausted mid-run, all manifest records remain in summary with accurate statuses."""
+        import httpx
+        from app.recommendation_evaluation.phase8d_live_pilot import (
+            Phase8DPilotConfig,
+            run_live_pilot,
+        )
+        from app.services.tmdb_client import TMDBClient, TMDBConfig
+
+        dataset = MagicMock()
+        dataset.movies = {}
+        for mid, title in [
+            ("1", "Toy Story (1995)"),
+            ("2", "Jumanji (1995)"),
+            ("3", "Heat (1995)"),
+            ("2851", "Missing TMDB Movie (1999)"),
+        ]:
+            m = MagicMock()
+            m.title = title
+            m.genres = ["Drama"]
+            m.tags = []
+            dataset.movies[mid] = m
+
+        mapping = MagicMock()
+        mapping.tmdb_lookup = {"1": 862, "2": 8844, "3": 949, "2851": None}
+        mapping.imdb_lookup = {"1": "0114709", "2": "0113497", "3": "0113277", "2851": "0123456"}
+        mapping.title_year_index = {
+            "1": ("Toy Story", 1995),
+            "2": ("Jumanji", 1995),
+            "3": ("Heat", 1995),
+            "2851": ("Missing TMDB Movie", 1999),
+        }
+
+        http_calls = 0
+
+        def handler(request: httpx.Request) -> httpx.Response:
+            nonlocal http_calls
+            http_calls += 1
+            url = str(request.url)
+            if "/movie/862" in url:
+                title = "Toy Story"
+            elif "/movie/8844" in url:
+                title = "Jumanji"
+            else:
+                title = "Heat"
+            return httpx.Response(
+                200,
+                json={
+                    "id": 862,
+                    "title": title,
+                    "original_title": title,
+                    "release_date": "1995-10-30",
+                    "overview": "Test overview",
+                    "genres": [{"id": 1, "name": "Drama"}],
+                    "credits": {"cast": [{"id": 1, "name": "Actor"}], "crew": [{"id": 2, "name": "Dir", "job": "Director"}]},
+                    "keywords": {"keywords": [{"id": 10, "name": "test"}]},
+                },
+            )
+
+        transport = httpx.MockTransport(handler)
+
+        config = Phase8DPilotConfig(
+            pilot_size=4,
+            request_budget=3,  # Enough for Movie 1 (2 reqs) + Movie 2 EN (1 req), then exhausted on Movie 2 VI!
+            dry_run=False,
+            live_authorized=True,
+            output_dir=tmp_path,
+            checkpoint_dir=tmp_path / "checkpoint",
+        )
+
+        with (
+            patch.dict(
+                os.environ,
+                {
+                    "PHASE8D_LIVE_AUTHORIZED": "true",
+                    "TMDB_ENABLE_LIVE_REQUESTS": "true",
+                    "TMDB_API_READ_ACCESS_TOKEN": "valid_test_token_123456",
+                },
+                clear=False,
+            ),
+            patch(
+                "app.recommendation_evaluation.phase8d_live_pilot.get_tmdb_id_for_movie",
+                side_effect=lambda m, mid: m.tmdb_lookup.get(mid),
+            ),
+            patch(
+                "app.recommendation_evaluation.phase8d_live_pilot.get_imdb_id_for_movie",
+                side_effect=lambda m, mid: m.imdb_lookup.get(mid),
+            ),
+        ):
+            summary = run_live_pilot(
+                ["1", "2", "3", "2851"],
+                dataset,
+                mapping,
+                config,
+                tmp_path,
+                transport=transport,
+                sleep_fn=lambda _: None,
+            )
+
+        # Hard cap of 3 HTTP attempts must be respected!
+        assert http_calls == 3
+        assert summary.total_requests == 3
+        assert len(summary.records) == 4
+
+        by_id = {r.movielens_id: r for r in summary.records}
+        # Movie 1: 2 requests (EN + VI) -> LIVE_VERIFIED
+        assert by_id["1"].verification_status == "LIVE_VERIFIED"
+        assert by_id["1"].request_count == 2
+        # Movie 2: 1 request (EN succeeded, VI hit budget cap) -> PARTIALLY_VERIFIED
+        assert by_id["2"].verification_status == "PARTIALLY_VERIFIED"
+        assert by_id["2"].request_count == 1
+        # Movie 3: 0 requests (budget already 3/3) -> NOT_ATTEMPTED
+        assert by_id["3"].verification_status == "NOT_ATTEMPTED"
+        assert by_id["3"].request_count == 0
+        # Movie 2851: missing TMDB ID -> NOT_ATTEMPTED_MISSING_TMDB_ID
+        assert by_id["2851"].verification_status == "NOT_ATTEMPTED_MISSING_TMDB_ID"
+        assert by_id["2851"].request_count == 0
+
+    def test_checkpoint_persists_cumulative_requests_across_resumed_runs(self, tmp_path):
+        """Resuming from checkpoint restores cumulative_requests so total HTTP attempts never exceed budget."""
+        import httpx
+        from app.recommendation_evaluation.phase8d_live_pilot import (
+            Phase8DPilotConfig,
+            run_live_pilot,
+        )
+
+        dataset = MagicMock()
+        dataset.movies = {}
+        for mid, title in [("1", "Toy Story (1995)"), ("2", "Jumanji (1995)"), ("3", "Heat (1995)")]:
+            m = MagicMock()
+            m.title = title
+            m.genres = ["Drama"]
+            m.tags = []
+            dataset.movies[mid] = m
+
+        mapping = MagicMock()
+        mapping.tmdb_lookup = {"1": 862, "2": 8844, "3": 949}
+        mapping.imdb_lookup = {"1": "0114709", "2": "0113497", "3": "0113277"}
+        mapping.title_year_index = {
+            "1": ("Toy Story", 1995),
+            "2": ("Jumanji", 1995),
+            "3": ("Heat", 1995),
+        }
+
+        total_network_calls = 0
+
+        def handler(request: httpx.Request) -> httpx.Response:
+            nonlocal total_network_calls
+            total_network_calls += 1
+            return httpx.Response(
+                200,
+                json={
+                    "id": 862,
+                    "title": "Toy Story",
+                    "original_title": "Toy Story",
+                    "release_date": "1995-10-30",
+                    "overview": "Test overview",
+                },
+            )
+
+        transport = httpx.MockTransport(handler)
+
+        config = Phase8DPilotConfig(
+            pilot_size=3,
+            request_budget=4,  # 4 total requests across ALL runs
+            dry_run=False,
+            live_authorized=True,
+            output_dir=tmp_path,
+            checkpoint_dir=tmp_path / "checkpoint",
+        )
+
+        with (
+            patch.dict(
+                os.environ,
+                {
+                    "PHASE8D_LIVE_AUTHORIZED": "true",
+                    "TMDB_ENABLE_LIVE_REQUESTS": "true",
+                    "TMDB_API_READ_ACCESS_TOKEN": "valid_test_token_123456",
+                },
+                clear=False,
+            ),
+            patch(
+                "app.recommendation_evaluation.phase8d_live_pilot.get_tmdb_id_for_movie",
+                side_effect=lambda m, mid: m.tmdb_lookup.get(mid),
+            ),
+            patch(
+                "app.recommendation_evaluation.phase8d_live_pilot.get_imdb_id_for_movie",
+                side_effect=lambda m, mid: m.imdb_lookup.get(mid),
+            ),
+        ):
+            # Run 1: processes movies 1 and 2 (4 requests), movie 3 is not_attempted_budget_exhausted
+            summary1 = run_live_pilot(
+                ["1", "2", "3"],
+                dataset,
+                mapping,
+                config,
+                tmp_path,
+                transport=transport,
+                sleep_fn=lambda _: None,
+            )
+            assert total_network_calls == 4
+            assert summary1.total_requests == 4
+
+            # Run 2 (resumed with same checkpoint dir): must see cumulative_requests=4 and make 0 additional calls!
+            summary2 = run_live_pilot(
+                ["1", "2", "3"],
+                dataset,
+                mapping,
+                config,
+                tmp_path,
+                transport=transport,
+                sleep_fn=lambda _: None,
+            )
+            assert total_network_calls == 4
+            assert summary2.total_requests == 4
+
+    def test_missing_credentials_records_blocker_with_zero_requests(self, tmp_path):
+        """When TMDB_API_READ_ACCESS_TOKEN is missing, live mode stops cleanly with 0 requests and preserves all movies."""
+        from app.recommendation_evaluation.phase8d_live_pilot import (
+            Phase8DPilotConfig,
+            run_live_pilot,
+        )
+
+        dataset = MagicMock()
+        dataset.movies = {}
+        for mid, title in [("1", "Toy Story (1995)"), ("2851", "Missing TMDB (1999)")]:
+            m = MagicMock()
+            m.title = title
+            m.genres = ["Drama"]
+            m.tags = []
+            dataset.movies[mid] = m
+
+        mapping = MagicMock()
+        mapping.tmdb_lookup = {"1": 862, "2851": None}
+        mapping.imdb_lookup = {"1": "0114709", "2851": "0123456"}
+        mapping.title_year_index = {"1": ("Toy Story", 1995), "2851": ("Missing TMDB", 1999)}
+
+        config = Phase8DPilotConfig(
+            pilot_size=2,
+            request_budget=74,
+            dry_run=False,
+            live_authorized=True,
+            output_dir=tmp_path,
+            checkpoint_dir=tmp_path / "checkpoint",
+        )
+
+        with (
+            patch.dict(
+                os.environ,
+                {
+                    "PHASE8D_LIVE_AUTHORIZED": "true",
+                    "TMDB_ENABLE_LIVE_REQUESTS": "true",
+                },
+                clear=False,
+            ),
+            patch(
+                "app.recommendation_evaluation.phase8d_live_pilot.get_tmdb_id_for_movie",
+                side_effect=lambda m, mid: m.tmdb_lookup.get(mid),
+            ),
+            patch(
+                "app.recommendation_evaluation.phase8d_live_pilot.get_imdb_id_for_movie",
+                side_effect=lambda m, mid: m.imdb_lookup.get(mid),
+            ),
+        ):
+            os.environ.pop("TMDB_API_READ_ACCESS_TOKEN", None)
+            summary = run_live_pilot(["1", "2851"], dataset, mapping, config, tmp_path)
+
+        assert summary.total_requests == 0
+        assert summary.blocker_code == "tmdb_not_configured"
+        assert summary.verification_mode == "NOT_RUN"
+        assert len(summary.records) == 2
+        assert all(r.request_count == 0 for r in summary.records)
+
+    def test_concurrent_pilot_lock_prevents_bypass(self, tmp_path):
+        """A second concurrent runner cannot acquire pilot.lock."""
+        from app.recommendation_evaluation.phase8d_live_pilot import (
+            Phase8DAuthorizationError,
+            _acquire_pilot_lock,
+            _release_pilot_lock,
+        )
+
+        lock_path = _acquire_pilot_lock(tmp_path)
+        try:
+            with pytest.raises(Phase8DAuthorizationError, match="Concurrent Phase 8D pilot execution detected"):
+                _acquire_pilot_lock(tmp_path)
+        finally:
+            _release_pilot_lock(lock_path)
+
+        # After release, lock can be acquired again
+        lock_path2 = _acquire_pilot_lock(tmp_path)
+        _release_pilot_lock(lock_path2)
+

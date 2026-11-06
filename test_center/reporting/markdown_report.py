@@ -75,6 +75,9 @@ def generate_markdown_report(report_data: dict[str, Any], output_path: Path) -> 
     # Phase 8B Semantic Embeddings & Metadata Ablation
     _render_semantic_recommendation(lines, report_data.get("semantic_recommendation", {}))
 
+    # Phase 8D Controlled Live TMDB Pilot
+    _render_phase8d_pilot(lines, report_data.get("phase8d_pilot", {}))
+
     # MMR trade-off
     _render_mmr(lines, report_data.get("mmr_tradeoff", {}))
 
@@ -226,6 +229,20 @@ def generate_vietnamese_summary(
                 f"| {_fmt(m10.get('novelty'), 2)} "
                 f"| {_fmt(lat.get('p50_ms'), 2)} |"
             )
+        _w("")
+
+    p8d = report_data.get("phase8d_pilot", {})
+    p8d_q = p8d.get("data_quality", {}).get("summary", {}) if isinstance(p8d, dict) else {}
+    if p8d_q:
+        _w("## 3C. Thử Nghiệm Pilot TMDB Trực Tuyến Có Kiểm Soát (Phase 8D)")
+        _w("")
+        _w(f"- **Quy mô Pilot:** {p8d_q.get('pilot_size', 40)} phim (Seed: `{p8d_q.get('seed', 8042)}`)")
+        _w(f"- **Chế độ thực thi:** `{'LIVE' if p8d_q.get('is_live') else 'DRY-RUN'}` (`{p8d_q.get('verification_mode', 'NOT_RUN')}`)")
+        _w(f"- **Ngân sách HTTP Request (bao gồm retry):** {p8d_q.get('total_requests', 0)}/{p8d_q.get('request_budget', 74)}")
+        _w(f"- **Giới hạn tốc độ (Rate Limit):** {p8d_q.get('configured_rate_limit_rps', 4.0)} RPS (tối đa quan sát: {p8d_q.get('max_observed_rps', 0.0):.2f} RPS)")
+        _w(f"- **Phim xác thực thành công (LIVE_VERIFIED):** {p8d_q.get('successful', 0)}/{p8d_q.get('pilot_size', 40)}")
+        if p8d_q.get("blocker_code"):
+            _w(f"- **Trạng thái chặn an toàn (Gate Blocker):** `{p8d_q.get('blocker_code')}` — {p8d_q.get('blocker_message', '')}")
         _w("")
 
     # Lint / Build
@@ -609,6 +626,42 @@ def _render_semantic_recommendation(lines: list[str], sem: dict[str, Any]) -> No
                 f"| {_fmt(pdata.get('recommendation_latency_p95_ms'), 2)} |"
             )
         lines.append("")
+
+
+def _render_phase8d_pilot(lines: list[str], p8d: dict[str, Any]) -> None:
+    """Render Phase 8D Controlled Live TMDB Pilot metrics."""
+    if not p8d or not isinstance(p8d, dict):
+        return
+    manifest = p8d.get("pilot_manifest", {})
+    quality = p8d.get("data_quality", {})
+    q_sum = quality.get("summary", {}) if isinstance(quality, dict) else {}
+    if not manifest and not q_sum:
+        return
+
+    lines.append("## Phase 8D — Controlled Live TMDB Pilot")
+    lines.append("")
+    lines.append(f"- **Pilot Size:** {q_sum.get('pilot_size', manifest.get('pilot_size', 40))} movies (seed `{q_sum.get('seed', 8042)}`)")
+    lines.append(f"- **Manifest Checksum (SHA-256):** `{manifest.get('manifest_checksum', '—')}`")
+    lines.append(f"- **Execution Mode:** `{'LIVE' if q_sum.get('is_live') else 'DRY-RUN'}`")
+    lines.append(f"- **Verification Mode:** `{q_sum.get('verification_mode', 'NOT_RUN')}`")
+    lines.append(
+        f"- **HTTP Attempts Used / Approved Cap:** {q_sum.get('total_requests', 0)} / {q_sum.get('request_budget', 74)} "
+        f"(retries included: `{manifest.get('retries_included_in_budget', True)}`)"
+    )
+    lines.append(
+        f"- **Rate Limit:** configured {q_sum.get('configured_rate_limit_rps', 4.0)} RPS · "
+        f"max observed {q_sum.get('max_observed_rps', 0.0):.2f} RPS"
+    )
+    lines.append(
+        f"- **Outcomes:** {q_sum.get('successful', 0)} LIVE_VERIFIED · "
+        f"{q_sum.get('partially_verified', 0)} PARTIALLY_VERIFIED · "
+        f"{q_sum.get('identity_conflicts', 0)} conflicts · "
+        f"{q_sum.get('skipped', 0)} missing TMDB ID · "
+        f"{q_sum.get('not_attempted', 0)} not attempted"
+    )
+    if q_sum.get("blocker_code"):
+        lines.append(f"- **Operational Blocker:** `{q_sum.get('blocker_code')}` — {q_sum.get('blocker_message', '')}")
+    lines.append("")
 
 
 def _render_limitations(lines: list[str], limitations: list[str]) -> None:

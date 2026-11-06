@@ -105,11 +105,12 @@ Without ALL four → automatic dry-run with mock data
 
 ### 3.4 Live Execution (Not Yet Executed)
 
-- Contacts TMDB API at 4 RPS (10× safety margin)
-- 2 requests per movie (EN + VI)
-- ~80–120 total requests for 40-movie pilot
-- Checkpoint after each movie, resume on interruption
-- All results stored in `backend/reports/phase8d_pilot/live/`
+- Contacts TMDB API (`api.themoviedb.org` over HTTPS) at 4 RPS (10× safety margin)
+- 2 requests per movie with TMDB ID (EN + VI)
+- Strictly capped at **74 total HTTP attempts (including retries)** for the 40-movie pilot (37 movies with TMDB IDs × 2 requests = 74; 3 movies without TMDB IDs marked `NOT_ATTEMPTED_MISSING_TMDB_ID`)
+- Pre-attempt enforcement inside `TMDBClient._request_json()` before every HTTP request or retry
+- Checkpoint after each HTTP attempt and each movie, preserving cumulative request count across resumes
+- All results stored in `backend/reports/phase8d_pilot/` and `backend/reports/phase8d_pilot/snapshots/`
 
 ### 3.5 TEC Integration
 

@@ -68,6 +68,7 @@ TMDB_TIMEOUT = "tmdb_timeout"
 TMDB_UPSTREAM_ERROR = "tmdb_upstream_error"
 TMDB_NETWORK_ERROR = "tmdb_network_error"
 TMDB_INVALID_RESPONSE = "tmdb_invalid_response"
+TMDB_BUDGET_EXHAUSTED = "tmdb_budget_exhausted"
 
 ENRICHMENT_JOB_NOT_FOUND = "enrichment_job_not_found"
 ENRICHMENT_CANDIDATE_NOT_FOUND = "enrichment_candidate_not_found"

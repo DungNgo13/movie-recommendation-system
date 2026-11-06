@@ -1,0 +1,47 @@
+{
+  "report_type": "phase8d_identity_matching_report",
+  "generated_at": "2026-11-06T04:37:51.070798+00:00",
+  "verification_mode": "NOT_RUN",
+  "pilot_size": 40,
+  "movies_with_tmdb_id_in_links": 37,
+  "movies_without_tmdb_id_in_links": 3,
+  "exact_id_verified_matches": 0,
+  "live_verified_complete": 0,
+  "partially_verified": 0,
+  "ambiguous_matches": 0,
+  "identity_conflicts": 0,
+  "no_match_or_missing_id_cases": 3,
+  "automatically_verified_movie_ids": [],
+  "manual_review_required_records": [
+    {
+      "movielens_id": "2851",
+      "tmdb_id": 0,
+      "imdb_id": "tt0081454",
+      "movielens_title": "Saturn 3 (1980)",
+      "tmdb_title": "",
+      "status": "not_attempted_missing_tmdb_id",
+      "verification_status": "NOT_ATTEMPTED_MISSING_TMDB_ID",
+      "reason": "No TMDB ID in MovieLens links.csv; manual review required (REVIEW_REQUIRED)."
+    },
+    {
+      "movielens_id": "32600",
+      "tmdb_id": 0,
+      "imdb_id": "tt0377059",
+      "movielens_title": "Eros (2004)",
+      "tmdb_title": "",
+      "status": "not_attempted_missing_tmdb_id",
+      "verification_status": "NOT_ATTEMPTED_MISSING_TMDB_ID",
+      "reason": "No TMDB ID in MovieLens links.csv; manual review required (REVIEW_REQUIRED)."
+    },
+    {
+      "movielens_id": "791",
+      "tmdb_id": 0,
+      "imdb_id": "tt0113610",
+      "movielens_title": "Last Klezmer: Leopold Kozlowski, His Life and Music, The (1994)",
+      "tmdb_title": "",
+      "status": "not_attempted_missing_tmdb_id",
+      "verification_status": "NOT_ATTEMPTED_MISSING_TMDB_ID",
+      "reason": "No TMDB ID in MovieLens links.csv; manual review required (REVIEW_REQUIRED)."
+    }
+  ]
+}

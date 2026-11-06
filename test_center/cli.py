@@ -262,6 +262,8 @@ def _cmd_run(settings: Any, args: argparse.Namespace) -> None:
             RecommendationCollector,
             MetadataEnrichmentCollector,
             SemanticRecommendationCollector,
+            Phase8CCollector,
+            Phase8DCollector,
             CollectorResult,
         )
     except ImportError:
@@ -272,6 +274,8 @@ def _cmd_run(settings: Any, args: argparse.Namespace) -> None:
             RecommendationCollector,
             MetadataEnrichmentCollector,
             SemanticRecommendationCollector,
+            Phase8CCollector,
+            Phase8DCollector,
             CollectorResult,
         )
 
@@ -341,6 +345,28 @@ def _cmd_run(settings: Any, args: argparse.Namespace) -> None:
             print(
                 f"  📊 Phase 8B Semantic Evaluation: {len(cond_a)} Condition A variants + "
                 f"2×2 Metadata Ablation collected"
+            )
+
+        print("▶ Collecting Phase 8C MovieLens-TMDB mapping & re-evaluation metrics...")
+        p8c_col = Phase8CCollector(settings)
+        p8c_res = p8c_col.collect_or_run()
+        results["phase8c_research"] = p8c_res.to_dict()
+        p8c_meta = p8c_res.metadata or {}
+        if p8c_meta:
+            print(
+                f"  📊 Phase 8C Research: {p8c_res.tests_passed}/{p8c_res.tests_total} artifacts collected"
+            )
+
+        print("▶ Collecting Phase 8D controlled live TMDB pilot metrics...")
+        p8d_col = Phase8DCollector(settings)
+        p8d_res = p8d_col.collect_or_run()
+        results["phase8d_pilot"] = p8d_res.to_dict()
+        p8d_meta = p8d_res.metadata or {}
+        if p8d_meta:
+            q_sum = p8d_meta.get("data_quality", {}).get("summary", {})
+            print(
+                f"  📊 Phase 8D Pilot: mode={q_sum.get('verification_mode', 'NOT_RUN')}, "
+                f"requests={q_sum.get('total_requests', 0)}/{q_sum.get('request_budget', 74)}"
             )
 
     # Optional: Coverage reporting
@@ -669,6 +695,14 @@ def _build_report_data(
     sem_meta = sem.get("metadata", {}) if isinstance(sem, dict) else {}
     sem_variants = sem_meta.get("condition_a_variants", {}) if isinstance(sem_meta, dict) else {}
 
+    # Extract Phase 8C and Phase 8D metrics
+    p8c = results.get("phase8c_research", {})
+    p8c_meta = p8c.get("metadata", {}) if isinstance(p8c, dict) else {}
+
+    p8d = results.get("phase8d_pilot", {})
+    p8d_meta = p8d.get("metadata", {}) if isinstance(p8d, dict) else {}
+    p8d_summary = p8d_meta.get("data_quality", {}).get("summary", {}) if isinstance(p8d_meta, dict) else {}
+
     return {
         "metadata": meta.to_dict(),
         "overall_status": overall,
@@ -718,6 +752,15 @@ def _build_report_data(
                 "dataset_checksum": sem_meta.get("dataset_checksum", ""),
                 "split_checksum": sem_meta.get("split_checksum", ""),
             },
+            "phase8d_pilot": {
+                "status": p8d.get("status", "NOT_RUN"),
+                "pilot_size": p8d_summary.get("pilot_size", 0),
+                "verification_mode": p8d_summary.get("verification_mode", "NOT_RUN"),
+                "is_live": p8d_summary.get("is_live", False),
+                "total_requests": p8d_summary.get("total_requests", 0),
+                "request_budget": p8d_summary.get("request_budget", 74),
+                "blocker_code": p8d_summary.get("blocker_code", ""),
+            },
             "security": {
                 "total_findings": 0,
                 "critical": 0,
@@ -728,6 +771,8 @@ def _build_report_data(
         "recommendation_metrics": rec_metrics,
         "metadata_enrichment": enr_meta,
         "semantic_recommendation": sem_meta,
+        "phase8c_research": p8c_meta,
+        "phase8d_pilot": p8d_meta,
         "known_limitations": [
             "Security scanning tools not installed (pip-audit, bandit, npm audit).",
             "Load testing requires explicit TEC_ALLOW_LOAD_TEST=1.",
