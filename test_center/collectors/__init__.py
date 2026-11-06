@@ -10,11 +10,13 @@ Exports:
     MetadataEnrichmentCollector — Phase 8A enrichment benchmark collector
     SemanticRecommendationCollector — Phase 8B semantic evaluation collector
     Phase8CCollector         — Phase 8C identity mapping & enrichment re-evaluation collector
+    Phase8DCollector         — Phase 8D controlled live TMDB pilot collector
 """
 from .base import CollectorResult, TestCaseRecord
 from .history_collector import HistoryCollector
 from .metadata_enrichment_collector import MetadataEnrichmentCollector
 from .phase8c_collector import Phase8CCollector
+from .phase8d_collector import Phase8DCollector
 from .pytest_collector import PytestCollector
 from .recommendation_collector import RecommendationCollector
 from .semantic_recommendation_collector import SemanticRecommendationCollector
@@ -30,4 +32,5 @@ __all__ = [
     "MetadataEnrichmentCollector",
     "SemanticRecommendationCollector",
     "Phase8CCollector",
+    "Phase8DCollector",
 ]
