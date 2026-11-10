@@ -742,8 +742,8 @@ def _render_phase8d_pilot(data: dict) -> str:
     p8d = data.get("phase8d_pilot", {})
     if not p8d or not isinstance(p8d, dict):
         return ""
-    manifest = p8d.get("pilot_manifest", {})
-    quality = p8d.get("data_quality", {})
+    manifest = p8d.get("manifest") or p8d.get("pilot_manifest") or {}
+    quality = p8d.get("quality_report") or p8d.get("data_quality") or {}
     q_sum = quality.get("summary", {}) if isinstance(quality, dict) else {}
     if not manifest and not q_sum:
         return ""

@@ -363,7 +363,8 @@ def _cmd_run(settings: Any, args: argparse.Namespace) -> None:
         results["phase8d_pilot"] = p8d_res.to_dict()
         p8d_meta = p8d_res.metadata or {}
         if p8d_meta:
-            q_sum = p8d_meta.get("data_quality", {}).get("summary", {})
+            q_rep = p8d_meta.get("quality_report") or p8d_meta.get("data_quality") or {}
+            q_sum = q_rep.get("summary", {}) if isinstance(q_rep, dict) else {}
             print(
                 f"  📊 Phase 8D Pilot: mode={q_sum.get('verification_mode', 'NOT_RUN')}, "
                 f"requests={q_sum.get('total_requests', 0)}/{q_sum.get('request_budget', 74)}"
@@ -701,7 +702,8 @@ def _build_report_data(
 
     p8d = results.get("phase8d_pilot", {})
     p8d_meta = p8d.get("metadata", {}) if isinstance(p8d, dict) else {}
-    p8d_summary = p8d_meta.get("data_quality", {}).get("summary", {}) if isinstance(p8d_meta, dict) else {}
+    p8d_qrep = (p8d_meta.get("quality_report") or p8d_meta.get("data_quality") or {}) if isinstance(p8d_meta, dict) else {}
+    p8d_summary = p8d_qrep.get("summary", {}) if isinstance(p8d_qrep, dict) else {}
 
     return {
         "metadata": meta.to_dict(),

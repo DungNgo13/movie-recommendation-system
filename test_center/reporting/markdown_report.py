@@ -232,7 +232,8 @@ def generate_vietnamese_summary(
         _w("")
 
     p8d = report_data.get("phase8d_pilot", {})
-    p8d_q = p8d.get("data_quality", {}).get("summary", {}) if isinstance(p8d, dict) else {}
+    p8d_qrep = (p8d.get("quality_report") or p8d.get("data_quality") or {}) if isinstance(p8d, dict) else {}
+    p8d_q = p8d_qrep.get("summary", {}) if isinstance(p8d_qrep, dict) else {}
     if p8d_q:
         _w("## 3C. Thử Nghiệm Pilot TMDB Trực Tuyến Có Kiểm Soát (Phase 8D)")
         _w("")
@@ -632,8 +633,8 @@ def _render_phase8d_pilot(lines: list[str], p8d: dict[str, Any]) -> None:
     """Render Phase 8D Controlled Live TMDB Pilot metrics."""
     if not p8d or not isinstance(p8d, dict):
         return
-    manifest = p8d.get("pilot_manifest", {})
-    quality = p8d.get("data_quality", {})
+    manifest = p8d.get("manifest") or p8d.get("pilot_manifest") or {}
+    quality = p8d.get("quality_report") or p8d.get("data_quality") or {}
     q_sum = quality.get("summary", {}) if isinstance(quality, dict) else {}
     if not manifest and not q_sum:
         return

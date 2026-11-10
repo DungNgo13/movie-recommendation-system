@@ -1,6 +1,6 @@
 {
   "report_type": "phase8d_full_catalog_estimate",
-  "generated_at": "2026-11-10T02:41:08.124553+00:00",
+  "generated_at": "2026-11-10T02:47:58.059771+00:00",
   "catalog": {
     "total_movies": 9742,
     "with_valid_tmdb_id": 9734,
