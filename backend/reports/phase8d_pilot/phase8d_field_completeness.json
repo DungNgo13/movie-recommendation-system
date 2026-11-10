@@ -1,9 +1,9 @@
 {
   "report_type": "phase8d_field_completeness",
-  "generated_at": "2026-11-06T04:37:51.070798+00:00",
-  "verification_mode": "NOT_RUN",
+  "generated_at": "2026-11-10T02:42:35.048733+00:00",
+  "verification_mode": "FAILED",
   "pilot_size": 40,
-  "movies_queried": 0,
+  "movies_queried": 19,
   "completeness_before_enrichment": {
     "title": {
       "populated": 40,

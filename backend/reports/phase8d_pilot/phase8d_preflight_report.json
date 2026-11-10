@@ -1,6 +1,6 @@
 {
   "preflight_passed": true,
-  "checked_at": "2026-11-06T04:37:50.898059+00:00",
+  "checked_at": "2026-11-10T02:41:08.123911+00:00",
   "checks": {
     "1_manifest_40_unique_and_checksum": {
       "passed": true,
@@ -47,13 +47,13 @@
         "live_flag_passed": true,
         "tmdb_live_requests_enabled": true,
         "phase8d_authorization_env": true,
-        "api_token_present": false,
+        "api_token_present": true,
         "authorization_granted": true,
         "request_budget": 74,
         "approved_hard_cap": 74,
         "budget_within_approved_cap": true,
         "gate_status": "AUTHORIZED",
-        "ready_for_network": false,
+        "ready_for_network": true,
         "message": "Live pilot authorized. Proceeding with bounded TMDB requests (max 74 HTTP attempts)."
       }
     }

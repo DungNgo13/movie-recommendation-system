@@ -1,7 +1,7 @@
 {
   "report_type": "phase8d_identity_matching_report",
-  "generated_at": "2026-11-06T04:37:51.070798+00:00",
-  "verification_mode": "NOT_RUN",
+  "generated_at": "2026-11-10T02:42:35.048733+00:00",
+  "verification_mode": "FAILED",
   "pilot_size": 40,
   "movies_with_tmdb_id_in_links": 37,
   "movies_without_tmdb_id_in_links": 3,
@@ -14,6 +14,156 @@
   "automatically_verified_movie_ids": [],
   "manual_review_required_records": [
     {
+      "movielens_id": "1029",
+      "tmdb_id": 11360,
+      "imdb_id": "tt0033563",
+      "movielens_title": "Dumbo (1941)",
+      "tmdb_title": "",
+      "status": "api_error",
+      "verification_status": "FAILED",
+      "reason": "TMDB network error on /movie/11360: [WinError 10054] An existing connection was forcibly closed by the remote host"
+    },
+    {
+      "movielens_id": "106782",
+      "tmdb_id": 106646,
+      "imdb_id": "tt0993846",
+      "movielens_title": "Wolf of Wall Street, The (2013)",
+      "tmdb_title": "",
+      "status": "api_error",
+      "verification_status": "FAILED",
+      "reason": "TMDB network error on /movie/106646: [WinError 10054] An existing connection was forcibly closed by the remote host"
+    },
+    {
+      "movielens_id": "110826",
+      "tmdb_id": 254473,
+      "imdb_id": "tt1430612",
+      "movielens_title": "Brick Mansions (2014)",
+      "tmdb_title": "",
+      "status": "api_error",
+      "verification_status": "FAILED",
+      "reason": "TMDB network error on /movie/254473: [WinError 10054] An existing connection was forcibly closed by the remote host"
+    },
+    {
+      "movielens_id": "112788",
+      "tmdb_id": 225886,
+      "imdb_id": "tt1956620",
+      "movielens_title": "Sex Tape (2014)",
+      "tmdb_title": "",
+      "status": "api_error",
+      "verification_status": "FAILED",
+      "reason": "TMDB network error on /movie/225886: [WinError 10054] An existing connection was forcibly closed by the remote host"
+    },
+    {
+      "movielens_id": "135",
+      "tmdb_id": 9101,
+      "imdb_id": "tt0116130",
+      "movielens_title": "Down Periscope (1996)",
+      "tmdb_title": "",
+      "status": "api_error",
+      "verification_status": "FAILED",
+      "reason": "TMDB network error on /movie/9101: [WinError 10054] An existing connection was forcibly closed by the remote host"
+    },
+    {
+      "movielens_id": "1493",
+      "tmdb_id": 76996,
+      "imdb_id": "tt0116931",
+      "movielens_title": "Love and Other Catastrophes (1996)",
+      "tmdb_title": "",
+      "status": "api_error",
+      "verification_status": "FAILED",
+      "reason": "TMDB network error on /movie/76996: [WinError 10054] An existing connection was forcibly closed by the remote host"
+    },
+    {
+      "movielens_id": "151317",
+      "tmdb_id": 312669,
+      "imdb_id": "tt3471098",
+      "movielens_title": "Maggie's Plan (2015)",
+      "tmdb_title": "",
+      "status": "api_error",
+      "verification_status": "FAILED",
+      "reason": "TMDB network error on /movie/312669: [WinError 10054] An existing connection was forcibly closed by the remote host"
+    },
+    {
+      "movielens_id": "152077",
+      "tmdb_id": 333371,
+      "imdb_id": "tt1179933",
+      "movielens_title": "10 Cloverfield Lane (2016)",
+      "tmdb_title": "",
+      "status": "api_error",
+      "verification_status": "FAILED",
+      "reason": "TMDB network error on /movie/333371: [WinError 10054] An existing connection was forcibly closed by the remote host"
+    },
+    {
+      "movielens_id": "1891",
+      "tmdb_id": 40961,
+      "imdb_id": "tt0120401",
+      "movielens_title": "Ugly, The (1997)",
+      "tmdb_title": "",
+      "status": "api_error",
+      "verification_status": "FAILED",
+      "reason": "TMDB network error on /movie/40961: [WinError 10054] An existing connection was forcibly closed by the remote host"
+    },
+    {
+      "movielens_id": "2080",
+      "tmdb_id": 10340,
+      "imdb_id": "tt0048280",
+      "movielens_title": "Lady and the Tramp (1955)",
+      "tmdb_title": "",
+      "status": "api_error",
+      "verification_status": "FAILED",
+      "reason": "TMDB network error on /movie/10340: [WinError 10054] An existing connection was forcibly closed by the remote host"
+    },
+    {
+      "movielens_id": "2282",
+      "tmdb_id": 11855,
+      "imdb_id": "tt0126604",
+      "movielens_title": "Pecker (1998)",
+      "tmdb_title": "",
+      "status": "api_error",
+      "verification_status": "FAILED",
+      "reason": "TMDB network error on /movie/11855: [WinError 10054] An existing connection was forcibly closed by the remote host"
+    },
+    {
+      "movielens_id": "2342",
+      "tmdb_id": 21589,
+      "imdb_id": "tt0116488",
+      "movielens_title": "Hard Core Logo (1996)",
+      "tmdb_title": "",
+      "status": "api_error",
+      "verification_status": "FAILED",
+      "reason": "TMDB network error on /movie/21589: [WinError 10054] An existing connection was forcibly closed by the remote host"
+    },
+    {
+      "movielens_id": "2478",
+      "tmdb_id": 8388,
+      "imdb_id": "tt0092086",
+      "movielens_title": "\u00a1Three Amigos! (1986)",
+      "tmdb_title": "",
+      "status": "api_error",
+      "verification_status": "FAILED",
+      "reason": "TMDB network error on /movie/8388: [WinError 10054] An existing connection was forcibly closed by the remote host"
+    },
+    {
+      "movielens_id": "2730",
+      "tmdb_id": 3175,
+      "imdb_id": "tt0072684",
+      "movielens_title": "Barry Lyndon (1975)",
+      "tmdb_title": "",
+      "status": "api_error",
+      "verification_status": "FAILED",
+      "reason": "TMDB network error on /movie/3175: [WinError 10054] An existing connection was forcibly closed by the remote host"
+    },
+    {
+      "movielens_id": "284",
+      "tmdb_id": 109560,
+      "imdb_id": "tt0117169",
+      "movielens_title": "New York Cop (Ny\u00fb Y\u00f4ku no koppu) (1993)",
+      "tmdb_title": "",
+      "status": "api_error",
+      "verification_status": "FAILED",
+      "reason": "TMDB network error on /movie/109560: [WinError 10054] An existing connection was forcibly closed by the remote host"
+    },
+    {
       "movielens_id": "2851",
       "tmdb_id": 0,
       "imdb_id": "tt0081454",
@@ -22,6 +172,26 @@
       "status": "not_attempted_missing_tmdb_id",
       "verification_status": "NOT_ATTEMPTED_MISSING_TMDB_ID",
       "reason": "No TMDB ID in MovieLens links.csv; manual review required (REVIEW_REQUIRED)."
+    },
+    {
+      "movielens_id": "3",
+      "tmdb_id": 15602,
+      "imdb_id": "tt0113228",
+      "movielens_title": "Grumpier Old Men (1995)",
+      "tmdb_title": "",
+      "status": "api_error",
+      "verification_status": "FAILED",
+      "reason": "TMDB network error on /movie/15602: [WinError 10054] An existing connection was forcibly closed by the remote host"
+    },
+    {
+      "movielens_id": "3152",
+      "tmdb_id": 25188,
+      "imdb_id": "tt0067328",
+      "movielens_title": "Last Picture Show, The (1971)",
+      "tmdb_title": "",
+      "status": "api_error",
+      "verification_status": "FAILED",
+      "reason": "TMDB network error on /movie/25188: [WinError 10054] An existing connection was forcibly closed by the remote host"
     },
     {
       "movielens_id": "32600",
@@ -34,6 +204,176 @@
       "reason": "No TMDB ID in MovieLens links.csv; manual review required (REVIEW_REQUIRED)."
     },
     {
+      "movielens_id": "3385",
+      "tmdb_id": 19259,
+      "imdb_id": "tt0090274",
+      "movielens_title": "Volunteers (1985)",
+      "tmdb_title": "",
+      "status": "api_error",
+      "verification_status": "FAILED",
+      "reason": "TMDB network error on /movie/19259: [WinError 10054] An existing connection was forcibly closed by the remote host"
+    },
+    {
+      "movielens_id": "3825",
+      "tmdb_id": 6282,
+      "imdb_id": "tt0200550",
+      "movielens_title": "Coyote Ugly (2000)",
+      "tmdb_title": "",
+      "status": "api_error",
+      "verification_status": "FAILED",
+      "reason": "TMDB network error on /movie/6282: [WinError 10054] An existing connection was forcibly closed by the remote host"
+    },
+    {
+      "movielens_id": "414",
+      "tmdb_id": 46094,
+      "imdb_id": "tt0109067",
+      "movielens_title": "Air Up There, The (1994)",
+      "tmdb_title": "",
+      "status": "not_attempted_budget_exhausted",
+      "verification_status": "NOT_ATTEMPTED",
+      "reason": "Skipped because 74-attempt budget was exhausted (74/74)."
+    },
+    {
+      "movielens_id": "4998",
+      "tmdb_id": 11414,
+      "imdb_id": "tt0051525",
+      "movielens_title": "Defiant Ones, The (1958)",
+      "tmdb_title": "",
+      "status": "not_attempted_budget_exhausted",
+      "verification_status": "NOT_ATTEMPTED",
+      "reason": "Skipped because 74-attempt budget was exhausted (74/74)."
+    },
+    {
+      "movielens_id": "57147",
+      "tmdb_id": 4787,
+      "imdb_id": "tt0795493",
+      "movielens_title": "Cassandra's Dream (2007)",
+      "tmdb_title": "",
+      "status": "not_attempted_budget_exhausted",
+      "verification_status": "NOT_ATTEMPTED",
+      "reason": "Skipped because 74-attempt budget was exhausted (74/74)."
+    },
+    {
+      "movielens_id": "5791",
+      "tmdb_id": 1360,
+      "imdb_id": "tt0120679",
+      "movielens_title": "Frida (2002)",
+      "tmdb_title": "",
+      "status": "not_attempted_budget_exhausted",
+      "verification_status": "NOT_ATTEMPTED",
+      "reason": "Skipped because 74-attempt budget was exhausted (74/74)."
+    },
+    {
+      "movielens_id": "58351",
+      "tmdb_id": 7343,
+      "imdb_id": "tt0870090",
+      "movielens_title": "City of Men (Cidade dos Homens) (2007)",
+      "tmdb_title": "",
+      "status": "not_attempted_budget_exhausted",
+      "verification_status": "NOT_ATTEMPTED",
+      "reason": "Skipped because 74-attempt budget was exhausted (74/74)."
+    },
+    {
+      "movielens_id": "59220",
+      "tmdb_id": 7861,
+      "imdb_id": "tt0425326",
+      "movielens_title": "Outsourced (2006)",
+      "tmdb_title": "",
+      "status": "not_attempted_budget_exhausted",
+      "verification_status": "NOT_ATTEMPTED",
+      "reason": "Skipped because 74-attempt budget was exhausted (74/74)."
+    },
+    {
+      "movielens_id": "6123",
+      "tmdb_id": 1563,
+      "imdb_id": "tt0084628",
+      "movielens_title": "Sunless (Sans Soleil) (1983)",
+      "tmdb_title": "",
+      "status": "not_attempted_budget_exhausted",
+      "verification_status": "NOT_ATTEMPTED",
+      "reason": "Skipped because 74-attempt budget was exhausted (74/74)."
+    },
+    {
+      "movielens_id": "6289",
+      "tmdb_id": 24982,
+      "imdb_id": "tt0297144",
+      "movielens_title": "Ghosts of the Abyss (2003)",
+      "tmdb_title": "",
+      "status": "not_attempted_budget_exhausted",
+      "verification_status": "NOT_ATTEMPTED",
+      "reason": "Skipped because 74-attempt budget was exhausted (74/74)."
+    },
+    {
+      "movielens_id": "67534",
+      "tmdb_id": 13161,
+      "imdb_id": "tt0490086",
+      "movielens_title": "Big Stan (2007)",
+      "tmdb_title": "",
+      "status": "not_attempted_budget_exhausted",
+      "verification_status": "NOT_ATTEMPTED",
+      "reason": "Skipped because 74-attempt budget was exhausted (74/74)."
+    },
+    {
+      "movielens_id": "6807",
+      "tmdb_id": 4543,
+      "imdb_id": "tt0085959",
+      "movielens_title": "Monty Python's The Meaning of Life (1983)",
+      "tmdb_title": "",
+      "status": "not_attempted_budget_exhausted",
+      "verification_status": "NOT_ATTEMPTED",
+      "reason": "Skipped because 74-attempt budget was exhausted (74/74)."
+    },
+    {
+      "movielens_id": "6944",
+      "tmdb_id": 11846,
+      "imdb_id": "tt0101862",
+      "movielens_title": "Father of the Bride (1991)",
+      "tmdb_title": "",
+      "status": "not_attempted_budget_exhausted",
+      "verification_status": "NOT_ATTEMPTED",
+      "reason": "Skipped because 74-attempt budget was exhausted (74/74)."
+    },
+    {
+      "movielens_id": "70301",
+      "tmdb_id": 17335,
+      "imdb_id": "tt1198138",
+      "movielens_title": "Obsessed (2009)",
+      "tmdb_title": "",
+      "status": "not_attempted_budget_exhausted",
+      "verification_status": "NOT_ATTEMPTED",
+      "reason": "Skipped because 74-attempt budget was exhausted (74/74)."
+    },
+    {
+      "movielens_id": "745",
+      "tmdb_id": 532,
+      "imdb_id": "tt0112691",
+      "movielens_title": "Wallace & Gromit: A Close Shave (1995)",
+      "tmdb_title": "",
+      "status": "not_attempted_budget_exhausted",
+      "verification_status": "NOT_ATTEMPTED",
+      "reason": "Skipped because 74-attempt budget was exhausted (74/74)."
+    },
+    {
+      "movielens_id": "78142",
+      "tmdb_id": 25846,
+      "imdb_id": "tt1081935",
+      "movielens_title": "Baar\u00eca (2009)",
+      "tmdb_title": "",
+      "status": "not_attempted_budget_exhausted",
+      "verification_status": "NOT_ATTEMPTED",
+      "reason": "Skipped because 74-attempt budget was exhausted (74/74)."
+    },
+    {
+      "movielens_id": "79091",
+      "tmdb_id": 20352,
+      "imdb_id": "tt1323594",
+      "movielens_title": "Despicable Me (2010)",
+      "tmdb_title": "",
+      "status": "not_attempted_budget_exhausted",
+      "verification_status": "NOT_ATTEMPTED",
+      "reason": "Skipped because 74-attempt budget was exhausted (74/74)."
+    },
+    {
       "movielens_id": "791",
       "tmdb_id": 0,
       "imdb_id": "tt0113610",
@@ -42,6 +382,36 @@
       "status": "not_attempted_missing_tmdb_id",
       "verification_status": "NOT_ATTEMPTED_MISSING_TMDB_ID",
       "reason": "No TMDB ID in MovieLens links.csv; manual review required (REVIEW_REQUIRED)."
+    },
+    {
+      "movielens_id": "79536",
+      "tmdb_id": 25335,
+      "imdb_id": "tt1227536",
+      "movielens_title": "Hellsinki (R\u00f6\u00f6peri) (2009)",
+      "tmdb_title": "",
+      "status": "not_attempted_budget_exhausted",
+      "verification_status": "NOT_ATTEMPTED",
+      "reason": "Skipped because 74-attempt budget was exhausted (74/74)."
+    },
+    {
+      "movielens_id": "8712",
+      "tmdb_id": 41463,
+      "imdb_id": "tt0029284",
+      "movielens_title": "My Favorite Wife (1940)",
+      "tmdb_title": "",
+      "status": "not_attempted_budget_exhausted",
+      "verification_status": "NOT_ATTEMPTED",
+      "reason": "Skipped because 74-attempt budget was exhausted (74/74)."
+    },
+    {
+      "movielens_id": "95497",
+      "tmdb_id": 39104,
+      "imdb_id": "tt0142241",
+      "movielens_title": "Dragon Ball Z: Super Android 13! (Doragon b\u00f4ru Z 7: Kyokugen batoru!! San dai s\u00fbp\u00e2 saiyajin) (1992)",
+      "tmdb_title": "",
+      "status": "not_attempted_budget_exhausted",
+      "verification_status": "NOT_ATTEMPTED",
+      "reason": "Skipped because 74-attempt budget was exhausted (74/74)."
     }
   ]
 }
