@@ -27,6 +27,7 @@ import httpx
 
 from ..core.api_errors import (
     TMDB_BUDGET_EXHAUSTED,
+    TMDB_CIRCUIT_OPEN,
     TMDB_DISALLOWED_HOST,
     TMDB_FORBIDDEN,
     TMDB_INVALID_INPUT,
@@ -38,6 +39,7 @@ from ..core.api_errors import (
     TMDB_PAGINATION_LIMIT_EXCEEDED,
     TMDB_RATE_LIMITED,
     TMDB_TIMEOUT,
+    TMDB_TLS_HANDSHAKE_FAILED,
     TMDB_UNAUTHORIZED,
     TMDB_UPSTREAM_ERROR,
 )
@@ -138,6 +140,11 @@ class TMDBClientStats:
     budget_exhausted_count: int = 0
     latencies_ms: list[float] = field(default_factory=list)
     request_timestamps: list[float] = field(default_factory=list)
+    # Circuit breaker telemetry
+    consecutive_transport_failures: int = 0
+    circuit_breaker_triggered: bool = False
+    circuit_breaker_reason: str = ""
+    circuit_breaker_rejections: int = 0
 
     def max_observed_rps(self) -> float:
         """Maximum requests observed within any 1.0-second sliding window."""
@@ -163,6 +170,10 @@ class TMDBClientStats:
             "budget_exhausted_count": self.budget_exhausted_count,
             "max_observed_rps": self.max_observed_rps(),
             "latencies_ms": list(self.latencies_ms),
+            "consecutive_transport_failures": self.consecutive_transport_failures,
+            "circuit_breaker_triggered": self.circuit_breaker_triggered,
+            "circuit_breaker_reason": self.circuit_breaker_reason,
+            "circuit_breaker_rejections": self.circuit_breaker_rejections,
         }
 
 
@@ -182,6 +193,7 @@ class TMDBConfig:
     max_connections: int = 10
     max_keepalive_connections: int = 5
     max_total_requests: Optional[int] = None
+    circuit_breaker_threshold: int = 5
 
     def __repr__(self) -> str:
         masked = "***REDACTED***" if self.read_access_token else "<empty>"
@@ -264,6 +276,42 @@ def build_tmdb_image_url(file_path: Optional[str], size: str = "w500") -> Option
         return None
     safe_size = size if size in ALLOWED_IMAGE_SIZES else "w500"
     return f"{DEFAULT_TMDB_IMAGE_BASE_URL}/{safe_size}{cleaned}"
+
+
+# ─── Transport Failure Classification ────────────────────────────────────────
+
+# Patterns indicating a transport-level (TLS/connection) failure rather than
+# an HTTP-level error.  Used by the circuit breaker to distinguish network
+# unavailability from transient upstream issues.
+_TRANSPORT_FAILURE_PATTERNS: tuple[str, ...] = (
+    "WinError 10054",
+    "WinError 10053",
+    "ConnectionReset",
+    "ConnectionRefused",
+    "ConnectionAborted",
+    "ConnectError",
+    "SSL",
+    "handshake",
+    "TLS",
+    "CERTIFICATE",
+    "ProxyError",
+    "SOCKS",
+)
+
+
+def _is_transport_failure(exc: Exception) -> bool:
+    """Classify whether an exception represents a transport-level failure.
+
+    Transport failures (TLS handshake reset, connection refused, proxy errors)
+    indicate that the network path is broken, as opposed to HTTP-level errors
+    (401, 429, 5xx) where the server is reachable but returning error statuses.
+    """
+    exc_str = str(exc)
+    exc_type = type(exc).__name__
+    for pattern in _TRANSPORT_FAILURE_PATTERNS:
+        if pattern in exc_str or pattern in exc_type:
+            return True
+    return False
 
 
 # ─── TMDB HTTP Client ────────────────────────────────────────────────────────
@@ -383,6 +431,17 @@ class TMDBClient:
         self._ensure_ready()
         safe_path = self._validate_endpoint_path(endpoint)
 
+        # ── Circuit breaker fast-fail ────────────────────────────────────
+        if self.stats.circuit_breaker_triggered:
+            self.stats.circuit_breaker_rejections += 1
+            raise TMDBClientError(
+                f"Circuit breaker OPEN after {self.stats.consecutive_transport_failures} "
+                f"consecutive transport failures ({self.stats.circuit_breaker_reason}). "
+                f"Skipping request to {safe_path}.",
+                code=TMDB_CIRCUIT_OPEN,
+                retryable=False,
+            )
+
         headers = {
             "Authorization": f"Bearer {self.config.read_access_token.strip()}",
             "Accept": "application/json",
@@ -429,6 +488,28 @@ class TMDBClient:
                     "TMDB timeout on %s (attempt %d/%d)",
                     safe_path, attempt + 1, max_attempts,
                 )
+                # Track transport failures for circuit breaker
+                if _is_transport_failure(exc):
+                    self.stats.consecutive_transport_failures += 1
+                    if (
+                        self.config.circuit_breaker_threshold > 0
+                        and self.stats.consecutive_transport_failures >= self.config.circuit_breaker_threshold
+                    ):
+                        self.stats.circuit_breaker_triggered = True
+                        self.stats.circuit_breaker_reason = (
+                            f"TIMEOUT/{type(exc).__name__}: {redact_secrets(str(exc), self.config.read_access_token)}"
+                        )
+                        self.stats.api_failures += 1
+                        logger.error(
+                            "Circuit breaker OPEN: %d consecutive transport failures on %s",
+                            self.stats.consecutive_transport_failures, safe_path,
+                        )
+                        raise TMDBClientError(
+                            f"Circuit breaker triggered after {self.stats.consecutive_transport_failures} "
+                            f"consecutive transport failures: {self.stats.circuit_breaker_reason}",
+                            code=TMDB_CIRCUIT_OPEN,
+                            retryable=False,
+                        ) from None
                 can_retry = (attempt + 1 < max_attempts) and (
                     self.config.max_total_requests is None
                     or self.stats.requests_total < self.config.max_total_requests
@@ -447,15 +528,39 @@ class TMDBClient:
             except httpx.RequestError as exc:
                 elapsed_ms = max(0.0, (self._clock() - start_ts) * 1000.0)
                 self.stats.latencies_ms.append(round(elapsed_ms, 2))
+                is_transport = _is_transport_failure(exc)
+                error_code = TMDB_TLS_HANDSHAKE_FAILED if is_transport else TMDB_NETWORK_ERROR
                 last_error = TMDBClientError(
                     f"TMDB network error on {safe_path}: {redact_secrets(str(exc), self.config.read_access_token)}",
-                    code=TMDB_NETWORK_ERROR,
+                    code=error_code,
                     retryable=True,
                 )
                 logger.warning(
-                    "TMDB network error on %s (attempt %d/%d)",
-                    safe_path, attempt + 1, max_attempts,
+                    "TMDB network error on %s (attempt %d/%d, transport_failure=%s)",
+                    safe_path, attempt + 1, max_attempts, is_transport,
                 )
+                # Track transport failures for circuit breaker
+                if is_transport:
+                    self.stats.consecutive_transport_failures += 1
+                    if (
+                        self.config.circuit_breaker_threshold > 0
+                        and self.stats.consecutive_transport_failures >= self.config.circuit_breaker_threshold
+                    ):
+                        self.stats.circuit_breaker_triggered = True
+                        self.stats.circuit_breaker_reason = (
+                            f"NETWORK/{type(exc).__name__}: {redact_secrets(str(exc), self.config.read_access_token)}"
+                        )
+                        self.stats.api_failures += 1
+                        logger.error(
+                            "Circuit breaker OPEN: %d consecutive transport failures on %s",
+                            self.stats.consecutive_transport_failures, safe_path,
+                        )
+                        raise TMDBClientError(
+                            f"Circuit breaker triggered after {self.stats.consecutive_transport_failures} "
+                            f"consecutive transport failures: {self.stats.circuit_breaker_reason}",
+                            code=TMDB_CIRCUIT_OPEN,
+                            retryable=False,
+                        ) from None
                 can_retry = (attempt + 1 < max_attempts) and (
                     self.config.max_total_requests is None
                     or self.stats.requests_total < self.config.max_total_requests
@@ -492,6 +597,8 @@ class TMDBClient:
                         status_code=status,
                     )
                 self.stats.requests_succeeded += 1
+                # Reset circuit breaker on successful response
+                self.stats.consecutive_transport_failures = 0
                 return payload
 
             if status == 401:

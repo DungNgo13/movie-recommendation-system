@@ -67,6 +67,8 @@ TMDB_RATE_LIMITED = "tmdb_rate_limited"
 TMDB_TIMEOUT = "tmdb_timeout"
 TMDB_UPSTREAM_ERROR = "tmdb_upstream_error"
 TMDB_NETWORK_ERROR = "tmdb_network_error"
+TMDB_TLS_HANDSHAKE_FAILED = "tmdb_tls_handshake_failed"
+TMDB_CIRCUIT_OPEN = "tmdb_circuit_open"
 TMDB_INVALID_RESPONSE = "tmdb_invalid_response"
 TMDB_BUDGET_EXHAUSTED = "tmdb_budget_exhausted"
 

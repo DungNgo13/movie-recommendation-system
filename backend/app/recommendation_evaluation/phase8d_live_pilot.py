@@ -39,10 +39,12 @@ from typing import Any, Literal
 
 from ..core.api_errors import (
     TMDB_BUDGET_EXHAUSTED,
+    TMDB_CIRCUIT_OPEN,
     TMDB_FORBIDDEN,
     TMDB_LIVE_REQUESTS_DISABLED,
     TMDB_NOT_CONFIGURED,
     TMDB_NOT_FOUND,
+    TMDB_TLS_HANDSHAKE_FAILED,
     TMDB_UNAUTHORIZED,
 )
 from ..services.recommendation.text_builder import deduplicate_phrases, prepare_movie_document
@@ -1179,6 +1181,12 @@ def run_live_pilot(
                     elif e.code == TMDB_NOT_FOUND:
                         status_str = "not_found"
                         v_status = "FAILED"
+                    elif e.code == TMDB_CIRCUIT_OPEN:
+                        status_str = "api_error"
+                        v_status = "FAILED"
+                    elif e.code == TMDB_TLS_HANDSHAKE_FAILED:
+                        status_str = "api_error"
+                        v_status = "FAILED"
                     else:
                         status_str = "api_error"
                         v_status = "FAILED"
@@ -1223,6 +1231,58 @@ def run_live_pilot(
                         blocker_error = e
                         summary.blocker_code = e.code
                         summary.blocker_message = e.message
+                    # Stop immediately if circuit breaker fired — mark remaining as network unavailable
+                    if e.code == TMDB_CIRCUIT_OPEN:
+                        logger.error(
+                            "Circuit breaker OPEN — marking remaining movies as NOT_ATTEMPTED_NETWORK_UNAVAILABLE"
+                        )
+                        summary.blocker_code = TMDB_CIRCUIT_OPEN
+                        summary.blocker_message = e.message
+                        summary.verification_mode = "FAILED"
+                        # Mark all remaining movies as not attempted due to network unavailability
+                        remaining_ids = [
+                            m for m in pilot_ids
+                            if m not in records_by_id and m not in completed_ids
+                        ]
+                        for remain_mid in remaining_ids:
+                            r_tmdb_id = get_tmdb_id_for_movie(mapping, remain_mid)
+                            r_imdb_id = get_imdb_id_for_movie(mapping, remain_mid) or ""
+                            r_title_info = mapping.title_year_index.get(remain_mid)
+                            r_ml_title = dataset.movies[remain_mid].title if remain_mid in dataset.movies else ""
+                            r_ml_year = r_title_info[1] if r_title_info else None
+                            remain_record = LiveRetrievalRecord(
+                                movielens_id=remain_mid,
+                                tmdb_id=r_tmdb_id or 0,
+                                imdb_id=r_imdb_id,
+                                movielens_title=r_ml_title,
+                                movielens_year=r_ml_year,
+                                tmdb_title="",
+                                tmdb_original_title="",
+                                tmdb_release_date="",
+                                status="not_attempted_network_unavailable",
+                                verification_status="NOT_ATTEMPTED_NETWORK_UNAVAILABLE",
+                                title_match=False,
+                                year_match=False,
+                                fields_retrieved=[],
+                                fields_missing=["all"],
+                                request_count=0,
+                                latency_ms=0.0,
+                                error_message=f"Skipped: circuit breaker triggered ({e.message})",
+                                match_method="direct_tmdb_id" if r_tmdb_id else "missing_tmdb_id",
+                                requires_manual_review=False,
+                            )
+                            records_by_id[remain_mid] = remain_record
+                        _save_checkpoint(
+                            checkpoint_dir=checkpoint_dir,
+                            movie_id="circuit_breaker",
+                            record=None,
+                            completed_ids=sorted(completed_ids),
+                            cumulative_requests=client.stats.requests_total,
+                            records_by_id=records_by_id,
+                            stats_snapshot=client.stats.to_dict(),
+                            request_budget=effective_budget,
+                        )
+                        break
                     continue
 
                 # 6. Retrieve Vietnamese localization (2nd request, only if budget allows)
