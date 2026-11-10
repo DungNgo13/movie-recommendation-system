@@ -275,3 +275,4 @@ pilot budget. Their results will determine whether:
 | Phase 8D.1 recovery plan | `docs/audit/PHASE8D_RECOVERY_PLAN.md` |
 | Phase 8D.1 TEC failure analysis | `docs/audit/PHASE8D_TEC_FAILURE_ANALYSIS.md` |
 | Checkpoint (run_001) | `backend/reports/phase8d_pilot/checkpoint/checkpoint.json` |
+

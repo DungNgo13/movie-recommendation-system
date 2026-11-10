@@ -389,3 +389,4 @@ TMDB requires authentication for all API endpoints).
 | Network comparison plan | `docs/audit/PHASE8D2_NETWORK_COMPARISON_PLAN.md` |
 | Recovery readiness | `docs/audit/PHASE8D2_RECOVERY_READINESS.md` |
 | Phase 8D.1 root cause analysis | `docs/audit/PHASE8D_TLS_ROOT_CAUSE_ANALYSIS.md` |
+

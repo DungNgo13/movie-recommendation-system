@@ -355,3 +355,4 @@ regardless of TLS implementation.
 | Phase 8D.1 network diagnostics | `docs/audit/PHASE8D_NETWORK_DIAGNOSTICS.md` |
 | Phase 8D.1 recovery plan | `docs/audit/PHASE8D_RECOVERY_PLAN.md` |
 | Previous checkpoint (run_001) | `backend/reports/phase8d_pilot/checkpoint/checkpoint.json` |
+
