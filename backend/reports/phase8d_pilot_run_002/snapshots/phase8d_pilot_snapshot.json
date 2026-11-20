@@ -1,0 +1,5320 @@
+{
+  "generated_at": "2026-11-20T04:27:58.604887+00:00",
+  "movies": {
+    "1029": {
+      "en_US": {
+        "cast_top10": [
+          {
+            "character": "Timothy Q. Mouse (voice) (uncredited)",
+            "id": 32437,
+            "name": "Edward Brophy"
+          },
+          {
+            "character": "Casey Jr. (voice) (uncredited)",
+            "id": 2530995,
+            "name": "Margaret Wright"
+          },
+          {
+            "character": "Elephant Matriarch / Mrs. Jumbo (voice) (uncredited)",
+            "id": 67290,
+            "name": "Verna Felton"
+          },
+          {
+            "character": "Prissy the Elephant (voice) (uncredited)",
+            "id": 114955,
+            "name": "Sarah Selby"
+          },
+          {
+            "character": "Catty the Elephant (voice) (uncredited)",
+            "id": 193820,
+            "name": "Noreen Gammill"
+          },
+          {
+            "character": "Giddy the Elephant (voice) (uncredited)",
+            "id": 3203000,
+            "name": "Dorothy Scott"
+          },
+          {
+            "character": "The Ringmaster (voice) (uncredited)",
+            "id": 9084,
+            "name": "Herman Bing"
+          },
+          {
+            "character": "Dandy Crow (voice) (uncredited)",
+            "id": 30236,
+            "name": "Cliff Edwards"
+          },
+          {
+            "character": "Dopey Crow (voice) (uncredited)",
+            "id": 222315,
+            "name": "Jim Carmichael"
+          },
+          {
+            "character": "Deacon Crow (voice) (uncredited)",
+            "id": 1513985,
+            "name": "Hall Johnson"
+          }
+        ],
+        "directors": [
+          {
+            "id": 11426,
+            "name": "Ben Sharpsteen"
+          },
+          {
+            "id": 226599,
+            "name": "Norman Ferguson"
+          },
+          {
+            "id": 11427,
+            "name": "Bill Roberts"
+          },
+          {
+            "id": 74565,
+            "name": "Jack Kinney"
+          },
+          {
+            "id": 11434,
+            "name": "Wilfred Jackson"
+          },
+          {
+            "id": 5691,
+            "name": "Samuel Armstrong"
+          }
+        ],
+        "genres": [
+          {
+            "id": 16,
+            "name": "Animation"
+          },
+          {
+            "id": 10751,
+            "name": "Family"
+          }
+        ],
+        "id": 11360,
+        "keywords": [
+          {
+            "id": 456,
+            "name": "mother"
+          },
+          {
+            "id": 1566,
+            "name": "dreams"
+          },
+          {
+            "id": 3030,
+            "name": "nightmare"
+          },
+          {
+            "id": 3032,
+            "name": "suffering"
+          },
+          {
+            "id": 291,
+            "name": "circus"
+          },
+          {
+            "id": 6513,
+            "name": "cartoon"
+          },
+          {
+            "id": 3199,
+            "name": "clown"
+          },
+          {
+            "id": 4075,
+            "name": "ear"
+          },
+          {
+            "id": 4344,
+            "name": "musical"
+          },
+          {
+            "id": 4639,
+            "name": "crow"
+          },
+          {
+            "id": 5608,
+            "name": "affection"
+          },
+          {
+            "id": 9207,
+            "name": "storch"
+          },
+          {
+            "id": 33429,
+            "name": "big ears"
+          },
+          {
+            "id": 155325,
+            "name": "cartoon mouse"
+          },
+          {
+            "id": 318533,
+            "name": "cartoon elephant"
+          },
+          {
+            "id": 324713,
+            "name": "whimsical"
+          }
+        ],
+        "original_title": "Dumbo",
+        "overview": "Dumbo is a baby elephant born with over-sized ears and a supreme lack of confidence. But thanks to his even more diminutive buddy Timothy the Mouse,  the pint-sized pachyderm learns to surmount all obstacles.",
+        "release_date": "1941-10-31",
+        "title": "Dumbo"
+      },
+      "imdb_id": "tt0033563",
+      "movielens_id": "1029",
+      "provenance": {
+        "cast": "tmdb:movie/11360:en-US",
+        "director": "tmdb:movie/11360:en-US",
+        "genres": "tmdb:movie/11360:en-US",
+        "keywords": "tmdb:movie/11360:en-US",
+        "original_title": "tmdb:movie/11360:en-US",
+        "overview": "tmdb:movie/11360:en-US",
+        "overview_vi": "tmdb:movie/11360:en-US",
+        "title_vi": "tmdb:movie/11360:en-US"
+      },
+      "tmdb_id": 11360,
+      "verification_status": "LIVE_VERIFIED",
+      "vi_VN": {
+        "id": 11360,
+        "language": "vi-VN",
+        "overview": "Dumbo - ch\u00fa voi con \u0111\u01b0\u1ee3c sinh ra v\u00e0 l\u1edbn l\u00ean trong m\u1ed9t g\u00e1nh xi\u1ebfc. Ngay t\u1eeb khi ra \u0111\u1eddi, c\u1eadu \u0111\u00e3 b\u1ecb c\u00e1c con voi kh\u00e1c trong \u0111o\u00e0n c\u01b0\u1eddi ch\u00ea v\u00ec c\u00f3 \u0111\u00f4i tai to l\u1edbn b\u1ea5t th\u01b0\u1eddng, b\u1ecb \u0111\u1eb7t t\u00ean l\u00e0 Dumbo (ngh\u0129a l\u00e0 ngu ng\u1ed1c). Ngo\u00e0i voi m\u1eb9 Jumbo, ch\u1ec9 c\u00f3 ch\u00fa chu\u1ed9t nh\u1ecf Timothy Q l\u00e0 quan t\u00e2m v\u00e0 b\u1ea7u b\u1ea1n v\u1edbi Dumbo. Ch\u00fa chu\u1ed9t n\u00e0y lu\u00f4n th\u00f4ng c\u1ea3m v\u1edbi ho\u00e0n c\u1ea3nh c\u1ee7a Dumbo, v\u00ec th\u1ebf m\u00e0 c\u1eadu ta \u0111\u00e3 quy\u1ebft \u0111\u1ecbnh s\u1ebd l\u00e0m Dumbo vui v\u1ebb tr\u1edf l\u1ea1i, t\u1ef1 \u0111\u1ec1 nhi\u1ec7m m\u00ecnh s\u1ebd l\u00e0m c\u1ed1 v\u1ea5n v\u00e0 b\u1ea3o v\u1ec7 cho Dumbo sau n\u00e0y v\u00e0 m\u00e3i m\u00e3i. T\u1eeb \u0111\u00f3 h\u1ecd \u0111\u00e3 tr\u1edf th\u00e0nh m\u1ed9t \u0111\u00f4i b\u1ea1n th\u00e2n tri k\u1ec9. Trong m\u1ed9t l\u1ea7n bi\u1ec3u di\u1ec5n xi\u1ebfc tr\u00ean m\u1ed9t t\u00f2a nh\u00e0 cao \u1ed1c, v\u00ec g\u1eb7p ph\u1ea3i nh\u1eefng s\u1ef1 c\u1ed1 kh\u00f4ng may m\u00e0 Dumbo \u0111\u00e3 b\u1ecb tr\u01b0\u1ee3t ng\u00e3, nh\u01b0ng c\u0169ng ch\u00ednh t\u1eeb \u0111\u00f3 m\u00e0 ch\u00fa voi n\u00e0y \u0111\u00e3 d\u00f9ng ch\u00ednh \u0111\u00f4i tai \u0111\u1ec3 bay l\u00ean. V\u00e0 t\u1eeb \u0111\u00f3 tr\u1edf \u0111i Dumbo tr\u1edf n\u00ean n\u1ed5i ti\u1ebfng tr\u00ean c\u00e1c ph\u01b0\u01a1ng ti\u1ec7n truy\u1ec1n th\u00f4ng, Timothy tr\u1edf th\u00e0nh qu\u1ea3n l\u00fd c\u1ee7a c\u1eadu, Dumbo v\u00e0 b\u00e0 Jumbo c\u00f3 \u0111\u01b0\u1ee3c m\u1ed9t toa t\u00e0u c\u1ee7a ri\u00eang h\u1ecd tr\u00ean t\u00e0u xi\u1ebfc...",
+        "title": "Ch\u00fa Voi Bi\u1ebft Bay"
+      }
+    },
+    "106782": {
+      "en_US": {
+        "cast_top10": [
+          {
+            "character": "Jordan Belfort",
+            "id": 6193,
+            "name": "Leonardo DiCaprio"
+          },
+          {
+            "character": "Donnie Azoff",
+            "id": 21007,
+            "name": "Jonah Hill"
+          },
+          {
+            "character": "Naomi Lapaglia",
+            "id": 234352,
+            "name": "Margot Robbie"
+          },
+          {
+            "character": "Mark Hanna",
+            "id": 10297,
+            "name": "Matthew McConaughey"
+          },
+          {
+            "character": "Agent Patrick Denham",
+            "id": 3497,
+            "name": "Kyle Chandler"
+          },
+          {
+            "character": "Max Belfort",
+            "id": 3026,
+            "name": "Rob Reiner"
+          },
+          {
+            "character": "Brad",
+            "id": 19498,
+            "name": "Jon Bernthal"
+          },
+          {
+            "character": "Manny Riskin",
+            "id": 15277,
+            "name": "Jon Favreau"
+          },
+          {
+            "character": "Jean Jacques Saurel",
+            "id": 56024,
+            "name": "Jean Dujardin"
+          },
+          {
+            "character": "Aunt Emma",
+            "id": 34901,
+            "name": "Joanna Lumley"
+          }
+        ],
+        "directors": [
+          {
+            "id": 1032,
+            "name": "Martin Scorsese"
+          }
+        ],
+        "genres": [
+          {
+            "id": 80,
+            "name": "Crime"
+          },
+          {
+            "id": 18,
+            "name": "Drama"
+          },
+          {
+            "id": 35,
+            "name": "Comedy"
+          }
+        ],
+        "id": 106646,
+        "keywords": [
+          {
+            "id": 417,
+            "name": "corruption"
+          },
+          {
+            "id": 818,
+            "name": "based on novel or book"
+          },
+          {
+            "id": 1803,
+            "name": "drug addiction"
+          },
+          {
+            "id": 2095,
+            "name": "anti hero"
+          },
+          {
+            "id": 3202,
+            "name": "con man"
+          },
+          {
+            "id": 4373,
+            "name": "fraud"
+          },
+          {
+            "id": 5636,
+            "name": "wall street"
+          },
+          {
+            "id": 5565,
+            "name": "biography"
+          },
+          {
+            "id": 9672,
+            "name": "based on true story"
+          },
+          {
+            "id": 6974,
+            "name": "rise and fall"
+          },
+          {
+            "id": 10453,
+            "name": "con artist"
+          },
+          {
+            "id": 10594,
+            "name": "money"
+          },
+          {
+            "id": 10631,
+            "name": "stockbroker"
+          },
+          {
+            "id": 10910,
+            "name": "wealthy"
+          },
+          {
+            "id": 14964,
+            "name": "drugs"
+          },
+          {
+            "id": 156260,
+            "name": "stripping"
+          },
+          {
+            "id": 156277,
+            "name": "hedonism"
+          },
+          {
+            "id": 163048,
+            "name": "decadence"
+          },
+          {
+            "id": 199518,
+            "name": "corrupt"
+          },
+          {
+            "id": 208289,
+            "name": "1980s"
+          },
+          {
+            "id": 228538,
+            "name": "sharemarket fraud"
+          },
+          {
+            "id": 230707,
+            "name": "desire for fame"
+          },
+          {
+            "id": 234814,
+            "name": "financial market"
+          },
+          {
+            "id": 235530,
+            "name": "fame-seeking"
+          },
+          {
+            "id": 247861,
+            "name": "black monday"
+          },
+          {
+            "id": 328926,
+            "name": "based on real person"
+          },
+          {
+            "id": 362375,
+            "name": "financial drama"
+          }
+        ],
+        "original_title": "The Wolf of Wall Street",
+        "overview": "A New York stockbroker refuses to cooperate in a large securities fraud case involving corruption on Wall Street, corporate banking world and mob infiltration. Based on Jordan Belfort's autobiography.",
+        "release_date": "2013-12-25",
+        "title": "The Wolf of Wall Street"
+      },
+      "imdb_id": "tt0993846",
+      "movielens_id": "106782",
+      "provenance": {
+        "cast": "tmdb:movie/106646:en-US",
+        "director": "tmdb:movie/106646:en-US",
+        "genres": "tmdb:movie/106646:en-US",
+        "keywords": "tmdb:movie/106646:en-US",
+        "original_title": "tmdb:movie/106646:en-US",
+        "overview": "tmdb:movie/106646:en-US",
+        "overview_vi": "tmdb:movie/106646:en-US",
+        "title_vi": "tmdb:movie/106646:en-US"
+      },
+      "tmdb_id": 106646,
+      "verification_status": "LIVE_VERIFIED",
+      "vi_VN": {
+        "id": 106646,
+        "language": "vi-VN",
+        "overview": "T\u00e1c ph\u1ea9m v\u1ec1 \u00f4ng tr\u00f9m ch\u1ee9ng kho\u00e1n Jordan Belfort v\u1ebd n\u00ean m\u1ed9t x\u00e3 h\u1ed9i M\u1ef9 tr\u00e0n ng\u1eadp t\u00ecnh d\u1ee5c, ma t\u00fay v\u00e0 \u0111\u1ea1o \u0111\u1ee9c suy \u0111\u1ed3i v\u00e0o cu\u1ed1i th\u1eadp ni\u00ean 1980, \u0111\u1ea7u th\u1eadp ni\u00ean 1990.  Phim \u0111\u01b0\u1ee3c ph\u00f3ng t\u00e1c d\u1ef1a tr\u00ean k\u1ecbch b\u1ea3n chuy\u1ec3n th\u1ec3 t\u1eeb cu\u1ed1n h\u1ed3i k\u00fd n\u1ed5i ti\u1ebfng \u0103n kh\u00e1ch c\u1ee7a Jordan Belfort, m\u1ed9t tay m\u00f4i gi\u1edbi c\u1ed5 phi\u1ebfu gi\u00e1 tr\u1ecb th\u1ea5p t\u1eeb Long Island \u0111\u00e3 tr\u1edf n\u00ean c\u1ef1c k\u1ef3 n\u1ed5i ti\u1ebfng khi xu\u1ea5t b\u1ea3n cu\u1ed1n h\u1ed3i k\u00fd sau th\u1eddi gian th\u1ee5 \u00e1n 20 th\u00e1ng t\u00f9 do t\u1eeb ch\u1ed1i h\u1ee3p t\u00e1c v\u1edbi c\u1ea3nh s\u00e1t \u0111i\u1ec1u tra trong v\u1ee5 b\u00ea b\u1ed1i ch\u1ee9ng kho\u00e1n gi\u1ea3 m\u1ea1o \u0111\u00e3 su\u00fdt n\u1eefa l\u00e0m s\u1ee5p \u0111\u1ed5 c\u1ea3 ph\u1ed1 Wall v\u00e0o th\u1eadp ni\u00ean 90, d\u00ednh l\u00edu \u0111\u1ebfn gi\u1edbi ng\u00e2n h\u00e0ng v\u00e0 c\u1ea3 c\u00e1c b\u0103ng \u0111\u1ea3ng mafia. The Wolf Of Wall Street \u0111\u00e3 ph\u1ea3n \u00e1nh s\u1ef1 th\u0103ng tr\u1ea7m c\u1ee7a th\u1ebf gi\u1edbi t\u00e0i ch\u00ednh Wall Street c\u00f9ng v\u1edbi nh\u1eefng cu\u1ed9c ti\u1ec7c t\u00f9ng ch\u01a1i b\u1eddi ng\u1eadp trong ma t\u00fay v\u00e0 r\u01b0\u1ee3u ch\u00e8, cu\u1ed1i c\u00f9ng \u0111\u00e3 l\u00e0m \u0111\u1ea3o l\u1ed9n cu\u1ed9c s\u1ed1ng c\u1ee7a nh\u1eefng con ng\u01b0\u1eddi \u0111\u1eafm ch\u00ecm trong n\u00f3...",
+        "title": "S\u00f3i Gi\u00e0 Ph\u1ed1 Wall"
+      }
+    },
+    "110826": {
+      "en_US": {
+        "cast_top10": [
+          {
+            "character": "Damien Collier",
+            "id": 8167,
+            "name": "Paul Walker"
+          },
+          {
+            "character": "Lino",
+            "id": 62439,
+            "name": "David Belle"
+          },
+          {
+            "character": "Tremaine",
+            "id": 150,
+            "name": "RZA"
+          },
+          {
+            "character": "Yeti",
+            "id": 112692,
+            "name": "Robert Maillet"
+          },
+          {
+            "character": "George the Greek",
+            "id": 54793,
+            "name": "Carlo Rota"
+          },
+          {
+            "character": "Mayor's Assistant",
+            "id": 1287272,
+            "name": "Kalinka P\u00e9trie"
+          },
+          {
+            "character": "Mayor",
+            "id": 7039,
+            "name": "Bruce Ramsay"
+          },
+          {
+            "character": "Big Cecil",
+            "id": 207881,
+            "name": "Kwasi Songui"
+          },
+          {
+            "character": "Lola",
+            "id": 113613,
+            "name": "Catalina Denis"
+          },
+          {
+            "character": "Rayzah",
+            "id": 231517,
+            "name": "Ayisha Issa"
+          }
+        ],
+        "directors": [
+          {
+            "id": 928490,
+            "name": "Camille Delamarre"
+          }
+        ],
+        "genres": [
+          {
+            "id": 28,
+            "name": "Action"
+          },
+          {
+            "id": 80,
+            "name": "Crime"
+          },
+          {
+            "id": 18,
+            "name": "Drama"
+          }
+        ],
+        "id": 254473,
+        "keywords": [
+          {
+            "id": 779,
+            "name": "martial arts"
+          },
+          {
+            "id": 1815,
+            "name": "atomic bomb"
+          },
+          {
+            "id": 3149,
+            "name": "gangster"
+          },
+          {
+            "id": 4565,
+            "name": "dystopia"
+          },
+          {
+            "id": 2394,
+            "name": "ghetto"
+          },
+          {
+            "id": 6955,
+            "name": "parkour"
+          },
+          {
+            "id": 8015,
+            "name": "cop"
+          },
+          {
+            "id": 9663,
+            "name": "sequel"
+          },
+          {
+            "id": 11199,
+            "name": "undercover cop"
+          },
+          {
+            "id": 14955,
+            "name": "fighting"
+          },
+          {
+            "id": 18021,
+            "name": "detroit, michigan"
+          },
+          {
+            "id": 188955,
+            "name": "hand to hand combat"
+          }
+        ],
+        "original_title": "Brick Mansions",
+        "overview": "In a dystopian Detroit, grand houses that once housed the wealthy are now homes of the city's most-dangerous criminals. Surrounding the area is a giant wall to keep the rest of Detroit safe. For undercover cop Damien Collier, every day is a battle against corruption as he struggles to bring his father's killer, Tremaine, to justice. Meanwhile, Damien and an ex-con named Lino work together to save the city from a plot to destroy it.",
+        "release_date": "2014-04-22",
+        "title": "Brick Mansions"
+      },
+      "imdb_id": "tt1430612",
+      "movielens_id": "110826",
+      "provenance": {
+        "cast": "tmdb:movie/254473:en-US",
+        "director": "tmdb:movie/254473:en-US",
+        "genres": "tmdb:movie/254473:en-US",
+        "keywords": "tmdb:movie/254473:en-US",
+        "original_title": "tmdb:movie/254473:en-US",
+        "overview": "tmdb:movie/254473:en-US",
+        "overview_vi": "tmdb:movie/254473:en-US",
+        "title_vi": "tmdb:movie/254473:en-US"
+      },
+      "tmdb_id": 254473,
+      "verification_status": "LIVE_VERIFIED",
+      "vi_VN": {
+        "id": 254473,
+        "language": "vi-VN",
+        "overview": "Brick Mansions l\u1ea5y b\u1ed1i c\u1ea3nh th\u00e0nh ph\u1ed1 Detroit khi \u0111\u00e3 b\u1ecb c\u00f4 l\u1eadp b\u1edfi m\u1ed9t b\u1ee9c t\u01b0\u1eddng ng\u0103n c\u00e1ch. \u0110\u00e2y tr\u1edf th\u00e0nh n\u01a1i tr\u00fa ng\u1ee5 c\u1ee7a nh\u1eefng t\u00ean t\u1ed9i ph\u1ea1m ma t\u00fay v\u00e0 c\u01b0\u1edbp b\u00f3c nguy hi\u1ec3m nh\u1ea5t trong x\u00e3 h\u1ed9i. \u1ede \u0111\u00f3, t\u00ean tr\u00f9m ma t\u00fay Tremaine (ZRA) \u0111ang ng\u00e0y \u0111\u00eam truy s\u00e1t Lino (David Belle) - m\u1ed9t c\u1ef1u t\u00f9 nh\u00e2n l\u1ea7m \u0111\u01b0\u1eddng l\u1ea1c l\u1ed1i nh\u01b0ng lu\u00f4n mu\u1ed1n tranh \u0111\u1ea5u cho s\u1ef1 trong s\u1ea1ch c\u1ee7a t\u00e2m h\u1ed3n.",
+        "title": "Khu Nguy Hi\u1ec3m"
+      }
+    },
+    "112788": {
+      "en_US": {
+        "cast_top10": [
+          {
+            "character": "Annie",
+            "id": 6941,
+            "name": "Cameron Diaz"
+          },
+          {
+            "character": "Jay",
+            "id": 41088,
+            "name": "Jason Segel"
+          },
+          {
+            "character": "Robby",
+            "id": 52997,
+            "name": "Rob Corddry"
+          },
+          {
+            "character": "Tess",
+            "id": 475512,
+            "name": "Ellie Kemper"
+          },
+          {
+            "character": "Hank",
+            "id": 2879,
+            "name": "Rob Lowe"
+          },
+          {
+            "character": "Catalina",
+            "id": 68276,
+            "name": "Jolene Blalock"
+          },
+          {
+            "character": "Rosie",
+            "id": 1384191,
+            "name": "Melissa Paulo"
+          },
+          {
+            "character": "Max",
+            "id": 105648,
+            "name": "Nat Faxon"
+          },
+          {
+            "character": "Linda",
+            "id": 9279,
+            "name": "Nancy Lenehan"
+          },
+          {
+            "character": "Nell",
+            "id": 1306572,
+            "name": "Giselle Eisenberg"
+          }
+        ],
+        "directors": [
+          {
+            "id": 51851,
+            "name": "Jake Kasdan"
+          }
+        ],
+        "genres": [
+          {
+            "id": 35,
+            "name": "Comedy"
+          }
+        ],
+        "id": 225886,
+        "keywords": [
+          {
+            "id": 6038,
+            "name": "marriage"
+          },
+          {
+            "id": 11615,
+            "name": "internet"
+          },
+          {
+            "id": 14534,
+            "name": "relationship"
+          },
+          {
+            "id": 18035,
+            "name": "family"
+          },
+          {
+            "id": 183728,
+            "name": "sex tape"
+          }
+        ],
+        "original_title": "Sex Tape",
+        "overview": "When Jay and Annie first got together, their romantic connection was intense \u2013 but ten years and two kids later, the flame of their love needs a spark.  To kick things up a notch, they decide \u2013 why not? \u2013 to make a video of themselves trying out every position in The Joy of Sex in one marathon three-hour session.  It seems like a great idea \u2013 until they discover that their most private video is no longer private.  With their reputations on the line, they know they\u2019re just one click away from being laid bare to the world... but as their race to reclaim their video leads to a night they'll never forget, they'll find that their video will expose even more than they bargained for.",
+        "release_date": "2014-07-17",
+        "title": "Sex Tape"
+      },
+      "imdb_id": "tt1956620",
+      "movielens_id": "112788",
+      "provenance": {
+        "cast": "tmdb:movie/225886:en-US",
+        "director": "tmdb:movie/225886:en-US",
+        "genres": "tmdb:movie/225886:en-US",
+        "keywords": "tmdb:movie/225886:en-US",
+        "original_title": "tmdb:movie/225886:en-US",
+        "overview": "tmdb:movie/225886:en-US",
+        "overview_vi": "tmdb:movie/225886:en-US",
+        "title_vi": "tmdb:movie/225886:en-US"
+      },
+      "tmdb_id": 225886,
+      "verification_status": "LIVE_VERIFIED",
+      "vi_VN": {
+        "id": 225886,
+        "language": "vi-VN",
+        "overview": "Hai v\u1ee3 ch\u1ed3ng Annie v\u00e0 Jay quy\u1ebft \u0111\u1ecbnh h\u00e2m n\u00f3ng t\u00ecnh y\u00eau c\u1ee7a h\u1ecd b\u1eb1ng vi\u1ec7c t\u1ef1 quay m\u1ed9t \u0111o\u1ea1n b\u0103ng sex. M\u1ecdi th\u1ee9 tr\u1edf n\u00ean r\u1ed1i tung khi \u0111o\u1ea1n video c\u1ee7a h\u1ecd b\u1ecb chia s\u1ebb c\u00f4ng khai.",
+        "title": "\u0110o\u1ea1n Phim Sex B\u1ecb L\u1ed9"
+      }
+    },
+    "135": {
+      "en_US": {
+        "cast_top10": [
+          {
+            "character": "Lt. Commander Tom Dodge",
+            "id": 7090,
+            "name": "Kelsey Grammer"
+          },
+          {
+            "character": "Lt. Emily Lake",
+            "id": 34485,
+            "name": "Lauren Holly"
+          },
+          {
+            "character": "Lt. Marty Pascal",
+            "id": 60949,
+            "name": "Rob Schneider"
+          },
+          {
+            "character": "Lt. Howard",
+            "id": 5048,
+            "name": "Harry Dean Stanton"
+          },
+          {
+            "character": "Rear Admiral Yancy Graham",
+            "id": 6905,
+            "name": "Bruce Dern"
+          },
+          {
+            "character": "Captain Knox",
+            "id": 3905,
+            "name": "William H. Macy"
+          },
+          {
+            "character": "Admiral Winslow",
+            "id": 9626,
+            "name": "Rip Torn"
+          },
+          {
+            "character": "Seaman Buckman",
+            "id": 236327,
+            "name": "Ken Hudson Campbell"
+          },
+          {
+            "character": "Seaman Nitro",
+            "id": 18271,
+            "name": "Toby Huss"
+          },
+          {
+            "character": "Planesman 1st Class Jefferson 'R.J.' Jackson",
+            "id": 84077,
+            "name": "Duane Martin"
+          }
+        ],
+        "directors": [
+          {
+            "id": 12920,
+            "name": "David S. Ward"
+          }
+        ],
+        "genres": [
+          {
+            "id": 35,
+            "name": "Comedy"
+          }
+        ],
+        "id": 9101,
+        "keywords": [
+          {
+            "id": 1860,
+            "name": "mutiny"
+          },
+          {
+            "id": 339,
+            "name": "submarine"
+          },
+          {
+            "id": 4410,
+            "name": "u.s. navy"
+          },
+          {
+            "id": 9789,
+            "name": "misfit"
+          },
+          {
+            "id": 10871,
+            "name": "maverick"
+          },
+          {
+            "id": 12011,
+            "name": "hijinks"
+          },
+          {
+            "id": 12612,
+            "name": "nemesis"
+          },
+          {
+            "id": 160881,
+            "name": "navy lieutenant"
+          },
+          {
+            "id": 193933,
+            "name": "comradeship"
+          },
+          {
+            "id": 227612,
+            "name": "nuclear submarine"
+          },
+          {
+            "id": 246510,
+            "name": "navy officer"
+          },
+          {
+            "id": 286227,
+            "name": "comedy of errors"
+          },
+          {
+            "id": 307319,
+            "name": "navy admiral"
+          },
+          {
+            "id": 307320,
+            "name": "band of misfits"
+          },
+          {
+            "id": 307321,
+            "name": "war games"
+          },
+          {
+            "id": 307322,
+            "name": "naval command"
+          }
+        ],
+        "original_title": "Down Periscope",
+        "overview": "Maverick Navy Lieutenant Commander Tom Dodge will never be a textbook officer, but he's a brilliant seaman who's always wanted to command a nuclear submarine \u2014 he's been given one last chance to clean up his record. Unfortunately, Admiral Graham, his nemesis, would rather sink the fleet than give Dodge his own boat. So, Graham stacks the deck against him and assigns Dodge to the Stingray, a diesel-powered WW2 submarine that can barely keep afloat. To make matters worse, Dodge's crew is a collection of maladjusted, mistake-prone misfits. Then, he's tagged the \"enemy\" in a crucial war game, and ordered to take on the U.S. Navy's best.",
+        "release_date": "1996-03-01",
+        "title": "Down Periscope"
+      },
+      "imdb_id": "tt0116130",
+      "movielens_id": "135",
+      "provenance": {
+        "cast": "tmdb:movie/9101:en-US",
+        "director": "tmdb:movie/9101:en-US",
+        "genres": "tmdb:movie/9101:en-US",
+        "keywords": "tmdb:movie/9101:en-US",
+        "original_title": "tmdb:movie/9101:en-US",
+        "overview": "tmdb:movie/9101:en-US",
+        "title_vi": "tmdb:movie/9101:en-US"
+      },
+      "tmdb_id": 9101,
+      "verification_status": "LIVE_VERIFIED",
+      "vi_VN": {
+        "id": 9101,
+        "language": "vi-VN",
+        "overview": "",
+        "title": "Down Periscope"
+      }
+    },
+    "1493": {
+      "en_US": {
+        "cast_top10": [
+          {
+            "character": "Mia",
+            "id": 1518,
+            "name": "Frances O'Connor"
+          },
+          {
+            "character": "Alice",
+            "id": 38784,
+            "name": "Alice Garner"
+          },
+          {
+            "character": "Michael Douglas",
+            "id": 3068,
+            "name": "Matt Day"
+          },
+          {
+            "character": "Ari",
+            "id": 79105,
+            "name": "Matthew Dyktynski"
+          },
+          {
+            "character": "Danni",
+            "id": 8329,
+            "name": "Radha Mitchell"
+          },
+          {
+            "character": "Professor Richard Leach",
+            "id": 75193,
+            "name": "Kim Gyngell"
+          },
+          {
+            "character": "Savita",
+            "id": 186977,
+            "name": "Suzi Dougherty"
+          },
+          {
+            "character": "Dr. Russell",
+            "id": 2511461,
+            "name": "Suzanne Dowling"
+          },
+          {
+            "character": "Toby",
+            "id": 75285,
+            "name": "Torquil Neilson"
+          },
+          {
+            "character": "Zac",
+            "id": 2511446,
+            "name": "Dominic McDonald"
+          }
+        ],
+        "directors": [
+          {
+            "id": 142513,
+            "name": "Emma-Kate Croghan"
+          }
+        ],
+        "genres": [
+          {
+            "id": 35,
+            "name": "Comedy"
+          },
+          {
+            "id": 10749,
+            "name": "Romance"
+          }
+        ],
+        "id": 76996,
+        "keywords": [
+          {
+            "id": 1740,
+            "name": "pop culture"
+          },
+          {
+            "id": 8039,
+            "name": "campus"
+          },
+          {
+            "id": 14766,
+            "name": "cafe"
+          },
+          {
+            "id": 187056,
+            "name": "woman director"
+          },
+          {
+            "id": 212673,
+            "name": "housemates"
+          }
+        ],
+        "original_title": "Love and Other Catastrophes",
+        "overview": "Over the course of one frantic day, five university students try to keep their heads above water.",
+        "release_date": "1996-08-01",
+        "title": "Love and Other Catastrophes"
+      },
+      "imdb_id": "tt0116931",
+      "movielens_id": "1493",
+      "provenance": {
+        "cast": "tmdb:movie/76996:en-US",
+        "director": "tmdb:movie/76996:en-US",
+        "genres": "tmdb:movie/76996:en-US",
+        "keywords": "tmdb:movie/76996:en-US",
+        "original_title": "tmdb:movie/76996:en-US",
+        "overview": "tmdb:movie/76996:en-US",
+        "title_vi": "tmdb:movie/76996:en-US"
+      },
+      "tmdb_id": 76996,
+      "verification_status": "LIVE_VERIFIED",
+      "vi_VN": {
+        "id": 76996,
+        "language": "vi-VN",
+        "overview": "",
+        "title": "Love and Other Catastrophes"
+      }
+    },
+    "151317": {
+      "en_US": {
+        "cast_top10": [
+          {
+            "character": "Maggie Hardin",
+            "id": 45400,
+            "name": "Greta Gerwig"
+          },
+          {
+            "character": "John Harding",
+            "id": 569,
+            "name": "Ethan Hawke"
+          },
+          {
+            "character": "Georgette N\u00f8rgaard",
+            "id": 1231,
+            "name": "Julianne Moore"
+          },
+          {
+            "character": "Tony",
+            "id": 19278,
+            "name": "Bill Hader"
+          },
+          {
+            "character": "Felicia",
+            "id": 52792,
+            "name": "Maya Rudolph"
+          },
+          {
+            "character": "Guy Childers",
+            "id": 77700,
+            "name": "Travis Fimmel"
+          },
+          {
+            "character": "Justine Harding",
+            "id": 1607561,
+            "name": "Mina Sundwall"
+          },
+          {
+            "character": "Paul Harding",
+            "id": 1385043,
+            "name": "Jackson Frazer"
+          },
+          {
+            "character": "Lily Harding",
+            "id": 1662556,
+            "name": "Ida Rohatyn"
+          },
+          {
+            "character": "Kliegler",
+            "id": 12900,
+            "name": "Wallace Shawn"
+          }
+        ],
+        "directors": [
+          {
+            "id": 41670,
+            "name": "Rebecca Miller"
+          }
+        ],
+        "genres": [
+          {
+            "id": 18,
+            "name": "Drama"
+          },
+          {
+            "id": 10749,
+            "name": "Romance"
+          },
+          {
+            "id": 35,
+            "name": "Comedy"
+          }
+        ],
+        "id": 312669,
+        "keywords": [
+          {
+            "id": 242,
+            "name": "new york city"
+          },
+          {
+            "id": 1992,
+            "name": "professor"
+          },
+          {
+            "id": 1788,
+            "name": "chinatown"
+          },
+          {
+            "id": 6258,
+            "name": "intellectual"
+          },
+          {
+            "id": 6038,
+            "name": "marriage"
+          },
+          {
+            "id": 3356,
+            "name": "quebec"
+          },
+          {
+            "id": 10983,
+            "name": "anthropology"
+          },
+          {
+            "id": 12392,
+            "name": "best friend"
+          },
+          {
+            "id": 13160,
+            "name": "university"
+          },
+          {
+            "id": 14720,
+            "name": "love affair"
+          },
+          {
+            "id": 41523,
+            "name": "brooklyn, new york city"
+          },
+          {
+            "id": 163758,
+            "name": "ex-husband ex-wife relationship"
+          },
+          {
+            "id": 171808,
+            "name": "older man younger man relationship"
+          },
+          {
+            "id": 177820,
+            "name": "wanting a baby"
+          },
+          {
+            "id": 187056,
+            "name": "woman director"
+          },
+          {
+            "id": 207185,
+            "name": "married life"
+          },
+          {
+            "id": 212795,
+            "name": "blended family"
+          },
+          {
+            "id": 250164,
+            "name": "book writing"
+          },
+          {
+            "id": 258593,
+            "name": "adulterous affair"
+          },
+          {
+            "id": 288423,
+            "name": "academic"
+          }
+        ],
+        "original_title": "Maggie's Plan",
+        "overview": "Maggie's plan to have a baby on her own with a sperm donor is derailed when she falls in love with John, an older married professor, destroying his volatile marriage to the brilliant and impossible Georgette. But three years later, married to John with one daughter, Maggie is out of love and in a quandary: what do you do when you suspect your man and his ex-wife are actually perfect for each other?",
+        "release_date": "2016-04-27",
+        "title": "Maggie's Plan"
+      },
+      "imdb_id": "tt3471098",
+      "movielens_id": "151317",
+      "provenance": {
+        "cast": "tmdb:movie/312669:en-US",
+        "director": "tmdb:movie/312669:en-US",
+        "genres": "tmdb:movie/312669:en-US",
+        "keywords": "tmdb:movie/312669:en-US",
+        "original_title": "tmdb:movie/312669:en-US",
+        "overview": "tmdb:movie/312669:en-US",
+        "title_vi": "tmdb:movie/312669:en-US"
+      },
+      "tmdb_id": 312669,
+      "verification_status": "LIVE_VERIFIED",
+      "vi_VN": {
+        "id": 312669,
+        "language": "vi-VN",
+        "overview": "",
+        "title": "Maggie's Plan"
+      }
+    },
+    "152077": {
+      "en_US": {
+        "cast_top10": [
+          {
+            "character": "Howard",
+            "id": 1230,
+            "name": "John Goodman"
+          },
+          {
+            "character": "Michelle",
+            "id": 17628,
+            "name": "Mary Elizabeth Winstead"
+          },
+          {
+            "character": "Emmett",
+            "id": 17487,
+            "name": "John Gallagher Jr."
+          },
+          {
+            "character": "Driver",
+            "id": 60881,
+            "name": "Douglas M. Griffin"
+          },
+          {
+            "character": "Woman",
+            "id": 8269,
+            "name": "Suzanne Cryer"
+          },
+          {
+            "character": "Ben (voice)",
+            "id": 51329,
+            "name": "Bradley Cooper"
+          },
+          {
+            "character": "Voice on Radio (voice)",
+            "id": 66655,
+            "name": "Sumalee Montano"
+          },
+          {
+            "character": "Radio Broadcaster (voice)",
+            "id": 2204366,
+            "name": "Frank Mottek"
+          }
+        ],
+        "directors": [
+          {
+            "id": 568322,
+            "name": "Dan Trachtenberg"
+          }
+        ],
+        "genres": [
+          {
+            "id": 53,
+            "name": "Thriller"
+          },
+          {
+            "id": 878,
+            "name": "Science Fiction"
+          },
+          {
+            "id": 18,
+            "name": "Drama"
+          },
+          {
+            "id": 27,
+            "name": "Horror"
+          }
+        ],
+        "id": 333371,
+        "keywords": [
+          {
+            "id": 1930,
+            "name": "kidnapping"
+          },
+          {
+            "id": 2340,
+            "name": "paranoia"
+          },
+          {
+            "id": 2321,
+            "name": "bunker"
+          },
+          {
+            "id": 9866,
+            "name": "basement"
+          },
+          {
+            "id": 10833,
+            "name": "survivalist"
+          },
+          {
+            "id": 12332,
+            "name": "apocalypse"
+          },
+          {
+            "id": 13063,
+            "name": "car accident"
+          },
+          {
+            "id": 15381,
+            "name": "captive"
+          }
+        ],
+        "original_title": "10 Cloverfield Lane",
+        "overview": "After a catastrophic car crash, a young woman wakes up in a survivalist's underground bunker, where he claims to have saved her from an apocalyptic attack that has left the outside world uninhabitable.",
+        "release_date": "2016-03-10",
+        "title": "10 Cloverfield Lane"
+      },
+      "imdb_id": "tt1179933",
+      "movielens_id": "152077",
+      "provenance": {
+        "cast": "tmdb:movie/333371:en-US",
+        "director": "tmdb:movie/333371:en-US",
+        "genres": "tmdb:movie/333371:en-US",
+        "keywords": "tmdb:movie/333371:en-US",
+        "original_title": "tmdb:movie/333371:en-US",
+        "overview": "tmdb:movie/333371:en-US",
+        "overview_vi": "tmdb:movie/333371:en-US",
+        "title_vi": "tmdb:movie/333371:en-US"
+      },
+      "tmdb_id": 333371,
+      "verification_status": "LIVE_VERIFIED",
+      "vi_VN": {
+        "id": 333371,
+        "language": "vi-VN",
+        "overview": "C\u00e2u chuy\u1ec7n b\u1eaft \u0111\u1ea7u b\u1eb1ng v\u1ee5 tai n\u1ea1n kh\u1ed1c li\u1ec7t x\u1ea3y \u0111\u1ebfn v\u1edbi Michelle khi\u1ebfn c\u00f4 l\u1ecbm \u0111i trong xe \u00f4 t\u00f4. Khi t\u1ec9nh d\u1eady, Michelle ph\u00e1t hi\u1ec7n m\u00ecnh \u0111ang \u0111\u01b0\u1ee3c \u0111i\u1ec1u tr\u1ecb v\u1ebft th\u01b0\u01a1ng v\u00e0 b\u1ecb giam trong m\u1ed9t c\u0103n h\u1ea7m c\u00f9ng v\u1edbi hai ng\u01b0\u1eddi \u0111\u00e0n \u00f4ng. Howard \u2013 m\u1ed9t trong s\u1ed1 h\u1ecd - n\u00f3i v\u1edbi c\u00f4 r\u1eb1ng th\u1ebf gi\u1edbi b\u00ean ngo\u00e0i \u0111ang ch\u1ecbu m\u1ed9t th\u1ea3m h\u1ecda kinh ho\u00e0ng, v\u00e0 r\u1eb1ng l\u1ef1a ch\u1ecdn \u1edf l\u1ea1i c\u0103n h\u1ea7m s\u1ebd gi\u00fap b\u1ea3o to\u00e0n t\u00ednh m\u1ea1ng. Kh\u00f4ng tin nh\u1eefng l\u1eddi Howard n\u00f3i, Michelle t\u00ecm m\u1ecdi c\u00e1ch tr\u1ed1n tho\u00e1t \u0111\u1ec3 t\u00ecm ra s\u1ef1 th\u1eadt.",
+        "title": "C\u0103n H\u1ea7m"
+      }
+    },
+    "1891": {
+      "en_US": {
+        "cast_top10": [
+          {
+            "character": "Simon Cartwright",
+            "id": 76836,
+            "name": "Paolo Rotondo"
+          },
+          {
+            "character": "Dr. Karen Schumaker",
+            "id": 173385,
+            "name": "Rebecca Hobbs"
+          },
+          {
+            "character": "Robert",
+            "id": 2520027,
+            "name": "Chris Graham"
+          },
+          {
+            "character": "Marge",
+            "id": 1085972,
+            "name": "Darien Takle"
+          },
+          {
+            "character": "Dr. Marlowe",
+            "id": 206524,
+            "name": "Roy Ward"
+          },
+          {
+            "character": "Helen Ann Millar",
+            "id": 1085973,
+            "name": "Cath McWhirter"
+          },
+          {
+            "character": "Helen's friend",
+            "id": 1085974,
+            "name": "Carolyn Beaver"
+          },
+          {
+            "character": "Simon, aged 4",
+            "id": 1085975,
+            "name": "Caelem Pope"
+          },
+          {
+            "character": "Evelyn Cartwright",
+            "id": 173382,
+            "name": "Jennifer Ward-Lealand"
+          },
+          {
+            "character": "Future cop",
+            "id": 1085976,
+            "name": "Finn Johnsen"
+          }
+        ],
+        "directors": [
+          {
+            "id": 206549,
+            "name": "Scott Reynolds"
+          }
+        ],
+        "genres": [
+          {
+            "id": 27,
+            "name": "Horror"
+          },
+          {
+            "id": 53,
+            "name": "Thriller"
+          }
+        ],
+        "id": 40961,
+        "keywords": [
+          {
+            "id": 2833,
+            "name": "psychoanalysis"
+          },
+          {
+            "id": 3125,
+            "name": "razor"
+          },
+          {
+            "id": 10292,
+            "name": "gore"
+          },
+          {
+            "id": 10323,
+            "name": "psychiatric hospital"
+          },
+          {
+            "id": 11268,
+            "name": "psychologist"
+          },
+          {
+            "id": 10714,
+            "name": "serial killer"
+          },
+          {
+            "id": 11612,
+            "name": "hospital"
+          },
+          {
+            "id": 15127,
+            "name": "killer"
+          },
+          {
+            "id": 158203,
+            "name": "straight razor"
+          },
+          {
+            "id": 190007,
+            "name": "mental hospital"
+          }
+        ],
+        "original_title": "The Ugly",
+        "overview": "A female psychologist wants to understand the minds of a confessed serial killer who spent the last five years in a mental hospital because of his state.",
+        "release_date": "1997-08-26",
+        "title": "The Ugly"
+      },
+      "imdb_id": "tt0120401",
+      "movielens_id": "1891",
+      "provenance": {
+        "cast": "tmdb:movie/40961:en-US",
+        "director": "tmdb:movie/40961:en-US",
+        "genres": "tmdb:movie/40961:en-US",
+        "keywords": "tmdb:movie/40961:en-US",
+        "original_title": "tmdb:movie/40961:en-US",
+        "overview": "tmdb:movie/40961:en-US",
+        "title_vi": "tmdb:movie/40961:en-US"
+      },
+      "tmdb_id": 40961,
+      "verification_status": "LIVE_VERIFIED",
+      "vi_VN": {
+        "id": 40961,
+        "language": "vi-VN",
+        "overview": "",
+        "title": "The Ugly"
+      }
+    },
+    "2080": {
+      "en_US": {
+        "cast_top10": [
+          {
+            "character": "Lady (voice)",
+            "id": 64871,
+            "name": "Barbara Luddy"
+          },
+          {
+            "character": "Tramp (voice)",
+            "id": 64872,
+            "name": "Larry Roberts"
+          },
+          {
+            "character": "Darling / Si / Am / Peg (voice)",
+            "id": 64870,
+            "name": "Peggy Lee"
+          },
+          {
+            "character": "Jock / Bull / Policeman at Zoo / Dachsie / Joe (voice)",
+            "id": 67230,
+            "name": "Bill Thompson"
+          },
+          {
+            "character": "Trusty (voice)",
+            "id": 1022053,
+            "name": "Bill Baucom"
+          },
+          {
+            "character": "Beaver (voice)",
+            "id": 110654,
+            "name": "Stan Freberg"
+          },
+          {
+            "character": "Aunt Sarah (voice)",
+            "id": 67290,
+            "name": "Verna Felton"
+          },
+          {
+            "character": "Boris (voice)",
+            "id": 1944,
+            "name": "Alan Reed"
+          },
+          {
+            "character": "Tony (voice)",
+            "id": 124506,
+            "name": "George Givot"
+          },
+          {
+            "character": "Toughy / Professor / Pedro / Hyena (voice)",
+            "id": 44676,
+            "name": "Dal McKennon"
+          }
+        ],
+        "directors": [
+          {
+            "id": 11429,
+            "name": "Hamilton Luske"
+          },
+          {
+            "id": 64864,
+            "name": "Clyde Geronimi"
+          },
+          {
+            "id": 11434,
+            "name": "Wilfred Jackson"
+          }
+        ],
+        "genres": [
+          {
+            "id": 16,
+            "name": "Animation"
+          },
+          {
+            "id": 10751,
+            "name": "Family"
+          },
+          {
+            "id": 10749,
+            "name": "Romance"
+          },
+          {
+            "id": 12,
+            "name": "Adventure"
+          },
+          {
+            "id": 35,
+            "name": "Comedy"
+          }
+        ],
+        "id": 10340,
+        "keywords": [
+          {
+            "id": 2038,
+            "name": "love of one's life"
+          },
+          {
+            "id": 1808,
+            "name": "female lover"
+          },
+          {
+            "id": 6513,
+            "name": "cartoon"
+          },
+          {
+            "id": 3289,
+            "name": "villain"
+          },
+          {
+            "id": 5091,
+            "name": "kiss"
+          },
+          {
+            "id": 15284,
+            "name": "cartoon cat"
+          },
+          {
+            "id": 178898,
+            "name": "cartoon dog"
+          },
+          {
+            "id": 208152,
+            "name": "pets"
+          },
+          {
+            "id": 325807,
+            "name": "enchant"
+          }
+        ],
+        "original_title": "Lady and the Tramp",
+        "overview": "Lady, a golden cocker spaniel, meets up with a mongrel dog who calls himself the Tramp. He is obviously from the wrong side of town, but happenings at Lady's home make her decide to travel with him for a while.",
+        "release_date": "1955-06-22",
+        "title": "Lady and the Tramp"
+      },
+      "imdb_id": "tt0048280",
+      "movielens_id": "2080",
+      "provenance": {
+        "cast": "tmdb:movie/10340:en-US",
+        "director": "tmdb:movie/10340:en-US",
+        "genres": "tmdb:movie/10340:en-US",
+        "keywords": "tmdb:movie/10340:en-US",
+        "original_title": "tmdb:movie/10340:en-US",
+        "overview": "tmdb:movie/10340:en-US",
+        "title_vi": "tmdb:movie/10340:en-US"
+      },
+      "tmdb_id": 10340,
+      "verification_status": "LIVE_VERIFIED",
+      "vi_VN": {
+        "id": 10340,
+        "language": "vi-VN",
+        "overview": "",
+        "title": "Ti\u1ec3u Th\u01b0 v\u00e0 G\u00e3 Lang Thang"
+      }
+    },
+    "2282": {
+      "en_US": {
+        "cast_top10": [
+          {
+            "character": "Pecker",
+            "id": 820,
+            "name": "Edward Furlong"
+          },
+          {
+            "character": "Shelley",
+            "id": 6886,
+            "name": "Christina Ricci"
+          },
+          {
+            "character": "Dr. Klompus",
+            "id": 29710,
+            "name": "Bess Armstrong"
+          },
+          {
+            "character": "Jimmy",
+            "id": 65166,
+            "name": "Mark Joy"
+          },
+          {
+            "character": "Joyce",
+            "id": 5960,
+            "name": "Mary Kay Place"
+          },
+          {
+            "character": "Tina",
+            "id": 17495,
+            "name": "Martha Plimpton"
+          },
+          {
+            "character": "Matt",
+            "id": 2839,
+            "name": "Brendan Sexton III"
+          },
+          {
+            "character": "Precinct Captain",
+            "id": 9292,
+            "name": "Mink Stole"
+          },
+          {
+            "character": "Rorey Wheeler",
+            "id": 3127,
+            "name": "Lili Taylor"
+          },
+          {
+            "character": "Lynn Wentworth",
+            "id": 77242,
+            "name": "Patricia Hearst"
+          }
+        ],
+        "directors": [
+          {
+            "id": 10367,
+            "name": "John Waters"
+          }
+        ],
+        "genres": [
+          {
+            "id": 35,
+            "name": "Comedy"
+          },
+          {
+            "id": 18,
+            "name": "Drama"
+          }
+        ],
+        "id": 11855,
+        "keywords": [
+          {
+            "id": 2861,
+            "name": "gallery"
+          },
+          {
+            "id": 1003,
+            "name": "photographer"
+          },
+          {
+            "id": 6025,
+            "name": "photography"
+          },
+          {
+            "id": 2672,
+            "name": "baltimore, usa"
+          },
+          {
+            "id": 2819,
+            "name": "exhibit"
+          },
+          {
+            "id": 5490,
+            "name": "girlfriend"
+          },
+          {
+            "id": 4569,
+            "name": "gay club"
+          },
+          {
+            "id": 5916,
+            "name": "gallery owner"
+          },
+          {
+            "id": 14893,
+            "name": "art"
+          },
+          {
+            "id": 15478,
+            "name": "art gallery"
+          }
+        ],
+        "original_title": "Pecker",
+        "overview": "A Baltimore teenager who picks up a second-hand camera starts snapping his way to stardom, soon turning into a nationwide sensation, with a fateful choice between his life and his art.",
+        "release_date": "1998-09-25",
+        "title": "Pecker"
+      },
+      "imdb_id": "tt0126604",
+      "movielens_id": "2282",
+      "provenance": {
+        "cast": "tmdb:movie/11855:en-US",
+        "director": "tmdb:movie/11855:en-US",
+        "genres": "tmdb:movie/11855:en-US",
+        "keywords": "tmdb:movie/11855:en-US",
+        "original_title": "tmdb:movie/11855:en-US",
+        "overview": "tmdb:movie/11855:en-US",
+        "title_vi": "tmdb:movie/11855:en-US"
+      },
+      "tmdb_id": 11855,
+      "verification_status": "LIVE_VERIFIED",
+      "vi_VN": {
+        "id": 11855,
+        "language": "vi-VN",
+        "overview": "",
+        "title": "Pecker"
+      }
+    },
+    "2342": {
+      "en_US": {
+        "cast_top10": [
+          {
+            "character": "Joe Dick",
+            "id": 67704,
+            "name": "Hugh Dillon"
+          },
+          {
+            "character": "Billy Tallent / William Boisy",
+            "id": 540,
+            "name": "Callum Keith Rennie"
+          },
+          {
+            "character": "John Oxenberger",
+            "id": 95638,
+            "name": "John Pyper-Ferguson"
+          },
+          {
+            "character": "Pipefitter",
+            "id": 67523,
+            "name": "Bernie Coulson"
+          },
+          {
+            "character": "Buck Haight",
+            "id": 2320,
+            "name": "Julian Richings"
+          },
+          {
+            "character": "Pipefitter's Girlfriend",
+            "id": 75532,
+            "name": "Benita Ha"
+          },
+          {
+            "character": "John Oxenberger's Girlfriend",
+            "id": 7007,
+            "name": "Claudia Ferri"
+          },
+          {
+            "character": "Himself",
+            "id": 80492,
+            "name": "Joey Ramone"
+          },
+          {
+            "character": "Laura Cromartie",
+            "id": 1235615,
+            "name": "Corrine Koslo"
+          },
+          {
+            "character": "Himself",
+            "id": 1999009,
+            "name": "Art Bergmann"
+          }
+        ],
+        "directors": [
+          {
+            "id": 55189,
+            "name": "Bruce McDonald"
+          }
+        ],
+        "genres": [
+          {
+            "id": 18,
+            "name": "Drama"
+          },
+          {
+            "id": 35,
+            "name": "Comedy"
+          },
+          {
+            "id": 10402,
+            "name": "Music"
+          }
+        ],
+        "id": 21589,
+        "keywords": [
+          {
+            "id": 1329,
+            "name": "canada"
+          },
+          {
+            "id": 818,
+            "name": "based on novel or book"
+          },
+          {
+            "id": 2334,
+            "name": "nightclub"
+          },
+          {
+            "id": 4470,
+            "name": "punk rock"
+          },
+          {
+            "id": 11800,
+            "name": "mockumentary"
+          },
+          {
+            "id": 160223,
+            "name": "vancouver"
+          },
+          {
+            "id": 160517,
+            "name": "fake documentary"
+          },
+          {
+            "id": 173919,
+            "name": "punk band"
+          },
+          {
+            "id": 174283,
+            "name": "fictional band"
+          },
+          {
+            "id": 193012,
+            "name": "winnipeg"
+          },
+          {
+            "id": 236316,
+            "name": "anarchic comedy"
+          },
+          {
+            "id": 252881,
+            "name": "saskatoon"
+          }
+        ],
+        "original_title": "Hard Core Logo",
+        "overview": "Bruce Macdonald follows punk bank Hard Core Logo on a harrowing last-gasp reunion tour throughout Western Canada. As magnetic lead-singer Joe Dick holds the whole magilla together through sheer force of will, all the tensions and pitfalls of life on the road come bubbling to the surface.",
+        "release_date": "1996-10-11",
+        "title": "Hard Core Logo"
+      },
+      "imdb_id": "tt0116488",
+      "movielens_id": "2342",
+      "provenance": {
+        "cast": "tmdb:movie/21589:en-US",
+        "director": "tmdb:movie/21589:en-US",
+        "genres": "tmdb:movie/21589:en-US",
+        "keywords": "tmdb:movie/21589:en-US",
+        "original_title": "tmdb:movie/21589:en-US",
+        "overview": "tmdb:movie/21589:en-US",
+        "title_vi": "tmdb:movie/21589:en-US"
+      },
+      "tmdb_id": 21589,
+      "verification_status": "LIVE_VERIFIED",
+      "vi_VN": {
+        "id": 21589,
+        "language": "vi-VN",
+        "overview": "",
+        "title": "Hard Core Logo"
+      }
+    },
+    "2478": {
+      "en_US": {
+        "cast_top10": [
+          {
+            "character": "Dusty Bottoms",
+            "id": 54812,
+            "name": "Chevy Chase"
+          },
+          {
+            "character": "Lucky Day",
+            "id": 67773,
+            "name": "Steve Martin"
+          },
+          {
+            "character": "Ned Nederlander",
+            "id": 519,
+            "name": "Martin Short"
+          },
+          {
+            "character": "El Guapo",
+            "id": 22767,
+            "name": "Alfonso Arau"
+          },
+          {
+            "character": "Jefe",
+            "id": 41737,
+            "name": "Tony Plana"
+          },
+          {
+            "character": "Carmen",
+            "id": 54813,
+            "name": "Patrice Martinez"
+          },
+          {
+            "character": "Bandito #1",
+            "id": 940922,
+            "name": "Jorge Cervera Jr."
+          },
+          {
+            "character": "German",
+            "id": 42146,
+            "name": "Kai Wulff"
+          },
+          {
+            "character": "Papa Sanchez",
+            "id": 116137,
+            "name": "Abel Franco"
+          },
+          {
+            "character": "Bartender",
+            "id": 191545,
+            "name": "Fred Asparagus"
+          }
+        ],
+        "directors": [
+          {
+            "id": 4610,
+            "name": "John Landis"
+          }
+        ],
+        "genres": [
+          {
+            "id": 35,
+            "name": "Comedy"
+          },
+          {
+            "id": 37,
+            "name": "Western"
+          }
+        ],
+        "id": 8388,
+        "keywords": [
+          {
+            "id": 1701,
+            "name": "hero"
+          },
+          {
+            "id": 534,
+            "name": "mexico"
+          },
+          {
+            "id": 5331,
+            "name": "village"
+          },
+          {
+            "id": 5616,
+            "name": "usa\u2013mexico border"
+          },
+          {
+            "id": 10705,
+            "name": "confusion"
+          },
+          {
+            "id": 11931,
+            "name": "spoof"
+          },
+          {
+            "id": 166527,
+            "name": "western hero"
+          },
+          {
+            "id": 181028,
+            "name": "western band"
+          },
+          {
+            "id": 259376,
+            "name": "playful"
+          },
+          {
+            "id": 325844,
+            "name": "ridiculous"
+          }
+        ],
+        "original_title": "\u00a1Three Amigos!",
+        "overview": "A trio of unemployed silent film actors are mistaken for real heroes by a small Mexican village in search of someone to stop a malevolent bandit.",
+        "release_date": "1986-12-12",
+        "title": "\u00a1Three Amigos!"
+      },
+      "imdb_id": "tt0092086",
+      "movielens_id": "2478",
+      "provenance": {
+        "cast": "tmdb:movie/8388:en-US",
+        "director": "tmdb:movie/8388:en-US",
+        "genres": "tmdb:movie/8388:en-US",
+        "keywords": "tmdb:movie/8388:en-US",
+        "original_title": "tmdb:movie/8388:en-US",
+        "overview": "tmdb:movie/8388:en-US",
+        "title_vi": "tmdb:movie/8388:en-US"
+      },
+      "tmdb_id": 8388,
+      "verification_status": "LIVE_VERIFIED",
+      "vi_VN": {
+        "id": 8388,
+        "language": "vi-VN",
+        "overview": "",
+        "title": "\u00a1Three Amigos!"
+      }
+    },
+    "2730": {
+      "en_US": {
+        "cast_top10": [
+          {
+            "character": "Barry Lyndon",
+            "id": 31070,
+            "name": "Ryan O'Neal"
+          },
+          {
+            "character": "Lady Lyndon",
+            "id": 31071,
+            "name": "Marisa Berenson"
+          },
+          {
+            "character": "The Chevalier",
+            "id": 2264,
+            "name": "Patrick Magee"
+          },
+          {
+            "character": "Captain Potzdorf",
+            "id": 37777,
+            "name": "Hardy Kr\u00fcger"
+          },
+          {
+            "character": "Lord Ludd",
+            "id": 782,
+            "name": "Steven Berkoff"
+          },
+          {
+            "character": "Nora",
+            "id": 31720,
+            "name": "Gay Hamilton"
+          },
+          {
+            "character": "Barry's Mother",
+            "id": 31721,
+            "name": "Marie Kean"
+          },
+          {
+            "character": "German Girl",
+            "id": 22703,
+            "name": "Diana K\u00f6rner"
+          },
+          {
+            "character": "Reverend Runt",
+            "id": 31722,
+            "name": "Murray Melvin"
+          },
+          {
+            "character": "Sir Charles Lyndon",
+            "id": 31718,
+            "name": "Frank Middlemass"
+          }
+        ],
+        "directors": [
+          {
+            "id": 240,
+            "name": "Stanley Kubrick"
+          }
+        ],
+        "genres": [
+          {
+            "id": 18,
+            "name": "Drama"
+          },
+          {
+            "id": 36,
+            "name": "History"
+          }
+        ],
+        "id": 3175,
+        "keywords": [
+          {
+            "id": 818,
+            "name": "based on novel or book"
+          },
+          {
+            "id": 395,
+            "name": "gambling"
+          },
+          {
+            "id": 1806,
+            "name": "desertion"
+          },
+          {
+            "id": 5330,
+            "name": "fencing"
+          },
+          {
+            "id": 3998,
+            "name": "palace"
+          },
+          {
+            "id": 4100,
+            "name": "british army"
+          },
+          {
+            "id": 4649,
+            "name": "opportunist"
+          },
+          {
+            "id": 10329,
+            "name": "wealth"
+          },
+          {
+            "id": 11061,
+            "name": "debt"
+          },
+          {
+            "id": 12965,
+            "name": "duel"
+          },
+          {
+            "id": 14985,
+            "name": "ireland"
+          },
+          {
+            "id": 157788,
+            "name": "british soldier"
+          },
+          {
+            "id": 160279,
+            "name": "18th century"
+          },
+          {
+            "id": 166531,
+            "name": "card playing"
+          },
+          {
+            "id": 168418,
+            "name": "pistol duel"
+          },
+          {
+            "id": 177997,
+            "name": "seven years war"
+          },
+          {
+            "id": 177998,
+            "name": "nobility"
+          },
+          {
+            "id": 177999,
+            "name": "prussia"
+          },
+          {
+            "id": 195013,
+            "name": "costume drama"
+          },
+          {
+            "id": 266753,
+            "name": "cautionary"
+          },
+          {
+            "id": 325773,
+            "name": "audacious"
+          }
+        ],
+        "original_title": "Barry Lyndon",
+        "overview": "An Irish rogue uses his cunning and wit to work his way up the social classes of 18th century England, transforming himself from the humble Redmond Barry into the noble Barry Lyndon.",
+        "release_date": "1975-12-16",
+        "title": "Barry Lyndon"
+      },
+      "imdb_id": "tt0072684",
+      "movielens_id": "2730",
+      "provenance": {
+        "cast": "tmdb:movie/3175:en-US",
+        "director": "tmdb:movie/3175:en-US",
+        "genres": "tmdb:movie/3175:en-US",
+        "keywords": "tmdb:movie/3175:en-US",
+        "original_title": "tmdb:movie/3175:en-US",
+        "overview": "tmdb:movie/3175:en-US",
+        "overview_vi": "tmdb:movie/3175:en-US",
+        "title_vi": "tmdb:movie/3175:en-US"
+      },
+      "tmdb_id": 3175,
+      "verification_status": "LIVE_VERIFIED",
+      "vi_VN": {
+        "id": 3175,
+        "language": "vi-VN",
+        "overview": "Th\u1ebf k\u1ec9 18, t\u1ea1i m\u1ed9t ng\u00f4i l\u00e0ng nh\u1ecf \u1edf Ai Len, Redmond Barry, m\u1ed9t c\u1eadu b\u00e9 n\u00f4ng th\u00f4n \u0111em l\u00f2ng y\u00eau ng\u01b0\u1eddi ch\u1ecb h\u1ecd Nora Brady. Khi Nora chu\u1ea9n b\u1ecb k\u1ebft h\u00f4n v\u1edbi m\u1ed9t \u0111\u1ea1i \u00fay ng\u01b0\u1eddi Anh t\u00ean John Quin, Barry \u0111\u00e3 th\u00e1ch \u0111\u1ea5u s\u00fang v\u1edbi John. Barry th\u1eafng v\u00e0 ph\u1ea3i b\u1ecf tr\u1ed1n t\u1edbi Dublin nh\u01b0ng l\u1ea1i b\u1ecb c\u01b0\u1edbp d\u1ecdc \u0111\u01b0\u1eddng. Kh\u00f4ng c\u00f3 s\u1ef1 l\u1ef1a ch\u1ecdn n\u00e0o, Barry ph\u1ea3i gia nh\u1eadp v\u00e0o qu\u00e2n \u0111\u1ed9i Anh v\u00e0 chi\u1ebfn \u0111\u1ea5u trong Cu\u1ed9c chi\u1ebfn 7 n\u0103m v\u1edbi Ph\u00e1p. Chuy\u1ebfn phi\u1ebfu l\u01b0u \u0111\u1ecbnh m\u1ec7nh thay \u0111\u1ed5i c\u1ea3 cu\u1ed9c \u0111\u1eddi c\u1ee7a ch\u00e0ng trai Ailen b\u1eaft \u0111\u1ea7u t\u1eeb \u0111\u00e2y...",
+        "title": "Ch\u00e0ng Barry May M\u1eafn"
+      }
+    },
+    "284": {
+      "en_US": {
+        "cast_top10": [
+          {
+            "character": "Toshi",
+            "id": 74195,
+            "name": "Toru Nakamura"
+          },
+          {
+            "character": "Hawk",
+            "id": 23920,
+            "name": "Chad McQueen"
+          },
+          {
+            "character": "Maria",
+            "id": 23931,
+            "name": "Mira Sorvino"
+          },
+          {
+            "character": "Konen Li",
+            "id": 26783,
+            "name": "Conan Lee"
+          },
+          {
+            "character": "Ferrara",
+            "id": 43773,
+            "name": "Andreas Katsulas"
+          },
+          {
+            "character": "Mr. C",
+            "id": 21385,
+            "name": "Tony Sirico"
+          },
+          {
+            "character": "Tito",
+            "id": 72983,
+            "name": "Manny Perez"
+          },
+          {
+            "character": "Mario",
+            "id": 288,
+            "name": "Jon Seda"
+          },
+          {
+            "character": "Sledge",
+            "id": 4438,
+            "name": "Manny Siverio"
+          },
+          {
+            "character": "Emilio",
+            "id": 61233,
+            "name": "Larry Romano"
+          }
+        ],
+        "directors": [
+          {
+            "id": 129957,
+            "name": "T\u014dru Murakawa"
+          }
+        ],
+        "genres": [
+          {
+            "id": 28,
+            "name": "Action"
+          },
+          {
+            "id": 53,
+            "name": "Thriller"
+          },
+          {
+            "id": 80,
+            "name": "Crime"
+          },
+          {
+            "id": 18,
+            "name": "Drama"
+          }
+        ],
+        "id": 109560,
+        "keywords": [],
+        "original_title": "New York Undercover Cop",
+        "overview": "Allegedly based on a true story, this film follows the life of Toshi, a Japanese man living in America and working with the New York City police. After being recommended for undercover work, Toshi decides to go after a gang lead by Hawk. Hawk and Toshi soon become friends, although Hawk's second-in-command, Tito, is suspicious of the newcomer. Will Toshi be able to bring the gang down, or will his cover be blown before he can finish the assignment?",
+        "release_date": "1993-08-14",
+        "title": "New York Undercover Cop"
+      },
+      "imdb_id": "tt0117169",
+      "movielens_id": "284",
+      "provenance": {
+        "cast": "tmdb:movie/109560:en-US",
+        "director": "tmdb:movie/109560:en-US",
+        "genres": "tmdb:movie/109560:en-US",
+        "original_title": "tmdb:movie/109560:en-US",
+        "overview": "tmdb:movie/109560:en-US",
+        "title_vi": "tmdb:movie/109560:en-US"
+      },
+      "tmdb_id": 109560,
+      "verification_status": "REVIEW_REQUIRED",
+      "vi_VN": {
+        "id": 109560,
+        "language": "vi-VN",
+        "overview": "",
+        "title": "New York Undercover Cop"
+      }
+    },
+    "3": {
+      "en_US": {
+        "cast_top10": [
+          {
+            "character": "Max Goldman",
+            "id": 6837,
+            "name": "Walter Matthau"
+          },
+          {
+            "character": "John Gustafson",
+            "id": 3151,
+            "name": "Jack Lemmon"
+          },
+          {
+            "character": "Ariel Gustafson",
+            "id": 13567,
+            "name": "Ann-Margret"
+          },
+          {
+            "character": "Maria Sophia Coletta Ragetti",
+            "id": 16757,
+            "name": "Sophia Loren"
+          },
+          {
+            "character": "Melanie Gustafson",
+            "id": 589,
+            "name": "Daryl Hannah"
+          },
+          {
+            "character": "Grandpa Gustafson",
+            "id": 16523,
+            "name": "Burgess Meredith"
+          },
+          {
+            "character": "Jacob Goldman",
+            "id": 7166,
+            "name": "Kevin Pollak"
+          },
+          {
+            "character": "Allie, Melanie's Daughter",
+            "id": 57676,
+            "name": "Katie Sagona"
+          },
+          {
+            "character": "Mama Ragetti",
+            "id": 151759,
+            "name": "Ann Morgan Guilbert"
+          },
+          {
+            "character": "Sven",
+            "id": 111594,
+            "name": "James Andelin"
+          }
+        ],
+        "directors": [
+          {
+            "id": 26502,
+            "name": "Howard Deutch"
+          }
+        ],
+        "genres": [
+          {
+            "id": 10749,
+            "name": "Romance"
+          },
+          {
+            "id": 35,
+            "name": "Comedy"
+          }
+        ],
+        "id": 15602,
+        "keywords": [
+          {
+            "id": 1495,
+            "name": "fishing"
+          },
+          {
+            "id": 9663,
+            "name": "sequel"
+          },
+          {
+            "id": 10938,
+            "name": "old man"
+          },
+          {
+            "id": 12392,
+            "name": "best friend"
+          },
+          {
+            "id": 13027,
+            "name": "wedding"
+          },
+          {
+            "id": 14836,
+            "name": "italian restaurant"
+          },
+          {
+            "id": 157187,
+            "name": "old friends"
+          },
+          {
+            "id": 179431,
+            "name": "duringcreditsstinger"
+          },
+          {
+            "id": 294543,
+            "name": "pranks"
+          }
+        ],
+        "original_title": "Grumpier Old Men",
+        "overview": "A family wedding reignites the ancient feud between next-door neighbors and fishing buddies John and Max. Meanwhile, a sultry Italian divorc\u00e9e opens a restaurant at the local bait shop, alarming the locals who worry she'll scare the fish away. But she's less interested in seafood than she is in cooking up a hot time with Max.",
+        "release_date": "1995-12-22",
+        "title": "Grumpier Old Men"
+      },
+      "imdb_id": "tt0113228",
+      "movielens_id": "3",
+      "provenance": {
+        "cast": "tmdb:movie/15602:en-US",
+        "director": "tmdb:movie/15602:en-US",
+        "genres": "tmdb:movie/15602:en-US",
+        "keywords": "tmdb:movie/15602:en-US",
+        "original_title": "tmdb:movie/15602:en-US",
+        "overview": "tmdb:movie/15602:en-US",
+        "title_vi": "tmdb:movie/15602:en-US"
+      },
+      "tmdb_id": 15602,
+      "verification_status": "LIVE_VERIFIED",
+      "vi_VN": {
+        "id": 15602,
+        "language": "vi-VN",
+        "overview": "",
+        "title": "Grumpier Old Men"
+      }
+    },
+    "3152": {
+      "en_US": {
+        "cast_top10": [
+          {
+            "character": "Sonny Crawford",
+            "id": 19207,
+            "name": "Timothy Bottoms"
+          },
+          {
+            "character": "Jacy Farrow",
+            "id": 1036,
+            "name": "Cybill Shepherd"
+          },
+          {
+            "character": "Duane Jackson",
+            "id": 1229,
+            "name": "Jeff Bridges"
+          },
+          {
+            "character": "Ruth Popper",
+            "id": 9599,
+            "name": "Cloris Leachman"
+          },
+          {
+            "character": "Lois Farrow",
+            "id": 9560,
+            "name": "Ellen Burstyn"
+          },
+          {
+            "character": "Sam the Lion",
+            "id": 8258,
+            "name": "Ben Johnson"
+          },
+          {
+            "character": "Lester Marlow",
+            "id": 1811,
+            "name": "Randy Quaid"
+          },
+          {
+            "character": "Abilene",
+            "id": 62019,
+            "name": "Clu Gulager"
+          },
+          {
+            "character": "Genevieve",
+            "id": 39015,
+            "name": "Eileen Brennan"
+          },
+          {
+            "character": "Billy",
+            "id": 8350,
+            "name": "Sam Bottoms"
+          }
+        ],
+        "directors": [
+          {
+            "id": 39012,
+            "name": "Peter Bogdanovich"
+          }
+        ],
+        "genres": [
+          {
+            "id": 18,
+            "name": "Drama"
+          },
+          {
+            "id": 10749,
+            "name": "Romance"
+          }
+        ],
+        "id": 25188,
+        "keywords": [
+          {
+            "id": 1415,
+            "name": "small town"
+          },
+          {
+            "id": 1605,
+            "name": "new love"
+          },
+          {
+            "id": 818,
+            "name": "based on novel or book"
+          },
+          {
+            "id": 1556,
+            "name": "texas"
+          },
+          {
+            "id": 3687,
+            "name": "graduation"
+          },
+          {
+            "id": 11710,
+            "name": "high school graduation"
+          },
+          {
+            "id": 11711,
+            "name": "billiard hall"
+          },
+          {
+            "id": 11713,
+            "name": "graduation present"
+          },
+          {
+            "id": 12999,
+            "name": "black and white"
+          },
+          {
+            "id": 164460,
+            "name": "elopement"
+          },
+          {
+            "id": 208611,
+            "name": "1950s"
+          },
+          {
+            "id": 210434,
+            "name": "thoughtful"
+          }
+        ],
+        "original_title": "The Last Picture Show",
+        "overview": "High school seniors and best friends, Sonny and Duane, live in a dying Texas town. The handsome Duane is dating a local beauty, while Sonny is having an affair with the coach's wife. As graduation nears and both boys contemplate their futures, Duane eyes the army and Sonny takes over a local business. Each struggles to figure out if he can escape this dead-end town and build a better life somewhere else.",
+        "release_date": "1971-10-03",
+        "title": "The Last Picture Show"
+      },
+      "imdb_id": "tt0067328",
+      "movielens_id": "3152",
+      "provenance": {
+        "cast": "tmdb:movie/25188:en-US",
+        "director": "tmdb:movie/25188:en-US",
+        "genres": "tmdb:movie/25188:en-US",
+        "keywords": "tmdb:movie/25188:en-US",
+        "original_title": "tmdb:movie/25188:en-US",
+        "overview": "tmdb:movie/25188:en-US",
+        "overview_vi": "tmdb:movie/25188:en-US",
+        "title_vi": "tmdb:movie/25188:en-US"
+      },
+      "tmdb_id": 25188,
+      "verification_status": "LIVE_VERIFIED",
+      "vi_VN": {
+        "id": 25188,
+        "language": "vi-VN",
+        "overview": "Hai h\u1ecdc sinh c\u1ea5p ba ki\u00eam b\u1ea1n th\u00e2n ch\u00ed c\u1ed1t, Sonny v\u00e0 Duane, c\u00f9ng sinh s\u1ed1ng t\u1ea1i m\u1ed9t th\u1ecb tr\u1ea5n hoang t\u00e0n \u1edf Texas. Thanh ni\u00ean \u0111i\u1ec3n trai Duane \u0111ang h\u1eb9n h\u00f2 v\u1edbi m\u1ed9t c\u00f4 g\u00e1i \u0111\u1ecba ph\u01b0\u01a1ng xinh x\u1eafn, trong khi Sonny th\u00ec \u0111ang qua l\u1ea1i v\u1edbi v\u1ee3 c\u1ee7a hu\u1ea5n luy\u1ec7n vi\u00ean th\u1ec3 d\u1ee5c. Khi l\u1ec5 t\u1ed1t nghi\u1ec7p \u0111ang \u0111\u1ebfn g\u1ea7n v\u00e0 c\u1ea3 hai ch\u00e0ng trai c\u00f9ng suy ngh\u0129 v\u1ec1 t\u01b0\u01a1ng lai c\u1ee7a b\u1ea3n th\u00e2n, Duane t\u00ednh \u0111i b\u1ed9 \u0111\u1ed9i, c\u00f2n Sonny l\u1ea1i mu\u1ed1n ti\u1ebfp qu\u1ea3n m\u1ed9t doanh nghi\u1ec7p \u0111\u1ecba ph\u01b0\u01a1ng. M\u1ed7i ng\u01b0\u1eddi \u0111\u1ec1u \u0111ang v\u1eadt l\u1ed9n \u0111\u1ec3 t\u00ecm ra c\u00e1ch r\u1eddi kh\u1ecfi th\u1ecb tr\u1ea5n l\u1ee5i-t\u00e0n n\u00e0y v\u00e0 x\u00e2y d\u1ef1ng m\u1ed9t cu\u1ed9c s\u1ed1ng t\u1ed1t \u0111\u1eb9p h\u01a1n \u1edf m\u1ed9t n\u01a1i kh\u00e1c.",
+        "title": "Bu\u1ed5i Chi\u1ebfu Phim Cu\u1ed1i C\u00f9ng"
+      }
+    },
+    "3385": {
+      "en_US": {
+        "cast_top10": [
+          {
+            "character": "Lawrence Whatley Bourne III",
+            "id": 31,
+            "name": "Tom Hanks"
+          },
+          {
+            "character": "Tom Tuttle",
+            "id": 7180,
+            "name": "John Candy"
+          },
+          {
+            "character": "Beth Wexler",
+            "id": 12931,
+            "name": "Rita Wilson"
+          },
+          {
+            "character": "John Reynolds",
+            "id": 29712,
+            "name": "Tim Thomerson"
+          },
+          {
+            "character": "At Toon",
+            "id": 16183,
+            "name": "Gedde Watanabe"
+          },
+          {
+            "character": "Lawrence Bourne Jr.",
+            "id": 95741,
+            "name": "George Plimpton"
+          },
+          {
+            "character": "Chung Mee",
+            "id": 157456,
+            "name": "Ernest Harada"
+          },
+          {
+            "character": "Albert Bardenaro",
+            "id": 153619,
+            "name": "Allan Arbus"
+          },
+          {
+            "character": "Kent Sutcliffe",
+            "id": 3982,
+            "name": "Xander Berkeley"
+          },
+          {
+            "character": "Cicero",
+            "id": 937883,
+            "name": "Ji-Tu Cumbuka"
+          }
+        ],
+        "directors": [
+          {
+            "id": 1788,
+            "name": "Nicholas Meyer"
+          }
+        ],
+        "genres": [
+          {
+            "id": 35,
+            "name": "Comedy"
+          }
+        ],
+        "id": 19259,
+        "keywords": [
+          {
+            "id": 2487,
+            "name": "naivety"
+          },
+          {
+            "id": 591,
+            "name": "central intelligence agency (cia)"
+          },
+          {
+            "id": 395,
+            "name": "gambling"
+          },
+          {
+            "id": 2106,
+            "name": "cold war"
+          },
+          {
+            "id": 1293,
+            "name": "asia"
+          },
+          {
+            "id": 5331,
+            "name": "village"
+          },
+          {
+            "id": 3434,
+            "name": "thailand"
+          },
+          {
+            "id": 3450,
+            "name": "bridge"
+          },
+          {
+            "id": 7208,
+            "name": "spoiled child"
+          },
+          {
+            "id": 3977,
+            "name": "product placement"
+          },
+          {
+            "id": 9268,
+            "name": "yale university"
+          },
+          {
+            "id": 10329,
+            "name": "wealth"
+          },
+          {
+            "id": 10910,
+            "name": "wealthy"
+          },
+          {
+            "id": 11061,
+            "name": "debt"
+          },
+          {
+            "id": 12400,
+            "name": "brainwashing"
+          },
+          {
+            "id": 173644,
+            "name": "communism"
+          }
+        ],
+        "original_title": "Volunteers",
+        "overview": "After graduating from Yale in 1962, womanizing Lawrence flees a gambling debt that his rich dad won't pay and takes his roomie's place as a Peace Corps Volunteer in the Thai Golden Triangle with two other PCVs. Will he survive two years?",
+        "release_date": "1985-08-16",
+        "title": "Volunteers"
+      },
+      "imdb_id": "tt0090274",
+      "movielens_id": "3385",
+      "provenance": {
+        "cast": "tmdb:movie/19259:en-US",
+        "director": "tmdb:movie/19259:en-US",
+        "genres": "tmdb:movie/19259:en-US",
+        "keywords": "tmdb:movie/19259:en-US",
+        "original_title": "tmdb:movie/19259:en-US",
+        "overview": "tmdb:movie/19259:en-US",
+        "title_vi": "tmdb:movie/19259:en-US"
+      },
+      "tmdb_id": 19259,
+      "verification_status": "LIVE_VERIFIED",
+      "vi_VN": {
+        "id": 19259,
+        "language": "vi-VN",
+        "overview": "",
+        "title": "Volunteers"
+      }
+    },
+    "3825": {
+      "en_US": {
+        "cast_top10": [
+          {
+            "character": "Violet Sanford (Jersey)",
+            "id": 15555,
+            "name": "Piper Perabo"
+          },
+          {
+            "character": "Lil",
+            "id": 49,
+            "name": "Maria Bello"
+          },
+          {
+            "character": "Rachel",
+            "id": 18354,
+            "name": "Bridget Moynahan"
+          },
+          {
+            "character": "Zoe",
+            "id": 77897,
+            "name": "Tyra Banks"
+          },
+          {
+            "character": "Cammie",
+            "id": 59592,
+            "name": "Izabella Miko"
+          },
+          {
+            "character": "Bill",
+            "id": 1230,
+            "name": "John Goodman"
+          },
+          {
+            "character": "LeAnn Rimes",
+            "id": 87765,
+            "name": "LeAnn Rimes"
+          },
+          {
+            "character": "Kevin O'Donnell",
+            "id": 28472,
+            "name": "Adam Garcia"
+          },
+          {
+            "character": "Girl at the Surprise Party",
+            "id": 70304,
+            "name": "Sarah Jane Morris"
+          },
+          {
+            "character": "Gloria",
+            "id": 15091,
+            "name": "Melanie Lynskey"
+          }
+        ],
+        "directors": [
+          {
+            "id": 48980,
+            "name": "David McNally"
+          }
+        ],
+        "genres": [
+          {
+            "id": 35,
+            "name": "Comedy"
+          },
+          {
+            "id": 18,
+            "name": "Drama"
+          },
+          {
+            "id": 10402,
+            "name": "Music"
+          },
+          {
+            "id": 10749,
+            "name": "Romance"
+          }
+        ],
+        "id": 6282,
+        "keywords": [
+          {
+            "id": 9767,
+            "name": "beautiful woman"
+          }
+        ],
+        "original_title": "Coyote Ugly",
+        "overview": "Graced with a velvet voice, 21-year-old Violet Sanford heads to New York to pursue her dream of becoming a songwriter only to find her aspirations sidelined by the accolades and notoriety she receives at her \"day\" job as a barmaid at Coyote Ugly. The \"Coyotes\" as they are affectionately called tantalize customers and the media alike with their outrageous antics, making Coyote Ugly the watering hole for guys on the prowl.",
+        "release_date": "2000-07-30",
+        "title": "Coyote Ugly"
+      },
+      "imdb_id": "tt0200550",
+      "movielens_id": "3825",
+      "provenance": {
+        "cast": "tmdb:movie/6282:en-US",
+        "director": "tmdb:movie/6282:en-US",
+        "genres": "tmdb:movie/6282:en-US",
+        "keywords": "tmdb:movie/6282:en-US",
+        "original_title": "tmdb:movie/6282:en-US",
+        "overview": "tmdb:movie/6282:en-US",
+        "title_vi": "tmdb:movie/6282:en-US"
+      },
+      "tmdb_id": 6282,
+      "verification_status": "LIVE_VERIFIED",
+      "vi_VN": {
+        "id": 6282,
+        "language": "vi-VN",
+        "overview": "",
+        "title": "Coyote Ugly"
+      }
+    },
+    "414": {
+      "en_US": {
+        "cast_top10": [
+          {
+            "character": "Jimmy Dolan",
+            "id": 4724,
+            "name": "Kevin Bacon"
+          },
+          {
+            "character": "Saleh",
+            "id": 134763,
+            "name": "Charles Gitonga Maina"
+          },
+          {
+            "character": "Sister Susan",
+            "id": 134764,
+            "name": "Yolanda Vazquez"
+          },
+          {
+            "character": "Nyaga",
+            "id": 134766,
+            "name": "Mabutho 'Kid' Sithole"
+          },
+          {
+            "character": "Ray Fox",
+            "id": 17646,
+            "name": "Sean McCann"
+          },
+          {
+            "character": "Father O'Hara",
+            "id": 134768,
+            "name": "Dennis Patrick"
+          },
+          {
+            "character": "Mifundo",
+            "id": 134769,
+            "name": "Ilo Mutombo"
+          },
+          {
+            "character": "Halawi",
+            "id": 134770,
+            "name": "Nigel Miguel"
+          },
+          {
+            "character": "Mark Collins",
+            "id": 134771,
+            "name": "Eric Menyuk"
+          },
+          {
+            "character": "Buddy Wilson",
+            "id": 134772,
+            "name": "Keith Gibbs"
+          }
+        ],
+        "directors": [
+          {
+            "id": 12988,
+            "name": "Paul Michael Glaser"
+          }
+        ],
+        "genres": [
+          {
+            "id": 10751,
+            "name": "Family"
+          },
+          {
+            "id": 35,
+            "name": "Comedy"
+          }
+        ],
+        "id": 46094,
+        "keywords": [
+          {
+            "id": 6075,
+            "name": "sports"
+          },
+          {
+            "id": 6496,
+            "name": "basketball"
+          }
+        ],
+        "original_title": "The Air Up There",
+        "overview": "Jimmy Dolan is a college basketball coach who wants a big promotion. To get it, he needs to make a dramatic find. He ends up deep in Africa, hoping to recruit Saleh, a huge basketball prodigy Jimmy glimpsed in a home movie. But Saleh is the chief's son and has responsibilities at home, since the tribe's land is threatened by a mining company with its own hotshot basketball team.",
+        "release_date": "1994-01-07",
+        "title": "The Air Up There"
+      },
+      "imdb_id": "tt0109067",
+      "movielens_id": "414",
+      "provenance": {
+        "cast": "tmdb:movie/46094:en-US",
+        "director": "tmdb:movie/46094:en-US",
+        "genres": "tmdb:movie/46094:en-US",
+        "keywords": "tmdb:movie/46094:en-US",
+        "original_title": "tmdb:movie/46094:en-US",
+        "overview": "tmdb:movie/46094:en-US",
+        "title_vi": "tmdb:movie/46094:en-US"
+      },
+      "tmdb_id": 46094,
+      "verification_status": "LIVE_VERIFIED",
+      "vi_VN": {
+        "id": 46094,
+        "language": "vi-VN",
+        "overview": "",
+        "title": "The Air Up There"
+      }
+    },
+    "4998": {
+      "en_US": {
+        "cast_top10": [
+          {
+            "character": "John 'Joker' Jackson",
+            "id": 3150,
+            "name": "Tony Curtis"
+          },
+          {
+            "character": "Noah Cullen",
+            "id": 16897,
+            "name": "Sidney Poitier"
+          },
+          {
+            "character": "Sheriff Max Muller",
+            "id": 6609,
+            "name": "Theodore Bikel"
+          },
+          {
+            "character": "Capt. Frank Gibbons",
+            "id": 8233,
+            "name": "Charles McGraw"
+          },
+          {
+            "character": "Big Sam",
+            "id": 4072,
+            "name": "Lon Chaney Jr."
+          },
+          {
+            "character": "Solly",
+            "id": 69811,
+            "name": "King Donovan"
+          },
+          {
+            "character": "Mack",
+            "id": 4307,
+            "name": "Claude Akins"
+          },
+          {
+            "character": "Editor",
+            "id": 15625,
+            "name": "Lawrence Dobkin"
+          },
+          {
+            "character": "Lou Gans",
+            "id": 13786,
+            "name": "Whit Bissell"
+          },
+          {
+            "character": "Angus",
+            "id": 941239,
+            "name": "Carl Switzer"
+          }
+        ],
+        "directors": [
+          {
+            "id": 4081,
+            "name": "Stanley Kramer"
+          }
+        ],
+        "genres": [
+          {
+            "id": 80,
+            "name": "Crime"
+          },
+          {
+            "id": 18,
+            "name": "Drama"
+          },
+          {
+            "id": 12,
+            "name": "Adventure"
+          },
+          {
+            "id": 53,
+            "name": "Thriller"
+          }
+        ],
+        "id": 11414,
+        "keywords": [
+          {
+            "id": 10685,
+            "name": "escape"
+          },
+          {
+            "id": 787,
+            "name": "mississippi river"
+          },
+          {
+            "id": 6089,
+            "name": "freedom"
+          },
+          {
+            "id": 6062,
+            "name": "hostility"
+          },
+          {
+            "id": 4551,
+            "name": "swamp"
+          },
+          {
+            "id": 6324,
+            "name": "bias"
+          },
+          {
+            "id": 7856,
+            "name": "racist"
+          },
+          {
+            "id": 7118,
+            "name": "escaped convict"
+          },
+          {
+            "id": 10717,
+            "name": "chain gang"
+          },
+          {
+            "id": 10958,
+            "name": "man hunt"
+          },
+          {
+            "id": 12425,
+            "name": "racism"
+          },
+          {
+            "id": 12999,
+            "name": "black and white"
+          },
+          {
+            "id": 13008,
+            "name": "train"
+          },
+          {
+            "id": 15234,
+            "name": "convict"
+          },
+          {
+            "id": 162701,
+            "name": "racial prejudice"
+          },
+          {
+            "id": 167486,
+            "name": "shackles"
+          },
+          {
+            "id": 207981,
+            "name": "south"
+          }
+        ],
+        "original_title": "The Defiant Ones",
+        "overview": "Two convicts\u2014one white, one black\u2014escape while chained to each other.",
+        "release_date": "1958-08-14",
+        "title": "The Defiant Ones"
+      },
+      "imdb_id": "tt0051525",
+      "movielens_id": "4998",
+      "provenance": {
+        "cast": "tmdb:movie/11414:en-US",
+        "director": "tmdb:movie/11414:en-US",
+        "genres": "tmdb:movie/11414:en-US",
+        "keywords": "tmdb:movie/11414:en-US",
+        "original_title": "tmdb:movie/11414:en-US",
+        "overview": "tmdb:movie/11414:en-US",
+        "title_vi": "tmdb:movie/11414:en-US"
+      },
+      "tmdb_id": 11414,
+      "verification_status": "LIVE_VERIFIED",
+      "vi_VN": {
+        "id": 11414,
+        "language": "vi-VN",
+        "overview": "",
+        "title": "The Defiant Ones"
+      }
+    },
+    "57147": {
+      "en_US": {
+        "cast_top10": [
+          {
+            "character": "Terry Blaine",
+            "id": 72466,
+            "name": "Colin Farrell"
+          },
+          {
+            "character": "Ian Blaine",
+            "id": 3061,
+            "name": "Ewan McGregor"
+          },
+          {
+            "character": "Angela",
+            "id": 39459,
+            "name": "Hayley Atwell"
+          },
+          {
+            "character": "Kate",
+            "id": 39658,
+            "name": "Sally Hawkins"
+          },
+          {
+            "character": "Howard",
+            "id": 207,
+            "name": "Tom Wilkinson"
+          },
+          {
+            "character": "Martin Burns",
+            "id": 26854,
+            "name": "Phil Davis"
+          },
+          {
+            "character": "Father",
+            "id": 42642,
+            "name": "John Benfield"
+          },
+          {
+            "character": "Mother",
+            "id": 45588,
+            "name": "Clare Higgins"
+          },
+          {
+            "character": "Lucy",
+            "id": 75061,
+            "name": "Ashley Madekwe"
+          },
+          {
+            "character": "Jerry",
+            "id": 67206,
+            "name": "Andrew Howard"
+          }
+        ],
+        "directors": [
+          {
+            "id": 1243,
+            "name": "Woody Allen"
+          }
+        ],
+        "genres": [
+          {
+            "id": 80,
+            "name": "Crime"
+          },
+          {
+            "id": 18,
+            "name": "Drama"
+          },
+          {
+            "id": 53,
+            "name": "Thriller"
+          }
+        ],
+        "id": 4787,
+        "keywords": [
+          {
+            "id": 544,
+            "name": "sailboat"
+          },
+          {
+            "id": 380,
+            "name": "sibling relationship"
+          },
+          {
+            "id": 128,
+            "name": "love triangle"
+          },
+          {
+            "id": 2062,
+            "name": "restart"
+          },
+          {
+            "id": 970,
+            "name": "parent child relationship"
+          },
+          {
+            "id": 895,
+            "name": "optimism"
+          },
+          {
+            "id": 2300,
+            "name": "despair"
+          },
+          {
+            "id": 3929,
+            "name": "hope"
+          },
+          {
+            "id": 1946,
+            "name": "restaurant"
+          },
+          {
+            "id": 3045,
+            "name": "mission of murder"
+          },
+          {
+            "id": 6464,
+            "name": "uncle"
+          },
+          {
+            "id": 7313,
+            "name": "oldtimer"
+          },
+          {
+            "id": 10594,
+            "name": "money"
+          },
+          {
+            "id": 9826,
+            "name": "murder"
+          },
+          {
+            "id": 15127,
+            "name": "killer"
+          },
+          {
+            "id": 170652,
+            "name": "father figure"
+          }
+        ],
+        "original_title": "Cassandra's Dream",
+        "overview": "The tale of two brothers with serious financial woes. When a third party proposes they turn to crime, things go bad and the two become enemies.",
+        "release_date": "2007-10-31",
+        "title": "Cassandra's Dream"
+      },
+      "imdb_id": "tt0795493",
+      "movielens_id": "57147",
+      "provenance": {
+        "cast": "tmdb:movie/4787:en-US",
+        "director": "tmdb:movie/4787:en-US",
+        "genres": "tmdb:movie/4787:en-US",
+        "keywords": "tmdb:movie/4787:en-US",
+        "original_title": "tmdb:movie/4787:en-US",
+        "overview": "tmdb:movie/4787:en-US",
+        "title_vi": "tmdb:movie/4787:en-US"
+      },
+      "tmdb_id": 4787,
+      "verification_status": "LIVE_VERIFIED",
+      "vi_VN": {
+        "id": 4787,
+        "language": "vi-VN",
+        "overview": "",
+        "title": "Cassandra's Dream"
+      }
+    },
+    "5791": {
+      "en_US": {
+        "cast_top10": [
+          {
+            "character": "Frida Kahlo",
+            "id": 3136,
+            "name": "Salma Hayek Pinault"
+          },
+          {
+            "character": "Diego Rivera",
+            "id": 658,
+            "name": "Alfred Molina"
+          },
+          {
+            "character": "Cristina Kahlo",
+            "id": 6859,
+            "name": "M\u00eda Maestro"
+          },
+          {
+            "character": "Matilde Kahlo",
+            "id": 16406,
+            "name": "Patricia Reyes Sp\u00edndola"
+          },
+          {
+            "character": "Nelson Rockefeller",
+            "id": 819,
+            "name": "Edward Norton"
+          },
+          {
+            "character": "David Alfaro Siqueiros",
+            "id": 3131,
+            "name": "Antonio Banderas"
+          },
+          {
+            "character": "Alejandro",
+            "id": 8688,
+            "name": "Diego Luna"
+          },
+          {
+            "character": "Guillermo Kahlo",
+            "id": 16407,
+            "name": "Roger Rees"
+          },
+          {
+            "character": "Tina Modotti",
+            "id": 15852,
+            "name": "Ashley Judd"
+          },
+          {
+            "character": "Gracie",
+            "id": 9825,
+            "name": "Saffron Burrows"
+          }
+        ],
+        "directors": [
+          {
+            "id": 16391,
+            "name": "Julie Taymor"
+          }
+        ],
+        "genres": [
+          {
+            "id": 18,
+            "name": "Drama"
+          },
+          {
+            "id": 10749,
+            "name": "Romance"
+          }
+        ],
+        "id": 1360,
+        "keywords": [
+          {
+            "id": 534,
+            "name": "mexico"
+          },
+          {
+            "id": 2038,
+            "name": "love of one's life"
+          },
+          {
+            "id": 3183,
+            "name": "bisexuality"
+          },
+          {
+            "id": 437,
+            "name": "painter"
+          },
+          {
+            "id": 9887,
+            "name": "surrealism"
+          },
+          {
+            "id": 5565,
+            "name": "biography"
+          },
+          {
+            "id": 158558,
+            "name": "disabled"
+          },
+          {
+            "id": 158718,
+            "name": "lgbt"
+          },
+          {
+            "id": 176485,
+            "name": "female artist"
+          },
+          {
+            "id": 187056,
+            "name": "woman director"
+          },
+          {
+            "id": 247269,
+            "name": "female painter"
+          },
+          {
+            "id": 285565,
+            "name": "frida kahlo"
+          }
+        ],
+        "original_title": "Frida",
+        "overview": "A biography of artist Frida Kahlo, who channeled the pain of a crippling injury and her tempestuous marriage into her work.",
+        "release_date": "2002-08-29",
+        "title": "Frida"
+      },
+      "imdb_id": "tt0120679",
+      "movielens_id": "5791",
+      "provenance": {
+        "cast": "tmdb:movie/1360:en-US",
+        "director": "tmdb:movie/1360:en-US",
+        "genres": "tmdb:movie/1360:en-US",
+        "keywords": "tmdb:movie/1360:en-US",
+        "original_title": "tmdb:movie/1360:en-US",
+        "overview": "tmdb:movie/1360:en-US",
+        "title_vi": "tmdb:movie/1360:en-US"
+      },
+      "tmdb_id": 1360,
+      "verification_status": "LIVE_VERIFIED",
+      "vi_VN": {
+        "id": 1360,
+        "language": "vi-VN",
+        "overview": "",
+        "title": "Frida"
+      }
+    },
+    "58351": {
+      "en_US": {
+        "cast_top10": [
+          {
+            "character": "Acerola \u00b4Ace\u00b4",
+            "id": 8598,
+            "name": "Douglas Silva"
+          },
+          {
+            "character": "Laranjinha `Wallace\u00b4",
+            "id": 8605,
+            "name": "Darlan Cunha"
+          },
+          {
+            "character": "Madrugad\u00e3o \u00b4Midnight`",
+            "id": 8599,
+            "name": "Jonathan Haagensen"
+          },
+          {
+            "character": "Heraldo",
+            "id": 52534,
+            "name": "Rodrigo de Od\u00e9"
+          },
+          {
+            "character": "Cris",
+            "id": 52535,
+            "name": "Camila Monteiro"
+          },
+          {
+            "character": "Camila",
+            "id": 52536,
+            "name": "Naima Silva"
+          },
+          {
+            "character": "Nefast \u00b4Fasto\u00b4",
+            "id": 52537,
+            "name": "Eduardo 'BR' Piranha"
+          },
+          {
+            "character": "Fiel",
+            "id": 52538,
+            "name": "Luciano Vidigal"
+          },
+          {
+            "character": "Caju",
+            "id": 52539,
+            "name": "Pedro Henrique"
+          },
+          {
+            "character": "Clayton",
+            "id": 52540,
+            "name": "V\u00edtor Oliveira"
+          }
+        ],
+        "directors": [
+          {
+            "id": 52528,
+            "name": "Paulo Morelli"
+          }
+        ],
+        "genres": [
+          {
+            "id": 18,
+            "name": "Drama"
+          }
+        ],
+        "id": 7343,
+        "keywords": [
+          {
+            "id": 542,
+            "name": "street gang"
+          },
+          {
+            "id": 100,
+            "name": "slum"
+          },
+          {
+            "id": 1412,
+            "name": "becoming an adult"
+          },
+          {
+            "id": 970,
+            "name": "parent child relationship"
+          },
+          {
+            "id": 2123,
+            "name": "father murder"
+          },
+          {
+            "id": 697,
+            "name": "loss of loved one"
+          },
+          {
+            "id": 1809,
+            "name": "rio de janeiro"
+          },
+          {
+            "id": 2394,
+            "name": "ghetto"
+          },
+          {
+            "id": 4933,
+            "name": "battle for power"
+          },
+          {
+            "id": 5397,
+            "name": "street riots"
+          },
+          {
+            "id": 5144,
+            "name": "matter of life and death"
+          },
+          {
+            "id": 7858,
+            "name": "boy gang"
+          },
+          {
+            "id": 10766,
+            "name": "youth gang"
+          },
+          {
+            "id": 10726,
+            "name": "gang"
+          },
+          {
+            "id": 170652,
+            "name": "father figure"
+          }
+        ],
+        "original_title": "Cidade dos Homens",
+        "overview": "Best buddies Acerola and Laranjinha, about to turn 18, discover things about their missing fathers' pasts which will shatter their solid friendship, in the middle of a war between rival drug gangs from Rio's favelas.",
+        "release_date": "2007-08-31",
+        "title": "City of Men"
+      },
+      "imdb_id": "tt0870090",
+      "movielens_id": "58351",
+      "provenance": {
+        "cast": "tmdb:movie/7343:en-US",
+        "director": "tmdb:movie/7343:en-US",
+        "genres": "tmdb:movie/7343:en-US",
+        "keywords": "tmdb:movie/7343:en-US",
+        "original_title": "tmdb:movie/7343:en-US",
+        "overview": "tmdb:movie/7343:en-US",
+        "title_vi": "tmdb:movie/7343:en-US"
+      },
+      "tmdb_id": 7343,
+      "verification_status": "LIVE_VERIFIED",
+      "vi_VN": {
+        "id": 7343,
+        "language": "vi-VN",
+        "overview": "",
+        "title": "Cidade dos Homens"
+      }
+    },
+    "59220": {
+      "en_US": {
+        "cast_top10": [
+          {
+            "character": "Todd Anderson",
+            "id": 52419,
+            "name": "Josh Hamilton"
+          },
+          {
+            "character": "Asha",
+            "id": 33191,
+            "name": "Ayesha Dharker"
+          },
+          {
+            "character": "Dave",
+            "id": 1740218,
+            "name": "Matt Smith"
+          },
+          {
+            "character": "Manmeet",
+            "id": 1895528,
+            "name": "Bhuvnesh Shetty"
+          },
+          {
+            "character": "Purohit N. Virajnarianan",
+            "id": 53107,
+            "name": "Asif Basra"
+          },
+          {
+            "character": "Aunti Ji",
+            "id": 1032966,
+            "name": "Sudha Shivpuri"
+          },
+          {
+            "character": "Aunt Ji's Old Man",
+            "id": 6563291,
+            "name": "Raghu Mama"
+          },
+          {
+            "character": "Kid",
+            "id": 6545245,
+            "name": "Feroz"
+          },
+          {
+            "character": "Bob",
+            "id": 19511,
+            "name": "Larry Pine"
+          },
+          {
+            "character": "Rickshaw Driver",
+            "id": 6563285,
+            "name": "Rudolf Rodrigues"
+          }
+        ],
+        "directors": [
+          {
+            "id": 53102,
+            "name": "John Jeffcoat"
+          }
+        ],
+        "genres": [
+          {
+            "id": 35,
+            "name": "Comedy"
+          },
+          {
+            "id": 18,
+            "name": "Drama"
+          },
+          {
+            "id": 10749,
+            "name": "Romance"
+          }
+        ],
+        "id": 7861,
+        "keywords": [
+          {
+            "id": 3640,
+            "name": "work"
+          },
+          {
+            "id": 1605,
+            "name": "new love"
+          },
+          {
+            "id": 5306,
+            "name": "boss"
+          },
+          {
+            "id": 2203,
+            "name": "unexpected happiness"
+          },
+          {
+            "id": 3675,
+            "name": "arts and culture"
+          },
+          {
+            "id": 9799,
+            "name": "romcom"
+          },
+          {
+            "id": 7934,
+            "name": "call center"
+          },
+          {
+            "id": 14636,
+            "name": "india"
+          },
+          {
+            "id": 14638,
+            "name": "american"
+          },
+          {
+            "id": 34061,
+            "name": "american abroad"
+          },
+          {
+            "id": 196595,
+            "name": "succession"
+          }
+        ],
+        "original_title": "Outsourced",
+        "overview": "After his entire department is outsourced, an American novelty products salesman heads to India to train his replacement.",
+        "release_date": "2007-09-28",
+        "title": "Outsourced"
+      },
+      "imdb_id": "tt0425326",
+      "movielens_id": "59220",
+      "provenance": {
+        "cast": "tmdb:movie/7861:en-US",
+        "director": "tmdb:movie/7861:en-US",
+        "genres": "tmdb:movie/7861:en-US",
+        "keywords": "tmdb:movie/7861:en-US",
+        "original_title": "tmdb:movie/7861:en-US",
+        "overview": "tmdb:movie/7861:en-US",
+        "title_vi": "tmdb:movie/7861:en-US"
+      },
+      "tmdb_id": 7861,
+      "verification_status": "LIVE_VERIFIED",
+      "vi_VN": {
+        "id": 7861,
+        "language": "vi-VN",
+        "overview": "",
+        "title": "Outsourced"
+      }
+    },
+    "6123": {
+      "en_US": {
+        "cast_top10": [
+          {
+            "character": "Narrator (voice)",
+            "id": 222259,
+            "name": "Florence Delay"
+          },
+          {
+            "character": "Self (archive footage)",
+            "id": 3220622,
+            "name": "Am\u00edlcar Cabral"
+          },
+          {
+            "character": "Self",
+            "id": 28626,
+            "name": "Arielle Dombasle"
+          },
+          {
+            "character": "Self (uncredited)",
+            "id": 4153165,
+            "name": "Bin Akao"
+          },
+          {
+            "character": "Self / Deep Purple Singer (uncredited)",
+            "id": 238869,
+            "name": "David Coverdale"
+          },
+          {
+            "character": "Self (uncredited)",
+            "id": 9956,
+            "name": "Chris Marker"
+          },
+          {
+            "character": "Narrator (voice)",
+            "id": 18765,
+            "name": "Alexandra Stewart"
+          }
+        ],
+        "directors": [
+          {
+            "id": 9956,
+            "name": "Chris Marker"
+          }
+        ],
+        "genres": [
+          {
+            "id": 99,
+            "name": "Documentary"
+          }
+        ],
+        "id": 1563,
+        "keywords": [
+          {
+            "id": 582,
+            "name": "san francisco, california"
+          },
+          {
+            "id": 5746,
+            "name": "iceland"
+          },
+          {
+            "id": 12369,
+            "name": "tokyo, japan"
+          },
+          {
+            "id": 170487,
+            "name": "essay film"
+          },
+          {
+            "id": 195239,
+            "name": "travelogue"
+          },
+          {
+            "id": 206283,
+            "name": "cape verde"
+          },
+          {
+            "id": 237188,
+            "name": "ethnography"
+          },
+          {
+            "id": 240475,
+            "name": "guinea bissau"
+          },
+          {
+            "id": 287803,
+            "name": "experimental cinema"
+          }
+        ],
+        "original_title": "Sans soleil",
+        "overview": "A woman narrates the thoughts of a world traveler, meditations on time and memory expressed in words and images from places as far-flung as Japan, Guinea-Bissau, Iceland, and San Francisco.",
+        "release_date": "1983-03-02",
+        "title": "Sans Soleil"
+      },
+      "imdb_id": "tt0084628",
+      "movielens_id": "6123",
+      "provenance": {
+        "cast": "tmdb:movie/1563:en-US",
+        "director": "tmdb:movie/1563:en-US",
+        "genres": "tmdb:movie/1563:en-US",
+        "keywords": "tmdb:movie/1563:en-US",
+        "original_title": "tmdb:movie/1563:en-US",
+        "overview": "tmdb:movie/1563:en-US",
+        "title_vi": "tmdb:movie/1563:en-US"
+      },
+      "tmdb_id": 1563,
+      "verification_status": "LIVE_VERIFIED",
+      "vi_VN": {
+        "id": 1563,
+        "language": "vi-VN",
+        "overview": "",
+        "title": "Sans soleil"
+      }
+    },
+    "6289": {
+      "en_US": {
+        "cast_top10": [
+          {
+            "character": "Self",
+            "id": 2053,
+            "name": "Bill Paxton"
+          },
+          {
+            "character": "Self",
+            "id": 556960,
+            "name": "John Broadwater"
+          },
+          {
+            "character": "Self",
+            "id": 2710,
+            "name": "James Cameron"
+          },
+          {
+            "character": "Self",
+            "id": 1312400,
+            "name": "Charles Pellegrino"
+          },
+          {
+            "character": "Self",
+            "id": 8538,
+            "name": "Lewis Abernathy"
+          },
+          {
+            "character": "Self",
+            "id": 556961,
+            "name": "Mike Cameron"
+          },
+          {
+            "character": "Self / J. Bruce Ismay",
+            "id": 1406683,
+            "name": "Ken Marschall"
+          },
+          {
+            "character": "Self / Thomas Andrews",
+            "id": 1029818,
+            "name": "Don Lynch"
+          },
+          {
+            "character": "Helen Churchill Candee",
+            "id": 1582231,
+            "name": "Adriana Valdez"
+          },
+          {
+            "character": "Madeleine Astor",
+            "id": 1582233,
+            "name": "Piper Gunnarson"
+          }
+        ],
+        "directors": [
+          {
+            "id": 2710,
+            "name": "James Cameron"
+          }
+        ],
+        "genres": [
+          {
+            "id": 99,
+            "name": "Documentary"
+          }
+        ],
+        "id": 24982,
+        "keywords": [
+          {
+            "id": 269,
+            "name": "diving"
+          },
+          {
+            "id": 2580,
+            "name": "shipwreck"
+          },
+          {
+            "id": 4388,
+            "name": "titanic"
+          },
+          {
+            "id": 14785,
+            "name": "underwater"
+          },
+          {
+            "id": 41595,
+            "name": "oceanic expedition"
+          },
+          {
+            "id": 182147,
+            "name": "underwater photography"
+          },
+          {
+            "id": 193083,
+            "name": "shipwrecked"
+          },
+          {
+            "id": 248630,
+            "name": "underwater facility"
+          },
+          {
+            "id": 262228,
+            "name": "observational documentary"
+          },
+          {
+            "id": 309116,
+            "name": "cinematic titanic"
+          },
+          {
+            "id": 333111,
+            "name": "wreck"
+          }
+        ],
+        "original_title": "Ghosts of the Abyss",
+        "overview": "With a team of the world's foremost historic and marine experts as well as friend Bill Paxton, James Cameron embarks on an unscripted adventure back to the wreck of the Titanic where nearly 1,500 souls lost their lives almost a century ago.",
+        "release_date": "2003-04-10",
+        "title": "Ghosts of the Abyss"
+      },
+      "imdb_id": "tt0297144",
+      "movielens_id": "6289",
+      "provenance": {
+        "cast": "tmdb:movie/24982:en-US",
+        "director": "tmdb:movie/24982:en-US",
+        "genres": "tmdb:movie/24982:en-US",
+        "keywords": "tmdb:movie/24982:en-US",
+        "original_title": "tmdb:movie/24982:en-US",
+        "overview": "tmdb:movie/24982:en-US",
+        "title_vi": "tmdb:movie/24982:en-US"
+      },
+      "tmdb_id": 24982,
+      "verification_status": "LIVE_VERIFIED",
+      "vi_VN": {
+        "id": 24982,
+        "language": "vi-VN",
+        "overview": "",
+        "title": "Con T\u00e0u Ma"
+      }
+    },
+    "67534": {
+      "en_US": {
+        "cast_top10": [
+          {
+            "character": "Big Stan",
+            "id": 60949,
+            "name": "Rob Schneider"
+          },
+          {
+            "character": "The Master",
+            "id": 141,
+            "name": "David Carradine"
+          },
+          {
+            "character": "Mindy",
+            "id": 41421,
+            "name": "Jennifer Morrison"
+          },
+          {
+            "character": "Warden Gasque",
+            "id": 6914,
+            "name": "Scott Wilson"
+          },
+          {
+            "character": "Dang",
+            "id": 1986402,
+            "name": "Tsuyoshi Abe"
+          },
+          {
+            "character": "Shorts",
+            "id": 19439,
+            "name": "Henry Gibson"
+          },
+          {
+            "character": "Lew Popper",
+            "id": 588,
+            "name": "M. Emmet Walsh"
+          },
+          {
+            "character": "Madame Foreman",
+            "id": 12134,
+            "name": "Sally Kirkland"
+          },
+          {
+            "character": "Mal",
+            "id": 21125,
+            "name": "Richard Kind"
+          },
+          {
+            "character": "Tubby",
+            "id": 98082,
+            "name": "Dan Haggerty"
+          }
+        ],
+        "directors": [
+          {
+            "id": 60949,
+            "name": "Rob Schneider"
+          }
+        ],
+        "genres": [
+          {
+            "id": 35,
+            "name": "Comedy"
+          },
+          {
+            "id": 80,
+            "name": "Crime"
+          }
+        ],
+        "id": 13161,
+        "keywords": [
+          {
+            "id": 378,
+            "name": "prison"
+          },
+          {
+            "id": 779,
+            "name": "martial arts"
+          },
+          {
+            "id": 417,
+            "name": "corruption"
+          },
+          {
+            "id": 2095,
+            "name": "anti hero"
+          },
+          {
+            "id": 4373,
+            "name": "fraud"
+          },
+          {
+            "id": 9253,
+            "name": "slapstick comedy"
+          },
+          {
+            "id": 10726,
+            "name": "gang"
+          },
+          {
+            "id": 206718,
+            "name": "cons and scams"
+          },
+          {
+            "id": 207445,
+            "name": "prison life"
+          },
+          {
+            "id": 215876,
+            "name": "prison rape"
+          }
+        ],
+        "original_title": "Big Stan",
+        "overview": "A weak con man panics when he learns he's going to prison for fraud. He hires a mysterious martial arts guru who helps transform him into a martial arts expert who can fight off inmates who want to hurt or love him.",
+        "release_date": "2007-11-03",
+        "title": "Big Stan"
+      },
+      "imdb_id": "tt0490086",
+      "movielens_id": "67534",
+      "provenance": {
+        "cast": "tmdb:movie/13161:en-US",
+        "director": "tmdb:movie/13161:en-US",
+        "genres": "tmdb:movie/13161:en-US",
+        "keywords": "tmdb:movie/13161:en-US",
+        "original_title": "tmdb:movie/13161:en-US",
+        "overview": "tmdb:movie/13161:en-US",
+        "overview_vi": "tmdb:movie/13161:en-US",
+        "title_vi": "tmdb:movie/13161:en-US"
+      },
+      "tmdb_id": 13161,
+      "verification_status": "LIVE_VERIFIED",
+      "vi_VN": {
+        "id": 13161,
+        "language": "vi-VN",
+        "overview": "Anh ch\u00e0ng Stan gi\u00e0u c\u00f3 b\u1ecb k\u1ebft \u00e1n 3 n\u0103m t\u00f9 v\u00ec t\u1ed9i l\u1eeba \u0111\u1ea3o trong vi\u1ec7c m\u00f4i gi\u1edbi nh\u00e0 \u0111\u1ea5t. V\u1edbi 6 th\u00e1ng c\u00f2n l\u1ea1i tr\u01b0\u1edbc khi l\u0129nh \u00e1n, Stan t\u00ecm \u0111\u1ee7 m\u1ecdi c\u00e1ch \u0111\u1ec3 c\u00f3 th\u1ec3 s\u1ed1ng s\u00f3t trong t\u00f9 v\u1edbi nh\u1eefng t\u00ean t\u00f9 nh\u00e2n to con v\u00e0 d\u00e3 man. V\u00e0 anh g\u1eb7p \u0111\u01b0\u1ee3c Master, m\u1ed9t cao th\u1ee7 v\u00f5 l\u00e2m, ng\u01b0\u1eddi \u0111\u1ed3ng \u00fd hu\u1ea5n luy\u1ec7n v\u1edbi Stan tr\u1edf th\u00e0nh \u0111\u1ea1i ca trong t\u00f9. B\u1eb1ng nh\u1eefng ph\u01b0\u01a1ng ph\u00e1p qu\u00e1i g\u1edf, kinh d\u1ecb Master tin r\u1eb1ng Stan s\u1ebd tr\u1edf n\u00ean kh\u1ecfe m\u1ea1nh v\u00e0 c\u00f3 v\u00f5 ngh\u1ec7 cao c\u01b0\u1eddng. Ng\u00e0y kinh ho\u00e0ng c\u0169ng \u0111\u1ebfn, Stan b\u1ecf l\u1ea1i sau l\u01b0ng c\u00f4 v\u1ee3 xinh \u0111\u1eb9p, b\u1ed1c l\u1eeda, c\u0103n bi\u1ec7t th\u1ef1 c\u00f9ng chi\u1ebfc xe h\u01a1i \u0111\u1eaft ti\u1ec1n \u0111\u1ec3 l\u00ean \u0111\u01b0\u1eddng \u0111i t\u00f9. Li\u1ec7u anh ch\u00e0ng nh\u1ecf b\u00e9, l\u00e1u c\u00e1 Stan c\u00f3 ch\u1ed1ng tr\u1ecdi \u0111\u01b0\u1ee3c v\u1edbi nh\u1eefng t\u00ean t\u1ed9i ph\u1ea1m d\u00e3 man v\u00e0 thi\u1ebfu th\u1ed1n t\u00ecnh c\u1ea3m trong t\u00f9.",
+        "title": "\u0110\u1ea1i Ca Stan\u200b"
+      }
+    },
+    "6807": {
+      "en_US": {
+        "cast_top10": [
+          {
+            "character": "Various Roles",
+            "id": 280,
+            "name": "Terry Gilliam"
+          },
+          {
+            "character": "Various Roles",
+            "id": 10722,
+            "name": "Graham Chapman"
+          },
+          {
+            "character": "Various Roles",
+            "id": 8930,
+            "name": "John Cleese"
+          },
+          {
+            "character": "Various Roles",
+            "id": 10713,
+            "name": "Eric Idle"
+          },
+          {
+            "character": "Various Roles",
+            "id": 10707,
+            "name": "Terry Jones"
+          },
+          {
+            "character": "Various Roles",
+            "id": 383,
+            "name": "Michael Palin"
+          },
+          {
+            "character": "Various Roles",
+            "id": 10733,
+            "name": "Carol Cleveland"
+          },
+          {
+            "character": "Cedric",
+            "id": 37891,
+            "name": "Simon Jones"
+          },
+          {
+            "character": "Mrs. Williams",
+            "id": 13475,
+            "name": "Patricia Quinn"
+          },
+          {
+            "character": "Nurse #1",
+            "id": 37892,
+            "name": "Judy Loe"
+          }
+        ],
+        "directors": [
+          {
+            "id": 10707,
+            "name": "Terry Jones"
+          }
+        ],
+        "genres": [
+          {
+            "id": 35,
+            "name": "Comedy"
+          }
+        ],
+        "id": 4543,
+        "keywords": [
+          {
+            "id": 2875,
+            "name": "sense of life"
+          },
+          {
+            "id": 3485,
+            "name": "comedian"
+          },
+          {
+            "id": 8201,
+            "name": "satire"
+          },
+          {
+            "id": 8708,
+            "name": "sketch"
+          },
+          {
+            "id": 11687,
+            "name": "breaking the fourth wall"
+          },
+          {
+            "id": 179430,
+            "name": "aftercreditsstinger"
+          },
+          {
+            "id": 179431,
+            "name": "duringcreditsstinger"
+          },
+          {
+            "id": 193172,
+            "name": "vignette"
+          },
+          {
+            "id": 215195,
+            "name": "the meaning of life"
+          },
+          {
+            "id": 236316,
+            "name": "anarchic comedy"
+          }
+        ],
+        "original_title": "Monty Python's The Meaning of Life",
+        "overview": "Life's questions are 'answered' in a series of outrageous vignettes, beginning with a staid London insurance company which transforms before our eyes into a pirate ship. Then there's the National Health doctors who try to claim a healthy liver from a still-living donor. The world's most voracious glutton brings the art of vomiting to new heights before his spectacular demise.",
+        "release_date": "1983-03-31",
+        "title": "Monty Python's The Meaning of Life"
+      },
+      "imdb_id": "tt0085959",
+      "movielens_id": "6807",
+      "provenance": {
+        "cast": "tmdb:movie/4543:en-US",
+        "director": "tmdb:movie/4543:en-US",
+        "genres": "tmdb:movie/4543:en-US",
+        "keywords": "tmdb:movie/4543:en-US",
+        "original_title": "tmdb:movie/4543:en-US",
+        "overview": "tmdb:movie/4543:en-US",
+        "overview_vi": "tmdb:movie/4543:en-US",
+        "title_vi": "tmdb:movie/4543:en-US"
+      },
+      "tmdb_id": 4543,
+      "verification_status": "LIVE_VERIFIED",
+      "vi_VN": {
+        "id": 4543,
+        "language": "vi-VN",
+        "overview": "D\u00f9 sao b\u1ea1n kh\u00f4ng th\u1ec3 s\u1ed1ng cu\u1ed9c \u0111\u1eddi m\u00ecnh 2 l\u1ea7n ,v\u1eady h\u00e3y s\u1ed1ng v\u1edbi \u01b0\u1edbc m\u01a1 th\u1ef1c s\u1ef1 c\u1ee7a b\u1ea1n . B\u1ea1n kh\u00f4ng c\u1ea7n v\u0129 \u0111\u1ea1i \u0111\u1ec3 b\u1eaft \u0111\u1ea7u nh\u01b0ng b\u1ea1n c\u1ea7n b\u1eaft \u0111\u1ea7u \u0111\u1ec3 \u0111\u1ea1t \u0111\u01b0\u1ee3c c\u00e1i v\u0129 \u0111\u1ea1i \u1ea5y.",
+        "title": "\u00dd Ngh\u0129a Cu\u1ed9c S\u1ed1ng"
+      }
+    },
+    "6944": {
+      "en_US": {
+        "cast_top10": [
+          {
+            "character": "George Banks",
+            "id": 67773,
+            "name": "Steve Martin"
+          },
+          {
+            "character": "Nina Banks",
+            "id": 3092,
+            "name": "Diane Keaton"
+          },
+          {
+            "character": "Annie Banks",
+            "id": 70696,
+            "name": "Kimberly Williams-Paisley"
+          },
+          {
+            "character": "Matty Banks",
+            "id": 18793,
+            "name": "Kieran Culkin"
+          },
+          {
+            "character": "Bryan MacKenzie",
+            "id": 59222,
+            "name": "George Newbern"
+          },
+          {
+            "character": "Franck Eggelhoffer",
+            "id": 519,
+            "name": "Martin Short"
+          },
+          {
+            "character": "Howard Weinstein",
+            "id": 14592,
+            "name": "BD Wong"
+          },
+          {
+            "character": "John MacKenzie",
+            "id": 20906,
+            "name": "Peter Michael Goetz"
+          },
+          {
+            "character": "Joanna MacKenzie",
+            "id": 54348,
+            "name": "Kate McGregor-Stewart"
+          },
+          {
+            "character": "Grace",
+            "id": 1128167,
+            "name": "Carmen Hayward"
+          }
+        ],
+        "directors": [
+          {
+            "id": 56106,
+            "name": "Charles Shyer"
+          }
+        ],
+        "genres": [
+          {
+            "id": 35,
+            "name": "Comedy"
+          },
+          {
+            "id": 10751,
+            "name": "Family"
+          }
+        ],
+        "id": 11846,
+        "keywords": [
+          {
+            "id": 5600,
+            "name": "daughter"
+          },
+          {
+            "id": 2381,
+            "name": "wedding planner"
+          },
+          {
+            "id": 3582,
+            "name": "bride"
+          },
+          {
+            "id": 4532,
+            "name": "son-in-law"
+          },
+          {
+            "id": 4604,
+            "name": "father-in-law"
+          },
+          {
+            "id": 5090,
+            "name": "fool"
+          },
+          {
+            "id": 9714,
+            "name": "remake"
+          },
+          {
+            "id": 12670,
+            "name": "los angeles, california"
+          },
+          {
+            "id": 13027,
+            "name": "wedding"
+          },
+          {
+            "id": 240303,
+            "name": "father daughter relationship"
+          }
+        ],
+        "original_title": "Father of the Bride",
+        "overview": "George Banks is an ordinary, middle-class man whose 22 year-old daughter Annie has decided to marry a man from an upper-class family, but George can't think of what life would be like without his daughter. His wife tries to make him happy for Annie, but when the wedding takes place at their home and a foreign wedding planner takes over the ceremony, he becomes slightly insane.",
+        "release_date": "1991-12-20",
+        "title": "Father of the Bride"
+      },
+      "imdb_id": "tt0101862",
+      "movielens_id": "6944",
+      "provenance": {
+        "cast": "tmdb:movie/11846:en-US",
+        "director": "tmdb:movie/11846:en-US",
+        "genres": "tmdb:movie/11846:en-US",
+        "keywords": "tmdb:movie/11846:en-US",
+        "original_title": "tmdb:movie/11846:en-US",
+        "overview": "tmdb:movie/11846:en-US",
+        "title_vi": "tmdb:movie/11846:en-US"
+      },
+      "tmdb_id": 11846,
+      "verification_status": "LIVE_VERIFIED",
+      "vi_VN": {
+        "id": 11846,
+        "language": "vi-VN",
+        "overview": "",
+        "title": "Father of the Bride"
+      }
+    },
+    "70301": {
+      "en_US": {
+        "cast_top10": [
+          {
+            "character": "Derek Charles",
+            "id": 17605,
+            "name": "Idris Elba"
+          },
+          {
+            "character": "Sharon Charles",
+            "id": 14386,
+            "name": "Beyonc\u00e9"
+          },
+          {
+            "character": "Lisa Sheridan",
+            "id": 17303,
+            "name": "Ali Larter"
+          },
+          {
+            "character": "Ben",
+            "id": 3035,
+            "name": "Jerry O'Connell"
+          },
+          {
+            "character": "Detective Monica Reese",
+            "id": 77133,
+            "name": "Christine Lahti"
+          },
+          {
+            "character": "Joe Gage",
+            "id": 14888,
+            "name": "Bruce McGill"
+          },
+          {
+            "character": "Patrick",
+            "id": 1190678,
+            "name": "Matthew Humphreys"
+          },
+          {
+            "character": "Samantha",
+            "id": 21318,
+            "name": "Scout Taylor-Compton"
+          },
+          {
+            "character": "Marge",
+            "id": 1190677,
+            "name": "Bonnie Perlman"
+          },
+          {
+            "character": "Hank",
+            "id": 87035,
+            "name": "Richard Ruccolo"
+          }
+        ],
+        "directors": [
+          {
+            "id": 80747,
+            "name": "Steve Shill"
+          }
+        ],
+        "genres": [
+          {
+            "id": 18,
+            "name": "Drama"
+          },
+          {
+            "id": 53,
+            "name": "Thriller"
+          }
+        ],
+        "id": 17335,
+        "keywords": [],
+        "original_title": "Obsessed",
+        "overview": "Things couldn't be better for Derek Charles. He's just received a big promotion at work, and has a wonderful marriage with his beautiful wife, Sharon. However, into this idyllic world steps Lisa, a temporary worker at Derek's office. Lisa begins to stalk Derek, jeopardizing all he holds dear.",
+        "release_date": "2009-02-26",
+        "title": "Obsessed"
+      },
+      "imdb_id": "tt1198138",
+      "movielens_id": "70301",
+      "provenance": {
+        "cast": "tmdb:movie/17335:en-US",
+        "director": "tmdb:movie/17335:en-US",
+        "genres": "tmdb:movie/17335:en-US",
+        "original_title": "tmdb:movie/17335:en-US",
+        "overview": "tmdb:movie/17335:en-US",
+        "overview_vi": "tmdb:movie/17335:en-US",
+        "title_vi": "tmdb:movie/17335:en-US"
+      },
+      "tmdb_id": 17335,
+      "verification_status": "LIVE_VERIFIED",
+      "vi_VN": {
+        "id": 17335,
+        "language": "vi-VN",
+        "overview": "C\u00f3 s\u1ef1 nghi\u1ec7p th\u00e0nh \u0111\u1ea1t v\u00e0 ng\u01b0\u1eddi v\u1ee3 tuy\u1ec7t v\u1eddi nh\u01b0ng cu\u1ed9c s\u1ed1ng c\u1ee7a v\u1ecb gi\u00e1m \u0111\u1ed1c l\u1ea1i d\u1ea7n s\u1ee5p \u0111\u1ed5 khi n\u1eef nh\u00e2n vi\u00ean th\u1eddi v\u1ee5 \u0111\u1ea7y g\u1ee3i c\u1ea3m t\u1ea5n c\u00f4ng v\u00e0 ph\u00e1 ho\u1ea1i cu\u1ed9c s\u1ed1ng c\u1ee7a anh.",
+        "title": "\u00c1m \u1ea2nh"
+      }
+    },
+    "745": {
+      "en_US": {
+        "cast_top10": [
+          {
+            "character": "Wallace (voice)",
+            "id": 7317,
+            "name": "Peter Sallis"
+          },
+          {
+            "character": "Wendolene (voice)",
+            "id": 77287,
+            "name": "Anne Reid"
+          }
+        ],
+        "directors": [
+          {
+            "id": 7314,
+            "name": "Nick Park"
+          }
+        ],
+        "genres": [
+          {
+            "id": 10751,
+            "name": "Family"
+          },
+          {
+            "id": 16,
+            "name": "Animation"
+          },
+          {
+            "id": 35,
+            "name": "Comedy"
+          }
+        ],
+        "id": 532,
+        "keywords": [
+          {
+            "id": 378,
+            "name": "prison"
+          },
+          {
+            "id": 3020,
+            "name": "sheep"
+          },
+          {
+            "id": 1436,
+            "name": "inventor"
+          },
+          {
+            "id": 1797,
+            "name": "loyalty"
+          },
+          {
+            "id": 6139,
+            "name": "innocence"
+          },
+          {
+            "id": 2526,
+            "name": "human animal relationship"
+          },
+          {
+            "id": 3289,
+            "name": "villain"
+          },
+          {
+            "id": 9887,
+            "name": "surrealism"
+          },
+          {
+            "id": 9840,
+            "name": "romance"
+          },
+          {
+            "id": 11477,
+            "name": "anthropomorphism"
+          },
+          {
+            "id": 10121,
+            "name": "stop motion"
+          },
+          {
+            "id": 15124,
+            "name": "framed"
+          },
+          {
+            "id": 15162,
+            "name": "dog"
+          },
+          {
+            "id": 18165,
+            "name": "animals"
+          },
+          {
+            "id": 158692,
+            "name": "wool"
+          },
+          {
+            "id": 182287,
+            "name": "sheep rustling"
+          },
+          {
+            "id": 197065,
+            "name": "claymation"
+          },
+          {
+            "id": 230385,
+            "name": "plasticine"
+          },
+          {
+            "id": 263548,
+            "name": "short film"
+          },
+          {
+            "id": 278823,
+            "name": "3d animation"
+          },
+          {
+            "id": 286644,
+            "name": "store owner"
+          }
+        ],
+        "original_title": "A Close Shave",
+        "overview": "Wallace's whirlwind romance with the proprietor of the local wool shop puts his head in a spin, and Gromit is framed for sheep-rustling in a fiendish criminal plot.",
+        "release_date": "1996-03-07",
+        "title": "A Close Shave"
+      },
+      "imdb_id": "tt0112691",
+      "movielens_id": "745",
+      "provenance": {
+        "cast": "tmdb:movie/532:en-US",
+        "director": "tmdb:movie/532:en-US",
+        "genres": "tmdb:movie/532:en-US",
+        "keywords": "tmdb:movie/532:en-US",
+        "original_title": "tmdb:movie/532:en-US",
+        "overview": "tmdb:movie/532:en-US",
+        "title_vi": "tmdb:movie/532:en-US"
+      },
+      "tmdb_id": 532,
+      "verification_status": "LIVE_VERIFIED",
+      "vi_VN": {
+        "id": 532,
+        "language": "vi-VN",
+        "overview": "",
+        "title": "A Close Shave"
+      }
+    },
+    "78142": {
+      "en_US": {
+        "cast_top10": [
+          {
+            "character": "Peppino",
+            "id": 94255,
+            "name": "Francesco Scianna"
+          },
+          {
+            "character": "Mannina",
+            "id": 94256,
+            "name": "Margareth Mad\u00e8"
+          },
+          {
+            "character": "Tana",
+            "id": 27642,
+            "name": "Lina Sastri"
+          },
+          {
+            "character": "Sarina adulta",
+            "id": 3822,
+            "name": "\u00c1ngela Molina"
+          },
+          {
+            "character": "Sarina",
+            "id": 124618,
+            "name": "Nicole Grimaudo"
+          },
+          {
+            "character": "Nino Terranuova",
+            "id": 120652,
+            "name": "Salvatore Ficarra"
+          },
+          {
+            "character": "Luigi Scalia",
+            "id": 120653,
+            "name": "Valentino Picone"
+          },
+          {
+            "character": "Ciccio Terranuova",
+            "id": 147156,
+            "name": "Gaetano Aronica"
+          },
+          {
+            "character": "Pietro da Ragazzo",
+            "id": 144272,
+            "name": "Marco Ierman\u00f2"
+          },
+          {
+            "character": "don Giacinto",
+            "id": 1330099,
+            "name": "Lollo Franco"
+          }
+        ],
+        "directors": [
+          {
+            "id": 65314,
+            "name": "Giuseppe Tornatore"
+          }
+        ],
+        "genres": [
+          {
+            "id": 18,
+            "name": "Drama"
+          },
+          {
+            "id": 35,
+            "name": "Comedy"
+          },
+          {
+            "id": 10749,
+            "name": "Romance"
+          }
+        ],
+        "id": 25846,
+        "keywords": [
+          {
+            "id": 629,
+            "name": "sicily, italy"
+          },
+          {
+            "id": 1755,
+            "name": "fascism"
+          },
+          {
+            "id": 10391,
+            "name": "mafia"
+          },
+          {
+            "id": 173644,
+            "name": "communism"
+          }
+        ],
+        "original_title": "Baar\u00eca",
+        "overview": "In 1920s Bagheria, Giuseppe 'Peppino' Torrenuova works as a shepherd to financially help his poor family. Over the next fifty years, Giuseppe's life, as well as the life of the village, is observed. Giuseppe grows up, joins the Communist Party, marries a local girl, has children, and forges a political career for himself.",
+        "release_date": "2009-09-25",
+        "title": "Baaria"
+      },
+      "imdb_id": "tt1081935",
+      "movielens_id": "78142",
+      "provenance": {
+        "cast": "tmdb:movie/25846:en-US",
+        "director": "tmdb:movie/25846:en-US",
+        "genres": "tmdb:movie/25846:en-US",
+        "keywords": "tmdb:movie/25846:en-US",
+        "original_title": "tmdb:movie/25846:en-US",
+        "overview": "tmdb:movie/25846:en-US",
+        "title_vi": "tmdb:movie/25846:en-US"
+      },
+      "tmdb_id": 25846,
+      "verification_status": "LIVE_VERIFIED",
+      "vi_VN": {
+        "id": 25846,
+        "language": "vi-VN",
+        "overview": "",
+        "title": "Baar\u00eca"
+      }
+    },
+    "79091": {
+      "en_US": {
+        "cast_top10": [
+          {
+            "character": "Gru (voice)",
+            "id": 4495,
+            "name": "Steve Carell"
+          },
+          {
+            "character": "Vector (voice)",
+            "id": 41088,
+            "name": "Jason Segel"
+          },
+          {
+            "character": "Dr Nefario (voice)",
+            "id": 59919,
+            "name": "Russell Brand"
+          },
+          {
+            "character": "Margo (voice)",
+            "id": 17743,
+            "name": "Miranda Cosgrove"
+          },
+          {
+            "character": "Edith (voice)",
+            "id": 124750,
+            "name": "Dana Gaier Ellis"
+          },
+          {
+            "character": "Agnes (voice)",
+            "id": 122851,
+            "name": "Elsie Fisher"
+          },
+          {
+            "character": "Tim the Minion / Bob the Minion / Mark the Minion / Phil the Minion / Stuart the Minion (voice)",
+            "id": 124747,
+            "name": "Pierre Coffin"
+          },
+          {
+            "character": "Gru's Mom (voice)",
+            "id": 5823,
+            "name": "Julie Andrews"
+          },
+          {
+            "character": "Mr. Perkins (voice)",
+            "id": 21200,
+            "name": "Will Arnett"
+          },
+          {
+            "character": "Miss Hattie (voice)",
+            "id": 41091,
+            "name": "Kristen Wiig"
+          }
+        ],
+        "directors": [
+          {
+            "id": 124747,
+            "name": "Pierre Coffin"
+          },
+          {
+            "id": 124748,
+            "name": "Chris Renaud"
+          }
+        ],
+        "genres": [
+          {
+            "id": 16,
+            "name": "Animation"
+          },
+          {
+            "id": 35,
+            "name": "Comedy"
+          },
+          {
+            "id": 80,
+            "name": "Crime"
+          },
+          {
+            "id": 878,
+            "name": "Science Fiction"
+          },
+          {
+            "id": 10751,
+            "name": "Family"
+          }
+        ],
+        "id": 20352,
+        "keywords": [
+          {
+            "id": 305,
+            "name": "moon"
+          },
+          {
+            "id": 970,
+            "name": "parent child relationship"
+          },
+          {
+            "id": 6783,
+            "name": "orphanage"
+          },
+          {
+            "id": 3289,
+            "name": "villain"
+          },
+          {
+            "id": 4130,
+            "name": "adoptive father"
+          },
+          {
+            "id": 8201,
+            "name": "satire"
+          },
+          {
+            "id": 7393,
+            "name": "life's dream"
+          },
+          {
+            "id": 9823,
+            "name": "rivalry"
+          },
+          {
+            "id": 10551,
+            "name": "ballet"
+          },
+          {
+            "id": 10261,
+            "name": "stealing"
+          },
+          {
+            "id": 12663,
+            "name": "little girl"
+          },
+          {
+            "id": 13014,
+            "name": "orphan"
+          },
+          {
+            "id": 156928,
+            "name": "tomboy"
+          },
+          {
+            "id": 160097,
+            "name": "intelligent"
+          },
+          {
+            "id": 179095,
+            "name": "evil doctor"
+          },
+          {
+            "id": 179431,
+            "name": "duringcreditsstinger"
+          },
+          {
+            "id": 194404,
+            "name": "supervillain"
+          },
+          {
+            "id": 278823,
+            "name": "3d animation"
+          }
+        ],
+        "original_title": "Despicable Me",
+        "overview": "Determined to prove he's the world's greatest supervillain, Gru hatches an audacious plan to steal the Moon. To pull it off, he adopts three orphaned girls\u2014Margo, Edith, and Agnes\u2014intending to use them as pawns in his scheme. But the unexpected bond they form forces him to question the criminal life he's always known.",
+        "release_date": "2010-07-08",
+        "title": "Despicable Me"
+      },
+      "imdb_id": "tt1323594",
+      "movielens_id": "79091",
+      "provenance": {
+        "cast": "tmdb:movie/20352:en-US",
+        "director": "tmdb:movie/20352:en-US",
+        "genres": "tmdb:movie/20352:en-US",
+        "keywords": "tmdb:movie/20352:en-US",
+        "original_title": "tmdb:movie/20352:en-US",
+        "overview": "tmdb:movie/20352:en-US",
+        "overview_vi": "tmdb:movie/20352:en-US",
+        "title_vi": "tmdb:movie/20352:en-US"
+      },
+      "tmdb_id": 20352,
+      "verification_status": "LIVE_VERIFIED",
+      "vi_VN": {
+        "id": 20352,
+        "language": "vi-VN",
+        "overview": "Nh\u00e2n v\u1eadt t\u00e2m \u0111i\u1ec3m c\u1ee7a b\u1ed9 phim l\u00e0 Gru, m\u1ed9t t\u00ean t\u1ed9i ph\u1ea1m kh\u00e9t ti\u1ebfng. Gru v\u00e0 \u0111\u00e1m tay ch\u00e2n robot t\u00ed hon chuy\u00ean \u0111i \u0111\u00e1nh c\u1eafp nh\u1eefng bi\u1ec3u t\u01b0\u1ee3ng n\u1ed5i ti\u1ebfng c\u1ee7a th\u1ebf gi\u1edbi. Th\u1ebf nh\u01b0ng ti\u1ebfng x\u1ea5u c\u1ee7a Gru b\u1ecb suy gi\u1ea3m khi t\u00ean t\u1ed9i ph\u1ea1m tr\u1ebb tu\u1ed5i Vector \u0111\u00e3 \u0103n c\u1eafp kim t\u1ef1 th\u00e1p c\u1ee7a Ai C\u1eadp. Gru quy\u1ebft \u0111\u1ecbnh l\u00e0m phi v\u1ee5 c\u00f3 m\u1ed9t kh\u00f4ng hai cho th\u1ebf gi\u1edbi ph\u1ea3i b\u00e1i ph\u1ee5c: \u0103n c\u1eafp m\u1eb7t tr\u0103ng. Tr\u01b0\u1edbc ti\u00ean, Gru ph\u1ea3i \u0111\u00e1nh c\u1eafp kh\u1ea9u s\u00fang c\u00f3 kh\u1ea3 n\u0103ng thu nh\u1ecf m\u1ecdi v\u1eadt t\u1eeb qu\u00e2n \u0111\u1ed9i. Nh\u01b0ng Vector \u0111\u00e3 n\u1eabng tay tr\u00ean kh\u1ea9u s\u00fang th\u1ea7n k\u1ef3 t\u1eeb Gru. M\u1ecdi k\u1ebf ho\u1ea1ch gi\u00e0nh l\u1ea1i c\u00e2y s\u00fang c\u1ee7a Gru \u0111\u1ec1u b\u1ecb Vector \u0111\u00e1nh b\u1ea1i. Cu\u1ed1i c\u00f9ng, Gru ngh\u0129 ra c\u00e1ch d\u00f9ng ba \u0111\u1ee9a tr\u1ebb c\u1ee7a vi\u1ec7n m\u1ed3 c\u00f4i x\u00e2m nh\u1eadp s\u00e0o huy\u1ec7t c\u1ee7a Vector. Th\u1ebf nh\u01b0ng ba \u0111\u1ee9a tr\u1ebb Margo, Edith, Agnes \u0111\u00e3 c\u1ea3m h\u00f3a Gru b\u1eb1ng s\u1ef1 ng\u00e2y th\u01a1, h\u01b0\u1edbng thi\u1ec7n c\u1ee7a m\u00ecnh.",
+        "title": "K\u1ebb Tr\u1ed9m M\u1eb7t Tr\u0103ng"
+      }
+    },
+    "79536": {
+      "en_US": {
+        "cast_top10": [
+          {
+            "character": "Tomppa",
+            "id": 92428,
+            "name": "Samuli Edelmann"
+          },
+          {
+            "character": "Krisu",
+            "id": 11263,
+            "name": "Peter Franz\u00e9n"
+          },
+          {
+            "character": "Monika",
+            "id": 93564,
+            "name": "Pihla Viitala"
+          },
+          {
+            "character": "Kari",
+            "id": 93565,
+            "name": "Kari Hietalahti"
+          },
+          {
+            "character": "Koistinen",
+            "id": 93566,
+            "name": "Juha Veijonen"
+          },
+          {
+            "character": "Korppu",
+            "id": 82857,
+            "name": "Jasper P\u00e4\u00e4kk\u00f6nen"
+          },
+          {
+            "character": "Ukin puukottama mies",
+            "id": 89511,
+            "name": "Pekka Huotari"
+          },
+          {
+            "character": "Arska",
+            "id": 976536,
+            "name": "Kristo Salminen"
+          },
+          {
+            "character": "Pera",
+            "id": 3384975,
+            "name": "Hiski Gr\u00f6nstrand"
+          },
+          {
+            "character": "Sale",
+            "id": 2746741,
+            "name": "Tommi Rantam\u00e4ki"
+          }
+        ],
+        "directors": [
+          {
+            "id": 93561,
+            "name": "Aleksi M\u00e4kel\u00e4"
+          }
+        ],
+        "genres": [
+          {
+            "id": 80,
+            "name": "Crime"
+          },
+          {
+            "id": 18,
+            "name": "Drama"
+          }
+        ],
+        "id": 25335,
+        "keywords": [
+          {
+            "id": 1787,
+            "name": "helsinki, finland"
+          },
+          {
+            "id": 818,
+            "name": "based on novel or book"
+          },
+          {
+            "id": 4779,
+            "name": "delinquent"
+          },
+          {
+            "id": 3882,
+            "name": "gang of thieves"
+          }
+        ],
+        "original_title": "R\u00f6\u00f6peri",
+        "overview": "In the mid-1960s, three small-time Finnish bootleggers seize control of their Helsinki neighborhood's black-market liquor business.",
+        "release_date": "2009-01-09",
+        "title": "Hellsinki"
+      },
+      "imdb_id": "tt1227536",
+      "movielens_id": "79536",
+      "provenance": {
+        "cast": "tmdb:movie/25335:en-US",
+        "director": "tmdb:movie/25335:en-US",
+        "genres": "tmdb:movie/25335:en-US",
+        "keywords": "tmdb:movie/25335:en-US",
+        "original_title": "tmdb:movie/25335:en-US",
+        "overview": "tmdb:movie/25335:en-US",
+        "title_vi": "tmdb:movie/25335:en-US"
+      },
+      "tmdb_id": 25335,
+      "verification_status": "LIVE_VERIFIED",
+      "vi_VN": {
+        "id": 25335,
+        "language": "vi-VN",
+        "overview": "",
+        "title": "R\u00f6\u00f6peri"
+      }
+    },
+    "8712": {
+      "en_US": {
+        "cast_top10": [
+          {
+            "character": "Nick Arden",
+            "id": 2638,
+            "name": "Cary Grant"
+          },
+          {
+            "character": "Ellen Wagstaff Arden",
+            "id": 77158,
+            "name": "Irene Dunne"
+          },
+          {
+            "character": "Steve Burkett",
+            "id": 1009,
+            "name": "Randolph Scott"
+          },
+          {
+            "character": "Bianca Bates",
+            "id": 98574,
+            "name": "Gail Patrick"
+          },
+          {
+            "character": "Ma",
+            "id": 19784,
+            "name": "Ann Shoemaker"
+          },
+          {
+            "character": "Tim Arden",
+            "id": 125847,
+            "name": "Scotty Beckett"
+          },
+          {
+            "character": "Chinch Arden",
+            "id": 1081179,
+            "name": "Mary Lou Harrington"
+          },
+          {
+            "character": "Hotel Clerk",
+            "id": 34234,
+            "name": "Donald MacBride"
+          },
+          {
+            "character": "Johnson",
+            "id": 103451,
+            "name": "Hugh O'Connell"
+          },
+          {
+            "character": "Judge Walter Bryson",
+            "id": 102066,
+            "name": "Granville Bates"
+          }
+        ],
+        "directors": [
+          {
+            "id": 100131,
+            "name": "Garson Kanin"
+          }
+        ],
+        "genres": [
+          {
+            "id": 35,
+            "name": "Comedy"
+          },
+          {
+            "id": 10749,
+            "name": "Romance"
+          }
+        ],
+        "id": 41463,
+        "keywords": [
+          {
+            "id": 931,
+            "name": "jealousy"
+          },
+          {
+            "id": 934,
+            "name": "judge"
+          },
+          {
+            "id": 2580,
+            "name": "shipwreck"
+          },
+          {
+            "id": 2676,
+            "name": "honeymoon"
+          },
+          {
+            "id": 6977,
+            "name": "bigamy"
+          },
+          {
+            "id": 10705,
+            "name": "confusion"
+          },
+          {
+            "id": 9929,
+            "name": "remarriage"
+          },
+          {
+            "id": 12670,
+            "name": "los angeles, california"
+          },
+          {
+            "id": 155402,
+            "name": "presumed dead"
+          },
+          {
+            "id": 155457,
+            "name": "screwball comedy"
+          },
+          {
+            "id": 155746,
+            "name": "deserted island"
+          },
+          {
+            "id": 160955,
+            "name": "second marriage"
+          },
+          {
+            "id": 179578,
+            "name": "lost at sea"
+          },
+          {
+            "id": 320420,
+            "name": "hilarious"
+          },
+          {
+            "id": 324123,
+            "name": "comedy of remarriage"
+          },
+          {
+            "id": 353523,
+            "name": "enoch arden"
+          },
+          {
+            "id": 367864,
+            "name": "first wife"
+          }
+        ],
+        "original_title": "My Favorite Wife",
+        "overview": "Years after her ship disappeared, a presumably dead woman returns home. To her shock, she finds her husband has remarried.",
+        "release_date": "1940-05-17",
+        "title": "My Favorite Wife"
+      },
+      "imdb_id": "tt0029284",
+      "movielens_id": "8712",
+      "provenance": {
+        "cast": "tmdb:movie/41463:en-US",
+        "director": "tmdb:movie/41463:en-US",
+        "genres": "tmdb:movie/41463:en-US",
+        "keywords": "tmdb:movie/41463:en-US",
+        "original_title": "tmdb:movie/41463:en-US",
+        "overview": "tmdb:movie/41463:en-US",
+        "title_vi": "tmdb:movie/41463:en-US"
+      },
+      "tmdb_id": 41463,
+      "verification_status": "LIVE_VERIFIED",
+      "vi_VN": {
+        "id": 41463,
+        "language": "vi-VN",
+        "overview": "",
+        "title": "My Favorite Wife"
+      }
+    },
+    "95497": {
+      "en_US": {
+        "cast_top10": [
+          {
+            "character": "Son Goku / Son Gohan (voice)",
+            "id": 90496,
+            "name": "Masako Nozawa"
+          },
+          {
+            "character": "Vegeta (voice)",
+            "id": 122501,
+            "name": "Ryo Horikawa"
+          },
+          {
+            "character": "Future Trunks (voice)",
+            "id": 1686,
+            "name": "Takeshi Kusao"
+          },
+          {
+            "character": "Piccolo (voice)",
+            "id": 85286,
+            "name": "Toshio Furukawa"
+          },
+          {
+            "character": "Kuririn (voice)",
+            "id": 65510,
+            "name": "Mayumi Tanaka"
+          },
+          {
+            "character": "Muten Roshi (voice)",
+            "id": 618,
+            "name": "Kohei Miyauchi"
+          },
+          {
+            "character": "Android 13 (voice)",
+            "id": 122653,
+            "name": "Kazuyuki Sogabe"
+          },
+          {
+            "character": "Android 14 (voice)",
+            "id": 122654,
+            "name": "Hisao Egawa"
+          },
+          {
+            "character": "Android 15 (voice)",
+            "id": 122655,
+            "name": "Toshio Kobayashi"
+          },
+          {
+            "character": "Dr. Gero (voice)",
+            "id": 122656,
+            "name": "Koji Yada"
+          }
+        ],
+        "directors": [
+          {
+            "id": 122186,
+            "name": "Daisuke Nishio"
+          }
+        ],
+        "genres": [
+          {
+            "id": 28,
+            "name": "Action"
+          },
+          {
+            "id": 16,
+            "name": "Animation"
+          },
+          {
+            "id": 878,
+            "name": "Science Fiction"
+          }
+        ],
+        "id": 39104,
+        "keywords": [
+          {
+            "id": 4375,
+            "name": "transformation"
+          },
+          {
+            "id": 9492,
+            "name": "fusion"
+          },
+          {
+            "id": 33637,
+            "name": "super power"
+          },
+          {
+            "id": 210024,
+            "name": "anime"
+          },
+          {
+            "id": 244653,
+            "name": "synthetic android"
+          }
+        ],
+        "original_title": "\u30c9\u30e9\u30b4\u30f3\u30dc\u30fc\u30eb\uff3a \u6975\u9650\u30d0\u30c8\u30eb\uff01\u4e09\u5927\u8d85\u30b5\u30a4\u30e4\u4eba",
+        "overview": "Dr. Gero's Androids #13, #14, and #15 are awakened by the laboratory computers and immediately head to the mall where Goku is shopping. After Goku, Trunks, and Vegeta defeat #14 and #15, #13 absorbs their inner computers and becomes a super being greater than the original three separately were. Now it is up to Goku to stop him.",
+        "release_date": "1992-07-11",
+        "title": "Dragon Ball Z: Super Android 13!"
+      },
+      "imdb_id": "tt0142241",
+      "movielens_id": "95497",
+      "provenance": {
+        "cast": "tmdb:movie/39104:en-US",
+        "director": "tmdb:movie/39104:en-US",
+        "genres": "tmdb:movie/39104:en-US",
+        "keywords": "tmdb:movie/39104:en-US",
+        "original_title": "tmdb:movie/39104:en-US",
+        "overview": "tmdb:movie/39104:en-US",
+        "overview_vi": "tmdb:movie/39104:en-US",
+        "title_vi": "tmdb:movie/39104:en-US"
+      },
+      "tmdb_id": 39104,
+      "verification_status": "LIVE_VERIFIED",
+      "vi_VN": {
+        "id": 39104,
+        "language": "vi-VN",
+        "overview": "T\u00ean b\u00e1c h\u1ecdc \u0111i\u00ean Kore \u0111\u00e3 ch\u1ebf t\u1ea1o ra ng\u01b0\u1eddi m\u00e1y Android 16 (King k\u00f4ng), Android 17(Pic) v\u00e0 Android 18 (Poc) nh\u1eb1m ph\u1ee5c v\u1ee5 \u00e2m m\u01b0u c\u1ee7a m\u00ecnh v\u00e0 h\u1eafn \u0111\u00e3 b\u1ecb ch\u00ednh c\u00e1c \u201c\u0111\u1ee9a con\u201d c\u1ee7a m\u00ecnh gi\u1ebft ch\u1ebft t\u1ea1i ph\u00f2ng th\u00ed nghi\u1ec7m. Tuy Kore \u0111\u00e3 ch\u1ebft nh\u01b0ng c\u00f4ng tr\u00ecnh nghi\u00ean c\u1ee9u c\u1ee7a h\u1eafn v\u1eabn c\u00f2n \u0111\u00f3 g\u00e2y hi\u1ec3m h\u1ecda cho Tr\u00e1i \u0111\u1ea5t.",
+        "title": "B\u1ea3y Vi\u00ean Ng\u1ecdc R\u1ed3ng: Si\u00eau Ng\u01b0\u1eddi M\u00e1y S\u1ed1 13"
+      }
+    }
+  },
+  "movies_queried": 37,
+  "pilot_size": 40,
+  "request_budget": 100,
+  "snapshot_type": "phase8d_pilot_research_snapshot",
+  "total_requests": 74,
+  "verification_mode": "PARTIALLY_VERIFIED"
+}

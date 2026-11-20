@@ -1,0 +1,73 @@
+{
+  "report_type": "phase8d_field_completeness",
+  "generated_at": "2026-11-20T04:27:58.608115+00:00",
+  "verification_mode": "PARTIALLY_VERIFIED",
+  "pilot_size": 40,
+  "movies_queried": 37,
+  "completeness_before_enrichment": {
+    "title": {
+      "populated": 40,
+      "pct": 100.0
+    },
+    "genres": {
+      "populated": 40,
+      "pct": 100.0
+    },
+    "overview_en": {
+      "populated": 0,
+      "pct": 0.0
+    },
+    "keywords": {
+      "populated": 0,
+      "pct": 0.0
+    },
+    "cast": {
+      "populated": 0,
+      "pct": 0.0
+    },
+    "director": {
+      "populated": 0,
+      "pct": 0.0
+    },
+    "title_vi": {
+      "populated": 0,
+      "pct": 0.0
+    },
+    "overview_vi": {
+      "populated": 0,
+      "pct": 0.0
+    }
+  },
+  "completeness_after_pilot": {
+    "has_overview": {
+      "populated": 37,
+      "pct_of_pilot_40": 92.5,
+      "pct_of_queried": 100.0
+    },
+    "has_keywords": {
+      "populated": 35,
+      "pct_of_pilot_40": 87.5,
+      "pct_of_queried": 94.59
+    },
+    "has_cast": {
+      "populated": 37,
+      "pct_of_pilot_40": 92.5,
+      "pct_of_queried": 100.0
+    },
+    "has_director": {
+      "populated": 37,
+      "pct_of_pilot_40": 92.5,
+      "pct_of_queried": 100.0
+    },
+    "has_vi_title": {
+      "populated": 37,
+      "pct_of_pilot_40": 92.5,
+      "pct_of_queried": 100.0
+    },
+    "has_vi_overview": {
+      "populated": 12,
+      "pct_of_pilot_40": 30.0,
+      "pct_of_queried": 32.43
+    }
+  }
+}

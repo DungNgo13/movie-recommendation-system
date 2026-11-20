@@ -1,0 +1,22 @@
+{
+  "report_type": "phase8d_request_statistics",
+  "generated_at": "2026-11-20T04:27:58.608115+00:00",
+  "is_live": true,
+  "verification_mode": "PARTIALLY_VERIFIED",
+  "approved_request_budget": 100,
+  "total_http_attempts": 74,
+  "requests_succeeded": 74,
+  "requests_failed": 0,
+  "request_budget_remaining": 26,
+  "http_429_count": 0,
+  "http_5xx_count": 0,
+  "retry_count": 0,
+  "budget_exhausted_events": 0,
+  "configured_rate_limit_rps": 4.0,
+  "max_observed_rps": 3.0,
+  "latency_p50_ms": 534.97,
+  "latency_p95_ms": 692.93,
+  "execution_duration_seconds": 42.292,
+  "blocker_code": "",
+  "blocker_message": ""
+}
