@@ -131,8 +131,8 @@ def parse_args():
     parser.add_argument(
         "--phase8d-request-budget",
         type=int,
-        default=74,
-        help="Maximum TMDB API HTTP attempts including retries (default: 74, approved hard cap: 74)",
+        default=100,
+        help="Maximum TMDB API HTTP attempts including retries (default: 100, approved hard cap: 100)",
     )
     return parser.parse_args()
 

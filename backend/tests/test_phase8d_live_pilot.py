@@ -83,17 +83,16 @@ class TestPhase8DPilotConfig:
             assert config.request_budget == 1
 
     def test_budget_clamping_upper(self):
-        """Budget above approved 74 cap (including 94 or 120) is clamped to 74."""
+        """Budget above approved 100 cap (including 120 or 9999) is clamped to 100."""
         with patch.dict(os.environ, {}, clear=False):
             os.environ.pop("PHASE8D_LIVE_AUTHORIZED", None)
             from app.recommendation_evaluation.phase8d_live_pilot import Phase8DPilotConfig
 
-            assert Phase8DPilotConfig.from_args(request_budget=94).request_budget == 74
-            assert Phase8DPilotConfig.from_args(request_budget=120).request_budget == 74
-            assert Phase8DPilotConfig.from_args(request_budget=9999).request_budget == 74
+            assert Phase8DPilotConfig.from_args(request_budget=120).request_budget == 100
+            assert Phase8DPilotConfig.from_args(request_budget=9999).request_budget == 100
 
     def test_budget_within_range(self):
-        """Budget within valid range [1, 74] is preserved."""
+        """Budget within valid range [1, 100] is preserved."""
         with patch.dict(os.environ, {}, clear=False):
             os.environ.pop("PHASE8D_LIVE_AUTHORIZED", None)
             from app.recommendation_evaluation.phase8d_live_pilot import Phase8DPilotConfig
@@ -1073,8 +1072,8 @@ class TestModuleConstants:
             PHASE8D_DEFAULT_REQUEST_BUDGET,
         )
 
-        assert PHASE8D_DEFAULT_REQUEST_BUDGET == 74
-        assert PHASE8D_APPROVED_MAX_REQUESTS == 74
+        assert PHASE8D_DEFAULT_REQUEST_BUDGET == 100
+        assert PHASE8D_APPROVED_MAX_REQUESTS == 100
 
     def test_authorization_env_name(self):
         from app.recommendation_evaluation.phase8d_live_pilot import (
@@ -1114,12 +1113,12 @@ class TestNormalizeTitle:
 
 
 # ---------------------------------------------------------------------------
-# Strict Request Budget Enforcement (74 HTTP attempts including retries)
+# Strict Request Budget Enforcement (100 HTTP attempts including retries)
 # ---------------------------------------------------------------------------
 
 
 class TestStrictBudgetEnforcement:
-    """Verify TMDBClient and run_live_pilot strictly enforce the 74-attempt hard cap."""
+    """Verify TMDBClient and run_live_pilot strictly enforce the 100-attempt hard cap."""
 
     def test_tmdb_client_stops_before_exceeding_max_total_requests_with_retries(self):
         """Retries, HTTP 429s, 5xxs, timeouts, and vi-VN calls all count toward max_total_requests."""
@@ -1177,6 +1176,66 @@ class TestStrictBudgetEnforcement:
         assert exc_info2.value.code == TMDB_BUDGET_EXHAUSTED
         assert call_count == 3
         assert client.stats.requests_total == 3
+
+    def test_option_b_100_budget_is_shared_not_renewable(self):
+        """The 26 extra attempts (100 - 74 base) are a shared retry allowance,
+        not a separate or automatically renewable budget."""
+        import httpx
+        from app.core.api_errors import TMDB_BUDGET_EXHAUSTED
+        from app.services.tmdb_client import TMDBClient, TMDBClientError, TMDBConfig
+
+        call_count = 0
+
+        def handler(request: httpx.Request) -> httpx.Response:
+            nonlocal call_count
+            call_count += 1
+            return httpx.Response(
+                200,
+                json={
+                    "id": 862,
+                    "title": "Toy Story",
+                    "original_title": "Toy Story",
+                    "release_date": "1995-10-30",
+                    "overview": "Toys come to life.",
+                },
+            )
+
+        transport = httpx.MockTransport(handler)
+        config = TMDBConfig(
+            read_access_token="valid_test_token_123456",
+            enable_live_requests=True,
+            max_retries=5,
+            backoff_base_seconds=0.001,
+            rate_limit_rps=100.0,
+            max_total_requests=100,
+        )
+        # Simulate prior usage of 99 attempts (1 remaining)
+        client = TMDBClient(config=config, transport=transport, sleep_fn=lambda _: None, initial_requests_total=99)
+
+        # First request uses the last remaining attempt
+        result = client.get_movie_details(862, language="en-US")
+        assert result["id"] == 862
+        assert client.stats.requests_total == 100
+        assert call_count == 1
+
+        # Next request must be blocked — budget is fully exhausted at 100
+        with pytest.raises(TMDBClientError) as exc_info:
+            client.get_movie_details(862, language="vi-VN")
+        assert exc_info.value.code == TMDB_BUDGET_EXHAUSTED
+        assert client.stats.requests_total == 100
+        assert call_count == 1  # No additional HTTP call was made
+
+    def test_budget_constant_matches_option_b(self):
+        """Verify PHASE8D_APPROVED_MAX_REQUESTS is set to 100 (Option B authorization)."""
+        from app.recommendation_evaluation.phase8d_live_pilot import (
+            PHASE8D_APPROVED_MAX_REQUESTS,
+            PHASE8D_DEFAULT_REQUEST_BUDGET,
+        )
+
+        assert PHASE8D_APPROVED_MAX_REQUESTS == 100
+        assert PHASE8D_DEFAULT_REQUEST_BUDGET == 100
+        # 37 movies × 2 requests = 74 base, 100 - 74 = 26 shared retry margin
+        assert PHASE8D_APPROVED_MAX_REQUESTS - 74 == 26
 
     def test_live_pilot_preserves_all_manifest_records_on_budget_exhaustion(self, tmp_path):
         """When budget is exhausted mid-run, all manifest records remain in summary with accurate statuses."""

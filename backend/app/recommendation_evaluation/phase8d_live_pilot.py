@@ -78,8 +78,8 @@ logger.addFilter(SecretRedactionFilter(lambda: os.getenv("TMDB_API_READ_ACCESS_T
 # Phase 8D constants
 PHASE8D_DEFAULT_PILOT_SIZE = 40
 PHASE8D_DEFAULT_SEED = 8042
-PHASE8D_APPROVED_MAX_REQUESTS = 74
-PHASE8D_DEFAULT_REQUEST_BUDGET = 74  # Strict hard cap: 74 total HTTP attempts, INCLUDING retries
+PHASE8D_APPROVED_MAX_REQUESTS = 100
+PHASE8D_DEFAULT_REQUEST_BUDGET = 100  # Strict hard cap: 100 total HTTP attempts, INCLUDING retries (run_002 Option B)
 PHASE8D_MAX_RPS = 4.0
 PHASE8D_AUTHORIZATION_ENV = "PHASE8D_LIVE_AUTHORIZED"
 
@@ -114,7 +114,7 @@ class Phase8DPilotConfig:
         request_budget: int = PHASE8D_DEFAULT_REQUEST_BUDGET,
         live: bool = False,
     ) -> Phase8DPilotConfig:
-        """Build config from CLI args with authorization gate check and 74-attempt hard cap."""
+        """Build config from CLI args with authorization gate check and 100-attempt hard cap."""
         env_authorized = os.getenv(PHASE8D_AUTHORIZATION_ENV, "").strip().lower() in (
             "true", "1", "yes",
         )
@@ -845,12 +845,12 @@ def run_phase8d_preflight_checks(
         "manifest_checksum": manifest_checksum,
     }
 
-    # 2. Verify maximum HTTP-attempt budget is <= 74 (including retries)
+    # 2. Verify maximum HTTP-attempt budget is <= approved cap (including retries)
     budget_ok = (
         1 <= config.request_budget <= PHASE8D_APPROVED_MAX_REQUESTS
         and manifest_budget <= PHASE8D_APPROVED_MAX_REQUESTS
     )
-    checks["2_max_http_attempt_budget_74"] = {
+    checks["2_max_http_attempt_budget_approved_cap"] = {
         "passed": budget_ok,
         "config_request_budget": config.request_budget,
         "manifest_total_request_budget": manifest_budget,
