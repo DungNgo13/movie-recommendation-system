@@ -333,6 +333,62 @@ def test_language_separation_prevents_vietnamese_overwriting_english_overview():
         )
 
 
+@pytest.mark.parametrize(
+    ("english", "localized", "original_language", "expected"),
+    [
+        ("Inception", "Inception", "en", "english_fallback"),
+        ("  Inception  ", "inception", "en", "english_fallback"),
+        ("Inception", "Kẻ Đánh Cắp Giấc Mơ", "en", "localized_candidate"),
+        ("Inception", "", "en", "missing"),
+        ("", "Tên phim", "en", "unverified"),
+        ("Đất Rừng Phương Nam", "Đất Rừng Phương Nam", "vi", "original_vi"),
+    ],
+)
+def test_tmdb_localization_status(english, localized, original_language, expected):
+    from app.services.tmdb_localization import classify_tmdb_vi_text
+
+    assert classify_tmdb_vi_text(english, localized, original_language) == expected
+
+
+def test_tmdb_english_fallback_is_not_staged_as_vietnamese():
+    english = {
+        "id": 27205, "title": "Inception", "original_title": "Inception",
+        "original_language": "en", "overview": "An English plot overview.",
+    }
+    proposed = extract_and_validate_tmdb_fields(
+        english, localized_vi={"title": "Inception", "overview": "An English plot overview."}
+    )
+    assert proposed["title"] == "Inception"
+    assert proposed["overview"] == "An English plot overview."
+    assert "title_vi" not in proposed
+    assert "overview_vi" not in proposed
+
+
+def test_tmdb_real_vietnamese_localization_is_staged():
+    english = {
+        "id": 27205, "title": "Inception", "original_language": "en",
+        "overview": "An English plot overview.",
+    }
+    proposed = extract_and_validate_tmdb_fields(
+        english, localized_vi={
+            "title": "Kẻ Đánh Cắp Giấc Mơ",
+            "overview": "Một tên trộm đánh cắp bí mật từ những giấc mơ.",
+        }
+    )
+    assert proposed["title_vi"] == "Kẻ Đánh Cắp Giấc Mơ"
+    assert proposed["overview_vi"].startswith("Một tên trộm")
+
+
+def test_tmdb_original_vietnamese_title_is_preserved():
+    english = {
+        "id": 27205, "title": "Đất Rừng Phương Nam", "original_language": "vi",
+    }
+    proposed = extract_and_validate_tmdb_fields(
+        english, localized_vi={"title": "Đất Rừng Phương Nam"}
+    )
+    assert proposed["title_vi"] == "Đất Rừng Phương Nam"
+
+
 def test_field_conflict_detection():
     """Conflict analyzer must distinguish missing fields, identical fields, and conflicts."""
     m = Movie(
