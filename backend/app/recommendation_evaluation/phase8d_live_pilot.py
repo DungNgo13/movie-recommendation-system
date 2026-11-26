@@ -48,6 +48,7 @@ from ..core.api_errors import (
     TMDB_UNAUTHORIZED,
 )
 from ..services.recommendation.text_builder import deduplicate_phrases, prepare_movie_document
+from ..services.tmdb_localization import VI_FIELD_STATUSES, classify_tmdb_vi_text
 from ..services.tmdb_client import (
     ALLOWLISTED_API_HOSTS,
     SecretRedactionFilter,
@@ -157,6 +158,8 @@ class LiveRetrievalRecord:
     has_director: bool = False
     has_vi_title: bool = False
     has_vi_overview: bool = False
+    vi_title_status: str = "unverified"
+    vi_overview_status: str = "unverified"
     match_method: str = "direct_tmdb_id"
     requires_manual_review: bool = False
     provenance: dict[str, str] = field(default_factory=dict)
@@ -593,6 +596,8 @@ def _record_to_dict(r: LiveRetrievalRecord) -> dict[str, Any]:
         "has_director": r.has_director,
         "has_vi_title": r.has_vi_title,
         "has_vi_overview": r.has_vi_overview,
+        "vi_title_status": r.vi_title_status,
+        "vi_overview_status": r.vi_overview_status,
         "match_method": r.match_method,
         "requires_manual_review": r.requires_manual_review,
         "provenance": r.provenance,
@@ -624,6 +629,8 @@ def _record_from_dict(d: dict[str, Any]) -> LiveRetrievalRecord:
         has_director=bool(d.get("has_director", False)),
         has_vi_title=bool(d.get("has_vi_title", False)),
         has_vi_overview=bool(d.get("has_vi_overview", False)),
+        vi_title_status=str(d.get("vi_title_status", "unverified")),
+        vi_overview_status=str(d.get("vi_overview_status", "unverified")),
         match_method=str(d.get("match_method", "direct_tmdb_id")),
         requires_manual_review=bool(d.get("requires_manual_review", False)),
         provenance=dict(d.get("provenance", {})),
@@ -1308,8 +1315,22 @@ def run_live_pilot(
                 title_ok = _check_title_match(ml_title, tmdb_title, tmdb_original)
                 year_ok = _check_year_match(ml_year, tmdb_release)
 
+                vi_title_status = classify_tmdb_vi_text(
+                    en_payload.get("title"), vi_payload.get("title"),
+                    en_payload.get("original_language"),
+                )
+                vi_overview_status = classify_tmdb_vi_text(
+                    en_payload.get("overview"), vi_payload.get("overview"),
+                    en_payload.get("original_language"),
+                )
+                # Do not count an English fallback as authentic Vietnamese metadata.
+                filtered_vi_payload = dict(vi_payload)
+                if vi_title_status not in VI_FIELD_STATUSES:
+                    filtered_vi_payload["title"] = ""
+                if vi_overview_status not in VI_FIELD_STATUSES:
+                    filtered_vi_payload["overview"] = ""
                 en_payload_copy = copy.deepcopy(en_payload)
-                en_payload_copy["vi"] = vi_payload
+                en_payload_copy["vi"] = filtered_vi_payload
                 fields_retrieved = _identify_retrieved_fields(en_payload_copy)
                 fields_missing = _identify_missing_fields(en_payload_copy)
 
@@ -1365,8 +1386,10 @@ def run_live_pilot(
                         for c in en_payload.get("credits", {}).get("crew", [])
                         if isinstance(c, dict)
                     ),
-                    has_vi_title=bool(vi_payload.get("title")),
-                    has_vi_overview=bool(vi_payload.get("overview")),
+                    has_vi_title=vi_title_status in VI_FIELD_STATUSES,
+                    has_vi_overview=vi_overview_status in VI_FIELD_STATUSES,
+                    vi_title_status=vi_title_status,
+                    vi_overview_status=vi_overview_status,
                     match_method="direct_tmdb_id",
                     requires_manual_review=needs_review,
                     provenance=provenance,
@@ -1399,6 +1422,10 @@ def run_live_pilot(
                         ],
                     },
                     "vi_VN": vi_payload,
+                    "vi_localization_status": {
+                        "title": vi_title_status,
+                        "overview": vi_overview_status,
+                    },
                 }
                 _save_checkpoint(
                     checkpoint_dir=checkpoint_dir,
@@ -1567,7 +1594,7 @@ def generate_pilot_quality_report(
             "movielens_year", "tmdb_title", "status", "verification_status",
             "title_match", "year_match", "request_count", "latency_ms",
             "has_overview", "has_keywords", "has_cast", "has_director",
-            "has_vi_title", "has_vi_overview", "error_message",
+            "has_vi_title", "has_vi_overview", "vi_title_status", "vi_overview_status", "error_message",
         ])
         for r in summary.records:
             writer.writerow([
@@ -1576,7 +1603,7 @@ def generate_pilot_quality_report(
                 r.verification_status, r.title_match, r.year_match,
                 r.request_count, round(r.latency_ms, 2),
                 r.has_overview, r.has_keywords, r.has_cast, r.has_director,
-                r.has_vi_title, r.has_vi_overview, r.error_message,
+                r.has_vi_title, r.has_vi_overview, r.vi_title_status, r.vi_overview_status, r.error_message,
             ])
 
     # 1. Request statistics JSON
