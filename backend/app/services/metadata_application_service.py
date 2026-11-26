@@ -246,7 +246,10 @@ def apply_approved_metadata(
                     field_name=field_name,
                     provider=candidate.provider,
                     provider_movie_id=candidate.provider_movie_id,
-                    source_language=candidate.source_language,
+                    source_language=(
+                        "vi-VN" if field_name in ("title_vi", "overview_vi")
+                        else candidate.source_language
+                    ),
                     previous_value=previous_serialized,
                     applied_value=new_serialized,
                     approved_by_email=admin_email,
