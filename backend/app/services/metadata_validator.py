@@ -445,18 +445,22 @@ def extract_and_validate_tmdb_fields(
     if backdrop_url:
         proposed["backdrop_path"] = backdrop_url
 
+    # A requested vi-VN locale may contain unchanged English fallback content.
+    # Only stage localized candidates or original Vietnamese values.
+    from .tmdb_localization import VI_FIELD_STATUSES, classify_tmdb_vi_text
+
     # Localized Vietnamese Display Fields (kept strictly separate)
     if isinstance(localized_vi, dict):
         vi_title = sanitize_untrusted_text(localized_vi.get("title"), max_length=MAX_TITLE_LEN)
-        # Only set title_vi if it is non-empty and not just an identical copy of English title
-        # (unless original language is Vietnamese)
-        if vi_title and (vi_title != en_title or orig_lang == "vi"):
+        title_status = classify_tmdb_vi_text(en_title, vi_title, orig_lang)
+        if title_status in VI_FIELD_STATUSES:
             proposed["title_vi"] = vi_title
 
         vi_overview = sanitize_untrusted_text(
             localized_vi.get("overview"), max_length=MAX_OVERVIEW_LEN, allow_newlines=False
         )
-        if vi_overview and vi_overview != en_overview:
+        overview_status = classify_tmdb_vi_text(en_overview, vi_overview, orig_lang)
+        if overview_status in VI_FIELD_STATUSES:
             proposed["overview_vi"] = vi_overview
 
     # Standard TMDB Attribution & Provenance Metadata
