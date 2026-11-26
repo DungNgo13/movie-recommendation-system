@@ -316,6 +316,14 @@ def test_full_admin_enrichment_approval_and_application_preserves_protected_fiel
     assert applied_job["application_status"] == "applied"
     assert applied_job["movie_metadata_version"] == 2
     assert len(applied_job["provenances"]) == 7
+    per_field_source = {
+        entry["field_name"]: entry["source_language"]
+        for entry in applied_job["provenances"]
+    }
+    assert per_field_source["title_vi"] == "vi-VN"
+    assert per_field_source["overview_vi"] == "vi-VN"
+    assert per_field_source["keywords"] == "en-US"
+
 
     # Verify DB state on Movie
     db_session.expire_all()
