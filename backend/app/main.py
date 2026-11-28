@@ -1,13 +1,18 @@
 import os
 import asyncio
 import contextlib
+from pathlib import Path
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from dotenv import load_dotenv
 
 # Load .env FIRST — before any module reads os.getenv().
-load_dotenv()
+# Use an explicit path relative to this file so it works regardless of CWD
+# (e.g. when the app is started from the repository root or via Docker).
+_BACKEND_DIR = Path(__file__).resolve().parent.parent  # …/backend/
+_ENV_FILE = _BACKEND_DIR / ".env"
+load_dotenv(_ENV_FILE)
 
 from .database import engine
 from .models import movie as movie_model

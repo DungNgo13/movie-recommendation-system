@@ -209,7 +209,23 @@ class TMDBConfig:
 
     @classmethod
     def from_env(cls) -> TMDBConfig:
-        """Load configuration from environment variables with safe defaults."""
+        """Load configuration from environment variables with safe defaults.
+
+        As a safety net, re-calls ``load_dotenv`` with the backend ``.env``
+        path so that TMDB settings are available even when the FastAPI app
+        is started from a working directory other than ``backend/``.
+        """
+        # Defensive: ensure backend/.env is loaded even if main.py's
+        # load_dotenv() missed it (e.g. CWD was not the backend/ dir).
+        try:
+            from pathlib import Path as _P
+            from dotenv import load_dotenv as _ld
+            _env_file = _P(__file__).resolve().parent.parent.parent / ".env"
+            if _env_file.is_file():
+                _ld(_env_file, override=False)
+        except Exception:
+            pass  # Non-fatal: rely on whatever is already in os.environ
+
         token = (os.getenv("TMDB_API_READ_ACCESS_TOKEN") or "").strip()
         live_raw = (os.getenv("TMDB_ENABLE_LIVE_REQUESTS") or "false").strip().lower()
         enable_live = live_raw in ("1", "true", "yes")
