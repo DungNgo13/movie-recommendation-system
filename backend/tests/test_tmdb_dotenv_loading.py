@@ -7,6 +7,8 @@ Covers:
   - TMDB_ENABLE_LIVE_REQUESTS=false (or missing) keeps live requests disabled
   - Missing TMDB_API_READ_ACCESS_TOKEN results in empty token
   - main.py load_dotenv uses explicit path relative to __file__
+  - Safety-net dotenv in from_env() uses override=False (env vars take precedence)
+  - Automated tests never make real network requests
 """
 
 from __future__ import annotations
@@ -20,7 +22,12 @@ import pytest
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-from app.services.tmdb_client import TMDBConfig
+from app.services.tmdb_client import TMDBClient, TMDBClientError, TMDBConfig
+
+
+# Helper: suppress the from_env() safety-net dotenv reload so tests
+# that clear the environment don't get .env values back via the fallback.
+_NO_DOTENV = patch("dotenv.load_dotenv", return_value=False)
 
 
 class TestTMDBConfigFromEnv:
@@ -45,19 +52,13 @@ class TestTMDBConfigFromEnv:
             cfg = TMDBConfig.from_env()
             assert cfg.enable_live_requests is False
 
-    def test_enable_live_requests_missing(self):
+    def test_enable_live_requests_missing_defaults_false(self):
         """Missing TMDB_ENABLE_LIVE_REQUESTS should default to False
         when the .env file is NOT available as a fallback."""
-        env = os.environ.copy()
-        env.pop("TMDB_ENABLE_LIVE_REQUESTS", None)
-        # Patch from_env's internal dotenv loading to not find .env,
-        # simulating a deployment where there's no .env file at all.
-        with patch.dict(os.environ, env, clear=True), \
-             patch("app.services.tmdb_client.os.getenv", side_effect=lambda k, d=None: env.get(k, d)):
-            cfg = TMDBConfig(
-                read_access_token="",
-                enable_live_requests=False,  # This is the default
-            )
+        clean = {k: v for k, v in os.environ.items()
+                 if k not in ("TMDB_ENABLE_LIVE_REQUESTS", "TMDB_API_READ_ACCESS_TOKEN")}
+        with patch.dict(os.environ, clean, clear=True), _NO_DOTENV:
+            cfg = TMDBConfig.from_env()
             assert cfg.enable_live_requests is False
 
     @pytest.mark.parametrize("value", ["1", "yes", "YES", "True", "TRUE"])
@@ -80,12 +81,14 @@ class TestTMDBConfigFromEnv:
             cfg = TMDBConfig.from_env()
             assert cfg.enable_live_requests is False
 
-    def test_missing_token(self):
+    def test_missing_token_defaults_empty(self):
         """Missing TMDB_API_READ_ACCESS_TOKEN should result in empty string
         when the .env file is NOT available as a fallback."""
-        # TMDBConfig defaults to empty token when env var is absent
-        cfg = TMDBConfig(read_access_token="")
-        assert cfg.read_access_token == ""
+        clean = {k: v for k, v in os.environ.items()
+                 if k != "TMDB_API_READ_ACCESS_TOKEN"}
+        with patch.dict(os.environ, clean, clear=True), _NO_DOTENV:
+            cfg = TMDBConfig.from_env()
+            assert cfg.read_access_token == ""
 
     def test_whitespace_token(self):
         """Whitespace-only token should be treated as empty."""
@@ -94,6 +97,31 @@ class TestTMDBConfigFromEnv:
         }, clear=False):
             cfg = TMDBConfig.from_env()
             assert cfg.read_access_token == ""
+
+    def test_env_vars_take_precedence_over_dotenv(self):
+        """Explicitly set env vars must NOT be overridden by the .env file
+        (from_env safety-net uses override=False)."""
+        with patch.dict(os.environ, {
+            "TMDB_ENABLE_LIVE_REQUESTS": "false",
+            "TMDB_API_READ_ACCESS_TOKEN": "explicit_token_in_env",
+        }, clear=False):
+            cfg = TMDBConfig.from_env()
+            # Even though .env has true and a real token, the explicit
+            # env vars must win because override=False.
+            assert cfg.enable_live_requests is False
+            assert cfg.read_access_token == "explicit_token_in_env"
+
+    def test_disabled_live_requests_blocks_client(self):
+        """TMDBClient must raise tmdb_live_requests_disabled when
+        enable_live_requests is False and no mock transport is injected."""
+        cfg = TMDBConfig(
+            read_access_token="fake_token",
+            enable_live_requests=False,
+        )
+        with TMDBClient(config=cfg, transport=None) as client:
+            with pytest.raises(TMDBClientError) as exc_info:
+                client.search_movies("Test")
+            assert exc_info.value.code == "tmdb_live_requests_disabled"
 
     def test_timeout_clamping(self):
         """Timeout values should be clamped to [0.5, 60.0]."""
@@ -146,3 +174,10 @@ class TestMainDotenvPath:
         assert backend_dir is not None, "_BACKEND_DIR not defined in main.py"
         assert backend_dir.name == "backend"
         assert (backend_dir / "app" / "main.py").is_file()
+
+    def test_env_file_exists(self):
+        """The .env file referenced by main.py should actually exist."""
+        from app import main
+        env_file = getattr(main, "_ENV_FILE", None)
+        assert env_file is not None
+        assert env_file.is_file(), f"Expected .env at {env_file}"
