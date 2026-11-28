@@ -98,6 +98,40 @@ export interface EnrichmentError extends Error {
   code?: string;
 }
 
+/**
+ * Map TMDB error codes to actionable user-facing messages.
+ */
+const TMDB_ERROR_MESSAGES: Record<string, string> = {
+  tmdb_live_requests_disabled:
+    'Live TMDB requests are disabled. An administrator must set TMDB_ENABLE_LIVE_REQUESTS=true in the backend .env and restart the server.',
+  tmdb_not_configured:
+    'TMDB API credentials are missing. Set TMDB_API_READ_ACCESS_TOKEN in the backend .env and restart the server.',
+  tmdb_unauthorized:
+    'TMDB API authentication failed (HTTP 401). Verify that the TMDB_API_READ_ACCESS_TOKEN is valid.',
+  tmdb_forbidden:
+    'TMDB API access forbidden (HTTP 403). The API token may lack the required permissions.',
+  tmdb_rate_limited:
+    'TMDB API rate limit exceeded. Please wait a moment and try again.',
+  tmdb_timeout:
+    'TMDB API request timed out. Check network connectivity and try again.',
+  tmdb_network_error:
+    "Network error connecting to TMDB. Check the server's internet connection.",
+  tmdb_tls_handshake_failed:
+    'TLS/SSL connection to TMDB failed. This may be caused by a firewall, proxy, or ISP restriction.',
+  tmdb_circuit_open:
+    'TMDB connectivity circuit breaker is open due to repeated failures. The connection will retry automatically after the server restarts.',
+  tmdb_budget_exhausted:
+    'TMDB request budget exhausted. No further API calls are allowed in this session.',
+  tmdb_upstream_error:
+    'TMDB API returned a server error. The service may be temporarily unavailable.',
+  tmdb_not_found:
+    'No matching movie found on TMDB for the given identifiers.',
+  enrichment_duplicate_active_job:
+    'An active enrichment job already exists for this movie. Approve, apply, or reject it before starting a new one.',
+  enrichment_concurrent_modification:
+    'The movie was modified by another user. Reload the page and try again.',
+};
+
 function authHeaders(json = true): Record<string, string> {
   const token = getToken();
   const headers: Record<string, string> = {};
@@ -125,7 +159,9 @@ async function handleResponse<T>(response: Response, fallbackMessage: string): P
     } catch {
       // ignore JSON parse failure
     }
-    const err = new Error(detail) as EnrichmentError;
+    // Use actionable message when a known TMDB/enrichment error code is returned
+    const actionableMessage = code ? TMDB_ERROR_MESSAGES[code] : undefined;
+    const err = new Error(actionableMessage || detail) as EnrichmentError;
     err.status = response.status;
     err.code = code;
     throw err;

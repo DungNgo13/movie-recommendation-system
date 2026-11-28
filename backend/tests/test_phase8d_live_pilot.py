@@ -1489,6 +1489,7 @@ class TestStrictBudgetEnforcement:
                 {
                     "PHASE8D_LIVE_AUTHORIZED": "true",
                     "TMDB_ENABLE_LIVE_REQUESTS": "true",
+                    "TMDB_API_READ_ACCESS_TOKEN": "",  # Simulate missing credentials
                 },
                 clear=False,
             ),
@@ -1501,7 +1502,6 @@ class TestStrictBudgetEnforcement:
                 side_effect=lambda m, mid: m.imdb_lookup.get(mid),
             ),
         ):
-            os.environ.pop("TMDB_API_READ_ACCESS_TOKEN", None)
             summary = run_live_pilot(["1", "2851"], dataset, mapping, config, tmp_path)
 
         assert summary.total_requests == 0
